@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore.Audio;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -753,8 +752,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
 		}
 		mImageFetcher.removeFromCache(key);
-		// Give the disk cache a little time before requesting a new image.
-		SystemClock.sleep(80);
 	}
 
 	/**

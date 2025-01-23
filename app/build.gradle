@@ -9,10 +9,10 @@ android {
 
 	defaultConfig {
 		applicationId 'org.nuclearfog.apollo'
-		minSdkVersion 16
+		minSdkVersion 21
 		targetSdkVersion 35
 		versionCode 56
-		versionName '1.5.16'
+		versionName '1.6'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
 	}
@@ -33,6 +33,7 @@ android {
 
 	buildFeatures {
 		buildConfig true
+		aidl true
 	}
 
 	aaptOptions {
@@ -59,10 +60,6 @@ android {
 		exclude '/kotlin/**'
 		exclude '/kotlin-tooling-metadata.json'
 		exclude '/Debug*'
-	}
-
-	buildFeatures {
-		aidl true
 	}
 }
 

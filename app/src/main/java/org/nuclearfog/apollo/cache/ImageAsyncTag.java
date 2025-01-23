@@ -65,6 +65,13 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	}
 
 	/**
+	 * @return true if background process is finished
+	 */
+	public boolean isFinished() {
+		return !bitmapWorkerTask.isRunning();
+	}
+
+	/**
 	 * @return unique tag key
 	 */
 	public String getTag() {

@@ -51,11 +51,6 @@
 			android:key="only_on_wifi"
 			android:summary="@string/settings_download_only_on_wifi_summary"
 			android:title="@string/settings_download_only_on_wifi_title" />
-		<EditTextPreference
-			android:key="api_key"
-			android:selectAllOnFocus="true"
-			android:lines="1"
-			android:title="@string/lastfm_api_key" />
 	</PreferenceCategory>
 
 	<!-- Storage catetory -->

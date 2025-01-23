@@ -212,7 +212,6 @@
 	<string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
 
 	<!--other-->
-	<string name="lastfm_api_key">LastFM API key</string>
 	<string name="preset_name_hint">enter preset name</string>
 	<string name="preset_custom">custom</string>
 

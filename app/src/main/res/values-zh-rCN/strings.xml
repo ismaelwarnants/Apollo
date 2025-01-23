@@ -167,6 +167,5 @@
 	<string name="title_audio_effects">音频效果</string>
 
 	<!-- 小于1小时的时长格式 -->
-	<string name="lastfm_api_key">LastFM API 密钥</string>
 
 </resources>

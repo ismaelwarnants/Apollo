@@ -9,11 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import org.nuclearfog.apollo.BuildConfig;
-
 import java.lang.ref.WeakReference;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -42,8 +41,8 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	/**
 	 * thread pool executor
 	 */
-	private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-
+	//private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+	private static final ExecutorService THREAD_POOL = Executors.newSingleThreadExecutor();
 	/**
 	 * handler used to send result back to activity/fragment
 	 */
@@ -56,6 +55,8 @@ public abstract class AsyncExecutor<Parameter, Result> {
 
 	private WeakReference<Context> mContext;
 
+	private volatile boolean isRunning = false;
+
 	/**
 	 *
 	 */
@@ -64,7 +65,7 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	}
 
 	/**
-	 * start packground task
+	 * start background task
 	 *
 	 * @param parameter parameter to send to the background task
 	 * @param callback  result from the background task
@@ -72,25 +73,20 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	public final void execute(final Parameter parameter, @Nullable AsyncCallback<Result> callback) {
 		final WeakReference<AsyncCallback<Result>> callbackReference = new WeakReference<>(callback);
 		try {
-			Future<?> future = THREAD_POOL.submit(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Result result = doInBackground(parameter);
-						onPostExecute(result, callbackReference);
-					} catch (RuntimeException exception) {
-						if (BuildConfig.DEBUG) {
-							exception.printStackTrace();
-						}
-					}
+			isRunning = true;
+			Future<?> future = THREAD_POOL.submit(() -> {
+				try {
+					Result result = doInBackground(parameter);
+					isRunning = false;
+					onPostExecute(result, callbackReference);
+				} catch (RuntimeException exception) {
+					Log.e(TAG, "error while executing background task", exception);
+					isRunning = false;
 				}
 			});
 			futureTasks.add(future);
 		} catch (RejectedExecutionException exception) {
 			Log.e(TAG, "failed to submit task");
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
 		}
 	}
 
@@ -104,8 +100,16 @@ public abstract class AsyncExecutor<Parameter, Result> {
 		}
 	}
 
+	/**
+	 *
+	 */
+	public final boolean isRunning() {
+		return isRunning;
+	}
+
+
 	@Nullable
-	protected Context getContext() {
+	protected final Context getContext() {
 		return mContext.get();
 	}
 
@@ -114,16 +118,14 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	 *
 	 * @param result result of the background task
 	 */
-	private synchronized void onPostExecute(@Nullable final Result result, WeakReference<AsyncCallback<Result>> callbackReference) {
-		uiHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!futureTasks.isEmpty())
-					futureTasks.remove();
-				AsyncCallback<Result> reference = callbackReference.get();
-				if (reference != null && result != null) {
-					reference.onResult(result);
-				}
+	private synchronized void onPostExecute(@Nullable Result result, WeakReference<AsyncCallback<Result>> callbackReference) {
+		uiHandler.post(() -> {
+			AsyncCallback<Result> reference = callbackReference.get();
+			if (!futureTasks.isEmpty()) {
+				futureTasks.remove();
+			}
+			if (reference != null && result != null) {
+				reference.onResult(result);
 			}
 		});
 	}

@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -24,10 +25,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.lastfm.AlbumEntry;
-import org.nuclearfog.apollo.lastfm.ArtistEntry;
-import org.nuclearfog.apollo.lastfm.ImageSize;
-import org.nuclearfog.apollo.lastfm.MusicEntry;
+import org.nuclearfog.apollo.lookup.MusicBrainz;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -66,9 +64,6 @@ public class ImageFetcher extends ImageWorker {
 	 */
 	private static final String ALBUM_ART_SUFFIX = "album";
 
-	private static final ImageSize[] QUALITY = {
-			ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE,
-			ImageSize.MEDIUM, ImageSize.SMALL, ImageSize.UNKNOWN};
 
 	private static ImageFetcher sInstance = null;
 
@@ -94,17 +89,6 @@ public class ImageFetcher extends ImageWorker {
 		return sInstance;
 	}
 
-
-	private static String getBestImage(MusicEntry e) {
-		for (ImageSize q : QUALITY) {
-			String url = e.getImageURL(q);
-			if (url != null) {
-				return url;
-			}
-		}
-		return null;
-	}
-
 	/**
 	 * Download a {@link Bitmap} from a URL, write it to a disk and return the
 	 * File pointer. This implementation uses a simple disk cache.
@@ -125,7 +109,7 @@ public class ImageFetcher extends ImageWorker {
 
 		try {
 			File tempFile = File.createTempFile("bitmap", null, cacheDir); //$NON-NLS-1$
-
+			urlString = urlString.replace("http://", "https://");
 			URL url = new URL(urlString);
 			urlConnection = (HttpsURLConnection) url.openConnection();
 			if (urlConnection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
@@ -283,22 +267,18 @@ public class ImageFetcher extends ImageWorker {
 		switch (imageType) {
 			case ARTIST:
 				if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-					ArtistEntry artist = ArtistEntry.getInfo(getContext(), artistName);
-					if (artist != null) {
-						return getBestImage(artist);
+					String id = MusicBrainz.getArtistId(artistName);
+					if (!id.isEmpty()) {
+						return MusicBrainz.getCoverArt(id);
 					}
 				}
 				break;
 
 			case ALBUM:
-				if (!TextUtils.isEmpty(artistName) && !TextUtils.isEmpty(albumName)
-						&& PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-					ArtistEntry correction = ArtistEntry.getCorrection(mContext, artistName);
-					if (correction != null) {
-						AlbumEntry album = AlbumEntry.getInfo(getContext(), correction.getName(), albumName);
-						if (album != null) {
-							return getBestImage(album);
-						}
+				if (!TextUtils.isEmpty(albumName) && PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
+					String id = MusicBrainz.getAlbumId(albumName);
+					if (!id.isEmpty()) {
+						return MusicBrainz.getCoverArt(id);
 					}
 				}
 				break;
@@ -319,6 +299,8 @@ public class ImageFetcher extends ImageWorker {
 
 	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
 		String key = generateAlbumCacheKey(album, artist);
+		if (key.contains("Those"))
+			Log.d("test","test");
 		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
 	}
 
@@ -326,8 +308,7 @@ public class ImageFetcher extends ImageWorker {
 	 * Used to fetch artist images.
 	 */
 	public void loadArtistImage(String key, ImageView imageView) {
-		// fixme last FM does not return artist images anymore so try to download an album artwork instead
-		loadImage(key, key, null, -1L, ImageType.ALBUM, imageView);
+		loadImage(key, key, null, -1L, ImageType.ARTIST, imageView);
 	}
 
 	/**
