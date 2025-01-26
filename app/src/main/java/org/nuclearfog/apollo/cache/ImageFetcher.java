@@ -26,6 +26,8 @@ import androidx.core.content.res.ResourcesCompat;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
+import org.nuclearfog.apollo.lookup.entities.Artwork;
+import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -108,8 +110,7 @@ public class ImageFetcher extends ImageWorker {
 		BufferedOutputStream out = null;
 
 		try {
-			File tempFile = File.createTempFile("bitmap", null, cacheDir); //$NON-NLS-1$
-			urlString = urlString.replace("http://", "https://");
+			File tempFile = File.createTempFile("bitmap", null, cacheDir);
 			URL url = new URL(urlString);
 			urlConnection = (HttpsURLConnection) url.openConnection();
 			if (urlConnection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
@@ -266,19 +267,19 @@ public class ImageFetcher extends ImageWorker {
 	public String processImageUrl(String artistName, String albumName, ImageType imageType) {
 		switch (imageType) {
 			case ARTIST:
-				if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-					String id = MusicBrainz.getArtistId(artistName);
-					if (!id.isEmpty()) {
-						return MusicBrainz.getCoverArt(id);
-					}
+				if (!TextUtils.isEmpty(artistName) && artistName.length() > 2 && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
+					// todo implement this
 				}
 				break;
 
 			case ALBUM:
-				if (!TextUtils.isEmpty(albumName) && PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-					String id = MusicBrainz.getAlbumId(albumName);
-					if (!id.isEmpty()) {
-						return MusicBrainz.getCoverArt(id);
+				if (!TextUtils.isEmpty(albumName) && albumName.length() > 2 && PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
+					AlbumMB album = MusicBrainz.getRelease(albumName);
+					if (album != null) {
+						Artwork artwork = MusicBrainz.getAlbumImage(album.getId());
+						if (artwork != null) {
+							return artwork.getThumbnailUrl();
+						}
 					}
 				}
 				break;

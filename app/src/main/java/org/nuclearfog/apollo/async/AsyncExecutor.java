@@ -12,7 +12,6 @@ import androidx.annotation.WorkerThread;
 import java.lang.ref.WeakReference;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -41,8 +40,8 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	/**
 	 * thread pool executor
 	 */
-	//private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-	private static final ExecutorService THREAD_POOL = Executors.newSingleThreadExecutor();
+	private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+
 	/**
 	 * handler used to send result back to activity/fragment
 	 */
