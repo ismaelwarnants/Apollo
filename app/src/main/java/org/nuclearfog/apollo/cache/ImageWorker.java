@@ -163,7 +163,7 @@ public abstract class ImageWorker {
 				}
 			}
 			// check storage for image or download
-			else /*if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) */{
+			else /*if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) */ {
 				// Otherwise run the worker task
 				ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, imageType, imageviews);
 				imageviews[0].setTag(asyncTag);

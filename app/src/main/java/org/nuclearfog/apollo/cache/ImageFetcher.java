@@ -26,8 +26,9 @@ import androidx.core.content.res.ResourcesCompat;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
-import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
+import org.nuclearfog.apollo.lookup.entities.ArtistMB;
+import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -265,24 +266,29 @@ public class ImageFetcher extends ImageWorker {
 	 */
 	@Override
 	public String processImageUrl(String artistName, String albumName, ImageType imageType) {
-		switch (imageType) {
-			case ARTIST:
-				if (!TextUtils.isEmpty(artistName) && artistName.length() > 2 && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-					// todo implement this
-				}
-				break;
-
-			case ALBUM:
-				if (!TextUtils.isEmpty(albumName) && albumName.length() > 2 && PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-					AlbumMB album = MusicBrainz.getRelease(albumName);
-					if (album != null) {
-						Artwork artwork = MusicBrainz.getAlbumImage(album.getId());
-						if (artwork != null) {
-							return artwork.getThumbnailUrl();
-						}
+		if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
+			String mbid = null;
+			if (imageType == ImageType.ARTIST) {
+				if (!TextUtils.isEmpty(artistName) && artistName.length() > 2) {
+					ArtistMB artist = MusicBrainz.getArtist(artistName);
+					if (artist != null) {
+						mbid = artist.getId();
 					}
 				}
-				break;
+			} else if (imageType == ImageType.ALBUM) {
+				if (!TextUtils.isEmpty(albumName) && albumName.length() > 2) {
+					AlbumMB album = MusicBrainz.getRelease(albumName);
+					if (album != null) {
+						mbid = album.getId();
+					}
+				}
+			}
+			if (mbid != null) {
+				Artwork artwork = MusicBrainz.getImage(mbid);
+				if (artwork != null) {
+					return artwork.getThumbnailUrl();
+				}
+			}
 		}
 		return null;
 	}
@@ -301,7 +307,7 @@ public class ImageFetcher extends ImageWorker {
 	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
 		String key = generateAlbumCacheKey(album, artist);
 		if (key.contains("Those"))
-			Log.d("test","test");
+			Log.d("test", "test");
 		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
 	}
 

@@ -420,17 +420,7 @@ public class MultiPlayer {
 		// set new cross fade task
 		if (enable) {
 			if (xfadeTask == null) {
-				xfadeTask = threadPool.scheduleWithFixedDelay(new Runnable() {
-					@Override
-					public void run() {
-						xfadeHandler.post(new Runnable() {
-							@Override
-							public void run() {
-								onCrossfadeTrack();
-							}
-						});
-					}
-				}, FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
+				xfadeTask = threadPool.scheduleWithFixedDelay(() -> xfadeHandler.post(this::onCrossfadeTrack), FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
 			}
 		} else if (xfadeTask != null) {
 			xfadeTask.cancel(true);
@@ -470,12 +460,7 @@ public class MultiPlayer {
 			} catch (IllegalStateException e) {
 				// ignore
 			}
-			playerHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					callback.onPlaybackError();
-				}
-			}, ERROR_RETRY);
+			playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
 			return true;
 		}
 		return false;

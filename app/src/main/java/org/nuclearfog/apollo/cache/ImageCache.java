@@ -239,16 +239,13 @@ public final class ImageCache implements ComponentCallbacks2 {
 			cacheFolder = context.getCacheDir();
 		final File folder = new File(cacheFolder, TAG);
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// Initialize the disk cache in a background thread
-					initDiskCache(folder);
-				} catch (Exception err) {
-					if (BuildConfig.DEBUG) {
-						err.printStackTrace();
-					}
+		new Thread(() -> {
+			try {
+				// Initialize the disk cache in a background thread
+				initDiskCache(folder);
+			} catch (Exception err) {
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
 				}
 			}
 		}).start();
@@ -340,12 +337,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 					if (out != null) {
 						out.close();
 					}
-				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-						Log.e(TAG, "addBitmapToCache - " + e);
-					}
-				} catch (IllegalStateException e) {
+				} catch (IOException | IllegalStateException e) {
 					if (BuildConfig.DEBUG) {
 						e.printStackTrace();
 						Log.e(TAG, "addBitmapToCache - " + e);
@@ -518,19 +510,16 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * cache first
 	 */
 	public void flush() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (mDiskCache != null) {
-					try {
-						if (!mDiskCache.isClosed()) {
-							mDiskCache.flush();
-						}
-					} catch (IOException e) {
-						if (BuildConfig.DEBUG) {
-							e.printStackTrace();
-							Log.e(TAG, "flush - " + e);
-						}
+		new Thread(() -> {
+			if (mDiskCache != null) {
+				try {
+					if (!mDiskCache.isClosed()) {
+						mDiskCache.flush();
+					}
+				} catch (IOException e) {
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+						Log.e(TAG, "flush - " + e);
 					}
 				}
 			}
@@ -541,21 +530,18 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * Clears the disk and memory caches
 	 */
 	public void clearCaches() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// Clear the disk cache
-				try {
-					if (mDiskCache != null) {
-						mDiskCache.delete();
-						mDiskCache = null;
-					}
-				} catch (IOException e) {
-					Log.e(TAG, "error cleaning disk cache" + e);
+		new Thread(() -> {
+			// Clear the disk cache
+			try {
+				if (mDiskCache != null) {
+					mDiskCache.delete();
+					mDiskCache = null;
 				}
-				// Clear the memory cache
-				evictAll();
+			} catch (IOException e) {
+				Log.e(TAG, "error cleaning disk cache" + e);
 			}
+			// Clear the memory cache
+			evictAll();
 		}).start();
 	}
 

@@ -116,7 +116,7 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 	/**
 	 *
 	 */
-	static class EqualizerHolder extends RecyclerView.ViewHolder {
+	public static class EqualizerHolder extends RecyclerView.ViewHolder {
 
 		final SeekBar slider;
 		final TextView level, frequency;

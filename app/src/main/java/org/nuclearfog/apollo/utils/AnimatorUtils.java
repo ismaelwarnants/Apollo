@@ -31,16 +31,13 @@ public final class AnimatorUtils {
 	 */
 	public static void fade(View view, boolean visible) {
 		AlphaAnimation anim;
-		Runnable post = new Runnable() {
-			@Override
-			public void run() {
-				if (visible) {
-					view.setAlpha(1f);
-					view.setVisibility(View.VISIBLE);
-				} else {
-					view.setAlpha(0f);
-					view.setVisibility(View.INVISIBLE);
-				}
+		Runnable post = () -> {
+			if (visible) {
+				view.setAlpha(1f);
+				view.setVisibility(View.VISIBLE);
+			} else {
+				view.setAlpha(0f);
+				view.setVisibility(View.INVISIBLE);
 			}
 		};
 		if (visible) {

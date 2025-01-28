@@ -442,6 +442,7 @@ public final class DiskLruCache implements Closeable {
 		InputStream[] ins = new InputStream[valueCount];
 		try {
 			for (int i = 0; i < valueCount; i++) {
+				//noinspection resource
 				ins[i] = new FileInputStream(entry.getCleanFile(i));
 			}
 		} catch (FileNotFoundException e) {

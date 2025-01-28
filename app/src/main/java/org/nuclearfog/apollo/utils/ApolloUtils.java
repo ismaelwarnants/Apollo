@@ -299,19 +299,16 @@ public final class ApolloUtils {
 	 * @param id        Item ID
 	 */
 	public static void registerItemViewListener(@NonNull View view, final ViewGroup container, final int pos, final long id) {
-		view.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// check if container is a list
-				if (container instanceof AbsListView) {
-					AbsListView list = ((AbsListView) container);
-					list.performItemClick(v, pos, id);
-				}
-				// check if parent is a list
-				else if (container.getParent() instanceof AbsListView) {
-					AbsListView list = ((AbsListView) container.getParent());
-					list.performItemClick(v, pos, id);
-				}
+		view.setOnClickListener(v -> {
+			// check if container is a list
+			if (container instanceof AbsListView) {
+				AbsListView list = ((AbsListView) container);
+				list.performItemClick(v, pos, id);
+			}
+			// check if parent is a list
+			else if (container.getParent() instanceof AbsListView) {
+				AbsListView list = ((AbsListView) container.getParent());
+				list.performItemClick(v, pos, id);
 			}
 		});
 	}

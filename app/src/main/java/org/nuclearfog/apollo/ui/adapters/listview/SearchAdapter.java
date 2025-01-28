@@ -73,6 +73,7 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		MusicHolder holder;

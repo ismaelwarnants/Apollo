@@ -5,6 +5,9 @@ import android.text.TextUtils;
 
 import org.nuclearfog.apollo.R;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * This class contains utils for strings
  *
@@ -103,5 +106,19 @@ public final class StringUtils {
 	 */
 	public static String makeLabel(Context context, int pluralInt, int number) {
 		return context.getResources().getQuantityString(pluralInt, number, number);
+	}
+
+	/**
+	 * encode text o UTF-8
+	 *
+	 * @param text text to encode
+	 * @return UTF8 translated string
+	 */
+	public static String encodeUTF8(String text) {
+		try {
+			return URLEncoder.encode(text, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return "";
+		}
 	}
 }

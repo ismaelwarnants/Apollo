@@ -278,7 +278,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAnimationCancel(Animator animation) {
+	public void onAnimationCancel(@NonNull Animator animation) {
 		mTabCarouselIsAnimating = false;
 	}
 
@@ -286,7 +286,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAnimationEnd(Animator animation) {
+	public void onAnimationEnd(@NonNull Animator animation) {
 		mTabCarouselIsAnimating = false;
 	}
 
@@ -294,7 +294,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAnimationRepeat(Animator animation) {
+	public void onAnimationRepeat(@NonNull Animator animation) {
 		mTabCarouselIsAnimating = true;
 	}
 
@@ -302,7 +302,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAnimationStart(Animator animation) {
+	public void onAnimationStart(@NonNull Animator animation) {
 		mTabCarouselIsAnimating = true;
 	}
 

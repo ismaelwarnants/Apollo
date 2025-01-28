@@ -22,6 +22,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
+
 /**
  * This drawable that draws a simple white and gray chess board pattern. It's
  * pattern you will often see as a background behind a partly transparent image
@@ -85,7 +87,7 @@ public class AlphaPatternDrawable extends Drawable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onBoundsChange(Rect bounds) {
+	protected void onBoundsChange(@NonNull Rect bounds) {
 		super.onBoundsChange(bounds);
 		numRectanglesHorizontal = bounds.width() / mRectangleSize;
 		numRectanglesVertical = bounds.height() / mRectangleSize;

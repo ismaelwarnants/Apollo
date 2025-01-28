@@ -1,8 +1,6 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,12 +45,9 @@ public class CacheClearDialog extends DialogFragment {
 		return new AlertDialog.Builder(requireContext())
 				.setMessage(R.string.delete_warning)
 				.setNegativeButton(R.string.cancel, null)
-				.setPositiveButton(android.R.string.ok, new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						ImageCache mImageCache = ImageCache.getInstance(requireContext());
-						mImageCache.clearCaches();
-					}
+				.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+					ImageCache mImageCache = ImageCache.getInstance(requireContext());
+					mImageCache.clearCaches();
 				}).create();
 	}
 }

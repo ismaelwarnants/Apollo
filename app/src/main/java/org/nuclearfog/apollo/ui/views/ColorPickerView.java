@@ -165,7 +165,7 @@ public class ColorPickerView extends View {
 
 
 	@Override
-	protected void onDraw(Canvas canvas) {
+	protected void onDraw(@NonNull Canvas canvas) {
 		if (mDrawingRect != null && mDrawingRect.width() > 0 && mDrawingRect.height() > 0) {
 			drawSatValPanel(canvas);
 			drawHuePanel(canvas);

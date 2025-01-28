@@ -107,7 +107,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onDown(MotionEvent ev) {
+	public boolean onDown(@NonNull MotionEvent ev) {
 		mHitPos = dragHandleHitPosition(ev);
 		if (mHitPos != MISS && mDragInitMode == ON_DOWN) {
 			startDrag(mHitPos, (int) ev.getX() - mItemX, (int) ev.getY() - mItemY);
@@ -119,7 +119,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	public boolean onScroll(MotionEvent e1, @NonNull MotionEvent e2, float distanceX, float distanceY) {
 		if (mHitPos != MISS && mDragInitMode == ON_DRAG && !mDragging) {
 			int x1 = (int) e1.getX();
 			int y1 = (int) e1.getY();
@@ -144,7 +144,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLongPress(MotionEvent e) {
+	public void onLongPress(@NonNull MotionEvent e) {
 		if (mHitPos != MISS && mDragInitMode == ON_LONG_PRESS) {
 			mDslv.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 			startDrag(mHitPos, mCurrX - mItemX, mCurrY - mItemY);
@@ -155,7 +155,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+	public boolean onFling(MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
 		if (mRemoveEnabled) {
 			float mFlingSpeed = 500f;
 			switch (mRemoveMode) {
@@ -179,7 +179,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onSingleTapUp(MotionEvent ev) {
+	public boolean onSingleTapUp(@NonNull MotionEvent ev) {
 		return false;
 	}
 
@@ -187,7 +187,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onShowPress(MotionEvent ev) {
+	public void onShowPress(@NonNull MotionEvent ev) {
 	}
 
 	/**

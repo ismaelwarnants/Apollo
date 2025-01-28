@@ -181,7 +181,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 
 
 	@Override
-	protected void onDraw(Canvas canvas) {
+	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
 
 		if (mViewPager == null) {

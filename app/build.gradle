@@ -1,3 +1,4 @@
+//file:noinspection DifferentStdlibGradleVersion
 plugins {
 	id 'com.android.application'
 }
@@ -65,9 +66,8 @@ android {
 
 dependencies {
 	implementation 'androidx.media:media:1.7.0'
-	//noinspection GradleDependency
-	implementation 'androidx.appcompat:appcompat:1.6.1'
+	implementation 'androidx.appcompat:appcompat:1.7.0'
 	implementation 'androidx.preference:preference:1.2.1'
-	//noinspection GradleDependency
-	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+	implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20'
 }

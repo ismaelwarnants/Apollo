@@ -7,15 +7,16 @@ import androidx.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.lookup.entities.ArtistMB;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,9 +32,20 @@ public class MusicBrainz {
 
 	private static final String TAG = "MusicBrainz";
 
+	/**
+	 * user agent used for the MusicBrainz API
+	 */
+	private static final String USER_AGENT = "Apollo/" + BuildConfig.VERSION_NAME + " (https://codeberg.org/nuclearfog/Apollo)";
+
+	/**
+	 * API host used to access music information
+	 */
 	private static final String API_MUSICBRAINZ = "https://musicbrainz.org/ws/2/";
+
+	/**
+	 * API host used to access cover art images
+	 */
 	private static final String API_COVERART_ARCHIVE = "https://coverartarchive.org/release/";
-	private static final String API_COVERART_ARCHIVE1 = "https://coverartarchive.org/release-group/";
 
 	private static final String ENDPOINT_SEARCH_ARTIST = "artist";
 	private static final String ENDPOINT_SEARCH_ALBUM = "release";
@@ -73,12 +85,12 @@ public class MusicBrainz {
 	 * @return artwork information or 'null' if not found
 	 */
 	@Nullable
-	public static Artwork getAlbumImage(String mbid) {
+	public static Artwork getImage(String mbid) {
 		try {
 			JSONObject json = get(API_COVERART_ARCHIVE, mbid, new String[0]);
 			return new Artwork(json);
 		} catch (JSONException e) {
-			Log.e(TAG, "error loading artwork", e);
+			Log.e(TAG, "error JSON-Format", e);
 		}
 		return null;
 	}
@@ -92,7 +104,7 @@ public class MusicBrainz {
 	 */
 	public static List<ArtistMB> searchArtists(String name, int count) {
 		try {
-			String[] param = {"query=" + URLEncoder.encode(name, "UTF-8"), "limit=" + count, "inc=artist-rels"};
+			String[] param = {"query=" + StringUtils.encodeUTF8(name), "limit=" + count, "inc=artist-rels"};
 			JSONObject json = get(API_MUSICBRAINZ, ENDPOINT_SEARCH_ARTIST, param);
 			JSONArray array = json.optJSONArray("artists");
 			if (array != null) {
@@ -103,7 +115,8 @@ public class MusicBrainz {
 				}
 				return result;
 			}
-		} catch (Exception e) {
+		} catch (JSONException e) {
+			Log.e(TAG, "error JSON-Format", e);
 		}
 		return new ArrayList<>();
 	}
@@ -117,7 +130,7 @@ public class MusicBrainz {
 	 */
 	public static List<AlbumMB> searchAlbums(String name, int count) {
 		try {
-			String[] param = {"query=" + URLEncoder.encode(name, "UTF-8"), "limit=" + count};
+			String[] param = {"query=" + StringUtils.encodeUTF8(name), "limit=" + count};
 			JSONObject json = get(API_MUSICBRAINZ, ENDPOINT_SEARCH_ALBUM, param);
 			JSONArray array = json.optJSONArray("releases");
 			if (array != null) {
@@ -129,6 +142,7 @@ public class MusicBrainz {
 				return result;
 			}
 		} catch (Exception e) {
+			Log.e(TAG, "error JSON-Format", e);
 		}
 		return new ArrayList<>();
 	}
@@ -136,11 +150,12 @@ public class MusicBrainz {
 	/**
 	 * access to GET endpoint
 	 *
-	 * @param host		hostname
-	 * @param endpoint	endpoint
-	 * @param param		additional parameter
-	 * @return			json response
+	 * @param host     hostname
+	 * @param endpoint endpoint
+	 * @param param    additional parameter
+	 * @return json response
 	 */
+	@SuppressWarnings("CharsetObjectCanBeUsed")
 	private static JSONObject get(String host, String endpoint, String[] param) throws JSONException {
 		try {
 			StringBuilder buf = new StringBuilder(host + endpoint);
@@ -153,7 +168,7 @@ public class MusicBrainz {
 			}
 			URL urlEndpoint = new URL(buf.toString());
 			HttpsURLConnection connection = (HttpsURLConnection) urlEndpoint.openConnection();
-			connection.setRequestProperty("User-Agent", "Apollo Music Player");
+			connection.setRequestProperty("User-Agent", USER_AGENT);
 			connection.setRequestProperty("Accept", "application/json");
 			if (connection.getResponseCode() == 200) {
 				InputStream responseBody = connection.getInputStream();
