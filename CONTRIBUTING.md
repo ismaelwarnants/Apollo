@@ -16,7 +16,7 @@ Bug reports are always welcome. The more information you collect, the more helpf
 ### Before Submitting a Bug Report
 - Make sure that you are using the latest version.
 - Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions
-- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/nuclearfog/Apollo-Music/issues?q=label%3Abug).
+- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the bug tracker.
 - Collect information about the bug:
   - Android version
   - Possibly your input and the output

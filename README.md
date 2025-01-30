@@ -6,7 +6,7 @@ Apollo-Music is a fork from CyanogenMod's <a href="https://github.com/adneal/Apo
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/org.nuclearfog.apollo/)
 
-Or download the latest APK from the [Releases Section](https://github.com/nuclearfog/Apollo-Music/releases/latest).
+Or download the latest APK from the releases section.
 
 ## What's new
 
@@ -19,4 +19,4 @@ Or download the latest APK from the [Releases Section](https://github.com/nuclea
 <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img1.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img2.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img3.jpg" width="200"/>
 
 ## Contributing
-For more information please read the <a href="https://github.com/nuclearfog/Apollo-Music/blob/master/CONTRIBUTING.md">Contribution Guidelines<a/>
+For more information please read the contribution guidelines

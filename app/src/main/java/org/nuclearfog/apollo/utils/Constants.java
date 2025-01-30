@@ -29,7 +29,7 @@ public final class Constants {
 	/**
 	 * link to the source code repository
 	 */
-	public static final String SOURCE_URL = "https://github.com/nuclearfog/Apollo-Music";
+	public static final String SOURCE_URL = "https://codeberg.org/nuclearfog/Apollo";
 
 	/**
 	 * The ID of an artist, album, genre, or playlist passed to the profile activity
