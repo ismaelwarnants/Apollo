@@ -157,9 +157,12 @@ public class GenreSongFragment extends ProfileFragment implements AsyncCallback<
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (mPlaylistId != -1)
-						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					if (item.getIntent() != null) {
+						long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (mPlaylistId != -1) {
+							MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -187,7 +190,7 @@ public class GenreSongFragment extends ProfileFragment implements AsyncCallback<
 		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
-			// Add the data to the adpater
+			// Add the data to the adapter
 			for (Song song : songs) {
 				mAdapter.add(song);
 			}

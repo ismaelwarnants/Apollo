@@ -28,10 +28,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginStart="10dp"
-		android:layout_marginLeft="10dp"
 		android:layout_marginBottom="5dp"
 		android:layout_marginEnd="5dp"
-		android:layout_marginRight="5dp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/audiofx_colorstrip"
 		app:layout_constraintBottom_toTopOf="@id/audiofx_preset"
@@ -45,7 +43,6 @@
 		android:layout_height="wrap_content"
 		android:text="@string/label_enable_equalizer"
 		android:layout_marginEnd="5dp"
-		android:layout_marginRight="5dp"
 		app:layout_constraintStart_toEndOf="@id/audiofx_enable"
 		app:layout_constraintTop_toTopOf="@id/audiofx_enable"
 		app:layout_constraintBottom_toBottomOf="@id/audiofx_enable"
@@ -59,7 +56,6 @@
 		android:text="@string/label_preset"
 		android:textSize="@dimen/text_size_medium"
 		android:layout_marginEnd="10dp"
-		android:layout_marginRight="10dp"
 		app:layout_constraintHorizontal_chainStyle="packed"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_preset"
@@ -99,7 +95,6 @@
 		android:layout_height="wrap_content"
 		android:text="@string/label_bass_boost"
 		android:layout_marginStart="5dp"
-		android:layout_marginLeft="5dp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_bass_boost"
 		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost" />
@@ -111,7 +106,7 @@
 		android:layout_height="wrap_content"
 		android:text="@string/label_reverb"
 		android:layout_marginStart="5dp"
-		android:layout_marginLeft="5dp"
+
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_reverb"
 		app:layout_constraintBottom_toBottomOf="@id/audiofx_reverb" />

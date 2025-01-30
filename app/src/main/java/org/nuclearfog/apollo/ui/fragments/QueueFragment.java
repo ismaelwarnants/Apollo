@@ -206,42 +206,47 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Item
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && mSelectedPosition >= 0) {
 			Song selectedSong = mAdapter.getItem(mSelectedPosition);
-			long[] trackId = {selectedSong.getId()};
+			if (selectedSong != null) {
+				long[] trackId = {selectedSong.getId()};
 
-			switch (item.getItemId()) {
-				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(requireActivity(), trackId);
-					return true;
+				switch (item.getItemId()) {
+					case ContextMenuItems.PLAY_NEXT:
+						MusicUtils.playNext(requireActivity(), trackId);
+						return true;
 
-				case ContextMenuItems.REMOVE_FROM_QUEUE:
-					remove(mSelectedPosition);
-					return true;
+					case ContextMenuItems.REMOVE_FROM_QUEUE:
+						remove(mSelectedPosition);
+						return true;
 
-				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireActivity()).addFavorite(selectedSong);
-					return true;
+					case ContextMenuItems.ADD_TO_FAVORITES:
+						FavoritesStore.getInstance(requireActivity()).addFavorite(selectedSong);
+						return true;
 
-				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
-					return true;
+					case ContextMenuItems.NEW_PLAYLIST:
+						PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
+						return true;
 
-				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (mPlaylistId != -1)
-						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
-					return true;
+					case ContextMenuItems.PLAYLIST_SELECTED:
+						if (item.getIntent() != null) {
+							long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+							if (mPlaylistId != -1) {
+								MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+							}
+						}
+						return true;
 
-				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
-					return true;
+					case ContextMenuItems.MORE_BY_ARTIST:
+						NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
+						return true;
 
-				case ContextMenuItems.USE_AS_RINGTONE:
-					MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
-					return true;
+					case ContextMenuItems.USE_AS_RINGTONE:
+						MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
+						return true;
 
-				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackId);
-					return true;
+					case ContextMenuItems.DELETE:
+						MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackId);
+						return true;
+				}
 			}
 		}
 		return false;

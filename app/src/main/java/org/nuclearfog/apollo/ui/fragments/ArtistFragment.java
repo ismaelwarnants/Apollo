@@ -239,9 +239,12 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (selectedPlaylistId != -1)
-						artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
+					if (item.getIntent() != null) {
+						selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (selectedPlaylistId != -1) {
+							artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.HIDE_ARTIST:

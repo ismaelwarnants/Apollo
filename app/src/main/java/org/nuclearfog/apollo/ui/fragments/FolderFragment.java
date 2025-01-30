@@ -183,14 +183,16 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		Folder mFolder = mAdapter.getItem(position);
-		Bundle bundle = new Bundle();
-		bundle.putLong(ID, -1L);
-		bundle.putString(NAME, mFolder.getName());
-		bundle.putString(MIME_TYPE, PAGE_FOLDERS);
-		bundle.putString(FOLDER, mFolder.getPath());
-		Intent intent = new Intent(requireActivity(), ProfileActivity.class);
-		intent.putExtras(bundle);
-		requireActivity().startActivity(intent);
+		if (mFolder != null) {
+			Bundle bundle = new Bundle();
+			bundle.putLong(ID, -1L);
+			bundle.putString(NAME, mFolder.getName());
+			bundle.putString(MIME_TYPE, PAGE_FOLDERS);
+			bundle.putString(FOLDER, mFolder.getPath());
+			Intent intent = new Intent(requireActivity(), ProfileActivity.class);
+			intent.putExtras(bundle);
+			requireActivity().startActivity(intent);
+		}
 	}
 
 	/**

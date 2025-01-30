@@ -315,13 +315,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		// Search view
 		getMenuInflater().inflate(R.menu.search, menu);
-		// Theme the search icon
-		MenuItem searchAction = menu.findItem(R.id.menu_search);
-		SearchView searchView = (SearchView) searchAction.getActionView();
-		// Add voice search
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-		searchView.setSearchableInfo(searchableInfo);
 		// Favorite action
 		getMenuInflater().inflate(R.menu.favorite, menu);
 		// Shuffle all
@@ -330,8 +323,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		getMenuInflater().inflate(R.menu.audio_player, menu);
 		// Settings
 		getMenuInflater().inflate(R.menu.activity_base, menu);
-		// Perform the search
-		searchView.setOnQueryTextListener(this);
+		// Theme the search icon
+		MenuItem searchAction = menu.findItem(R.id.menu_search);
+		SearchView searchView = (SearchView) searchAction.getActionView();
+		// Add voice search
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+		if (searchView != null) {
+			searchView.setSearchableInfo(searchableInfo);
+			// Perform the search
+			searchView.setOnQueryTextListener(this);
+		}
 		return true;
 	}
 

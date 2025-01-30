@@ -266,28 +266,28 @@ public class ImageFetcher extends ImageWorker {
 	 */
 	@Override
 	public String processImageUrl(String artistName, String albumName, ImageType imageType) {
-		if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-			String mbid = null;
-			if (imageType == ImageType.ARTIST) {
-				if (!TextUtils.isEmpty(artistName) && artistName.length() > 2) {
-					ArtistMB artist = MusicBrainz.getArtist(artistName);
-					if (artist != null) {
-						mbid = artist.getId();
-					}
-				}
-			} else if (imageType == ImageType.ALBUM) {
-				if (!TextUtils.isEmpty(albumName) && albumName.length() > 2) {
-					AlbumMB album = MusicBrainz.getRelease(albumName);
-					if (album != null) {
-						mbid = album.getId();
-					}
+		String mbid = null;
+		if (imageType == ImageType.ARTIST) {
+			if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()
+					&& !TextUtils.isEmpty(artistName) && artistName.length() > 2) {
+				ArtistMB artist = MusicBrainz.getArtist(artistName);
+				if (artist != null) {
+					mbid = artist.getId();
 				}
 			}
-			if (mbid != null) {
-				Artwork artwork = MusicBrainz.getImage(mbid);
-				if (artwork != null) {
-					return artwork.getThumbnailUrl();
+		} else if (imageType == ImageType.ALBUM) {
+			if (PreferenceUtils.getInstance(mContext).downloadMissingArtwork()
+					&& !TextUtils.isEmpty(albumName) && albumName.length() > 2) {
+				AlbumMB album = MusicBrainz.getRelease(albumName);
+				if (album != null) {
+					mbid = album.getId();
 				}
+			}
+		}
+		if (mbid != null) {
+			Artwork artwork = MusicBrainz.getImage(mbid);
+			if (artwork != null) {
+				return artwork.getThumbnailUrl();
 			}
 		}
 		return null;

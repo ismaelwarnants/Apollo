@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.worker.BitmapWorkerTask;
+import org.nuclearfog.apollo.async.worker.BitmapWorker;
 
 /**
  * A custom {@link android.view.View} Objet tag that will be attached to the
@@ -20,7 +20,7 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	/**
 	 * background worker task
 	 */
-	private BitmapWorkerTask bitmapWorkerTask;
+	private BitmapWorker bitmapWorker;
 
 	private ImageView[] imageViews;
 
@@ -33,7 +33,7 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	 * Constructor of <code>AsyncDrawable</code>
 	 */
 	public ImageAsyncTag(ImageWorker imgWorker, @NonNull String mKey, ImageWorker.ImageType imageType, ImageView... imageViews) {
-		bitmapWorkerTask = new BitmapWorkerTask(imgWorker, imageType);
+		bitmapWorker = new BitmapWorker(imgWorker, imageType);
 		this.imageViews = imageViews;
 		this.mKey = mKey;
 	}
@@ -54,21 +54,21 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	 */
 	public void run(String artistName, String albumName, long albumId) {
 		String[] param = {mKey, artistName, albumName, Long.toString(albumId)};
-		bitmapWorkerTask.execute(param, this);
+		bitmapWorker.execute(param, this);
 	}
 
 	/**
 	 * cancel worker task
 	 */
 	public void cancel() {
-		bitmapWorkerTask.cancel();
+		bitmapWorker.cancel();
 	}
 
 	/**
 	 * @return true if background process is finished
 	 */
 	public boolean isFinished() {
-		return !bitmapWorkerTask.isRunning();
+		return !bitmapWorker.isRunning();
 	}
 
 	/**

@@ -219,8 +219,12 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public long getItemId(int position) {
-		if (position >= HEADER_COUNT)
-			return super.getItem(position - HEADER_COUNT).getId();
+		if (position >= HEADER_COUNT) {
+			Song song = super.getItem(position - HEADER_COUNT);
+			if (song != null) {
+				return song.getId();
+			}
+		}
 		return super.getItemId(position);
 	}
 

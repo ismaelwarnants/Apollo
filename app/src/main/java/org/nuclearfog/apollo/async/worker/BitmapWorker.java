@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
  *
  * @author nuclearfog
  */
-public class BitmapWorkerTask extends AsyncExecutor<String[], Drawable[]> {
+public class BitmapWorker extends AsyncExecutor<String[], Drawable[]> {
 
 	/**
 	 * Default transition drawable fade time
@@ -31,7 +31,7 @@ public class BitmapWorkerTask extends AsyncExecutor<String[], Drawable[]> {
 	private ImageType mImageType;
 
 
-	public BitmapWorkerTask(ImageWorker worker, ImageType mImageType) {
+	public BitmapWorker(ImageWorker worker, ImageType mImageType) {
 		super(null);
 		callback = new WeakReference<>(worker);
 		this.mImageType = mImageType;

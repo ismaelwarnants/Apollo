@@ -45,7 +45,7 @@ public final class BitmapUtils {
 	 * @return A blurred version of the given {@link Bitmap}.
 	 */
 	public static Bitmap createBlurredBitmap(Bitmap sentBitmap) {
-		if (sentBitmap == null) {
+		if (sentBitmap == null || sentBitmap.getConfig() == null) {
 			return null;
 		}
 

@@ -31,8 +31,9 @@ public class AlbumMB {
 		String dateStr = json.optString("first-release-date", "");
 
 		try {
-			Date d = DATE_FORMAT.parse(dateStr);
-			release = d.getTime();
+			Date date = DATE_FORMAT.parse(dateStr);
+			if (date != null)
+				release = date.getTime();
 		} catch (ParseException e) {
 			release = 0;
 		}

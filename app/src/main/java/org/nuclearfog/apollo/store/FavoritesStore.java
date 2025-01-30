@@ -105,7 +105,7 @@ public class FavoritesStore extends AppStore {
 	 * @param mSong song instance
 	 */
 	public synchronized void addFavorite(@NonNull Song mSong) {
-		long playCount = getPlayCount(mSong.getId()) + 1; // increment by 1
+		int playCount = getPlayCount(mSong.getId()) + 1; // increment by 1
 		SQLiteDatabase database = getWritableDatabase();
 		ContentValues values = new ContentValues(6);
 		values.put(FavoriteColumns.ID, mSong.getId());
@@ -140,11 +140,8 @@ public class FavoritesStore extends AppStore {
 		String[] args = {String.valueOf(trackId)};
 		SQLiteDatabase database = getReadableDatabase();
 		Cursor cursor = database.query(FavoriteColumns.NAME, null, FAVORITE_SELECT, args, null, null, null, "1");
-		boolean result = false;
-		if (cursor != null) {
-			result = cursor.moveToFirst();
-			cursor.close();
-		}
+		boolean result = cursor.moveToFirst();
+		cursor.close();
 		return result;
 	}
 
@@ -157,42 +154,36 @@ public class FavoritesStore extends AppStore {
 		List<Song> result = new LinkedList<>();
 		SQLiteDatabase data = getReadableDatabase();
 		Cursor cursor = data.query(FavoriteColumns.NAME, COLUMNS, null, null, null, null, FAV_ORDER);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					long id = cursor.getLong(0);
-					String name = cursor.getString(1);
-					String album = cursor.getString(2);
-					String artist = cursor.getString(3);
-					long duration = cursor.getLong(4);
-					Song song = new Song(id, name, artist, album, duration);
-					result.add(song);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
+		if (cursor.moveToFirst()) {
+			do {
+				long id = cursor.getLong(0);
+				String name = cursor.getString(1);
+				String album = cursor.getString(2);
+				String artist = cursor.getString(3);
+				long duration = cursor.getLong(4);
+				Song song = new Song(id, name, artist, album, duration);
+				result.add(song);
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
 		return result;
 	}
 
 	/**
-	 * Used to retrieve how often a favorited track was played
+	 * Used to retrieve how often a favorite track was played
 	 *
 	 * @param songId The song Id to reference
 	 * @return The play count for a song
 	 */
-	private long getPlayCount(long songId) {
-		long result = 0;
-		if (songId >= 0) {
-			String[] args = {Long.toString(songId)};
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(FavoriteColumns.NAME, COLUMNS, FAVORITE_SELECT, args, null, null, null, null);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					result = cursor.getLong(5);
-				}
-				cursor.close();
-			}
+	private int getPlayCount(long songId) {
+		int result = 0;
+		String[] args = {Long.toString(songId)};
+		SQLiteDatabase database = getReadableDatabase();
+		Cursor cursor = database.query(FavoriteColumns.NAME, COLUMNS, FAVORITE_SELECT, args, null, null, null, null);
+		if (cursor.moveToFirst()) {
+			result = cursor.getInt(5);
 		}
+		cursor.close();
 		return result;
 	}
 

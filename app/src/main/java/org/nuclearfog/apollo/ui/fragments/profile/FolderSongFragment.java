@@ -51,7 +51,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 	 */
 	@Nullable
 	private Song mSong;
-	private String foldername = "";
+	private String path_music_folder = "";
 
 
 	@Override
@@ -65,8 +65,8 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 		setHasOptionsMenu(true);
 		// init loader
 		if (param != null) {
-			foldername = param.getString(Constants.FOLDER, "");
-			mLoader.execute(foldername, this);
+			path_music_folder = param.getString(Constants.FOLDER, "");
+			mLoader.execute(path_music_folder, this);
 		}
 	}
 
@@ -145,9 +145,12 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (mPlaylistId != -1)
-						MusicUtils.addToPlaylist(requireActivity(), ids, mPlaylistId);
+					if (item.getIntent() != null) {
+						long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (mPlaylistId != -1) {
+							MusicUtils.addToPlaylist(requireActivity(), ids, mPlaylistId);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -187,7 +190,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		mLoader.execute(foldername, this);
+		mLoader.execute(path_music_folder, this);
 	}
 
 	/**

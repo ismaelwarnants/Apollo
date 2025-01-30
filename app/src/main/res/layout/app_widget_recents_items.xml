@@ -32,7 +32,6 @@
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
-		android:paddingLeft="@dimen/list_preferred_item_padding"
 		android:paddingStart="@dimen/list_preferred_item_padding"
 		android:layout_gravity="center_vertical"
 		tools:ignore="RtlSymmetry">

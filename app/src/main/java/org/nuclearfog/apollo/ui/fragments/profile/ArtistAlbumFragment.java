@@ -180,9 +180,12 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (selectedPlaylistId != -1)
-						albumSongLoader.execute(mAlbum.getId(), onAddToExistingPlaylist);
+					if (item.getIntent() != null) {
+						selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (selectedPlaylistId != -1) {
+							albumSongLoader.execute(mAlbum.getId(), onAddToExistingPlaylist);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.DELETE:

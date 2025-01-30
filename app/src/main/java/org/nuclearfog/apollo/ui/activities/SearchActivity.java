@@ -258,14 +258,16 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (selectedPlaylistId != -1) {
-						if (selection instanceof Album)
-							albumSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
-						else if (selection instanceof Artist)
-							artistSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
-						else if (selection instanceof Song)
-							MusicUtils.addToPlaylist(this, new long[]{selection.getId()}, selectedPlaylistId);
+					if (item.getIntent() != null) {
+						selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (selectedPlaylistId != -1) {
+							if (selection instanceof Album)
+								albumSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
+							else if (selection instanceof Artist)
+								artistSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
+							else if (selection instanceof Song)
+								MusicUtils.addToPlaylist(this, new long[]{selection.getId()}, selectedPlaylistId);
+						}
 					}
 					return true;
 

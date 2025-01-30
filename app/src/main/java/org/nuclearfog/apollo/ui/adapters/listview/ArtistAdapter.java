@@ -115,8 +115,9 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 	 */
 	@Override
 	public long getItemId(int position) {
-		if (getItem(position) != null)
-			return getItem(position).getId();
+		Artist artist = getItem(position);
+		if (artist != null)
+			return artist.getId();
 		return super.getItemId(position);
 	}
 

@@ -271,12 +271,14 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Settings
 		getMenuInflater().inflate(R.menu.activity_base, menu);
 		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-		// Add voice search
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-		searchView.setSearchableInfo(searchableInfo);
-		// Perform the search
-		searchView.setOnQueryTextListener(this);
+		if (searchView != null) {
+			// Add voice search
+			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+			searchView.setSearchableInfo(searchableInfo);
+			// Perform the search
+			searchView.setOnQueryTextListener(this);
+		}
 		return true;
 	}
 

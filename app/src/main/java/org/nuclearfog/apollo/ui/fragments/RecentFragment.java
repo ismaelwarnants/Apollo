@@ -239,9 +239,12 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (selectedPlaylistId != -1)
-						albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
+					if (item.getIntent() != null) {
+						selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (selectedPlaylistId != -1) {
+							albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:

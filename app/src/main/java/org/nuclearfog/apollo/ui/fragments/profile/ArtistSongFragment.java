@@ -154,9 +154,12 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (mPlaylistId != -1)
-						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					if (item.getIntent() != null) {
+						long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (mPlaylistId != -1) {
+							MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+						}
+					}
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:

@@ -167,7 +167,7 @@ public class AppMsg {
 	 *
 	 * @author e.shishkin
 	 */
-	private static class Style {
+	public static class Style {
 
 		private int duration;
 		private int background;

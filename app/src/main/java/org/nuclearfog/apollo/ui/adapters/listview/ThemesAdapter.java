@@ -57,10 +57,12 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 		}
 		// Retrieve the data holder
 		ThemeHolder themeHolder = getItem(position);
-		// Set the theme preview
-		holder.mImage.setImageDrawable(themeHolder.mPreview);
-		// Set the theme name
-		holder.mLineOne.setText(themeHolder.mName);
+		if (themeHolder != null) {
+			// Set the theme preview
+			holder.mImage.setImageDrawable(themeHolder.mPreview);
+			// Set the theme name
+			holder.mLineOne.setText(themeHolder.mName);
+		}
 		return convertView;
 	}
 

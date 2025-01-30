@@ -20,7 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
@@ -150,11 +149,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @return true if there is enough space for the cache
 	 */
 	private static boolean isSpaceAvailable(String path) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-			StatFs fs = new StatFs(path);
-			return fs.getBlockSizeLong() * fs.getAvailableBlocksLong() > DISK_CACHE_SIZE;
-		}
-		return true;
+		StatFs fs = new StatFs(path);
+		return fs.getBlockSizeLong() * fs.getAvailableBlocksLong() > DISK_CACHE_SIZE;
 	}
 
 	/**

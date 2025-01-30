@@ -38,7 +38,6 @@
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
-			android:paddingLeft="@dimen/notification_info_container_padding_left"
 			android:paddingStart="@dimen/notification_info_container_padding_left"
 			android:gravity="center">
 

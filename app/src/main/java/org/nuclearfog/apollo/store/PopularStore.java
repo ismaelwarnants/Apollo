@@ -94,7 +94,7 @@ public class PopularStore extends AppStore {
 	 * @param song song to add
 	 */
 	public synchronized void addSong(@NonNull Song song) {
-		long playCount = getPlayCount(song.getId()) + 1; // increment by 1
+		int playCount = getPlayCount(song.getId()) + 1; // increment by 1
 		SQLiteDatabase database = getWritableDatabase();
 		ContentValues values = new ContentValues(6);
 		values.put(PopularColumns.ID, song.getId());
@@ -112,20 +112,18 @@ public class PopularStore extends AppStore {
 		SQLiteDatabase data = getReadableDatabase();
 		Cursor cursor = data.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
 		List<Song> result = new LinkedList<>();
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					long id = cursor.getLong(0);
-					String name = cursor.getString(1);
-					String album = cursor.getString(2);
-					String artist = cursor.getString(3);
-					long duration = cursor.getLong(4);
-					Song song = new Song(id, name, artist, album, duration);
-					result.add(song);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
+		if (cursor.moveToFirst()) {
+			do {
+				long id = cursor.getLong(0);
+				String name = cursor.getString(1);
+				String album = cursor.getString(2);
+				String artist = cursor.getString(3);
+				long duration = cursor.getLong(4);
+				Song song = new Song(id, name, artist, album, duration);
+				result.add(song);
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
 		return result;
 	}
 
@@ -156,19 +154,15 @@ public class PopularStore extends AppStore {
 	 * @param songId The song Id to reference
 	 * @return The play count for a song
 	 */
-	private long getPlayCount(long songId) {
-		long result = 0;
-		if (songId >= 0) {
-			String[] having = {Long.toString(songId)};
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					result = cursor.getLong(4);
-				}
-				cursor.close();
-			}
+	private int getPlayCount(long songId) {
+		int result = 0;
+		String[] having = {Long.toString(songId)};
+		SQLiteDatabase database = getReadableDatabase();
+		Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
+		if (cursor.moveToFirst()) {
+			result = cursor.getInt(4);
 		}
+		cursor.close();
 		return result;
 
 	}

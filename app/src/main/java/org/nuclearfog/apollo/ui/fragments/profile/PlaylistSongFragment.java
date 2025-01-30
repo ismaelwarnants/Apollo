@@ -171,12 +171,15 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long playlistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
-					if (playlistId != -1) {
-						MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
-						// reload if track was added to this playlist
-						if (mPlaylistId == playlistId)
-							mLoader.execute(mPlaylistId, this);
+					if (item.getIntent() != null) {
+						long playlistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+						if (playlistId != -1) {
+							MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
+							// reload if track was added to this playlist
+							if (mPlaylistId == playlistId) {
+								mLoader.execute(mPlaylistId, this);
+							}
+						}
 					}
 					return true;
 

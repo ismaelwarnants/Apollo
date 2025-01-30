@@ -45,8 +45,6 @@
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
 			android:layout_toEndOf="@+id/app_widget_recents_icon"
-			android:layout_toRightOf="@+id/app_widget_recents_icon"
-			android:layout_toLeftOf="@id/app_widget_recents_previous"
 			android:layout_toStartOf="@id/app_widget_recents_previous"
 			android:lines="1"
 			android:text="@string/page_recent"
@@ -60,7 +58,6 @@
 			android:background="@android:color/transparent"
 			android:contentDescription="@null"
 			android:layout_centerVertical="true"
-			android:layout_toLeftOf="@+id/app_widget_recents_play"
 			android:layout_toStartOf="@+id/app_widget_recents_play"
 			android:scaleType="center"
 			android:src="@drawable/btn_playback_previous" />
@@ -71,7 +68,6 @@
 			android:layout_height="match_parent"
 			android:background="@android:color/transparent"
 			android:layout_centerVertical="true"
-			android:layout_toLeftOf="@+id/app_widget_recents_next"
 			android:layout_toStartOf="@+id/app_widget_recents_next"
 			android:scaleType="center"
 			android:src="@drawable/btn_playback_play" />
@@ -83,7 +79,6 @@
 			android:background="@android:color/transparent"
 			android:contentDescription="@null"
 			android:layout_alignParentEnd="true"
-			android:layout_alignParentRight="true"
 			android:layout_centerVertical="true"
 			android:scaleType="center"
 			android:src="@drawable/btn_playback_next" />

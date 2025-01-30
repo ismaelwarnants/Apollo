@@ -130,7 +130,7 @@ public final class SortOrder {
 		String SONG_YEAR = MediaStore.Audio.Media.YEAR + " DESC";
 
 		/* Artist song sort order duration */
-		String SONG_DURATION = "duration" /*MediaStore.Audio.Media.DURATION*/ + " DESC";
+		String SONG_DURATION = MediaStore.Audio.Media.DURATION + " DESC";
 
 		/* Artist song sort order date */
 		String SONG_DATE = MediaStore.Audio.Media.DATE_ADDED + " DESC";

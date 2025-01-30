@@ -161,12 +161,10 @@ public class RecentStore extends AppStore {
 			String[] args = {artistName};
 			SQLiteDatabase database = getReadableDatabase();
 			Cursor cursor = database.query(RecentStoreColumns.NAME, COLUMNS, RECENT_SELECT_NAME, args, null, null, RECENT_ORDER);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					result = cursor.getString(1);
-				}
-				cursor.close();
+			if (cursor.moveToFirst()) {
+				result = cursor.getString(1);
 			}
+			cursor.close();
 		}
 		return result;
 	}
@@ -178,20 +176,18 @@ public class RecentStore extends AppStore {
 		SQLiteDatabase database = getReadableDatabase();
 		Cursor cursor = database.query(RecentStoreColumns.NAME, COLUMNS, null, null, null, null, RECENT_ORDER);
 		List<Album> result = new LinkedList<>();
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					long id = cursor.getLong(0);
-					String name = cursor.getString(1);
-					String artist = cursor.getString(2);
-					int count = cursor.getInt(3);
-					String year = cursor.getString(4);
-					Album album = new Album(id, name, artist, count, year, true);
-					result.add(album);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
+		if (cursor.moveToFirst()) {
+			do {
+				long id = cursor.getLong(0);
+				String name = cursor.getString(1);
+				String artist = cursor.getString(2);
+				int count = cursor.getInt(3);
+				String year = cursor.getString(4);
+				Album album = new Album(id, name, artist, count, year, true);
+				result.add(album);
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
 		return result;
 	}
 
