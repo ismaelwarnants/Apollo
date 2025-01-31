@@ -119,7 +119,7 @@ public class FavoritesStore extends AppStore {
 	}
 
 	/**
-	 * remove song from favorits
+	 * remove song from favorites
 	 *
 	 * @param songId track ID
 	 */
@@ -223,7 +223,7 @@ public class FavoritesStore extends AppStore {
 		String PLAYCOUNT = "playcount";
 
 		/**
-		 * Duraion of the track
+		 * Duration of the track
 		 */
 		String DURATION = "duration";
 	}

@@ -32,7 +32,7 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.utils.BitmapUtils;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -48,14 +48,14 @@ class NotificationHelper {
 
 	/**
 	 * Notification ID
-	 * use different notification IDs for each build to avoid conflics
+	 * use different notification IDs for each build to avoid conflicts
 	 */
 	private static final int APOLLO_MUSIC_SERVICE = BuildConfig.DEBUG ? 0x5D74E856 : 0x28E61796;
 
 	/**
 	 * Notification channel ID
 	 */
-	private static final String NOTIFICAITON_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
+	private static final String NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
 
 	/**
 	 * intent used to open audio player after clicking on notification
@@ -65,7 +65,7 @@ class NotificationHelper {
 	/**
 	 * Notification name
 	 */
-	private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
+	private static final String NOTIFICATION_NAME = "Apollo Controlpanel";
 
 	/**
 	 * Service context
@@ -104,8 +104,8 @@ class NotificationHelper {
 		legacyLayout = mPreferences.oldNotificationLayoutEnabled();
 
 		// init notification manager & channel
-		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
-		channelBuilder.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
+		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
+		channelBuilder.setName(NOTIFICATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(channelBuilder.build());
 
@@ -121,7 +121,7 @@ class NotificationHelper {
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
 		// create notification builder
-		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICAITON_CHANNEL_ID)
+		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(contentIntent)
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -198,7 +198,7 @@ class NotificationHelper {
 			if (song != null && album != null) {
 				notificationBuilder.setContentTitle(song.getName());
 				notificationBuilder.setContentText(song.getArtist());
-				notificationBuilder.setLargeIcon(BitmapUtils.getAlbumArt(mService, album));
+				notificationBuilder.setLargeIcon(ApolloUtils.getAlbumArt(mService, album));
 			}
 			// init media control (fallback if not supported by MediaStyle)
 			notificationBuilder.clearActions();
@@ -216,11 +216,11 @@ class NotificationHelper {
 			if (album != null && song != null) {
 				mSmallContent.setTextViewText(R.id.notification_base_line_one, song.getName());
 				mSmallContent.setTextViewText(R.id.notification_base_line_two, song.getArtist());
-				mSmallContent.setImageViewBitmap(R.id.notification_base_image, BitmapUtils.getAlbumArt(mService, album));
+				mSmallContent.setImageViewBitmap(R.id.notification_base_image, ApolloUtils.getAlbumArt(mService, album));
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, song.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, album.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, song.getArtist());
-				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, BitmapUtils.getAlbumArt(mService, album));
+				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, ApolloUtils.getAlbumArt(mService, album));
 			}
 			if (mService.isPlaying()) {
 				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
@@ -254,7 +254,7 @@ class NotificationHelper {
 	}
 
 	/**
-	 * create playbackservice intent
+	 * create playback service intent
 	 *
 	 * @param action action send to playback service
 	 */

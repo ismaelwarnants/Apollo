@@ -16,7 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
 
 /**
- * A themeable {@link StateListDrawable}.
+ * A themable {@link StateListDrawable}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog

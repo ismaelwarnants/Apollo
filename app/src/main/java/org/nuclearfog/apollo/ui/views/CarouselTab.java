@@ -165,7 +165,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	}
 
 	/**
-	 * @param label The string to set as the labe.
+	 * @param label The string to set as the label.
 	 */
 	public void setLabel(String label) {
 		mLabelView.setText(label);

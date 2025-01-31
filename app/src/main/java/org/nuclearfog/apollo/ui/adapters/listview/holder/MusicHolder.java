@@ -18,7 +18,7 @@ import android.widget.TextView;
 import org.nuclearfog.apollo.R;
 
 /**
- * Used to efficiently cache and recyle the {@link View}s used in the artist,
+ * Used to efficiently cache and recycle the {@link View}s used in the artist,
  * album, song, playlist, and genre adapters.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)

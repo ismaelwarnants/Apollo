@@ -10,7 +10,7 @@ import android.os.Handler;
 public class ShutdownHandler extends Handler implements Runnable {
 
 	/**
-	 * Idle time before stopping the foreground notfication
+	 * Idle time before stopping the foreground notification
 	 */
 	private static final int IDLE_DELAY = 30000;
 
@@ -39,7 +39,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	}
 
 	/**
-	 * abort running sheduled shutdown
+	 * abort running scheduled shutdown
 	 */
 	public void stop() {
 		removeCallbacks(this);

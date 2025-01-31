@@ -30,7 +30,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * A {@link RepeatingImageButton} that will repeatedly call a 'listener' method as long
- * as the button is pressed, otherwise functions like a typecal ImageView
+ * as the button is pressed, otherwise functions like a typical ImageView
  */
 public class RepeatingImageButton extends AppCompatImageButton {
 
@@ -161,9 +161,9 @@ public class RepeatingImageButton extends AppCompatImageButton {
 
 		/**
 		 * @param v           View to be set
-		 * @param repeatcount The number of repeat counts
+		 * @param repeatCount The number of repeat counts
 		 */
-		void onRepeat(View v, int repeatcount);
+		void onRepeat(View v, int repeatCount);
 	}
 
 	/**

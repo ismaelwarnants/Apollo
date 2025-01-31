@@ -23,7 +23,7 @@ public final class StringUtils {
 	 * Capitalizes the first character in a string
 	 *
 	 * @param str The string to capitalize
-	 * @return A captitalized string
+	 * @return A capitalized string
 	 */
 	public static String capitalize(String str) {
 		return capitalize(str, null);
@@ -34,11 +34,10 @@ public final class StringUtils {
 	 *
 	 * @param str        The string to capitalize
 	 * @param delimiters The delimiters
-	 * @return A captitalized string
+	 * @return A capitalized string
 	 */
 	public static String capitalize(String str, char[] delimiters) {
-		int delimLen = delimiters == null ? -1 : delimiters.length;
-		if (TextUtils.isEmpty(str) || delimLen == 0) {
+		if (TextUtils.isEmpty(str) || delimiters == null || delimiters.length == 0) {
 			return str;
 		}
 		char[] buffer = str.toCharArray();

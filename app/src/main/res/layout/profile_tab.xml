@@ -59,7 +59,7 @@
 		android:id="@+id/profile_tab_label"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/profile_carousel_label_height"
-		android:background="@color/carousell_text_background"
+		android:background="@color/carousel_text_background"
 		android:paddingLeft="@dimen/profile_label_padding"
 		android:paddingStart="@dimen/profile_label_padding"
 		android:paddingRight="@dimen/profile_label_padding"

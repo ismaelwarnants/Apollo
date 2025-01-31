@@ -22,7 +22,7 @@ public class ServiceBinder implements ServiceConnection {
 	private boolean stopForeground = false;
 
 	/**
-	 * @param callback callbeck used to informa activity that the service is connected
+	 * @param callback callback used to inform an activity that the service is connected
 	 */
 	public ServiceBinder(ServiceBinderCallback callback) {
 		this.callback = new WeakReference<>(callback);

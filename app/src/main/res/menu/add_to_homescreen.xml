@@ -18,7 +18,7 @@
 
 	<item
 		android:id="@+id/menu_add_to_homescreen"
-		android:icon="@drawable/ic_action_pinn_to_home"
+		android:icon="@drawable/ic_action_pin_to_home"
 		android:orderInCategory="2"
 		android:title="@string/menu_add_to_homescreen"
 		app:showAsAction="ifRoom" />

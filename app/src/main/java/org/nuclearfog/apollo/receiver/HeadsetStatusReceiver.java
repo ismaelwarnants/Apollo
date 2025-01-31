@@ -18,7 +18,7 @@ public class HeadsetStatusReceiver extends BroadcastReceiver {
 	private MusicPlaybackService service;
 
 	/**
-	 * @param service callback to playbackservice to stop playback
+	 * @param service callback to playback service to stop playback
 	 */
 	public HeadsetStatusReceiver(MusicPlaybackService service) {
 		this.service = service;

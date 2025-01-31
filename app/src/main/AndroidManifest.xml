@@ -12,10 +12,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools" package="org.nuclearfog.apollo">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="org.nuclearfog.apollo">
 
-	<!-- Used to set the devices's ringtone -->
+	<!-- Used to set the device's ringtone -->
 	<uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
 	<!-- Used to prevent interrupting of the playback by battery optimization -->
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />

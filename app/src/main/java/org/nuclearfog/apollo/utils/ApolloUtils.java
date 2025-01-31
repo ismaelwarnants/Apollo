@@ -44,6 +44,7 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
@@ -96,10 +97,10 @@ public final class ApolloUtils {
 			state = wifiNetwork.isConnectedOrConnecting();
 		}
 		/* Mobile data connection */
-		NetworkInfo mbobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (mbobileNetwork != null) {
+		NetworkInfo mobile_network = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (mobile_network != null) {
 			if (!onlyOnWifi) {
-				state = mbobileNetwork.isConnectedOrConnecting();
+				state = mobile_network.isConnectedOrConnecting();
 			}
 		}
 		/* Other networks */
@@ -160,6 +161,15 @@ public final class ApolloUtils {
 	}
 
 	/**
+	 * get album art from storage
+	 *
+	 * @return album art image
+	 */
+	public static Bitmap getAlbumArt(Context context, @NonNull Album album) {
+		return getImageFetcher(context).getArtwork(album);
+	}
+
+	/**
 	 * Used to create shortcuts for an artist, album, or playlist that is then
 	 * placed on the default launcher homescreen
 	 *
@@ -189,7 +199,7 @@ public final class ApolloUtils {
 			shortcutIntent.putExtra(Constants.IDS, ApolloUtils.serializeIDs(ids));
 			shortcutIntent.putExtra(Constants.NAME, displayName);
 			shortcutIntent.putExtra(Constants.MIME_TYPE, mimeType);
-			// check if displayname is a path
+			// check if display name is a path
 			if (displayName.startsWith("/")) {
 				File file = new File(displayName);
 				if (file.exists()) {
@@ -228,7 +238,7 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * send broadcast to external eualizer app with current audio session ID
+	 * send broadcast to external equalizer app with current audio session ID
 	 *
 	 * @param sessionId current audio session ID
 	 */

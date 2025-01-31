@@ -237,10 +237,10 @@ class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setShuffleMode(int shufflemode) {
+	public void setShuffleMode(int shuffleMode) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.setShuffleMode(shufflemode);
+			service.setShuffleMode(shuffleMode);
 		}
 	}
 
@@ -259,10 +259,10 @@ class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setRepeatMode(int repeatmode) {
+	public void setRepeatMode(int repeatMode) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.setRepeatMode(repeatmode);
+			service.setRepeatMode(repeatMode);
 		}
 	}
 

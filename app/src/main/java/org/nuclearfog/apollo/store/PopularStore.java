@@ -128,7 +128,7 @@ public class PopularStore extends AppStore {
 	}
 
 	/**
-	 * remove track from most played databse
+	 * remove track from most played database
 	 *
 	 * @param trackId ID of the track to remove
 	 */
@@ -203,7 +203,7 @@ public class PopularStore extends AppStore {
 		String PLAYCOUNT = "playcount";
 
 		/**
-		 * Duraion of the track
+		 * Duration of the track
 		 */
 		String DURATION = "duration";
 	}

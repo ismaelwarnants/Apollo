@@ -301,8 +301,8 @@ public class ColorPickerView extends View {
 
 
 	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
+	protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+		super.onSizeChanged(w, h, oldW, oldH);
 		mDrawingRect = new RectF();
 		mDrawingRect.left = mDrawingOffset + getPaddingLeft();
 		mDrawingRect.right = w - mDrawingOffset - getPaddingRight();
@@ -437,10 +437,10 @@ public class ColorPickerView extends View {
 
 		float[] hsv = new float[]{mHue, mSat, mVal};
 		int color = Color.HSVToColor(hsv);
-		int acolor = Color.HSVToColor(0, hsv);
+		int aColor = Color.HSVToColor(0, hsv);
 		float rectWidth = 4 * mDensity / 2;
 
-		Shader mAlphaShader = new LinearGradient(rect.left, rect.top, rect.right, rect.top, color, acolor, TileMode.CLAMP);
+		Shader mAlphaShader = new LinearGradient(rect.left, rect.top, rect.right, rect.top, color, aColor, TileMode.CLAMP);
 		mAlphaPaint.setShader(mAlphaShader);
 		canvas.drawRect(rect, mAlphaPaint);
 		canvas.drawText(TEXT_ALPHA_SLIDER, rect.centerX(), rect.centerY() + 4 * mDensity, mAlphaTextPaint);
@@ -582,7 +582,7 @@ public class ColorPickerView extends View {
 		if (mode == MeasureSpec.AT_MOST || mode == MeasureSpec.EXACTLY) {
 			return size;
 		} else {
-			return getPrefferedWidth();
+			return getPreferredWidth();
 		}
 	}
 
@@ -591,13 +591,13 @@ public class ColorPickerView extends View {
 		if (mode == MeasureSpec.AT_MOST || mode == MeasureSpec.EXACTLY) {
 			return size;
 		} else {
-			return getPrefferedHeight();
+			return getPreferredHeight();
 		}
 	}
 
 
-	private int getPrefferedWidth() {
-		int width = getPrefferedHeight();
+	private int getPreferredWidth() {
+		int width = getPreferredHeight();
 		if (mShowAlphaPanel) {
 			width -= Math.round(PANEL_SPACING + ALPHA_PANEL_HEIGHT);
 		}
@@ -606,7 +606,7 @@ public class ColorPickerView extends View {
 	}
 
 
-	private int getPrefferedHeight() {
+	private int getPreferredHeight() {
 		int height = Math.round(200 * mDensity);
 		if (mShowAlphaPanel) {
 			height += Math.round(PANEL_SPACING + ALPHA_PANEL_HEIGHT);

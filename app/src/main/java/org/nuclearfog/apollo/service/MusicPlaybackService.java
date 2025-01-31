@@ -81,7 +81,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private static final String MUSIC_PACKAGE_NAME = "com.android.music";
 	/**
-	 * Called to indicate a general service commmand.
+	 * Called to indicate a general service command.
 	 */
 	public static final String SERVICECMD = APOLLO_PACKAGE_NAME + ".musicservicecommand";
 	/**
@@ -105,11 +105,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
 	/**
-	 * Indicates the repeat mode chaned
+	 * Indicates the repeat mode changed
 	 */
 	public static final String CHANGED_REPEATMODE = APOLLO_PACKAGE_NAME + ".repeatmodechanged";
 	/**
-	 * Indicates the shuffle mode chaned
+	 * Indicates the shuffle mode changed
 	 */
 	public static final String CHANGED_SHUFFLEMODE = APOLLO_PACKAGE_NAME + ".shufflemodechanged";
 	/**
@@ -362,7 +362,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		ContextCompat.registerReceiver(this, headsetReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
 
 		// send session ID to external equalizer if set
-		if (settings.isExternalAudioFxPrefered() && !settings.isAudioFxEnabled()) {
+		if (settings.isExternalAudioFxPreferred() && !settings.isAudioFxEnabled()) {
 			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
 		}
 		// Bring the queue back
@@ -665,7 +665,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void gotoNext() {
 		if (!mPlayList.isEmpty()) {
 			if (!mPlayer.isPlaying() || !mPlayer.next()) {
-				// reload next tracks if an error occured
+				// reload next tracks if an error occurred
 				mPlayPos = incrementPosition(mPlayPos, true);
 				openCurrentAndNext();
 				play();
@@ -783,7 +783,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// fall through
 
 			case CHANGED_POSITION:
-				updatePlaybackstate();
+				updatePlaybackState();
 				break;
 
 			case CHANGED_QUEUE:
@@ -812,12 +812,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Sets the shuffle mode
 	 *
-	 * @param shufflemode The shuffle mode to use
+	 * @param shuffleMode The shuffle mode to use
 	 */
-	synchronized void setShuffleMode(int shufflemode) {
-		if (mShuffleMode != shufflemode || mPlayList.isEmpty()) {
+	synchronized void setShuffleMode(int shuffleMode) {
+		if (mShuffleMode != shuffleMode || mPlayList.isEmpty()) {
 			// setup party shuffle
-			if (shufflemode == SHUFFLE_AUTO) {
+			if (shuffleMode == SHUFFLE_AUTO) {
 				if (makeShuffleList(true)) {
 					mShuffleMode = SHUFFLE_AUTO;
 					mPlayPos = 0;
@@ -826,7 +826,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 			// setup queue shuffle
-			else if (shufflemode == SHUFFLE_NORMAL) {
+			else if (shuffleMode == SHUFFLE_NORMAL) {
 				if (makeShuffleList(false)) {
 					mShuffleMode = SHUFFLE_NORMAL;
 					mShufflePos = 0;
@@ -834,7 +834,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 			// reset shuffle mode
-			else if (shufflemode == SHUFFLE_NONE) {
+			else if (shuffleMode == SHUFFLE_NONE) {
 				clearShuffleList();
 				setNextTrack(false);
 			}
@@ -864,7 +864,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * clear the curren queue and stop playback
+	 * clear the current queue and stop playback
 	 */
 	synchronized void clearQueue() {
 		stop();
@@ -913,7 +913,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return how many instances of the track were removed
 	 */
 	synchronized int removeQueueTracks(long[] ids) {
-		int numremoved = 0;
+		int numRemoved = 0;
 		for (long id : ids) {
 			int pos;
 			do {
@@ -931,7 +931,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 							mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
 						stop();
 					}
-					numremoved++;
+					numRemoved++;
 				}
 			} while (pos >= 0);
 			if (mPlayList.isEmpty()) {
@@ -944,11 +944,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			stop();
 		}
 		// notify if any tracks were removed
-		if (numremoved > 0) {
+		if (numRemoved > 0) {
 			notifyChange(CHANGED_QUEUE);
 			notifyChange(CHANGED_POSITION);
 		}
-		return numremoved;
+		return numRemoved;
 	}
 
 	/**
@@ -961,9 +961,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Returns the current position in time of the currenttrack
+	 * Returns the current position in time of the current track
 	 *
-	 * @return The current playback position in miliseconds
+	 * @return The current playback position in milliseconds
 	 */
 	synchronized long getPosition() {
 		if (mPlayer.initialized()) {
@@ -975,10 +975,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Sets the repeat mode
 	 *
-	 * @param repeatmode The repeat mode to use
+	 * @param repeatMode The repeat mode to use
 	 */
-	synchronized void setRepeatMode(int repeatmode) {
-		mRepeatMode = repeatmode;
+	synchronized void setRepeatMode(int repeatMode) {
+		mRepeatMode = repeatMode;
 		setNextTrack(false);
 		saveQueue(false);
 		notifyChange(CHANGED_REPEATMODE);
@@ -1104,7 +1104,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * update playback state of the media session (used to update player control notification)
 	 */
-	private void updatePlaybackstate() {
+	private void updatePlaybackState() {
 		PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
 		builder.setState(mPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
 		builder.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY |
@@ -1166,7 +1166,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * update track & album cursor uring Uri
+	 * update track & album cursor using Uri
 	 *
 	 * @param uri uri of the audio track
 	 */
@@ -1551,10 +1551,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			openCurrentAndNext();
 			if (mPlayer.initialized()) {
-				long seekpos = settings.getSeekPosition();
-				seekTo(seekpos >= 0 && seekpos <= mPlayer.getDuration() ? seekpos : 0);
+				long seekPos = settings.getSeekPosition();
+				seekTo(seekPos >= 0 && seekPos <= mPlayer.getDuration() ? seekPos : 0);
 			}
-			//
 			mRepeatMode = settings.getRepeatMode();
 			mShuffleMode = settings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {

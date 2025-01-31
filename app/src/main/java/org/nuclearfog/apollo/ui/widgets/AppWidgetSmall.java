@@ -27,7 +27,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
-import org.nuclearfog.apollo.utils.BitmapUtils;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
  * 4x1 App-Widget
@@ -73,7 +73,7 @@ public class AppWidgetSmall extends AppWidgetBase {
 		Song song = service.getCurrentSong();
 		Album album = service.getCurrentAlbum();
 		if (song != null && album != null) {
-			Bitmap bitmap = BitmapUtils.getAlbumArt(service, album);
+			Bitmap bitmap = ApolloUtils.getAlbumArt(service, album);
 			// Set the titles and artwork
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());

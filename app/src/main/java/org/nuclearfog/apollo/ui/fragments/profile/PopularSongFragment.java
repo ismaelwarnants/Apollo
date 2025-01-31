@@ -29,7 +29,7 @@ import org.nuclearfog.apollo.utils.NavUtils;
 import java.util.List;
 
 /**
- * This fragment class shows the most playes tracks
+ * This fragment class shows the most played tracks
  *
  * @author nuclearfog
  */
@@ -94,7 +94,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 		if (menuInfo instanceof AdapterView.AdapterContextMenuInfo) {
 			// Get the position of the selected item
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-			// Creat a new song
+			// Create a new song
 			mSong = mAdapter.getItem(info.position);
 			// Play the song
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -211,7 +211,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
-			// Add the data to the adpater
+			// Add the data to the adapter
 			for (Song song : songs) {
 				mAdapter.add(song);
 			}

@@ -11,16 +11,9 @@
 
 package org.nuclearfog.apollo.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
-import androidx.annotation.NonNull;
-
-import org.nuclearfog.apollo.cache.ImageCache;
-import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.model.Album;
 
 /**
  * {@link Bitmap} specific helpers.
@@ -286,10 +279,8 @@ public final class BitmapUtils {
 		if (w == size && h == size) {
 			return bitmap;
 		}
-
-		float mScale = (float) size / Math.min(w, h);
-
 		Bitmap mTarget = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+		float mScale = (float) size / Math.min(w, h);
 		int mWidth = Math.round(mScale * bitmap.getWidth());
 		int mHeight = Math.round(mScale * bitmap.getHeight());
 		Canvas mCanvas = new Canvas(mTarget);
@@ -298,16 +289,5 @@ public final class BitmapUtils {
 		Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
 		mCanvas.drawBitmap(bitmap, 0, 0, paint);
 		return mTarget;
-	}
-
-	/**
-	 * get album art from storage
-	 *
-	 * @return album art image
-	 */
-	public static Bitmap getAlbumArt(Context context, @NonNull Album album) {
-		ImageFetcher mImageFetcher = ImageFetcher.getInstance(context);
-		mImageFetcher.setImageCache(ImageCache.getInstance(context));
-		return mImageFetcher.getArtwork(album);
 	}
 }

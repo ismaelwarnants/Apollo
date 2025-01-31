@@ -132,7 +132,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private ImageView mQueueSwitch;
 	/**
-	 * Progess
+	 * playback seekbar
 	 */
 	private PlayerSeekbar playerSeekbar;
 	/**
@@ -385,7 +385,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			// Share the current meta data
 			shareCurrentTrack();
 		} else if (vId == R.id.menu_audio_player_equalizer) {
-			if (mPrefs.isExternalAudioFxPrefered() && ApolloUtils.isEqualizerInstalled(this)) {
+			if (mPrefs.isExternalAudioFxPreferred() && ApolloUtils.isEqualizerInstalled(this)) {
 				// Sound effects
 				NavUtils.openEffectsPanel(this);
 			} else {
@@ -525,12 +525,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 
 	@Override
-	public void onRepeat(@NonNull View v, int repcnt) {
+	public void onRepeat(@NonNull View v, int repeatCount) {
 		if (v.getId() == R.id.action_button_previous) {
-			if (repcnt > 0)
+			if (repeatCount > 0)
 				scan(false);
 		} else if (v.getId() == R.id.action_button_next) {
-			if (repcnt > 0)
+			if (repeatCount > 0)
 				scan(true);
 		}
 	}
@@ -542,7 +542,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		updatePlaybackControls();
 		// Update the favorites icon
 		invalidateOptionsMenu();
-		// jumpt to current track
+		// jump to current track
 		setQueueTrack();
 	}
 
@@ -551,10 +551,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	public void onStateChange() {
 		// Set the play and pause image
 		boolean playing = MusicUtils.isPlaying(this);
-		long posittion = MusicUtils.getPositionMillis(this);
+		long position = MusicUtils.getPositionMillis(this);
 		mPlayPauseButton.updateState(playing);
 		playerSeekbar.setPlayStatus(playing);
-		playerSeekbar.setCurrentTime(posittion);
+		playerSeekbar.setCurrentTime(position);
 	}
 
 
@@ -664,7 +664,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	}
 
 	/**
-	 * Used to scan backwards in time through the curren track
+	 * Used to scan backwards in time through the current track
 	 *
 	 * @param forward true to scan forward
 	 */

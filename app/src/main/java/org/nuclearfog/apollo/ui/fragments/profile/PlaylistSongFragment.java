@@ -118,7 +118,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 		if (menuInfo instanceof AdapterContextMenuInfo) {
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-			// Creat a new song
+			// Create a new song
 			mSong = mAdapter.getItem(info.position);
 			// Play the song
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -213,7 +213,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
-			// Add the data to the adpater
+			// Add the data to the adapter
 			for (Song song : songs) {
 				mAdapter.add(song);
 			}

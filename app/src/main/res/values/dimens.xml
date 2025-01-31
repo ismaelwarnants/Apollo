@@ -20,7 +20,7 @@
 	<dimen name="text_size_small">14.0sp</dimen>
 	<dimen name="text_size_medium">16.0sp</dimen>
 	<dimen name="text_size_large">18.0sp</dimen>
-	<dimen name="text_size_dayum">36.0sp</dimen>
+	<dimen name="text_size_huge">36.0sp</dimen>
 
 	<!-- List and grid view padding -->
 	<dimen name="list_preferred_item_padding">10.0dp</dimen>
@@ -124,7 +124,7 @@
 	<dimen name="toolbar_height">45dp</dimen>
 	<dimen name="notification_close_button_size">40dp</dimen>
 
-	<!-- ProfileTabCaroussel -->
+	<!-- ProfileTabCarousel -->
 	<fraction name="tab_width_screen_percentage">75.0%</fraction>
 	<fraction name="tab_height_screen_percentage">42.0%</fraction>
 

@@ -94,7 +94,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
 	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
 	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
-	private AsyncCallback<Boolean> onArtistHide = this::onArtistHiden;
+	private AsyncCallback<Boolean> onArtistHide = this::onArtistHidden;
 
 	/**
 	 * The adapter for the grid
@@ -425,7 +425,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	/**
 	 * called after an entry was hidden
 	 */
-	private void onArtistHiden(Boolean hidden) {
+	private void onArtistHidden(Boolean hidden) {
 		if (getActivity() != null && selectedArtist != null) {
 			if (hidden) {
 				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();

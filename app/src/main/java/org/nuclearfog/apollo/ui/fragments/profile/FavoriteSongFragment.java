@@ -103,7 +103,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 		if (menuInfo instanceof AdapterContextMenuInfo) {
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-			// Creat a new song
+			// Create a new song
 			mSong = mAdapter.getItem(info.position);
 			// Play the song
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);

@@ -65,7 +65,7 @@ public class PlaybackStatusReceiver extends BroadcastReceiver {
 		void onMetaChange();
 
 		/**
-		 * called when playstate changes
+		 * called when play state changes
 		 */
 		void onStateChange();
 

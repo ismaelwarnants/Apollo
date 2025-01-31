@@ -11,7 +11,7 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
+import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FAVORITES;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
@@ -245,7 +245,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 			// Favorites list
 			if (selected.getId() == Playlist.FAVORITE_ID) {
 				bundle.putString(Constants.NAME, getString(R.string.playlist_favorites));
-				bundle.putString(Constants.MIME_TYPE, PAGE_FAVORIT);
+				bundle.putString(Constants.MIME_TYPE, PAGE_FAVORITES);
 			}
 			// Last added
 			else if (selected.getId() == Playlist.LAST_ADDED_ID) {

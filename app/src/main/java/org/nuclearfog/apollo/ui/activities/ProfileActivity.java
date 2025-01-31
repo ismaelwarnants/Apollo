@@ -80,7 +80,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment}
 	 */
-	public static final String PAGE_FAVORIT = "page_fav";
+	public static final String PAGE_FAVORITES = "page_fav";
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
 	 */
@@ -191,7 +191,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(this);
-		// Initialze the image fetcher
+		// Initialize the image fetcher
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
@@ -273,7 +273,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				}
 				break;
 		}
-		// Attch the adapter
+		// Attach the adapter
 		mViewPager.setAdapter(mPagerAdapter);
 		// Offscreen limit
 		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
@@ -596,9 +596,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onScrollChanged(int l, int oldl) {
+	public void onScrollChanged(int l, int oldL) {
 		if (mViewPager.isFakeDragging()) {
-			mViewPager.fakeDragBy(oldl - l);
+			mViewPager.fakeDragBy(oldL - l);
 		}
 	}
 
@@ -690,8 +690,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
-	 * Fetchs for the artist or album art, other wise sets the default header
-	 * image.
+	 * Fetch for the artist or album art, otherwise sets the default header image.
 	 */
 	public void selectOldPhoto() {
 		// First remove the old image
@@ -787,7 +786,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					return PLAYLIST;
 				case PAGE_FOLDERS:
 					return FOLDER;
-				case PAGE_FAVORIT:
+				case PAGE_FAVORITES:
 					return FAVORITE;
 				case PAGE_MOST_PLAYED:
 					return POPULAR;

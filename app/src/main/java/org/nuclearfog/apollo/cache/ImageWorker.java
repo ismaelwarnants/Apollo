@@ -136,37 +136,37 @@ public abstract class ImageWorker {
 	}
 
 	/**
-	 * Called to fetch the artist or ablum art.
+	 * Called to fetch the artist or album art.
 	 *
 	 * @param key        The unique identifier for the image.
 	 * @param artistName The artist name for the Last.fm API.
 	 * @param albumName  The album name for the Last.fm API.
 	 * @param albumId    The album art index, to check for missing artwork.
-	 * @param imageviews The {@link ImageView} used to set the cached {@link Bitmap}.
+	 * @param imageViews The {@link ImageView} used to set the cached {@link Bitmap}.
 	 *                   a second image is optional and will be used to add blurring effect
 	 * @param imageType  The type of image URL to fetch for.
 	 */
 	@SuppressWarnings("SameParameterValue")
-	protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageviews) {
-		if (key != null && mImageCache != null && imageviews.length > 0) {
+	protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageViews) {
+		if (key != null && mImageCache != null && imageViews.length > 0) {
 			// reset artwork
-			setDefaultImage(imageviews);
+			setDefaultImage(imageViews);
 			// First, check the cache for the image
 			Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
 			if (lruBitmap != null) {
 				// Bitmap found in memory cache
-				imageviews[0].setImageBitmap(lruBitmap);
+				imageViews[0].setImageBitmap(lruBitmap);
 				// add blurring to the second image if defined
-				if (imageviews.length > 1) {
+				if (imageViews.length > 1) {
 					Bitmap blur = BitmapUtils.createBlurredBitmap(lruBitmap);
-					imageviews[1].setImageBitmap(blur);
+					imageViews[1].setImageBitmap(blur);
 				}
 			}
 			// check storage for image or download
-			else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
+			else if (executePotentialWork(key, imageViews[0]) && !mImageCache.isDiskCachePaused()) {
 				// Otherwise run the worker task
-				ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, imageType, imageviews);
-				imageviews[0].setTag(asyncTag);
+				ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, imageType, imageViews);
+				imageViews[0].setTag(asyncTag);
 				asyncTag.run(artistName, albumName, albumId);
 			}
 		}

@@ -35,7 +35,7 @@
 	<color name="list_item_background">#66000000</color>
 
 	<!-- Dark transparent color -->
-	<color name="carousell_text_background">#66000000</color>
+	<color name="carousel_text_background">#66000000</color>
 
 	<!-- A darkish color used for the action bar -->
 	<color name="action_bar_color">#ff0d0d0d</color>

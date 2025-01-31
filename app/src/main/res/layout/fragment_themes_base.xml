@@ -39,7 +39,7 @@
 		android:background="@color/transparent_black"
 		android:padding="@dimen/item_theme_text_padding"
 		android:textColor="@color/white"
-		android:textSize="@dimen/text_size_dayum"
+		android:textSize="@dimen/text_size_huge"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/image"
 		app:layout_constraintBottom_toBottomOf="@+id/image"

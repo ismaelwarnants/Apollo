@@ -58,7 +58,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	private static final int TAB_INDEX_SECOND = 1;
 
 	/**
-	 * Alpha layer to be set on the lable view
+	 * Alpha layer to be set on the layer view
 	 */
 	private static final float MAX_ALPHA = 0.6f;
 
@@ -170,8 +170,8 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 			View child = getChildAt(0);
 			if (mEnableSwipe) {
 				// Add 1 dip of separation between the tabs
-				int seperatorPixels = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()) + 0.5f);
-				int width = MeasureSpec.makeMeasureSpec(TAB_COUNT * tabWidth + seperatorPixels, MeasureSpec.EXACTLY);
+				int separatorPixels = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()) + 0.5f);
+				int width = MeasureSpec.makeMeasureSpec(TAB_COUNT * tabWidth + separatorPixels, MeasureSpec.EXACTLY);
 				int height = MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY);
 				child.measure(width, height);
 			} else {
@@ -380,7 +380,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	/**
 	 * set image of the album art
 	 *
-	 * @param uri path to the local imagefile
+	 * @param uri path to the local image file
 	 */
 	public void setAlbumArt(Uri uri) {
 		mFirstTab.getPhoto().setImageURI(uri);
@@ -497,7 +497,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 
 		void onTouchUp();
 
-		void onScrollChanged(int l, int oldl);
+		void onScrollChanged(int l, int oldL);
 
 		void onTabSelected(int position);
 

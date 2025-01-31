@@ -110,7 +110,7 @@ public final class MusicUtils {
 	public static final int REQUEST_DELETE_FILES = 0x8DA3;
 
 	/**
-	 * emty ID list
+	 * empty ID list
 	 */
 	private static final long[] EMPTY_LIST = {};
 
@@ -229,9 +229,9 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * toggle playstate
+	 * toggle play state
 	 *
-	 * @return true if succeed, false if queue is empty or if an error occured
+	 * @return true if succeed, false if queue is empty or if an error occurred
 	 */
 	public static boolean togglePlayPause(Activity activity) {
 		IApolloService service = getService(activity);
@@ -431,7 +431,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @return The audio session ID or 0 if not initialized or if an error occured
+	 * @return The audio session ID or 0 if not initialized or if an error occurred
 	 */
 	public static int getAudioSessionId(Activity activity) {
 		IApolloService service = getService(activity);
@@ -568,7 +568,7 @@ public final class MusicUtils {
 			// if view type count is greater than 1, a header exists at first position
 			// calculate position offset
 			int off = (adapter.getViewTypeCount() - 1);
-			// length of the arrayadapter
+			// length of the array adapter
 			int len = adapter.getCount();
 			// calculate real position
 			position -= off;
@@ -679,17 +679,17 @@ public final class MusicUtils {
 	/**
 	 * @param activity   The {@link Context} to use.
 	 * @param ids        The id of the song(s) to add.
-	 * @param playlistid The id of the playlist being added to.
+	 * @param playlistId The id of the playlist being added to.
 	 */
 	@SuppressLint("InlinedApi")
-	public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
+	public static void addToPlaylist(Activity activity, long[] ids, long playlistId) {
 		try {
-			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistid);
+			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
 			Cursor cursor = CursorFactory.makePlaylistCursor(activity.getContentResolver(), uri);
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					int base = cursor.getInt(0);
-					int numinserted = 0;
+					int numInserted = 0;
 					for (int offset = 0; offset < ids.length; offset += 1000) {
 						int len = ids.length;
 						if (offset + len > ids.length) {
@@ -701,9 +701,9 @@ public final class MusicUtils {
 							mContentValuesCache[i].put(Playlists.Members.PLAY_ORDER, base + offset + i);
 							mContentValuesCache[i].put(Playlists.Members.AUDIO_ID, ids[offset + i]);
 						}
-						numinserted += activity.getContentResolver().bulkInsert(uri, mContentValuesCache);
+						numInserted += activity.getContentResolver().bulkInsert(uri, mContentValuesCache);
 					}
-					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numInserted, numInserted);
 					AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 				}
 				cursor.close();
@@ -725,7 +725,7 @@ public final class MusicUtils {
 	 */
 	public static void renamePlaylist(Activity activity, long id, String name) {
 		try {
-			// seting new name
+			// setting new name
 			ContentValues values = new ContentValues(1);
 			values.put(Playlists.NAME, StringUtils.capitalize(name));
 			// update old playlist
@@ -836,7 +836,7 @@ public final class MusicUtils {
 			}
 			return;
 		}
-		// print message if succeded
+		// print message if succeeded
 		Cursor cursor = CursorFactory.makeTrackCursor(activity, id);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
@@ -934,7 +934,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Creates a sub menu used to add items to a new playlist or an existsing
+	 * Creates a sub menu used to add items to a new playlist or an existing
 	 * one.
 	 *
 	 * @param context       The {@link Context} to use.
@@ -972,7 +972,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Called when one of the lists should refresh or requery.
+	 * Called when one of the lists should refresh or re-query.
 	 */
 	public static void refresh(Activity activity) {
 		IApolloService service = getService(activity);
@@ -1052,7 +1052,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Clears the qeueue
+	 * Clears the queue
 	 */
 	public static void clearQueue(Activity activity) {
 		IApolloService service = getService(activity);

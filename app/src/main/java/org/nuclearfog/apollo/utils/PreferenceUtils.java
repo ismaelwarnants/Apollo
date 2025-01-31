@@ -38,7 +38,7 @@ public final class PreferenceUtils {
 	private static final String TAG = "PreferenceUtils";
 
 	/* Default start page (Artist page) */
-	public static final int DEFFAULT_PAGE = 3;
+	public static final int DEFAULT_PAGE = 3;
 	/**
 	 * Saves the last page the pager was on in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
 	 */
@@ -112,7 +112,7 @@ public final class PreferenceUtils {
 		defaultPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		audioEffectsPref = context.getSharedPreferences(FX_PREF_NAME, Context.MODE_PRIVATE);
 		themeColor = defaultPref.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
-		startPage = defaultPref.getInt(START_PAGE, DEFFAULT_PAGE);
+		startPage = defaultPref.getInt(START_PAGE, DEFAULT_PAGE);
 	}
 
 	/**
@@ -330,7 +330,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * set current ursor position
+	 * set current cursor position
 	 *
 	 * @param position cursor position
 	 */
@@ -727,11 +727,11 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * check if external audio effect app is prefered
+	 * check if external audio effect app is preferred
 	 *
-	 * @return true if external audio effect app is prefered
+	 * @return true if external audio effect app is preferred
 	 */
-	public boolean isExternalAudioFxPrefered() {
+	public boolean isExternalAudioFxPreferred() {
 		return defaultPref.getBoolean(FX_PREFER_EXT, false);
 	}
 

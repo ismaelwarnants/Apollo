@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * This class is opened when the user touches a Home screen shortcut or album
- * art in an app-wdget, and then carries out the proper action. It is also
+ * art in an app-widget, and then carries out the proper action. It is also
  * responsible for processing voice queries and playing the spoken artist,
  * album, song, playlist, or genre.
  *
@@ -179,7 +179,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					playlistLoader.execute(id, onSongsLoaded);
 					break;
 
-				case ProfileActivity.PAGE_FAVORIT:
+				case ProfileActivity.PAGE_FAVORITES:
 					// Don't shuffle the Favorites track list
 					mShouldShuffle = false;
 					// Get the Favorites song list
@@ -217,7 +217,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	}
 
 	/**
-	 * set song ID list after loading asyncronously
+	 * set song ID list after loading asynchronously
 	 *
 	 * @param items list of songs
 	 */

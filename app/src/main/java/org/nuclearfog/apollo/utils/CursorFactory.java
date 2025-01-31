@@ -344,7 +344,7 @@ public final class CursorFactory {
 	 * {@link #ARTIST_COLUMNS}
 	 *
 	 * @param search search string
-	 * @return cursor with artits matching the search string
+	 * @return cursor with artists matching the search string
 	 */
 	@Nullable
 	public static Cursor makeArtistSearchCursor(Context context, @NonNull String search) {
@@ -636,7 +636,7 @@ public final class CursorFactory {
 	}
 
 	/**
-	 * creates a cursor to seach for track information with fixed columns
+	 * creates a cursor to search for track information with fixed columns
 	 * {@link #AUDIO_COLUMNS}
 	 *
 	 * @param trackIds query with track IDs

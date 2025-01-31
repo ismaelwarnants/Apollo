@@ -204,7 +204,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
-			// Add the data to the adpater
+			// Add the data to the adapter
 			for (Album album : albums) {
 				mAdapter.add(album);
 			}

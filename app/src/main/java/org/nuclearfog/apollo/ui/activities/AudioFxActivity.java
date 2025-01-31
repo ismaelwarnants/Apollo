@@ -55,7 +55,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	public static final String KEY_SESSION_ID = "session_id";
 
 	/**
-	 * maximum steps of the bassboost seekbar
+	 * maximum steps of the bass boost seekbar
 	 */
 	private static final int BASS_STEPS = 20;
 
@@ -181,7 +181,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		if (fromUser) {
 			// set bass boost
 			if (seekBar.getId() == R.id.audiofx_bass_boost) {
-				audioEffects.setBassLevel(progress * AudioEffects.MAX_BASSBOOST / BASS_STEPS);
+				audioEffects.setBassLevel(progress * AudioEffects.MAX_BASS_BOOST / BASS_STEPS);
 			}
 			// set reverb
 			else if (seekBar.getId() == R.id.audiofx_reverb) {
@@ -240,13 +240,13 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	 */
 	private void setViews() {
 		enableFx.setChecked(audioEffects.isAudioFxEnabled());
-		bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASSBOOST);
+		bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASS_BOOST);
 		reverb.setProgress(audioEffects.getReverbLevel());
 		eqAdapter.setBands(audioEffects.getBandLevel());
 	}
 
 	/**
-	 * set visibity of the views
+	 * set visibility of the views
 	 *
 	 * @param enable true to make views visible
 	 */

@@ -30,7 +30,7 @@ public final class ContextMenuItems {
 	public static final int PLAY_SELECTION = 0x2DC71E3B;
 
 	/**
-	 * Used to add to the qeueue
+	 * Used to add to the queue
 	 */
 	public static final int ADD_TO_QUEUE = 0xF8572568;
 

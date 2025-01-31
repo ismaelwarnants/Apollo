@@ -20,7 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.util.Log;
@@ -392,39 +391,40 @@ public final class ImageCache implements ComponentCallbacks2 {
 			return getBitmapFromMemCache(data);
 		}
 
-		waitUntilUnpaused();
-		String key = hashKeyForDisk(data);
-		if (mDiskCache != null) {
-			InputStream inputStream = null;
-			try {
-				DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
-				if (snapshot != null) {
-					inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
-					if (inputStream != null) {
-						Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-						if (bitmap != null) {
-							return bitmap;
-						}
-					}
-				}
-			} catch (IOException e) {
-				if (BuildConfig.DEBUG) {
-					e.printStackTrace();
-					Log.e(TAG, "getBitmapFromDiskCache - " + e);
-				}
-			} finally {
+		synchronized (PAUSELOCK) {
+			String key = hashKeyForDisk(data);
+			if (mDiskCache != null) {
+				InputStream inputStream = null;
 				try {
-					if (inputStream != null) {
-						inputStream.close();
+					DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+					if (snapshot != null) {
+						inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+						if (inputStream != null) {
+							Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+							if (bitmap != null) {
+								return bitmap;
+							}
+						}
 					}
 				} catch (IOException e) {
 					if (BuildConfig.DEBUG) {
 						e.printStackTrace();
+						Log.e(TAG, "getBitmapFromDiskCache - " + e);
+					}
+				} finally {
+					try {
+						if (inputStream != null) {
+							inputStream.close();
+						}
+					} catch (IOException e) {
+						if (BuildConfig.DEBUG) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
+			return null;
 		}
-		return null;
 	}
 
 	/**
@@ -482,23 +482,24 @@ public final class ImageCache implements ComponentCallbacks2 {
 	@Nullable
 	public Bitmap getArtworkFromFile(Context context, long albumId) {
 		Bitmap artwork = null;
-		waitUntilUnpaused();
-		try {
-			Uri uri = ContentUris.withAppendedId(mArtworkUri, albumId);
-			ParcelFileDescriptor fileDescr = context.getContentResolver().openFileDescriptor(uri, "r");
-			if (fileDescr != null) {
-				FileDescriptor fileDescriptor = fileDescr.getFileDescriptor();
-				artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-				fileDescr.close();
+		synchronized (PAUSELOCK) {
+			try {
+				Uri uri = ContentUris.withAppendedId(mArtworkUri, albumId);
+				ParcelFileDescriptor fileDescr = context.getContentResolver().openFileDescriptor(uri, "r");
+				if (fileDescr != null) {
+					FileDescriptor fileDescriptor = fileDescr.getFileDescriptor();
+					artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+					fileDescr.close();
+				}
+			} catch (OutOfMemoryError e) {
+				evictAll();
+			} catch (FileNotFoundException e) {
+				// caught if no album art was found
+			} catch (Exception e) {
+				Log.w(TAG, "error while loading album art", e);
 			}
-		} catch (OutOfMemoryError e) {
-			evictAll();
-		} catch (FileNotFoundException e) {
-			// caught if no album art was found
-		} catch (Exception e) {
-			Log.w(TAG, "error while loading album art", e);
+			return artwork;
 		}
-		return artwork;
 	}
 
 	/**
@@ -588,23 +589,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 				mPauseDiskAccess = pause;
 				if (!pause) {
 					PAUSELOCK.notify();
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void waitUntilUnpaused() {
-		synchronized (PAUSELOCK) {
-			if (Looper.myLooper() != Looper.getMainLooper()) {
-				while (mPauseDiskAccess) {
-					try {
-						PAUSELOCK.wait();
-					} catch (InterruptedException e) {
-						// ignored, we'll start waiting again
-					}
 				}
 			}
 		}

@@ -76,14 +76,14 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
 		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
 		int themeColor = mPrefs.getDefaultThemeColor();
-		float textsize = getResources().getDimension(R.dimen.text_size_micro);
+		float textSize = getResources().getDimension(R.dimen.text_size_micro);
 		float width = getResources().getDimension(R.dimen.audio_player_time_width);
 		int color = getResources().getColor(R.color.audio_player_current_time);
 		// theme views
 		seekbar = new SeekBar(context);
 		for (int i = 0; i < times.length; i++) {
 			times[i] = new TextView(context);
-			times[i].setTextSize(TypedValue.COMPLEX_UNIT_PX, textsize);
+			times[i].setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 			times[i].setWidth((int) width);
 			times[i].setGravity(Gravity.CENTER);
 			times[i].setTextColor(color);
@@ -211,7 +211,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	}
 
 	/**
-	 * called periodically by {@link TimeHandler} to update the seekbar positioin
+	 * called periodically by {@link TimeHandler} to update the seekbar position
 	 */
 	private void update() {
 		if (updateSeekbar) {
@@ -235,7 +235,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	}
 
 	/**
-	 * Runnable used to update the seekbar position peridocally
+	 * Runnable used to update the seekbar position periodically
 	 */
 	private static final class TimeHandler implements Runnable {
 

@@ -135,7 +135,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		mGridView.setAdapter(mAdapter);
 		// Recycle the data
 		mGridView.setRecyclerListener(new RecycleHolder());
-		// set emty message
+		// set empty message
 		mGridView.setEmptyView(emptyText);
 		// Speed up scrolling
 		mGridView.setOnScrollListener(this);

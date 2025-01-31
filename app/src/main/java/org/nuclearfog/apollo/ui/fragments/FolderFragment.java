@@ -94,7 +94,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		// Init views
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		ListView mList = mRootView.findViewById(R.id.list_base);
-		TextView emptyholder = mRootView.findViewById(R.id.list_base_empty_info);
+		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
 		//
 		preference = PreferenceUtils.getInstance(requireContext());
 		mAdapter = new FolderAdapter(requireContext());
@@ -106,7 +106,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		setHasOptionsMenu(true);
 		// set listview
 		mList.setAdapter(mAdapter);
-		mList.setEmptyView(emptyholder);
+		mList.setEmptyView(emptyHolder);
 		mList.setRecyclerListener(new RecycleHolder());
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
@@ -239,7 +239,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	}
 
 	/**
-	 * add songs of a folder to exlude list
+	 * add songs of a folder to exclude list
 	 */
 	private void onExcludeFolder(Boolean hidden) {
 		if (getActivity() != null && selectedFolder != null) {

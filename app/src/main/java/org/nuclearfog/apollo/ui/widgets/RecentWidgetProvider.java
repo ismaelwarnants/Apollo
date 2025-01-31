@@ -97,7 +97,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 			updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 			updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 			context.sendBroadcast(updateIntent);
-			// regtister this class
+			// register this class
 			Intent onClickIntent = new Intent(context, RecentWidgetProvider.class);
 			onClickIntent.setAction(RecentWidgetProvider.CLICK_ACTION);
 			onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);

@@ -15,7 +15,7 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<!-- UI catetgory -->
+	<!-- UI category -->
 	<PreferenceCategory android:title="@string/settings_ui_category">
 
 		<!-- Color scheme -->
@@ -30,7 +30,7 @@
 			android:title="@string/settings_theme_chooser_title" />
 	</PreferenceCategory>
 
-	<!-- Data catetory -->
+	<!-- Data category -->
 	<PreferenceCategory android:title="@string/settings_data_category">
 
 		<!-- Only on Wi-Fi -->
@@ -53,7 +53,7 @@
 			android:title="@string/settings_download_only_on_wifi_title" />
 	</PreferenceCategory>
 
-	<!-- Storage catetory -->
+	<!-- Storage category -->
 	<PreferenceCategory android:title="@string/settings_storage_category">
 
 		<!-- Delete cache -->
@@ -63,7 +63,7 @@
 			android:title="@string/settings_delete_cache_title" />
 	</PreferenceCategory>
 
-	<!-- other settigns -->
+	<!-- other settings -->
 	<PreferenceCategory android:title="@string/settings_other">
 
 		<!-- disable battery optimization -->

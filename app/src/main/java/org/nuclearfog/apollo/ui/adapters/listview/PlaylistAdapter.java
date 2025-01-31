@@ -33,7 +33,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 
 	/**
-	 * item layout reource
+	 * item layout resource
 	 */
 	private static final int LAYOUT = R.layout.list_item_simple;
 

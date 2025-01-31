@@ -93,7 +93,7 @@
 	<string name="use_default">Use default photo</string>
 	<string name="old_photo">Use old photo</string>
 	<string name="item_hidden">entry hidden successfully</string>
-	<string name="web_search">Websearch</string>
+	<string name="web_search">Web search</string>
 
 	<!-- Context menu items -->
 	<string name="context_menu_play_selection">Play</string>
@@ -144,7 +144,7 @@
 	<string name="set_as_ringtone">\'<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\' set as ringtone</string>
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> set as the theme</string>
 	<string name="explain_permission_write_settings">This permission is only required to set ringtone</string>
-	<string name="error_audioeffects_not_supported">Audioeffects not supported!</string>
+	<string name="error_audioeffects_not_supported">Audio effects not supported!</string>
 
 	<!-- Settings -->
 	<string name="settings_ui_category">Interface</string>

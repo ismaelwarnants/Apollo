@@ -121,7 +121,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// Initialze the theme resources
+		// Initialize the theme resources
 		mResources = new ThemeUtils(requireContext());
 		songLoader = new SongLoader(requireContext());
 		// Attach the adapter

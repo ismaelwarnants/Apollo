@@ -68,7 +68,7 @@ public class ExcludeStore extends AppStore {
 	}
 
 	/**
-	 * add item ID to exclude lsit
+	 * add item ID to exclude list
 	 *
 	 * @param type type of item to exclude
 	 * @param ids  IDs to exclude

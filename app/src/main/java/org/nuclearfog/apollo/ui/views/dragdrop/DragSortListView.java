@@ -421,7 +421,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		boolean lastCallWasIntercept = mLastCallWasIntercept;
 		mLastCallWasIntercept = false;
 		if (!lastCallWasIntercept) {
-			saveTouchCoords(ev);
+			saveTouchCoordinates(ev);
 		}
 		if (mFloatView != null) {
 			switch (ev.getAction() & MotionEvent.ACTION_MASK) {
@@ -468,7 +468,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		if (!mDragEnabled) {
 			return super.onInterceptTouchEvent(ev);
 		}
-		saveTouchCoords(ev);
+		saveTouchCoordinates(ev);
 		mLastCallWasIntercept = true;
 		boolean intercept = false;
 		int action = ev.getAction() & MotionEvent.ACTION_MASK;
@@ -1027,7 +1027,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	}
 
 
-	private void saveTouchCoords(MotionEvent ev) {
+	private void saveTouchCoordinates(MotionEvent ev) {
 		int action = ev.getAction() & MotionEvent.ACTION_MASK;
 		if (action != MotionEvent.ACTION_DOWN) {
 			mLastY = mY;

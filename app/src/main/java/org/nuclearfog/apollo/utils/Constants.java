@@ -60,7 +60,7 @@ public final class Constants {
 	 */
 	public static final String FOLDER = "folder_path";
 	/**
-	 * key used for contextmenu to add IDs to playlist entries
+	 * key used for context menu to add IDs to playlist entries
 	 */
 	public static final String PLAYLIST_ID = "context_playlist_id";
 	/**

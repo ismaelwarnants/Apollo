@@ -24,7 +24,7 @@ import org.nuclearfog.apollo.utils.Constants;
 public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 
 	/**
-	 * item layout reource
+	 * item layout resource
 	 */
 	private static final int LAYOUT = R.layout.list_item_simple;
 

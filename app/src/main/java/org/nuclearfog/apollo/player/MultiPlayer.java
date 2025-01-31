@@ -39,7 +39,7 @@ public class MultiPlayer {
 	 */
 	private static final int FADE_OUT = 11;
 	/**
-	 * indicates that two track are crossfading
+	 * indicates that there is a crossfading in progress
 	 */
 	private static final int XFADE = 12;
 	/**
@@ -51,7 +51,7 @@ public class MultiPlayer {
 	 */
 	private static final float FADE_STEPS = 0.08f;
 	/**
-	 * crossfade overlay of two tracks in milliseconds
+	 * cross-fade overlay of two tracks in milliseconds
 	 */
 	private static final long XFADE_DELAY = 1000;
 	/**
@@ -97,7 +97,7 @@ public class MultiPlayer {
 	/**
 	 * true if player continues to next track automatically
 	 */
-	private volatile boolean continious = true;
+	private volatile boolean continuous = true;
 	/**
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
 	 */
@@ -148,10 +148,10 @@ public class MultiPlayer {
 	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
 		if (uri != null) {
 			int nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
-			continious = setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
-			return continious;
+			continuous = setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
+			return continuous;
 		} else {
-			continious = false;
+			continuous = false;
 			return true;
 		}
 	}
@@ -235,7 +235,7 @@ public class MultiPlayer {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean next() {
-		if (continious && initialized && xfadeMode == NONE) {
+		if (continuous && initialized && xfadeMode == NONE) {
 			xfadeMode = XFADE;
 			isPlaying = true;
 			setCrossfadeTask(true);
@@ -397,7 +397,7 @@ public class MultiPlayer {
 				default:
 					long diff = Math.abs(getDuration() - getPosition());
 					if (diff <= XFADE_DELAY) {
-						if (continious) {
+						if (continuous) {
 							xfadeMode = XFADE;
 						} else {
 							xfadeMode = FADE_OUT;
@@ -467,7 +467,7 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * callback used for playbackservice
+	 * callback used for playback service
 	 */
 	public interface OnPlaybackStatusCallback {
 

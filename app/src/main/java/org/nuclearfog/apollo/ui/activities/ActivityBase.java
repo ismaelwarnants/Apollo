@@ -187,7 +187,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		// register playstate callback
+		// register play state callback
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 		if (MusicUtils.isConnected(this)) {
@@ -332,8 +332,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// play button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			boolean succed = MusicUtils.togglePlayPause(this);
-			if (!succed) {
+			boolean succeed = MusicUtils.togglePlayPause(this);
+			if (!succeed) {
 				songLoader.execute(null, onSongsShuffle);
 			}
 		}
@@ -445,7 +445,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	protected abstract int getContentView();
 
 	/**
-	 * initialize acitivity
+	 * initialize activity
 	 */
 	protected abstract void init(Bundle savedInstanceState);
 

@@ -282,8 +282,8 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 	 * DragSortController settings (such as remove mode). Starts the drag on the DragSortListView.
 	 *
 	 * @param position The list item position (includes headers).
-	 * @param deltaX   Touch x-coord minus left edge of floating View.
-	 * @param deltaY   Touch y-coord minus top edge of floating View.
+	 * @param deltaX   Touch x-coordinate minus left edge of floating View.
+	 * @param deltaY   Touch y-coordinate minus top edge of floating View.
 	 */
 	private void startDrag(int position, int deltaX, int deltaY) {
 		int mDragFlags = 0;

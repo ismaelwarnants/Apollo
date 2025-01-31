@@ -24,10 +24,10 @@ public final class AudioEffects {
 	/**
 	 * max limit of the bass boost effect defined in {@link BassBoost}
 	 */
-	public static final int MAX_BASSBOOST = 1000;
+	public static final int MAX_BASS_BOOST = 1000;
 
 	/**
-	 * max reverb steps definded in {@link PresetReverb}
+	 * max reverb steps defined in {@link PresetReverb}
 	 */
 	public static final int MAX_REVERB = 6;
 
@@ -77,7 +77,7 @@ public final class AudioEffects {
 	}
 
 	/**
-	 * release all audioeffects from usage
+	 * release all audio effects from usage
 	 */
 	public static void release() {
 		if (instance != null) {
@@ -244,7 +244,7 @@ public final class AudioEffects {
 	/**
 	 * return bass boost strength
 	 *
-	 * @return bassbost strength value from 0 to 1000
+	 * @return bass boost strength value from 0 to 1000
 	 */
 	public int getBassLevel() {
 		try {
@@ -260,7 +260,7 @@ public final class AudioEffects {
 	/**
 	 * set bass boost level
 	 *
-	 * @param level bassbost strength value from 0 to 1000
+	 * @param level bass boost strength value from 0 to 1000
 	 */
 	public void setBassLevel(int level) {
 		try {

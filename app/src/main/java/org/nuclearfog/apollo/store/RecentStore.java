@@ -82,7 +82,7 @@ public class RecentStore extends AppStore {
 	/**
 	 * Name of database file
 	 */
-	private static final String DATABASENAME = "albumhistory.db";
+	private static final String DB_NAME = "albumhistory.db";
 
 	/**
 	 * singleton instance of this class
@@ -95,7 +95,7 @@ public class RecentStore extends AppStore {
 	 * @param context The {@link Context} to use
 	 */
 	private RecentStore(Context context) {
-		super(context, DATABASENAME);
+		super(context, DB_NAME);
 	}
 
 	/**
