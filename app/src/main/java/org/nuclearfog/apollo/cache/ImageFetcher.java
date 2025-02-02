@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -269,15 +270,20 @@ public class ImageFetcher extends ImageWorker {
 		if (imageType == ImageType.ARTIST) {
 			if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()
 					&& !TextUtils.isEmpty(artistName) && artistName.length() > 2) {
-				ArtistMB artist = MusicBrainz.getArtist(artistName);
+				// fetch artist information
+				ArtistMB artist = MusicBrainz.getArtistByName(artistName);
 				if (artist != null) {
-					mbid = artist.getId();
+					// fetch the most recent album of the artist
+					List<AlbumMB> albums = MusicBrainz.searchAlbumsByArtistId(artist.getId(), 1);
+					if (!albums.isEmpty()) {
+						mbid = albums.get(0).getId();
+					}
 				}
 			}
 		} else if (imageType == ImageType.ALBUM) {
 			if (PreferenceUtils.getInstance(mContext).downloadMissingArtwork()
 					&& !TextUtils.isEmpty(albumName) && albumName.length() > 2) {
-				AlbumMB album = MusicBrainz.getRelease(albumName);
+				AlbumMB album = MusicBrainz.getReleaseByName(albumName);
 				if (album != null) {
 					mbid = album.getId();
 				}

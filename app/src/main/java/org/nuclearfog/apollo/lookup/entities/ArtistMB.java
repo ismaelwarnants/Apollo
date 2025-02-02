@@ -13,11 +13,16 @@ public class ArtistMB {
 
 	private String mbid;
 	private String name;
+	private String area = "";
 
 
 	public ArtistMB(JSONObject json) {
 		mbid = json.optString("id", "");
 		name = json.optString("name", "");
+		JSONObject areaJson = json.optJSONObject("area");
+		if (areaJson != null) {
+			area = areaJson.optString("name", "");
+		}
 	}
 
 	/**
@@ -36,6 +41,15 @@ public class ArtistMB {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * The artist area, indicates the area with which an artist is primarily identified with. (e.g. birth/formation country)
+	 *
+	 * @return area name
+	 */
+	public String getArea() {
+		return area;
 	}
 
 

@@ -59,7 +59,7 @@ public class BitmapWorker extends AsyncExecutor<String[], Drawable[]> {
 		if (bitmap == null && ApolloUtils.isOnline(worker.getContext())) {
 			// Now define what the artist name, album name, and url are.
 			String mArtistName = params[1];
-			String mAlbumName = params[2] != null ? params[2] : mArtistName;
+			String mAlbumName = params[2];
 			String mUrl = worker.processImageUrl(mArtistName, mAlbumName, mImageType);
 			if (mUrl != null) {
 				bitmap = worker.processBitmap(mUrl);
