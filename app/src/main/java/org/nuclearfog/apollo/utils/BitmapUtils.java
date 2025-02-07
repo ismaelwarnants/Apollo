@@ -47,7 +47,7 @@ public final class BitmapUtils {
 		//
 		// Java Author: Mario Klingemann <mario at quasimondo.com>
 		// http://incubator.quasimondo.com
-		// created Feburary 29, 2004
+		// created February 29, 2004
 		// Android port : Yahel Bouaziz <yahel at kayenko.com>
 		// http://www.kayenko.com
 		// ported april 5th, 2012

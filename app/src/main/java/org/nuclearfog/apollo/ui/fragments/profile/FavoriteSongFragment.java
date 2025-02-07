@@ -76,7 +76,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// sets empty list text
-		setEmptyText(R.string.empty_favorits);
+		setEmptyText(R.string.empty_favorites);
 		// Start the loader
 		mLoader.execute(null, this);
 	}

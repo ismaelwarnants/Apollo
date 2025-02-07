@@ -157,8 +157,8 @@
 	<string name="error_permission_denied">应用无法正常工作，因为没有读取存储和电话状态的权限！</string>
 	<string name="empty_recents">还没有听过任何曲目。</string>
 	<string name="empty_playlist">此播放列表为空。</string>
-	<string name="empty_favorits">没有添加到收藏夹的曲目！</string>
-	<string name="empty_artst_albums">此艺术家没有专辑</string>
+	<string name="empty_favorites">没有添加到收藏夹的曲目！</string>
+	<string name="empty_artist_albums">此艺术家没有专辑</string>
 
 	<!-- 标签 -->
 	<string name="label_enable_equalizer">启用音频效果</string>

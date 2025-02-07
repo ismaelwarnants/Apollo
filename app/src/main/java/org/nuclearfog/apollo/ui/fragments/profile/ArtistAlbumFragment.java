@@ -85,7 +85,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// sets empty list text
-		setEmptyText(R.string.empty_artst_albums);
+		setEmptyText(R.string.empty_artist_albums);
 		// set adapter
 		setAdapter(mAdapter);
 		// Start the loader

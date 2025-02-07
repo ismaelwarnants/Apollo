@@ -174,11 +174,13 @@ public abstract class ImageWorker {
 
 	/**
 	 * set default artwork
+	 *
+	 * @param imageViews imageview to set the default artwork
 	 */
-	protected void setDefaultImage(ImageView... imageviews) {
-		imageviews[0].setImageResource(R.drawable.default_artwork);
-		if (imageviews.length > 1) {
-			imageviews[1].setImageResource(0);
+	protected void setDefaultImage(ImageView... imageViews) {
+		imageViews[0].setImageResource(R.drawable.default_artwork);
+		if (imageViews.length > 1) {
+			imageViews[1].setImageResource(0);
 		}
 	}
 
