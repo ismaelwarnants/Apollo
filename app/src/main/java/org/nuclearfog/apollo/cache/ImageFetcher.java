@@ -283,7 +283,7 @@ public class ImageFetcher extends ImageWorker {
 		} else if (imageType == ImageType.ALBUM) {
 			if (PreferenceUtils.getInstance(mContext).downloadMissingArtwork()
 					&& !TextUtils.isEmpty(albumName) && albumName.length() > 2) {
-				AlbumMB album = MusicBrainz.getReleaseByName(albumName);
+				AlbumMB album = MusicBrainz.getReleaseByName(albumName, artistName);
 				if (album != null) {
 					mbid = album.getId();
 				}

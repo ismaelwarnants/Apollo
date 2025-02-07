@@ -76,7 +76,7 @@ public class Album extends Music implements Parcelable {
 		super(albumId, albumName, visible);
 		if (albumYear != null)
 			mYear = albumYear;
-		if (artistName != null)
+		if (artistName != null && !artistName.equals("<unknown>"))
 			mArtistName = artistName;
 		mSongNumber = songNumber;
 	}

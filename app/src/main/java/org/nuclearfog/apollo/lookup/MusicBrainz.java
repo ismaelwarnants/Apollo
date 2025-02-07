@@ -72,8 +72,11 @@ public class MusicBrainz {
 	 * @return release information of 'null' if not found
 	 */
 	@Nullable
-	public static AlbumMB getReleaseByName(String name) {
-		List<AlbumMB> album = searchAlbumsByName(name, 1);
+	public static AlbumMB getReleaseByName(String name, String artist) {
+		List<AlbumMB> album = searchAlbumsByName(name, artist, 1);
+		if (album.isEmpty())
+			// if album not found, use album name only
+			album = searchAlbumsByName(name, null, 1);
 		if (album.isEmpty())
 			return null;
 		return album.get(0);
@@ -127,15 +130,19 @@ public class MusicBrainz {
 	/**
 	 * search for albums matching search string
 	 *
-	 * @param name  name of the album to search
+	 * @param album  name of the album to search
+	 * @param artist artist name of the album (optional)
 	 * @param count max result count
 	 * @return list of album matches
 	 */
-	public static List<AlbumMB> searchAlbumsByName(String name, int count) {
+	public static List<AlbumMB> searchAlbumsByName(String album, @Nullable String artist, int count) {
 		List<AlbumMB> result = new ArrayList<>();
 		try {
 			List<String> params = new ArrayList<>();
-			params.add("query=" + StringUtils.encodeUTF8(name));
+			if (artist == null)
+				params.add("query=" + StringUtils.encodeUTF8(album));
+			else
+				params.add("query=" + StringUtils.encodeUTF8("release:\"" + album + "\" AND artist:\"" + artist + "\""));
 			params.add("limit=" + count);
 			return getAlbums(params);
 		} catch (JSONException e) {

@@ -120,10 +120,10 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 */
 	public Song(long song_id, String song_name, String artist_name, String album_name, String path, long duration, boolean visibility) {
 		super(song_id, song_name, visibility);
-		if (artist_name != null) {
+		if (artist_name != null && !artist_name.equals("<unknown>")) {
 			this.artist_name = artist_name;
 		}
-		if (album_name != null) {
+		if (album_name != null && !album_name.equals("<unknown>")) {
 			this.album_name = album_name;
 		}
 		if (duration > 0) {
