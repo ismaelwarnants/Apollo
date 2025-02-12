@@ -60,6 +60,6 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		layout="@layout/bottom_action_bar" />
+		layout="@layout/action_bar_bottom" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

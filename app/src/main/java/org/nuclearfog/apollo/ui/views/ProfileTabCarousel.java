@@ -131,7 +131,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 */
 	public ProfileTabCarousel(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		View view = LayoutInflater.from(context).inflate(R.layout.profile_tab_carousel, this, false);
+		View view = LayoutInflater.from(context).inflate(R.layout.tab_carousel, this, false);
 		mFirstTab = view.findViewById(R.id.profile_tab_carousel_tab_one);
 		mSecondTab = view.findViewById(R.id.profile_tab_carousel_tab_two);
 		addView(view);

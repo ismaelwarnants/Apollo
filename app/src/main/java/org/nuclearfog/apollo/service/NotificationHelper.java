@@ -146,13 +146,13 @@ class NotificationHelper {
 		// use custom notification layout for old Android version
 		else {
 			// initialize small notification view
-			mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_base);
+			mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_base);
 			mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbackPlayPause);
 			mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbackNext);
 			mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbackPrevious);
 			mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbackStop);
 			// initialize expanded notification view
-			mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
+			mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_expanded);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, callbackPlayPause);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, callbackNext);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);

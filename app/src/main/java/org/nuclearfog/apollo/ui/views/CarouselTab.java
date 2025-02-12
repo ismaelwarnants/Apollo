@@ -56,7 +56,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	 */
 	public CarouselTab(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		View view = LayoutInflater.from(context).inflate(R.layout.profile_tab, this, false);
+		View view = LayoutInflater.from(context).inflate(R.layout.tab_profile, this, false);
 		View mAlphaLayer = view.findViewById(R.id.profile_tab_alpha_overlay);
 		mColorstrip = view.findViewById(R.id.profile_tab_colorstrip);
 		mPhoto = view.findViewById(R.id.profile_tab_photo);
