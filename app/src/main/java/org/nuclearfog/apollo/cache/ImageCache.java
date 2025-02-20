@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.util.Log;
+import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,7 +97,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * LRU cache
 	 */
 	@Nullable
-	private MemoryCache mLruCache;
+	private LruCache<String, Bitmap> mLruCache;
 	/**
 	 * Disk LRU cache
 	 */
@@ -285,7 +286,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 		} else {
 			lruCacheSize = 16000000;
 		}
-		mLruCache = new MemoryCache(lruCacheSize);
+		mLruCache = new LruCache<>(lruCacheSize);
 		// Release some memory as needed
 		context.registerComponentCallbacks(this);
 	}
@@ -599,35 +600,5 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 */
 	public boolean isDiskCachePaused() {
 		return mPauseDiskAccess;
-	}
-
-	/**
-	 * Used to cache images via {@link LruCache}.
-	 */
-	public static class MemoryCache extends LruCache<String, Bitmap> {
-
-		/**
-		 * Constructor of <code>MemoryCache</code>
-		 *
-		 * @param maxSize The allowed size of the {@link LruCache}
-		 */
-		public MemoryCache(int maxSize) {
-			super(maxSize);
-		}
-
-		/**
-		 * Get the size in bytes of a bitmap.
-		 */
-		public static int getBitmapSize(Bitmap bitmap) {
-			return bitmap.getByteCount();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected int sizeOf(Bitmap paramBitmap) {
-			return getBitmapSize(paramBitmap);
-		}
 	}
 }
