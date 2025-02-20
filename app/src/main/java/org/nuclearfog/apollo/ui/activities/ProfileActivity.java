@@ -50,6 +50,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
+import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
@@ -711,10 +712,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * artwork. This is specifically for fetching the image from Last.fm.
 	 */
 	public void fetchAlbumArt() {
+		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName);
+		/*
 		// First remove the old image
 		removeFromCache();
 		// Fetch for the artwork
 		mTabCarousel.fetchAlbumPhoto(mProfileName, mArtistName);
+		*/
 	}
 
 	/**
