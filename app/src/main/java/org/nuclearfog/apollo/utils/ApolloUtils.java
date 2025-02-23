@@ -42,9 +42,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
@@ -149,27 +148,6 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * Creates a new instance of the {@link ImageCache} and {@link ImageFetcher}
-	 *
-	 * @param context The {@link Context} to use.
-	 * @return A new {@link ImageFetcher} used to fetch images asynchronously.
-	 */
-	public static ImageFetcher getImageFetcher(Context context) {
-		ImageFetcher imageFetcher = ImageFetcher.getInstance(context);
-		imageFetcher.setImageCache(ImageCache.getInstance(context));
-		return imageFetcher;
-	}
-
-	/**
-	 * get album art from storage
-	 *
-	 * @return album art image
-	 */
-	public static Bitmap getAlbumArt(Context context, @NonNull Album album) {
-		return getImageFetcher(context).getArtwork(album);
-	}
-
-	/**
 	 * Used to create shortcuts for an artist, album, or playlist that is then
 	 * placed on the default launcher homescreen
 	 *
@@ -181,11 +159,14 @@ public final class ApolloUtils {
 	public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {
 		try {
 			Bitmap bitmap;
-			ImageFetcher fetcher = getImageFetcher(activity);
+			ImageFetcher fetcher = new ImageFetcher(activity);
 			if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
-				bitmap = fetcher.getCachedBitmap(ImageFetcher.generateAlbumCacheKey(displayName, artistName));
+				bitmap = fetcher.getImageFromCache(ImageType.ALBUM, displayName, artistName);
+			} else if (mimeType.equals(MediaStore.Audio.Artists.CONTENT_TYPE)) {
+				bitmap = fetcher.getImageFromCache(ImageType.ARTIST, displayName, artistName);
 			} else {
-				bitmap = fetcher.getCachedBitmap(displayName);
+				// todo implement bitmap loader for genre/folder
+				bitmap = null;
 			}
 			if (bitmap == null) {
 				bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.default_artwork);

@@ -16,6 +16,7 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio;
@@ -47,10 +48,10 @@ import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
-import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
@@ -193,7 +194,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(this);
 		// Initialize the image fetcher
-		mImageFetcher = ApolloUtils.getImageFetcher(this);
+		mImageFetcher = new ImageFetcher(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
 		genreSongLoader = new GenreSongLoader(this);
@@ -254,21 +255,18 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 
 			case FOLDER:
-				mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
-				if (actionBar != null) {
-					actionBar.setTitle(this.mProfileName);
-				}
+				mTabCarousel.setPlaylistProfileHeader(mProfileName);
 				break;
 
 			case GENRE:
+				// Add the carousel images
+				mTabCarousel.setGenreProfileHeader(mProfileName);
+				break;
+
 			case FAVORITE:
 			case PLAYLIST:
 			case LAST_ADDED:
 			case POPULAR:
-				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
-				// most played fragment
-				// Action bar title = Last added
 				if (actionBar != null) {
 					actionBar.setTitle(mProfileName);
 				}
@@ -646,14 +644,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (intent != null && intent.getData() != null) {
 				Uri imageUri = intent.getData();
 				if (type == Type.ARTIST) {
-					mImageFetcher.addImageToCache(mArtistName, imageUri);
+					mImageFetcher.addImageToCache(ImageType.ARTIST, imageUri, mProfileName, mArtistName);
 					mTabCarousel.setAlbumArt(imageUri);
 				} else if (type == Type.ALBUM) {
-					String key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
-					mImageFetcher.addImageToCache(key, imageUri);
+					mImageFetcher.addImageToCache(ImageType.ALBUM, imageUri, mProfileName, mArtistName);
 					mTabCarousel.getAlbumArt().setImageURI(imageUri);
 				} else {
-					mImageFetcher.addImageToCache(mProfileName, imageUri);
+					// todo implement caching for genre/folder
 					mTabCarousel.setAlbumArt(imageUri);
 				}
 			} else {
@@ -702,7 +699,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		} else if (type == Type.ALBUM) {
 			mTabCarousel.setAlbumProfileHeader(mProfileName, mArtistName);
 		} else {
-			mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
+			mTabCarousel.setPlaylistProfileHeader(mProfileName);
 		}
 	}
 
@@ -712,13 +709,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * artwork. This is specifically for fetching the image from Last.fm.
 	 */
 	public void fetchAlbumArt() {
-		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName);
-		/*
-		// First remove the old image
-		removeFromCache();
-		// Fetch for the artwork
-		mTabCarousel.fetchAlbumPhoto(mProfileName, mArtistName);
-		*/
+		// todo add image selector dialog
 	}
 
 	/**
@@ -748,13 +739,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * Removes the header image from the cache.
 	 */
 	private void removeFromCache() {
-		String key = mProfileName;
 		if (type == Type.ARTIST) {
-			key = mArtistName;
+			mImageFetcher.addImageToCache(ImageType.ARTIST, (Bitmap) null, mProfileName, mArtistName);
 		} else if (type == Type.ALBUM) {
-			key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
+			mImageFetcher.addImageToCache(ImageType.ALBUM, (Bitmap) null, mProfileName, mArtistName);
+		} else if (type == Type.GENRE) {
+
+			// todo add more cache operations
 		}
-		mImageFetcher.removeFromCache(key);
 	}
 
 	/**
@@ -774,6 +766,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		GENRE,
 		PLAYLIST,
 		FOLDER,
+		// todo disable images for fav, last added & popular
 		FAVORITE,
 		LAST_ADDED,
 		POPULAR;

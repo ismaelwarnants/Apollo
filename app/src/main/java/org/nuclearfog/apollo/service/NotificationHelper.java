@@ -16,6 +16,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -30,9 +31,9 @@ import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -92,6 +93,8 @@ class NotificationHelper {
 	 */
 	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious, callbackStop;
 
+	private ImageFetcher imageFetcher;
+
 	private boolean legacyLayout;
 
 	/**
@@ -102,6 +105,7 @@ class NotificationHelper {
 		mService = service;
 		PreferenceUtils mPreferences = PreferenceUtils.getInstance(service);
 		legacyLayout = mPreferences.oldNotificationLayoutEnabled();
+		imageFetcher = new ImageFetcher(mService);
 
 		// init notification manager & channel
 		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
@@ -198,7 +202,7 @@ class NotificationHelper {
 			if (song != null && album != null) {
 				notificationBuilder.setContentTitle(song.getName());
 				notificationBuilder.setContentText(song.getArtist());
-				notificationBuilder.setLargeIcon(ApolloUtils.getAlbumArt(mService, album));
+				notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
 			}
 			// init media control (fallback if not supported by MediaStyle)
 			notificationBuilder.clearActions();
@@ -214,13 +218,14 @@ class NotificationHelper {
 		// build legacy notification
 		else {
 			if (album != null && song != null) {
+				Bitmap artwork = imageFetcher.getAlbumArtwork(album);
 				mSmallContent.setTextViewText(R.id.notification_base_line_one, song.getName());
 				mSmallContent.setTextViewText(R.id.notification_base_line_two, song.getArtist());
-				mSmallContent.setImageViewBitmap(R.id.notification_base_image, ApolloUtils.getAlbumArt(mService, album));
+				mSmallContent.setImageViewBitmap(R.id.notification_base_image, artwork);
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, song.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, album.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, song.getArtist());
-				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, ApolloUtils.getAlbumArt(mService, album));
+				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, artwork);
 			}
 			if (mService.isPlaying()) {
 				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);

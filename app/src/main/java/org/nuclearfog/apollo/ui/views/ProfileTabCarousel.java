@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.views.FrameLayoutWithOverlay.OnOverlayClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
@@ -445,8 +446,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	public void setArtistProfileHeader(String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
 		mSecondTab.setLabel(getResources().getString(R.string.page_albums));
-		mFirstTab.setArtistPhoto(artistName);
-		mSecondTab.setArtistAlbumPhoto(artistName);
+		mFirstTab.setPhoto(ImageType.ARTIST, artistName, "");
 		mEnableSwipe = true;
 	}
 
@@ -458,8 +458,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 */
 	public void setAlbumProfileHeader(String albumName, String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setAlbumPhoto(albumName, artistName);
-
+		mFirstTab.setPhoto(ImageType.ALBUM, artistName, albumName);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
@@ -467,24 +466,27 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	/**
 	 * Sets the playlist or genre image header
 	 *
-	 * @param profileName The key used to find the cached image for a playlist or genre
+	 * @param profileName The key used to find the cached image for a playlist
 	 */
-	public void setPlaylistOrGenreProfileHeader(String profileName) {
+	public void setPlaylistProfileHeader(String profileName) {
 		mFirstTab.setDefault();
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setPlaylistOrGenrePhoto(profileName);
+		mFirstTab.setPhoto(ImageType.PLAYLIST, profileName, "");
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
 
 	/**
-	 * Used to fetch for the album art via Last.fm.
+	 * Sets the playlist or genre image header
 	 *
-	 * @param albumName  The name of the album in the profile the user is viewing.
-	 * @param artistName The name of the album artist in the profile the user is viewing.
+	 * @param profileName The key used to find the cached image for a genre
 	 */
-	public void fetchAlbumPhoto(String albumName, String artistName) {
-		mFirstTab.fetchAlbumPhoto(albumName, artistName);
+	public void setGenreProfileHeader(String profileName) {
+		mFirstTab.setDefault();
+		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setPhoto(ImageType.GENRE, profileName, "");
+		mSecondTab.setVisibility(View.GONE);
+		mEnableSwipe = false;
 	}
 
 	/**

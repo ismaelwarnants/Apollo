@@ -11,46 +11,48 @@
 
 package org.nuclearfog.apollo.cache;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.lookup.entities.ArtistMB;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-
 /**
- * A subclass of {@link ImageWorker} that fetches images from a URL.
+ * This class wraps up completing some arbitrary long running work when loading
+ * a {@link Bitmap} to an {@link ImageView}. It handles things like using a
+ * memory and disk cache, running the work in a background thread and setting a
+ * placeholder image.
+ *
+ * @author nuclearfog
  */
-public class ImageFetcher extends ImageWorker {
+public class ImageFetcher {
 
-	public static final int IO_BUFFER_SIZE_BYTES = 1024;
-	private static final int DEFAULT_MAX_IMAGE_HEIGHT = 1024;
-	private static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
+	private static final String TAG = "ImageWorker";
 
 	/**
 	 * size of the artist/album art of the notification image
@@ -58,214 +60,168 @@ public class ImageFetcher extends ImageWorker {
 	private static final int NOTIFICATION_SIZE = 200;
 
 	/**
-	 * location folder name of the image cache
+	 * The {@link Uri} used to retrieve album art
 	 */
-	private static final String DEFAULT_CACHE_DIR = "download";
+	private static final Uri URI_ARTWORK = Uri.parse("content://media/external/audio/albumart");
 
 	/**
-	 * Used to distinguish album art from artist images
+	 * The Context to use
 	 */
-	private static final String ALBUM_ART_SUFFIX = "album";
-
-
-	private static ImageFetcher sInstance = null;
+	protected Context mContext;
 
 	/**
-	 * Creates a new instance of {@link ImageFetcher}.
+	 * Disk and memory caches
+	 */
+	protected ImageCache mImageCache;
+
+	/**
 	 *
-	 * @param context The {@link Context} to use.
 	 */
-	private ImageFetcher(Context context) {
-		super(context);
+	public ImageFetcher(Context context) {
+		mContext = context.getApplicationContext();
+		mImageCache = ImageCache.getInstance(mContext);
 	}
 
 	/**
-	 * Used to create a singleton of the image fetcher
-	 *
-	 * @param context The {@link Context} to use
-	 * @return A new instance of this class.
+	 * @return application context
 	 */
-	public static ImageFetcher getInstance(Context context) {
-		if (sInstance == null) {
-			sInstance = new ImageFetcher(context.getApplicationContext());
-		}
-		return sInstance;
+	@NonNull
+	public Context getContext() {
+		return mContext;
 	}
 
 	/**
-	 * Download a {@link Bitmap} from a URL, write it to a disk and return the
-	 * File pointer. This implementation uses a simple disk cache.
-	 *
-	 * @param context   The context to use
-	 * @param urlString The URL to fetch
-	 * @return A {@link File} pointing to the fetched bitmap
+	 * flush() is called to synchronize up other methods that are accessing the
+	 * cache first
 	 */
-	public static File downloadBitmapToFile(Context context, String urlString, String uniqueName) {
-		File cacheDir = ImageCache.getDiskCacheDir(context, uniqueName);
-
-		if (!cacheDir.exists()) {
-			cacheDir.mkdir();
-		}
-
-		HttpsURLConnection urlConnection = null;
-		BufferedOutputStream out = null;
-
-		try {
-			File tempFile = File.createTempFile("bitmap", null, cacheDir);
-			URL url = new URL(urlString);
-			urlConnection = (HttpsURLConnection) url.openConnection();
-			if (urlConnection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
-				return null;
-			}
-			InputStream in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE_BYTES);
-			out = new BufferedOutputStream(new FileOutputStream(tempFile), IO_BUFFER_SIZE_BYTES);
-
-			int oneByte;
-			while ((oneByte = in.read()) != -1) {
-				out.write(oneByte);
-			}
-			return tempFile;
-		} catch (IOException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
-		} finally {
-			if (urlConnection != null) {
-				urlConnection.disconnect();
-			}
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		return null;
+	public void flush() {
+		mImageCache.flush();
 	}
 
 	/**
-	 * Decode and sample down a {@link Bitmap} from a file to the requested
-	 * width and height.
-	 *
-	 * @param filename The full path of the file to decode
-	 * @return A {@link Bitmap} sampled down from the original with the same
-	 * aspect ratio and dimensions that are equal to or greater than the
-	 * requested width and height
+	 * @param pause True to temporarily pause the disk cache, false otherwise.
 	 */
-	public static Bitmap decodeSampledBitmapFromFile(String filename) {
-
-		// First decode with inJustDecodeBounds=true to check dimensions
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(filename, options);
-
-		// Calculate inSampleSize
-		options.inSampleSize = calculateInSampleSize(options, DEFAULT_MAX_IMAGE_WIDTH,
-				DEFAULT_MAX_IMAGE_HEIGHT);
-
-		// Decode bitmap with inSampleSize set
-		options.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(filename, options);
+	public void setPauseDiskCache(boolean pause) {
+		mImageCache.setPauseDiskCache(pause);
 	}
 
 	/**
-	 * Calculate an inSampleSize for use in a
-	 * {@link android.graphics.BitmapFactory.Options} object when decoding
-	 * bitmaps using the decode* methods from {@link BitmapFactory}. This
-	 * implementation calculates the closest inSampleSize that will result in
-	 * the final decoded bitmap having a width and height equal to or larger
-	 * than the requested width and height. This implementation does not ensure
-	 * a power of 2 is returned for inSampleSize which can be faster when
-	 * decoding but results in a larger bitmap which isn't as useful for caching
-	 * purposes.
+	 * load album images asynchronously into the imageview(s)
 	 *
-	 * @param options   An options object with out* params already populated (run
-	 *                  through a decode* method with inJustDecodeBounds==true
-	 * @param reqWidth  The requested width of the resulting bitmap
-	 * @param reqHeight The requested height of the resulting bitmap
-	 * @return The value to be used for inSampleSize
+	 * @param album album information to fetch the images from
+	 * @param imageViews imageview(s) to attach the images
 	 */
-	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		/* Raw height and width of image */
-		int height = options.outHeight;
-		int width = options.outWidth;
-		int inSampleSize = 1;
-
-		if (height > reqHeight || width > reqWidth) {
-			if (width > height) {
-				inSampleSize = Math.round(height / (float) reqHeight);
+	public void loadAlbumImage(@Nullable Album album, ImageView... imageViews) {
+		if (imageViews.length > 0) {
+			if (album != null) {
+				loadAlbumImage(album.getArtist(), album.getName(), album.getId(), imageViews);
 			} else {
-				inSampleSize = Math.round(width / (float) reqWidth);
-			}
-
-			// This offers some additional logic in case the image has a strange
-			// aspect ratio. For example, a panorama may have a much larger
-			// width than height. In these cases the total pixels might still
-			// end up being too large to fit comfortably in memory, so we should
-			// be more aggressive with sample down the image (=larger
-			// inSampleSize).
-
-			float totalPixels = width * height;
-
-			/* More than 2x the requested pixels we'll sample down further */
-			float totalReqPixelsCap = reqWidth * reqHeight * 2;
-
-			while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
-				inSampleSize++;
+				setDefaultImage(imageViews);
 			}
 		}
-		return inSampleSize;
-	}
-
-
-	@Nullable
-	public static String generateAlbumCacheKey(@Nullable Album album) {
-		if (album != null)
-			return generateAlbumCacheKey(album.getName(), album.getArtist());
-		return null;
 	}
 
 	/**
-	 * Generates key used by album art cache. It needs both album name and artist name
-	 * to let to select correct image for the case when there are two albums with the
-	 * same artist.
+	 * load album images asynchronously into the imageview(s)
 	 *
-	 * @param albumName  The album name the cache key needs to be generated.
-	 * @param artistName The artist name the cache key needs to be generated.
+	 * @param artist artist name of the album
+	 * @param album album name
+	 * @param id  MediaStore ID of the album
+	 * @param imageViews imageview(s) to attach the images
+	 */
+	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
+		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
+	}
+
+	/**
+	 * load artist image asynchronously into imageview
+	 *
+	 * @param artist artist name
+	 * @param imageView imageview to attach the image
+	 */
+	public void loadArtistImage(String artist, ImageView imageView) {
+		String key = generateCacheKey(ImageType.ARTIST, artist);
+		loadImage(key, artist, "", 0, ImageType.ARTIST, imageView);
+	}
+
+	/**
+	 * add image to local cache using Uri
+	 *
+	 * @param type type of the image
+	 * @param uri  local Uri to image or null to remove image
+	 * @param data keywords used to find image (e.g. artist, album or genre name)
+	 */
+	public void addImageToCache(ImageType type, @Nullable Uri uri, String... data) {
+		try {
+			Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+			addImageToCache(type, bitmap, data);
+		} catch (IOException exception) {
+			Log.e(TAG, "could not load local image to cache!", exception);
+		}
+	}
+
+	/**
+	 * add bitmap image to local cache
+	 *
+	 * @param type   type of the image or null to remove image
+	 * @param bitmap bitmap image to cache or null to remove the image
+	 * @param data   keywords used to find image (e.g. artist, album or genre name)
+	 */
+	public void addImageToCache(ImageType type, @Nullable Bitmap bitmap, String... data) {
+		addImageToCache(bitmap, generateCacheKey(type, data));
+	}
+
+	/**
+	 * add bitmap to cache
+	 *
+	 * @param bitmap bitmap image to cache or null to remove the image
+	 * @param key	 cache key used to identify the bitmap
+	 */
+	public void addImageToCache(@Nullable Bitmap bitmap, String key) {
+		if (bitmap != null) {
+			mImageCache.addBitmapToCache(key, bitmap);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
+	 * get image from cache
+	 *
+	 * @param type image type
+	 * @param data keywords used to find image (e.g. artist, album or genre name)
+	 * @return bitmap image or null if not found
 	 */
 	@Nullable
-	public static String generateAlbumCacheKey(String albumName, String artistName) {
-		if (albumName != null && artistName != null)
-			return albumName + "_" + artistName + "_" + ALBUM_ART_SUFFIX;
-		return null;
+	public Bitmap getImageFromCache(ImageType type, String... data) {
+		String key = generateCacheKey(type, data);
+		Bitmap bitmap = mImageCache.getCachedBitmap(key);
+		if (bitmap == null)
+			return getDefaultArtwork();
+		return bitmap;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * get image bitmap directly from cache using cache key
+	 *
+	 * @param key keyword used to find the image
+	 * @return image matching the keyword or null if not found
 	 */
-	@Override
-	public Bitmap processBitmap(String url) {
-		if (url == null) {
-			return null;
-		}
-		File file = downloadBitmapToFile(mContext, url, DEFAULT_CACHE_DIR);
-		if (file != null) {
-			// Return a sampled down version
-			Bitmap bitmap = decodeSampledBitmapFromFile(file.toString());
-			file.delete();
-			return bitmap;
-		}
-		return null;
+	@Nullable
+	public Bitmap getCachedBitmap(String key) {
+		return mImageCache.getCachedBitmap(key);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * fetch album/artist image using online service
+	 *
+	 * @param artistName name of the artist/band
+	 * @param albumName  name of the album
+	 * @param imageType  type of the image {@link ImageType#ALBUM,ImageType#ARTIST}
+	 * @return url of the image
 	 */
-	@Override
-	public String processImageUrl(String artistName, String albumName, ImageType imageType) {
+	public String downloadImage(ImageType imageType, String artistName, String albumName) {
 		String mbid = null;
 		if (imageType == ImageType.ARTIST) {
 			if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()
@@ -299,100 +255,158 @@ public class ImageFetcher extends ImageWorker {
 	}
 
 	/**
-	 * Used to fetch album images.
-	 */
-	public void loadAlbumImage(@Nullable Album album, ImageView... imageViews) {
-		if (album != null) {
-			loadAlbumImage(album.getArtist(), album.getName(), album.getId(), imageViews);
-		} else {
-			setDefaultImage(imageViews);
-		}
-	}
-
-	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
-		String key = generateAlbumCacheKey(album, artist);
-		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
-	}
-
-	/**
-	 * Used to fetch artist images.
-	 */
-	public void loadArtistImage(String key, ImageView imageView) {
-		loadImage(key, key, null, -1L, ImageType.ARTIST, imageView);
-	}
-
-	/**
-	 * @param pause True to temporarily pause the disk cache, false otherwise.
-	 */
-	public void setPauseDiskCache(boolean pause) {
-		if (mImageCache != null) {
-			mImageCache.setPauseDiskCache(pause);
-		}
-	}
-
-	/**
-	 * @param key The key used to find the image to remove
-	 */
-	public void removeFromCache(String key) {
-		if (mImageCache != null) {
-			mImageCache.removeFromCache(key);
-		}
-	}
-
-	/**
-	 * @param key The key used to find the image to return
-	 */
-	public Bitmap getCachedBitmap(String key) {
-		if (mImageCache != null) {
-			return mImageCache.getCachedBitmap(key);
-		}
-		return getDefaultArtwork();
-	}
-
-	/**
-	 * @param album Album to load artwork from
-	 */
-	public Bitmap getCachedArtwork(@Nullable Album album) {
-		if (mImageCache != null && album != null) {
-			String key = generateAlbumCacheKey(album);
-			return mImageCache.getCachedArtwork(mContext, key, album.getId());
-		}
-		return getDefaultArtwork();
-	}
-
-	/**
-	 * Finds cached or downloads album art. Used in {@link MusicPlaybackService}
-	 * to set the current album art in the notification and lock screen
+	 * get album artwork from app image cache
+	 * if not found, return default artwork
 	 *
-	 * @param album album to load the artwork from
-	 * @return The album art as an {@link Bitmap}
+	 * @param album album to get the artwork from
+	 * @return a scaled down {@link Bitmap}
 	 */
-	@Nullable
-	public Bitmap getArtwork(Album album) {
-		// Check the disk cache
-		Bitmap artwork = null;
-		if (mImageCache != null && album != null) {
-			artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(album));
-			if (artwork == null) {
-				// Check for local artwork
-				artwork = mImageCache.getArtworkFromFile(mContext, album.getId());
-			}
-		}
+	@NonNull
+	public Bitmap getAlbumArtwork(@NonNull Album album) {
+		String cacheKey = generateCacheKey(ImageType.ALBUM, album.getName(), album.getArtist());
+		Bitmap artwork = mImageCache.getBitmapFromDiskCache(cacheKey);
 		if (artwork == null) {
 			artwork = getDefaultArtwork();
-		}
-		if (artwork == null) {
-			return null;
 		}
 		// scale down image
 		return Bitmap.createScaledBitmap(artwork, NOTIFICATION_SIZE, NOTIFICATION_SIZE, false);
 	}
 
+	/**
+	 * Used to fetch the artwork for an album locally from the user's device
+	 *
+	 * @param albumId ID of the album to get the artwork from
+	 * @return The artwork for an album
+	 */
+	@Nullable
+	public Bitmap getAlbumArtwork(long albumId) {
+		Bitmap artwork = null;
+		try {
+			Uri uri = ContentUris.withAppendedId(URI_ARTWORK, albumId);
+			ParcelFileDescriptor descriptor = mContext.getContentResolver().openFileDescriptor(uri, "r");
+			if (descriptor != null) {
+				FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
+				artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+				descriptor.close();
+			}
+		} catch (FileNotFoundException e) {
+			// proceed if no album artwork was found
+		} catch (Exception e) {
+			Log.w(TAG, "error while loading album art", e);
+		}
+		return artwork;
+	}
 
+	/**
+	 * Called to fetch the artist or album art.
+	 *
+	 * @param key        The unique identifier for the image.
+	 * @param artistName The artist name for the Last.fm API.
+	 * @param albumName  The album name for the Last.fm API.
+	 * @param albumId    The album art index, to check for missing artwork.
+	 * @param imageViews The {@link ImageView} used to set the cached {@link Bitmap}.
+	 *                   a second image is optional and will be used to add blurring effect
+	 * @param imageType  The type of image URL to fetch for.
+	 */
+	@SuppressWarnings("SameParameterValue")
+	private void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageViews) {
+		if (key != null && imageViews.length > 0) {
+			// reset artwork
+			setDefaultImage(imageViews);
+			// First, check the cache for the image
+			Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
+			if (lruBitmap != null) {
+				// Bitmap found in memory cache
+				imageViews[0].setImageBitmap(lruBitmap);
+				// add blurring to the second image if defined
+				if (imageViews.length > 1) {
+					Bitmap blur = BitmapUtils.createBlurredBitmap(lruBitmap);
+					imageViews[1].setImageBitmap(blur);
+				}
+			}
+			// check storage for image or download
+			else if (executePotentialWork(key, imageViews[0]) && !mImageCache.isDiskCachePaused()) {
+				// Otherwise run the worker task
+				ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, imageType, imageViews);
+				imageViews[0].setTag(asyncTag);
+				asyncTag.run(artistName, albumName, albumId);
+			}
+		}
+	}
+
+	/**
+	 * set default artwork
+	 *
+	 * @param imageViews imageview to set the default artwork
+	 */
+	private void setDefaultImage(ImageView... imageViews) {
+		imageViews[0].setImageResource(R.drawable.default_artwork);
+		if (imageViews.length > 1) {
+			imageViews[1].setImageResource(0);
+		}
+	}
+
+	/**
+	 * Returns true if the current work has been canceled or if there was no
+	 * work in progress on this image view. Returns false if the work in
+	 * progress deals with the same data. The work is not stopped in that case.
+	 */
+	private boolean executePotentialWork(String key, ImageView imageView) {
+		if (imageView != null) {
+			Object drawable = imageView.getTag();
+			if (drawable instanceof ImageAsyncTag) {
+				ImageAsyncTag asyncDrawable = (ImageAsyncTag) drawable;
+				// The same work is already in progress
+				if (!asyncDrawable.getTag().equals(key)) {
+					// cancel worker to load a new image
+					asyncDrawable.cancel();
+				} else {
+					return asyncDrawable.isFinished();
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * get default artwork if no artwork is found
+	 *
+	 * @return bitmap of the default artwork
+	 */
+	@NonNull
+	@SuppressWarnings("ConstantConditions")
 	private Bitmap getDefaultArtwork() {
 		Drawable bitmap = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.default_artwork, null);
-		if (bitmap != null)
-			return ((BitmapDrawable) bitmap).getBitmap();
-		return null;
+		return ((BitmapDrawable) bitmap).getBitmap();
+	}
+
+	/**
+	 * create unique cache key for specific entry
+	 *
+	 * @param type image type to cache
+	 * @param data string values (e.g. artist, album name) used to calculate cache key
+	 * @return key string
+	 */
+	private String generateCacheKey(ImageType type, String... data) {
+		StringBuilder str = new StringBuilder();
+		for (String key : data) {
+			str.append(key).append('_');
+		}
+		str.append(type.value);
+		return str.toString();
+	}
+
+	/**
+	 * Used to define what type of image URL to fetch for, artist or album.
+	 */
+	public enum ImageType {
+
+		ARTIST("artist"), ALBUM("album"), GENRE("genre"), PLAYLIST("playlist"), FOLDER("folder");
+
+		String value;
+
+		ImageType(String value) {
+			this.value = value;
+		}
 	}
 }

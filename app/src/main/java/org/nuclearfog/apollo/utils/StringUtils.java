@@ -3,10 +3,13 @@ package org.nuclearfog.apollo.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * This class contains utils for strings
@@ -119,5 +122,34 @@ public final class StringUtils {
 		} catch (UnsupportedEncodingException e) {
 			return "";
 		}
+	}
+
+	/**
+	 * A hashing method that changes a string (like a URL) into a hash suitable
+	 * for using as a disk filename.
+	 *
+	 * @param key The key used to store the file
+	 */
+	public static String hashKeyForDisk(String key) {
+		String cacheKey;
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			digest.update(key.getBytes());
+			StringBuilder builder = new StringBuilder();
+			for (byte b : digest.digest()) {
+				String hex = Integer.toHexString(0xFF & b);
+				if (hex.length() == 1) {
+					builder.append('0');
+				}
+				builder.append(hex);
+			}
+			cacheKey = builder.toString();
+		} catch (NoSuchAlgorithmException e) {
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
+			cacheKey = String.valueOf(key.hashCode());
+		}
+		return cacheKey;
 	}
 }

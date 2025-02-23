@@ -22,12 +22,12 @@ import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
  * 4x1 App-Widget
@@ -73,7 +73,8 @@ public class AppWidgetSmall extends AppWidgetBase {
 		Song song = service.getCurrentSong();
 		Album album = service.getCurrentAlbum();
 		if (song != null && album != null) {
-			Bitmap bitmap = ApolloUtils.getAlbumArt(service, album);
+			ImageFetcher imageFetcher = new ImageFetcher(service);
+			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
 			// Set the titles and artwork
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());

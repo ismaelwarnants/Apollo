@@ -63,7 +63,7 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 	public SearchAdapter(FragmentActivity activity) {
 		super(activity, LAYOUT);
 		// Initialize the cache & image fetcher
-		mImageFetcher = ApolloUtils.getImageFetcher(activity);
+		mImageFetcher = new ImageFetcher(activity);
 		// Create the prefix highlighter
 		mHighlighter = new PrefixHighlighter(activity);
 		// get inflater from fragment

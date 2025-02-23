@@ -63,7 +63,7 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 		super(context, columns, mLayoutId);
 		this.mLayoutId = mLayoutId;
 		// Initialize the cache & image fetcher
-		mImageFetcher = ApolloUtils.getImageFetcher(context);
+		mImageFetcher = new ImageFetcher(context);
 	}
 
 	/**

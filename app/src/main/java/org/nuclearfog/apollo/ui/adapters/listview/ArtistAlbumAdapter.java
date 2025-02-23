@@ -79,7 +79,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	public ArtistAlbumAdapter(Context context) {
 		super(context, LAYOUT);
 		// Initialize the cache & image fetcher
-		mImageFetcher = ApolloUtils.getImageFetcher(context);
+		mImageFetcher = new ImageFetcher(context);
 		// create placeholder view
 		mHeader = new ProfileTabCarousel(context);
 		mHeader.setVisibility(View.INVISIBLE);

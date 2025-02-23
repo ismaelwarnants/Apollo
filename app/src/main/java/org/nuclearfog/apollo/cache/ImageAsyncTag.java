@@ -1,12 +1,14 @@
 package org.nuclearfog.apollo.cache;
 
-import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.worker.BitmapWorker;
+import org.nuclearfog.apollo.async.worker.BitmapWorker.Param;
+import org.nuclearfog.apollo.async.worker.BitmapWorker.Result;
+import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 
 /**
  * A custom {@link android.view.View} Objet tag that will be attached to the
@@ -15,7 +17,7 @@ import org.nuclearfog.apollo.async.worker.BitmapWorker;
  * required, and makes sure that only the last started worker process can
  * bind its result, independently of the finish order.
  */
-public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
+public class ImageAsyncTag implements AsyncCallback<Result> {
 
 	/**
 	 * background worker task
@@ -29,10 +31,8 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	 */
 	private String mKey;
 
-	/**
-	 * Constructor of <code>AsyncDrawable</code>
-	 */
-	public ImageAsyncTag(ImageWorker imgWorker, @NonNull String mKey, ImageWorker.ImageType imageType, ImageView... imageViews) {
+
+	public ImageAsyncTag(ImageFetcher imgWorker, @NonNull String mKey, ImageType imageType, ImageView... imageViews) {
 		bitmapWorker = new BitmapWorker(imgWorker, imageType);
 		this.imageViews = imageViews;
 		this.mKey = mKey;
@@ -40,11 +40,11 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 
 
 	@Override
-	public void onResult(@NonNull Drawable[] drawables) {
+	public void onResult(@NonNull Result result) {
 		if (imageViews != null) {
-			imageViews[0].setImageDrawable(drawables[0]);
+			imageViews[0].setImageDrawable(result.drawable);
 			if (imageViews.length > 1) {
-				imageViews[1].setImageDrawable(drawables[1]);
+				imageViews[1].setImageDrawable(result.blurredDrawable);
 			}
 		}
 	}
@@ -53,7 +53,7 @@ public class ImageAsyncTag implements AsyncCallback<Drawable[]> {
 	 * execute background task
 	 */
 	public void run(String artistName, String albumName, long albumId) {
-		String[] param = {mKey, artistName, albumName, Long.toString(albumId)};
+		Param param = new Param(mKey, albumName, artistName, albumId);
 		bitmapWorker.execute(param, this);
 	}
 

@@ -23,12 +23,12 @@ import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
  * 4x2 App-Widget
@@ -93,12 +93,13 @@ public class AppWidgetLarge extends AppWidgetBase {
 		Album album = service.getCurrentAlbum();
 		Song song = service.getCurrentSong();
 		if (album != null && song != null) {
-			Bitmap albumArt = ApolloUtils.getAlbumArt(service, album);
+			ImageFetcher imageFetcher = new ImageFetcher(service);
+			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
 			// Set the titles and artwork
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_two, song.getArtist());
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_three, song.getAlbum());
-			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, albumArt);
+			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
 		}
 		return appWidgetView;
 	}

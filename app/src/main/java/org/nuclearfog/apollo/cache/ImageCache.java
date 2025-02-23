@@ -13,14 +13,11 @@ package org.nuclearfog.apollo.cache;
 
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.util.Log;
 import android.util.LruCache;
@@ -29,15 +26,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * This class holds the memory and disk bitmap caches.
@@ -63,11 +57,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * Compression settings when writing images to disk cache
 	 */
 	private static final CompressFormat COMPRESS_FORMAT = CompressFormat.JPEG;
-
-	/**
-	 * The {@link Uri} used to retrieve album art
-	 */
-	private static final Uri mArtworkUri = Uri.parse("content://media/external/audio/albumart");
 
 	/**
 	 * Disk cache index to read from
@@ -100,6 +89,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	private LruCache<String, Bitmap> mLruCache;
 	/**
 	 * Disk LRU cache
+	 * todo check if DISKLruCache can be replaced by system class
 	 */
 	@Nullable
 	private DiskLruCache mDiskCache;
@@ -127,22 +117,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Get a usable cache directory (external if available, internal otherwise)
-	 *
-	 * @param context    The {@link Context} to use
-	 * @param uniqueName A unique directory name to append to the cache
-	 *                   directory
-	 * @return The cache directory
-	 */
-	public static File getDiskCacheDir(Context context, String uniqueName) {
-		// getExternalCacheDir(context) returns null if external storage is not ready
-		File folder = context.getExternalCacheDir();
-		if (folder == null)
-			folder = context.getCacheDir();
-		return new File(folder, uniqueName);
-	}
-
-	/**
 	 * Check if space is available at a given path.
 	 *
 	 * @param path The path to check
@@ -152,47 +126,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 		StatFs fs = new StatFs(path);
 		return fs.getBlockSizeLong() * fs.getAvailableBlocksLong() > DISK_CACHE_SIZE;
 	}
-
-	/**
-	 * A hashing method that changes a string (like a URL) into a hash suitable
-	 * for using as a disk filename.
-	 *
-	 * @param key The key used to store the file
-	 */
-	public static String hashKeyForDisk(String key) {
-		String cacheKey;
-		try {
-			MessageDigest digest = MessageDigest.getInstance("MD5");
-			digest.update(key.getBytes());
-			cacheKey = bytesToHexString(digest.digest());
-		} catch (NoSuchAlgorithmException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
-			cacheKey = String.valueOf(key.hashCode());
-		}
-		return cacheKey;
-	}
-
-	/**
-	 * <a href="http://stackoverflow.com/questions/332079">...</a>
-	 *
-	 * @param bytes The bytes to convert.
-	 * @return A {@link String} converted from the bytes of a hashable key used
-	 * to store a filename on the disk, to hex digits.
-	 */
-	private static String bytesToHexString(byte[] bytes) {
-		StringBuilder builder = new StringBuilder();
-		for (byte b : bytes) {
-			String hex = Integer.toHexString(0xFF & b);
-			if (hex.length() == 1) {
-				builder.append('0');
-			}
-			builder.append(hex);
-		}
-		return builder.toString();
-	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -230,55 +163,35 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param context The {@link Context} to use
 	 */
 	private void init(Context context) {
+		// create cache folder
 		File cacheFolder = context.getExternalCacheDir();
 		if (cacheFolder == null)
 			cacheFolder = context.getCacheDir();
 		final File folder = new File(cacheFolder, TAG);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
 
+		// Initialize the disk cache in a background thread
 		new Thread(() -> {
 			try {
-				// Initialize the disk cache in a background thread
-				initDiskCache(folder);
+				if ((mDiskCache == null || mDiskCache.isClosed()) && isSpaceAvailable(folder.getPath())) {
+					try {
+						mDiskCache = DiskLruCache.open(folder, 1, 1, DISK_CACHE_SIZE);
+					} catch (IOException e) {
+						if (BuildConfig.DEBUG) {
+							e.printStackTrace();
+						}
+					}
+				}
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
 				}
 			}
 		}).start();
+
 		// Set up the memory cache
-		initLruCache(context);
-	}
-
-	/**
-	 * Initializes the disk cache. Note that this includes disk access so this
-	 * should not be executed on the main/UI thread. By default an ImageCache
-	 * does not initialize the disk cache when it is created, instead you should
-	 * call initDiskCache() to initialize it on a background thread.
-	 */
-	private synchronized void initDiskCache(File cacheFolder) {
-		// Set up disk cache
-		if (mDiskCache == null || mDiskCache.isClosed()) {
-			if (!cacheFolder.exists()) {
-				cacheFolder.mkdirs();
-			}
-			if (isSpaceAvailable(cacheFolder.getPath())) {
-				try {
-					mDiskCache = DiskLruCache.open(cacheFolder, 1, 1, DISK_CACHE_SIZE);
-				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Sets up the Lru cache
-	 *
-	 * @param context The {@link Context} to use
-	 */
-	public void initLruCache(Context context) {
 		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		int lruCacheSize;
 		if (activityManager != null) {
@@ -297,17 +210,13 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param data   The key used to store the image
 	 * @param bitmap The {@link Bitmap} to cache
 	 */
-	public void addBitmapToCache(String data, Bitmap bitmap) {
-		if (data == null || bitmap == null) {
-			return;
-		}
-
+	public void addBitmapToCache(@NonNull String data, @NonNull Bitmap bitmap) {
 		// Add to memory cache
 		addBitmapToMemCache(data, bitmap);
 
 		// Add to disk cache
 		if (mDiskCache != null) {
-			String key = hashKeyForDisk(data);
+			String key = StringUtils.hashKeyForDisk(data);
 			OutputStream out = null;
 			try {
 				DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
@@ -317,7 +226,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 						out = editor.newOutputStream(DISK_CACHE_INDEX);
 						bitmap.compress(COMPRESS_FORMAT, COMPRESS_QUALITY, out);
 						editor.commit();
-						out.close();
 						flush();
 					}
 				} else {
@@ -334,10 +242,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 						out.close();
 					}
 				} catch (IOException | IllegalStateException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-						Log.e(TAG, "addBitmapToCache - " + e);
-					}
+					Log.e(TAG, "addBitmapToCache - failed to close output stream");
 				}
 			}
 		}
@@ -349,10 +254,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param data   The key identifier
 	 * @param bitmap The {@link Bitmap} to cache
 	 */
-	public void addBitmapToMemCache(String data, Bitmap bitmap) {
-		if (data == null || bitmap == null) {
-			return;
-		}
+	public void addBitmapToMemCache(@NonNull String data, @NonNull Bitmap bitmap) {
 		// Add to memory cache
 		if (mLruCache != null && getBitmapFromMemCache(data) == null) {
 			mLruCache.put(data, bitmap);
@@ -365,10 +267,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param data Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
-	public Bitmap getBitmapFromMemCache(String data) {
-		if (data == null) {
-			return null;
-		}
+	public Bitmap getBitmapFromMemCache(@NonNull String data) {
 		if (mLruCache != null) {
 			return mLruCache.get(data);
 		}
@@ -381,19 +280,14 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param data Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
-	public Bitmap getBitmapFromDiskCache(String data) {
-		if (data == null) {
-			return null;
-		}
-
-		// Check in the memory cache here to avoid going to the disk cache less
-		// often
+	public Bitmap getBitmapFromDiskCache(@NonNull String data) {
+		// Check in the memory cache here to avoid going to the disk cache less often
 		if (getBitmapFromMemCache(data) != null) {
 			return getBitmapFromMemCache(data);
 		}
 
 		synchronized (PAUSELOCK) {
-			String key = hashKeyForDisk(data);
+			String key = StringUtils.hashKeyForDisk(data);
 			if (mDiskCache != null) {
 				InputStream inputStream = null;
 				try {
@@ -436,71 +330,13 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
 	@Nullable
-	public Bitmap getCachedBitmap(String data) {
-		if (data == null) {
-			return null;
-		}
+	public Bitmap getCachedBitmap(@NonNull String data) {
 		Bitmap cachedImage = getBitmapFromDiskCache(data);
 		if (cachedImage != null) {
 			addBitmapToMemCache(data, cachedImage);
 			return cachedImage;
 		}
 		return null;
-	}
-
-	/**
-	 * Tries to return the album art from memory cache and disk cache, before
-	 * calling {@code #getArtworkFromFile(Context, String)} again
-	 *
-	 * @param context The {@link Context} to use
-	 * @param data    The name of the album art
-	 * @param id      The ID of the album to find artwork for
-	 * @return The artwork for an album
-	 */
-	@Nullable
-	public Bitmap getCachedArtwork(Context context, String data, long id) {
-		if (context == null || data == null) {
-			return null;
-		}
-		Bitmap cachedImage = getCachedBitmap(data);
-		if (cachedImage == null && id >= 0) {
-			cachedImage = getArtworkFromFile(context, id);
-		}
-		if (cachedImage != null) {
-			addBitmapToMemCache(data, cachedImage);
-			return cachedImage;
-		}
-		return null;
-	}
-
-	/**
-	 * Used to fetch the artwork for an album locally from the user's device
-	 *
-	 * @param context The {@link Context} to use
-	 * @param albumId ID of the album to get the artwork from
-	 * @return The artwork for an album
-	 */
-	@Nullable
-	public Bitmap getArtworkFromFile(Context context, long albumId) {
-		Bitmap artwork = null;
-		synchronized (PAUSELOCK) {
-			try {
-				Uri uri = ContentUris.withAppendedId(mArtworkUri, albumId);
-				ParcelFileDescriptor fileDescr = context.getContentResolver().openFileDescriptor(uri, "r");
-				if (fileDescr != null) {
-					FileDescriptor fileDescriptor = fileDescr.getFileDescriptor();
-					artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-					fileDescr.close();
-				}
-			} catch (OutOfMemoryError e) {
-				evictAll();
-			} catch (FileNotFoundException e) {
-				// caught if no album art was found
-			} catch (Exception e) {
-				Log.w(TAG, "error while loading album art", e);
-			}
-			return artwork;
-		}
 	}
 
 	/**
@@ -556,10 +392,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 * @param key The key used to identify which cache entries to delete.
 	 */
-	public void removeFromCache(String key) {
-		if (key == null) {
-			return;
-		}
+	public void removeFromCache(@NonNull String key) {
 		// Remove the Lru entry
 		if (mLruCache != null) {
 			mLruCache.remove(key);
@@ -567,7 +400,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 		try {
 			// Remove the disk entry
 			if (mDiskCache != null) {
-				mDiskCache.remove(hashKeyForDisk(key));
+				mDiskCache.remove(StringUtils.hashKeyForDisk(key));
 			}
 		} catch (IOException e) {
 			if (BuildConfig.DEBUG) {

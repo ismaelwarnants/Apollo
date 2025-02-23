@@ -60,7 +60,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 		// Get the layout Id
 		mLayoutId = layoutId;
 		// Initialize the cache & image fetcher
-		mImageFetcher = ApolloUtils.getImageFetcher(context);
+		mImageFetcher = new ImageFetcher(context);
 	}
 
 	/**

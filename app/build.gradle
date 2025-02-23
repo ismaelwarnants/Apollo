@@ -22,7 +22,7 @@ android {
 			debuggable false
 			minifyEnabled true
 			shrinkResources true
-			multiDexEnabled false
+			vcsInfo.include false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 		}
 		debug {

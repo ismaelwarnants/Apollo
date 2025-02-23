@@ -195,7 +195,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
 		songLoader = new SongLoader(this);
-		mImageFetcher = ApolloUtils.getImageFetcher(this);
+		mImageFetcher = new ImageFetcher(this);
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Theme the action bar

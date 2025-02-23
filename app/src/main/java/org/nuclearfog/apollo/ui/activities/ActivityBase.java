@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.SongLoader;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
@@ -109,6 +110,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 
 	private SongLoader songLoader;
 
+	private ImageFetcher imageFetcher;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -142,6 +145,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		songLoader = new SongLoader(this);
 		ThemeUtils mTheme = new ThemeUtils(this);
+		imageFetcher = new ImageFetcher(this);
 
 		// set bottom action bar color
 		mTheme.setBackgroundColor(bottomActionBar);
@@ -410,7 +414,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// Set the album art
 		if (album != null) {
-			ApolloUtils.getImageFetcher(this).loadAlbumImage(album, mAlbumArt);
+			imageFetcher.loadAlbumImage(album, mAlbumArt);
 		} else {
 			mAlbumArt.setImageResource(0);
 		}

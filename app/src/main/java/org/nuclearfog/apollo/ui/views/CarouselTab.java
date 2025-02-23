@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -26,8 +25,7 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.store.RecentStore;
-import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
@@ -62,7 +60,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 		mPhoto = view.findViewById(R.id.profile_tab_photo);
 		mAlbumArt = view.findViewById(R.id.profile_tab_album_art);
 		mLabelView = view.findViewById(R.id.profile_tab_label);
-		mFetcher = ApolloUtils.getImageFetcher(context);
+		mFetcher = new ImageFetcher(context);
 		// add child views
 		addView(view);
 		// Set the alpha layer
@@ -87,73 +85,39 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	 *
 	 * @param artist The name of the artist in the profile the user is viewing.
 	 */
-	public void setArtistPhoto(String artist) {
-		if (!TextUtils.isEmpty(artist)) {
-			mFetcher.loadArtistImage(artist, mPhoto);
-		} else {
-			setDefault();
-		}
-	}
+	public void setPhoto(ImageType type, String artist, String album) {
+		switch (type) {
+			case ARTIST:
+				if (!TextUtils.isEmpty(artist)) {
+					mFetcher.loadArtistImage(artist, mPhoto);
+				} else {
+					setDefault();
+				}
+				break;
 
-	/**
-	 * Used to set the album art in the album profile.
-	 *
-	 * @param album The name of the album in the profile the user is viewing.
-	 */
-	public void setAlbumPhoto(String album, String artist) {
-		if (!TextUtils.isEmpty(album)) {
-			mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(getContext(), album, artist), mAlbumArt, mPhoto);
-			mAlbumArt.setVisibility(View.VISIBLE);
-		} else {
-			setDefault();
-		}
-	}
+			case ALBUM:
+				if (!TextUtils.isEmpty(album)) {
+					mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(getContext(), album, artist), mAlbumArt, mPhoto);
+					mAlbumArt.setVisibility(View.VISIBLE);
+				} else {
+					setDefault();
+				}
+				break;
 
-	/**
-	 * Used to set the album art in the artist profile.
-	 *
-	 * @param artist The name of the artist in the profile the user is viewing.
-	 */
-	public void setArtistAlbumPhoto(String artist) {
-		final String lastAlbum = RecentStore.getInstance(getContext()).getAlbumName(artist);
-		if (!TextUtils.isEmpty(lastAlbum)) {
-			// Set the last album the artist played
-			mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(getContext(), lastAlbum, artist), mPhoto);
-		} else {
-			setDefault();
-		}
-	}
+			case PLAYLIST:
+			case GENRE:/*
+				if (!TextUtils.isEmpty(profileName)) {
+					Bitmap image = mFetcher.getCachedBitmap(type, profileName);
+					if (image != null) {
+						mPhoto.setImageBitmap(image);
+					} else {
+						setDefault();
+					}
+				} else {
+					setDefault();
+				}*/
+				break;
 
-	/**
-	 * Used to set the header image for playlists and genres.
-	 *
-	 * @param profileName The key used to fetch the image.
-	 */
-	public void setPlaylistOrGenrePhoto(String profileName) {
-		if (!TextUtils.isEmpty(profileName)) {
-			Bitmap image = mFetcher.getCachedBitmap(profileName);
-			if (image != null) {
-				mPhoto.setImageBitmap(image);
-			} else {
-				setDefault();
-			}
-		} else {
-			setDefault();
-		}
-	}
-
-	/**
-	 * Used to fetch for the album art via Last.fm.
-	 *
-	 * @param album  The name of the album in the profile the user is viewing.
-	 * @param artist The name of the album artist in the profile the user is viewing
-	 */
-	public void fetchAlbumPhoto(String album, String artist) {
-		if (!TextUtils.isEmpty(album)) {
-			mFetcher.removeFromCache(ImageFetcher.generateAlbumCacheKey(album, artist));
-			mFetcher.loadAlbumImage(artist, album, -1L, mAlbumArt);
-		} else {
-			setDefault();
 		}
 	}
 
