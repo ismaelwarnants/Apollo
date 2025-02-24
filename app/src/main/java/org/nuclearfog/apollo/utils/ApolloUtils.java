@@ -43,7 +43,6 @@ import androidx.fragment.app.FragmentActivity;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
@@ -161,9 +160,9 @@ public final class ApolloUtils {
 			Bitmap bitmap;
 			ImageFetcher fetcher = new ImageFetcher(activity);
 			if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
-				bitmap = fetcher.getImageFromCache(ImageType.ALBUM, displayName, artistName);
+				bitmap = fetcher.getAlbumImage(displayName, artistName);
 			} else if (mimeType.equals(MediaStore.Audio.Artists.CONTENT_TYPE)) {
-				bitmap = fetcher.getImageFromCache(ImageType.ARTIST, displayName, artistName);
+				bitmap = fetcher.getArtistImage(artistName);
 			} else {
 				// todo implement bitmap loader for genre/folder
 				bitmap = null;

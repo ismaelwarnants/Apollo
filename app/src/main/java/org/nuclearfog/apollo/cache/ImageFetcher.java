@@ -35,6 +35,7 @@ import org.nuclearfog.apollo.lookup.entities.ArtistMB;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.utils.BitmapUtils;
+import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.io.FileDescriptor;
@@ -67,12 +68,12 @@ public class ImageFetcher {
 	/**
 	 * The Context to use
 	 */
-	protected Context mContext;
+	private Context mContext;
 
 	/**
 	 * Disk and memory caches
 	 */
-	protected ImageCache mImageCache;
+	private ImageCache mImageCache;
 
 	/**
 	 *
@@ -106,9 +107,40 @@ public class ImageFetcher {
 	}
 
 	/**
+	 * get album image from cache
+	 *
+	 * @param artist artist name
+	 * @param album  album name
+	 * @return artist image bitmap
+	 */
+	public Bitmap getAlbumImage(String album, String artist) {
+		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		Bitmap bitmap = getCachedBitmap(key);
+		if (bitmap == null)
+			return getDefaultArtwork();
+		return bitmap;
+	}
+
+	/**
+	 * cache the album image
+	 *
+	 * @param album  album name
+	 * @param artist artist name of the album
+	 * @param uri    local Uri to image file
+	 */
+	public void setAlbumImage(String album, String artist, @Nullable Uri uri) {
+		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		if (uri != null) {
+			addImageToCache(uri, key);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
 	 * load album images asynchronously into the imageview(s)
 	 *
-	 * @param album album information to fetch the images from
+	 * @param album      album information to fetch the images from
 	 * @param imageViews imageview(s) to attach the images
 	 */
 	public void loadAlbumImage(@Nullable Album album, ImageView... imageViews) {
@@ -124,9 +156,9 @@ public class ImageFetcher {
 	/**
 	 * load album images asynchronously into the imageview(s)
 	 *
-	 * @param artist artist name of the album
-	 * @param album album name
-	 * @param id  MediaStore ID of the album
+	 * @param artist     artist name of the album
+	 * @param album      album name
+	 * @param id         MediaStore ID of the album
 	 * @param imageViews imageview(s) to attach the images
 	 */
 	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
@@ -135,9 +167,38 @@ public class ImageFetcher {
 	}
 
 	/**
-	 * load artist image asynchronously into imageview
+	 * get artist image from cache
 	 *
 	 * @param artist artist name
+	 * @return artist image bitmap
+	 */
+	public Bitmap getArtistImage(String artist) {
+		String key = generateCacheKey(ImageType.ARTIST, artist);
+		Bitmap bitmap = getCachedBitmap(key);
+		if (bitmap == null)
+			return getDefaultArtwork();
+		return bitmap;
+	}
+
+	/**
+	 * cache artist image
+	 *
+	 * @param artist name of the artist
+	 * @param uri    local Uri of the image file
+	 */
+	public void setArtistImage(String artist, @Nullable Uri uri) {
+		String key = generateCacheKey(ImageType.ARTIST, artist);
+		if (uri != null) {
+			addImageToCache(uri, key);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
+	 * load artist image asynchronously into imageview
+	 *
+	 * @param artist    artist name
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadArtistImage(String artist, ImageView imageView) {
@@ -146,37 +207,88 @@ public class ImageFetcher {
 	}
 
 	/**
-	 * add image to local cache using Uri
+	 * caches the genre image
 	 *
-	 * @param type type of the image
-	 * @param uri  local Uri to image or null to remove image
-	 * @param data keywords used to find image (e.g. artist, album or genre name)
+	 * @param genre genre name
+	 * @param uri   local Uri of the image file
 	 */
-	public void addImageToCache(ImageType type, @Nullable Uri uri, String... data) {
-		try {
-			Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-			addImageToCache(type, bitmap, data);
-		} catch (IOException exception) {
-			Log.e(TAG, "could not load local image to cache!", exception);
+	public void setGenreImage(String genre, @Nullable Uri uri) {
+		String key = generateCacheKey(ImageType.GENRE, genre);
+		if (uri != null) {
+			addImageToCache(uri, key);
+		} else {
+			mImageCache.removeFromCache(key);
 		}
 	}
 
 	/**
-	 * add bitmap image to local cache
+	 * loads the genre image into imageview asynchronously
 	 *
-	 * @param type   type of the image or null to remove image
-	 * @param bitmap bitmap image to cache or null to remove the image
-	 * @param data   keywords used to find image (e.g. artist, album or genre name)
+	 * @param genre     genre name
+	 * @param imageView imageview to attach the image
 	 */
-	public void addImageToCache(ImageType type, @Nullable Bitmap bitmap, String... data) {
-		addImageToCache(bitmap, generateCacheKey(type, data));
+	public void loadGenreImage(String genre, ImageView imageView) {
+		String key = generateCacheKey(ImageType.GENRE, genre);
+		loadImage(key, "", "", 0, ImageType.GENRE, imageView);
+	}
+
+	/**
+	 * caches the playlist image
+	 *
+	 * @param id  ID of the playlist
+	 * @param uri local Uri of the image file
+	 */
+	public void setPlaylistImage(long id, @Nullable Uri uri) {
+		String key = generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
+		if (uri != null) {
+			addImageToCache(uri, key);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
+	 * loads the genre image into imageview asynchronously
+	 *
+	 * @param id        ID of the playlist
+	 * @param imageView imageview to attach the image
+	 */
+	public void loadPlaylistImage(long id, ImageView imageView) {
+		String key = generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
+		loadImage(key, "", "", 0, ImageType.PLAYLIST, imageView);
+	}
+
+	/**
+	 * caches the music folder image
+	 *
+	 * @param folder path of the music folder
+	 * @param uri    local Uri of the image file
+	 */
+	public void setFolderImage(String folder, @Nullable Uri uri) {
+		String key = generateCacheKey(ImageType.FOLDER, folder);
+		if (uri != null) {
+			addImageToCache(uri, key);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
+	 * loads the folder image into imageview asynchronously
+	 *
+	 * @param folder    music folder path
+	 * @param imageView imageview to attach the image
+	 */
+	public void loadFolderImage(String folder, ImageView imageView) {
+		String key = generateCacheKey(ImageType.FOLDER, folder);
+		loadImage(key, "", "", 0, ImageType.FOLDER, imageView);
 	}
 
 	/**
 	 * add bitmap to cache
 	 *
 	 * @param bitmap bitmap image to cache or null to remove the image
-	 * @param key	 cache key used to identify the bitmap
+	 * @param key    cache key used to identify the bitmap
 	 */
 	public void addImageToCache(@Nullable Bitmap bitmap, String key) {
 		if (bitmap != null) {
@@ -184,22 +296,6 @@ public class ImageFetcher {
 		} else {
 			mImageCache.removeFromCache(key);
 		}
-	}
-
-	/**
-	 * get image from cache
-	 *
-	 * @param type image type
-	 * @param data keywords used to find image (e.g. artist, album or genre name)
-	 * @return bitmap image or null if not found
-	 */
-	@Nullable
-	public Bitmap getImageFromCache(ImageType type, String... data) {
-		String key = generateCacheKey(type, data);
-		Bitmap bitmap = mImageCache.getCachedBitmap(key);
-		if (bitmap == null)
-			return getDefaultArtwork();
-		return bitmap;
 	}
 
 	/**
@@ -301,14 +397,12 @@ public class ImageFetcher {
 	 * Called to fetch the artist or album art.
 	 *
 	 * @param key        The unique identifier for the image.
-	 * @param artistName The artist name for the Last.fm API.
-	 * @param albumName  The album name for the Last.fm API.
-	 * @param albumId    The album art index, to check for missing artwork.
-	 * @param imageViews The {@link ImageView} used to set the cached {@link Bitmap}.
-	 *                   a second image is optional and will be used to add blurring effect
+	 * @param artistName The artist name.
+	 * @param albumName  The album name.
+	 * @param albumId    The album ID.
+	 * @param imageViews The {@link ImageView} used to set the cached {@link Bitmap}. A second image is optional and will be used to add blurring effect
 	 * @param imageType  The type of image URL to fetch for.
 	 */
-	@SuppressWarnings("SameParameterValue")
 	private void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageViews) {
 		if (key != null && imageViews.length > 0) {
 			// reset artwork
@@ -369,6 +463,21 @@ public class ImageFetcher {
 	}
 
 	/**
+	 * add image to local cache using Uri
+	 *
+	 * @param uri local Uri to image or null to remove image
+	 * @param key cache key used to identify image
+	 */
+	private void addImageToCache(Uri uri, String key) {
+		try {
+			Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+			addImageToCache(bitmap, key);
+		} catch (IOException exception) {
+			Log.e(TAG, "could not load local image to cache!", exception);
+		}
+	}
+
+	/**
 	 * get default artwork if no artwork is found
 	 *
 	 * @return bitmap of the default artwork
@@ -394,19 +503,5 @@ public class ImageFetcher {
 		}
 		str.append(type.value);
 		return str.toString();
-	}
-
-	/**
-	 * Used to define what type of image URL to fetch for, artist or album.
-	 */
-	public enum ImageType {
-
-		ARTIST("artist"), ALBUM("album"), GENRE("genre"), PLAYLIST("playlist"), FOLDER("folder");
-
-		String value;
-
-		ImageType(String value) {
-			this.value = value;
-		}
 	}
 }

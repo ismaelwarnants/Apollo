@@ -16,7 +16,6 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio;
@@ -48,7 +47,6 @@ import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
@@ -232,15 +230,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		switch (type) {
 			case ALBUM:
 				// Add the carousel images
-				mTabCarousel.setAlbumProfileHeader(mProfileName, mArtistName);
+				mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
 				// Album profile fragments
 				if (actionBar != null) {
 					// Action bar title = album name
 					actionBar.setTitle(mProfileName);
-					if (mArguments != null) {
-						// Action bar subtitle = year released
-						actionBar.setSubtitle(year);
-					}
+					// Action bar subtitle = year released
+					actionBar.setSubtitle(year);
 				}
 				break;
 
@@ -255,18 +251,25 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 
 			case FOLDER:
-				mTabCarousel.setPlaylistProfileHeader(mProfileName);
+				mTabCarousel.setFolderProfileHeader(folderPath);
+				if (actionBar != null) {
+					actionBar.setTitle(mProfileName);
+				}
 				break;
 
 			case GENRE:
 				// Add the carousel images
 				mTabCarousel.setGenreProfileHeader(mProfileName);
+				if (actionBar != null) {
+					actionBar.setTitle(mProfileName);
+				}
 				break;
 
 			case FAVORITE:
 			case PLAYLIST:
 			case LAST_ADDED:
 			case POPULAR:
+				mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				if (actionBar != null) {
 					actionBar.setTitle(mProfileName);
 				}
@@ -643,15 +646,30 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			Intent intent = result.getData();
 			if (intent != null && intent.getData() != null) {
 				Uri imageUri = intent.getData();
-				if (type == Type.ARTIST) {
-					mImageFetcher.addImageToCache(ImageType.ARTIST, imageUri, mProfileName, mArtistName);
-					mTabCarousel.setAlbumArt(imageUri);
-				} else if (type == Type.ALBUM) {
-					mImageFetcher.addImageToCache(ImageType.ALBUM, imageUri, mProfileName, mArtistName);
-					mTabCarousel.getAlbumArt().setImageURI(imageUri);
-				} else {
-					// todo implement caching for genre/folder
-					mTabCarousel.setAlbumArt(imageUri);
+				mTabCarousel.setAlbumArt(imageUri);
+				switch (type) {
+					case ARTIST:
+						mImageFetcher.setArtistImage(mArtistName, imageUri);
+						break;
+
+					case ALBUM:
+						mImageFetcher.setAlbumImage(mProfileName, mArtistName, imageUri);
+						break;
+
+					case FOLDER:
+						mImageFetcher.setFolderImage(folderPath, imageUri);
+						break;
+
+					case GENRE:
+						mImageFetcher.setGenreImage(mProfileName, imageUri);
+						break;
+
+					case PLAYLIST:
+					case FAVORITE:
+					case POPULAR:
+					case LAST_ADDED:
+						mImageFetcher.setPlaylistImage(ids[0], imageUri);
+						break;
 				}
 			} else {
 				selectOldPhoto();
@@ -697,16 +715,16 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		if (type == Type.ARTIST) {
 			mTabCarousel.setArtistProfileHeader(mArtistName);
 		} else if (type == Type.ALBUM) {
-			mTabCarousel.setAlbumProfileHeader(mProfileName, mArtistName);
+			mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
 		} else {
-			mTabCarousel.setPlaylistProfileHeader(mProfileName);
+			mTabCarousel.setPlaylistProfileHeader(ids[0]);
 		}
 	}
 
 	/**
 	 * When the user chooses {@code #selectOldPhoto()} while viewing an album
 	 * profile, the image is, most likely, reverted back to the locally found
-	 * artwork. This is specifically for fetching the image from Last.fm.
+	 * artwork. This is specifically for fetching the image from MusicBrainz.
 	 */
 	public void fetchAlbumArt() {
 		// todo add image selector dialog
@@ -739,13 +757,29 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * Removes the header image from the cache.
 	 */
 	private void removeFromCache() {
-		if (type == Type.ARTIST) {
-			mImageFetcher.addImageToCache(ImageType.ARTIST, (Bitmap) null, mProfileName, mArtistName);
-		} else if (type == Type.ALBUM) {
-			mImageFetcher.addImageToCache(ImageType.ALBUM, (Bitmap) null, mProfileName, mArtistName);
-		} else if (type == Type.GENRE) {
+		switch (type) {
+			case ARTIST:
+				mImageFetcher.setArtistImage(mArtistName, null);
+				break;
 
-			// todo add more cache operations
+			case ALBUM:
+				mImageFetcher.setAlbumImage(mArtistName, mProfileName, null);
+				break;
+
+			case FOLDER:
+				mImageFetcher.setFolderImage(folderPath, null);
+				break;
+
+			case GENRE:
+				mImageFetcher.setGenreImage(mProfileName, null);
+				break;
+
+			case PLAYLIST:
+			case FAVORITE:
+			case POPULAR:
+			case LAST_ADDED:
+				mImageFetcher.setPlaylistImage(ids[0], null);
+				break;
 		}
 	}
 
@@ -766,7 +800,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		GENRE,
 		PLAYLIST,
 		FOLDER,
-		// todo disable images for fav, last added & popular
 		FAVORITE,
 		LAST_ADDED,
 		POPULAR;

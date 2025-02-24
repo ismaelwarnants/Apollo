@@ -8,7 +8,7 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.worker.BitmapWorker;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Param;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Result;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
+import org.nuclearfog.apollo.utils.Constants.ImageType;
 
 /**
  * A custom {@link android.view.View} Objet tag that will be attached to the

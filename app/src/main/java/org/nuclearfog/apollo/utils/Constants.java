@@ -92,4 +92,18 @@ public final class Constants {
 	/* This class is never initiated. */
 	private Constants() {
 	}
+
+	/**
+	 * types of images/artworks to download
+	 */
+	public enum ImageType {
+
+		ARTIST("artist"), ALBUM("album"), GENRE("genre"), PLAYLIST("playlist"), FOLDER("folder");
+
+		public final String value;
+
+		ImageType(String value) {
+			this.value = value;
+		}
+	}
 }

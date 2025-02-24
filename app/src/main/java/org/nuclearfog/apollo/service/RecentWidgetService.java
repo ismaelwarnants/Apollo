@@ -20,7 +20,6 @@ import android.widget.RemoteViewsService;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
@@ -108,7 +107,7 @@ public class RecentWidgetService extends RemoteViewsService {
 			// Set the artist names
 			mViews.setTextViewText(R.id.app_widget_recents_line_two, album.getArtist());
 			// Set the album art
-			Bitmap bitmap = mFetcher.getImageFromCache(ImageType.ALBUM, album.getName(), album.getArtist());
+			Bitmap bitmap = mFetcher.getAlbumImage(album.getName(), album.getArtist());
 			if (bitmap != null) {
 				mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
 			} else {

@@ -132,7 +132,7 @@ public class MusicBrainz {
 	 *
 	 * @param album  name of the album to search
 	 * @param artist artist name of the album (optional)
-	 * @param count max result count
+	 * @param count  max result count
 	 * @return list of album matches
 	 */
 	public static List<AlbumMB> searchAlbumsByName(String album, @Nullable String artist, int count) {

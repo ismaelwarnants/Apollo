@@ -12,10 +12,12 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,14 +27,14 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
-import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
+ * a custom view representing a tab. Used by {@link ProfileTabCarousel}
+ *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class CarouselTab extends FrameLayoutWithOverlay {
+public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListener {
 
 	private ImageView mPhoto;
 	private ImageView mAlbumArt;
@@ -40,6 +42,9 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	private View mColorstrip;
 
 	private ImageFetcher mFetcher;
+
+	@Nullable
+	private OnPhotoClickedListener listener;
 
 	/**
 	 *
@@ -65,6 +70,8 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 		addView(view);
 		// Set the alpha layer
 		setAlphaLayer(mAlphaLayer);
+
+		mPhoto.setOnClickListener(this);
 	}
 
 	/**
@@ -81,51 +88,106 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	}
 
 	/**
-	 * Used to set the artist image in the artist profile.
-	 *
-	 * @param artist The name of the artist in the profile the user is viewing.
+	 * {@inheritDoc}
 	 */
-	public void setPhoto(ImageType type, String artist, String album) {
-		switch (type) {
-			case ARTIST:
-				if (!TextUtils.isEmpty(artist)) {
-					mFetcher.loadArtistImage(artist, mPhoto);
-				} else {
-					setDefault();
-				}
-				break;
-
-			case ALBUM:
-				if (!TextUtils.isEmpty(album)) {
-					mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(getContext(), album, artist), mAlbumArt, mPhoto);
-					mAlbumArt.setVisibility(View.VISIBLE);
-				} else {
-					setDefault();
-				}
-				break;
-
-			case PLAYLIST:
-			case GENRE:/*
-				if (!TextUtils.isEmpty(profileName)) {
-					Bitmap image = mFetcher.getCachedBitmap(type, profileName);
-					if (image != null) {
-						mPhoto.setImageBitmap(image);
-					} else {
-						setDefault();
-					}
-				} else {
-					setDefault();
-				}*/
-				break;
-
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.profile_tab_photo) {
+			if (listener != null) {
+				listener.onPhotoClicked();
+			}
 		}
 	}
 
 	/**
+	 * sets photo of the first tab
 	 *
+	 * @param uri local uri of the image file
+	 */
+	public void setPhoto(Uri uri) {
+		mPhoto.setImageURI(uri);
+	}
+
+	/**
+	 * load album art from cache
+	 *
+	 * @param id     album ID
+	 * @param artist artist name of the album
+	 * @param album  album name
+	 */
+	public void setAlbumImage(long id, String artist, String album) {
+		if (!TextUtils.isEmpty(album) && !TextUtils.isEmpty(artist)) {
+			mFetcher.loadAlbumImage(artist, album, id, mAlbumArt, mPhoto);
+			mAlbumArt.setVisibility(View.VISIBLE);
+		} else {
+			setDefault();
+		}
+	}
+
+	/**
+	 * load artist image from cache
+	 *
+	 * @param artist artist name
+	 */
+	public void setArtistImage(String artist) {
+		if (!TextUtils.isEmpty(artist)) {
+			mFetcher.loadArtistImage(artist, mPhoto);
+		} else {
+			setDefault();
+		}
+	}
+
+	/**
+	 * load genre image from cache
+	 *
+	 * @param genre genre name
+	 */
+	public void setGenreImage(String genre) {
+		if (!TextUtils.isEmpty(genre)) {
+			mFetcher.loadGenreImage(genre, mPhoto);
+		} else {
+			setDefault();
+		}
+	}
+
+	/**
+	 * load playlist image from cache
+	 *
+	 * @param id playlist ID
+	 */
+	public void setPlaylistImage(long id) {
+		if (id != 0) {
+			mFetcher.loadPlaylistImage(id, mPhoto);
+		} else {
+			setDefault();
+		}
+	}
+
+	/**
+	 * load folder image from cache
+	 *
+	 * @param folder folder path
+	 */
+	public void setFolderImage(String folder) {
+		if (!TextUtils.isEmpty(folder)) {
+			mFetcher.loadFolderImage(folder, mPhoto);
+		} else {
+			setDefault();
+		}
+	}
+
+	/**
+	 * set default photo
 	 */
 	public void setDefault() {
 		mPhoto.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.header_temp));
+	}
+
+	/**
+	 * sets click listener for the first photo
+	 */
+	public void setOnPhotoClickedListener(OnPhotoClickedListener listener) {
+		this.listener = listener;
 	}
 
 	/**
@@ -150,16 +212,10 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	}
 
 	/**
-	 * @return The {@link ImageView} used to set the header photo.
+	 * listener called if the profile photo was clicked
 	 */
-	public ImageView getPhoto() {
-		return mPhoto;
-	}
+	public interface OnPhotoClickedListener {
 
-	/**
-	 * @return The {@link ImageView} used to set the album art .
-	 */
-	public ImageView getAlbumArt() {
-		return mAlbumArt;
+		void onPhotoClicked();
 	}
 }

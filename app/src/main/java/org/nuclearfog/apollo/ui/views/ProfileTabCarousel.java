@@ -21,18 +21,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.views.CarouselTab.OnPhotoClickedListener;
 import org.nuclearfog.apollo.ui.views.FrameLayoutWithOverlay.OnOverlayClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 
@@ -40,8 +38,11 @@ import org.nuclearfog.apollo.utils.AnimatorUtils;
  * A custom {@link HorizontalScrollView} that displays up to two "tabs" in the
  * {@link ProfileActivity}. If the second tab is visible, a fraction of it will
  * overflow slightly onto the screen.
+ *
+ * @author nuclearfog
+ * @see CarouselTab
  */
-public class ProfileTabCarousel extends HorizontalScrollView implements OnClickListener, OnTouchListener, OnOverlayClickListener, OnGlobalLayoutListener, AnimatorListener {
+public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnOverlayClickListener, OnGlobalLayoutListener, AnimatorListener, OnPhotoClickedListener {
 
 	/**
 	 * Number of tabs
@@ -147,7 +148,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 		setHorizontalFadingEdgeEnabled(false);
 		setOverScrollMode(OVER_SCROLL_NEVER);
 
-		mFirstTab.getPhoto().setOnClickListener(this);
+		mFirstTab.setOnPhotoClickedListener(this);
 		mFirstTab.setOverlayOnClickListener(this);
 		mSecondTab.setOverlayOnClickListener(this);
 		setOnTouchListener(this);
@@ -217,10 +218,8 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.profile_tab_photo) {
-			mListener.onAlbumArtSelected();
-		}
+	public void onPhotoClicked() {
+		mListener.onAlbumArtSelected();
 	}
 
 	/**
@@ -384,14 +383,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * @param uri path to the local image file
 	 */
 	public void setAlbumArt(Uri uri) {
-		mFirstTab.getPhoto().setImageURI(uri);
-	}
-
-	/**
-	 * @return The {@link ImageView} used to set the album art.
-	 */
-	public ImageView getAlbumArt() {
-		return mFirstTab.getAlbumArt();
+		mFirstTab.setPhoto(uri);
 	}
 
 	/**
@@ -446,7 +438,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	public void setArtistProfileHeader(String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
 		mSecondTab.setLabel(getResources().getString(R.string.page_albums));
-		mFirstTab.setPhoto(ImageType.ARTIST, artistName, "");
+		mFirstTab.setArtistImage(artistName);
 		mEnableSwipe = true;
 	}
 
@@ -456,35 +448,48 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	 * @param albumName  The key used to find the cached album art
 	 * @param artistName The artist name used to find the cached artist image
 	 */
-	public void setAlbumProfileHeader(String albumName, String artistName) {
+	public void setAlbumProfileHeader(long albumId, String albumName, String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setPhoto(ImageType.ALBUM, artistName, albumName);
+		mFirstTab.setAlbumImage(albumId, artistName, albumName);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
 
 	/**
-	 * Sets the playlist or genre image header
+	 * Sets the playlist image header
 	 *
-	 * @param profileName The key used to find the cached image for a playlist
+	 * @param id playlist ID
 	 */
-	public void setPlaylistProfileHeader(String profileName) {
+	public void setPlaylistProfileHeader(long id) {
 		mFirstTab.setDefault();
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setPhoto(ImageType.PLAYLIST, profileName, "");
+		mFirstTab.setPlaylistImage(id);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
 
 	/**
-	 * Sets the playlist or genre image header
+	 * Sets the genre image header
 	 *
-	 * @param profileName The key used to find the cached image for a genre
+	 * @param genreName The key used to find the cached image for a genre
 	 */
-	public void setGenreProfileHeader(String profileName) {
+	public void setGenreProfileHeader(String genreName) {
 		mFirstTab.setDefault();
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setPhoto(ImageType.GENRE, profileName, "");
+		mFirstTab.setGenreImage(genreName);
+		mSecondTab.setVisibility(View.GONE);
+		mEnableSwipe = false;
+	}
+
+	/**
+	 * Sets the music folder image header
+	 *
+	 * @param folder folder path
+	 */
+	public void setFolderProfileHeader(String folder) {
+		mFirstTab.setDefault();
+		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setFolderImage(folder);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}

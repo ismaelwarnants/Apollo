@@ -17,7 +17,6 @@ import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PrefixHighlighter;
 import org.nuclearfog.apollo.utils.StringUtils;
 

@@ -12,9 +12,9 @@ import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Param;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Result;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.cache.ImageFetcher.ImageType;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.BitmapUtils;
+import org.nuclearfog.apollo.utils.Constants.ImageType;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
