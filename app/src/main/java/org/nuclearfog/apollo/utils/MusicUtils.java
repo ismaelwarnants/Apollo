@@ -1068,27 +1068,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * get the file path of the audio playback
-	 *
-	 * @return path to the music file
-	 */
-	public static String getPlaybackFilePath(Activity activity) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				Song song = service.getCurrentTrack();
-				if (song != null)
-					return song.getPath();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * open delete dialog for tracks
 	 *
 	 * @param activity activity

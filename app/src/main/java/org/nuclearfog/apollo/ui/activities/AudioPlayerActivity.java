@@ -684,10 +684,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Used to shared what the user is currently listening to
 	 */
 	private void shareCurrentTrack() {
-		String path = MusicUtils.getPlaybackFilePath(this);
-		if (path != null && !path.isEmpty()) {
+		Song currentTrack = MusicUtils.getCurrentTrack(this);
+		if (currentTrack != null) {
 			try {
-				File file = new File(path);
+				File file = new File(currentTrack.getPath());
 				Uri fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);
 				Intent shareIntent = new Intent();
 				shareIntent.setAction(Intent.ACTION_SEND);
