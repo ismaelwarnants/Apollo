@@ -87,7 +87,7 @@
 			android:launchMode="singleTask"
 			android:clearTaskOnLaunch="false"
 			android:windowSoftInputMode="adjustPan"
-			android:configChanges="orientation|keyboardHidden">
+			android:configChanges="keyboardHidden">
 
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -105,8 +105,7 @@
 			android:exported="true"
 			android:launchMode="singleTask"
 			android:clearTaskOnLaunch="false"
-			android:windowSoftInputMode="adjustPan"
-			android:configChanges="orientation|keyboardHidden">
+			android:windowSoftInputMode="adjustPan">
 
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
@@ -163,8 +162,7 @@
 		<!-- Profile phone Activity -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.ProfileActivity"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|keyboardHidden" />
+			android:excludeFromRecents="true" />
 
 		<!-- Audio FX Activity -->
 		<activity

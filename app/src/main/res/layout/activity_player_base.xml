@@ -40,7 +40,7 @@
 		app:layout_constraintEnd_toEndOf="parent" />
 
 	<androidx.fragment.app.FragmentContainerView
-		android:id="@+id/audio_player_pager"
+		android:id="@+id/audio_player_queue_fragment"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:visibility="invisible"

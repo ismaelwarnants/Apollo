@@ -177,7 +177,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		Toolbar toolbar = findViewById(R.id.player_toolbar);
 		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
 		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
-		queueContainer = findViewById(R.id.audio_player_pager);
+		queueContainer = findViewById(R.id.audio_player_queue_fragment);
 		controls = findViewById(R.id.audio_player_controls);
 		mTrackName = findViewById(R.id.audio_player_track_name);
 		mArtistName = findViewById(R.id.audio_player_artist_name);

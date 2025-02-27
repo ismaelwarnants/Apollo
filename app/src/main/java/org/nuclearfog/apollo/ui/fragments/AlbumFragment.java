@@ -84,11 +84,6 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 */
 	private static final int GROUP_ID = 0x515A2A6B;
 
-	/**
-	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
-	 */
-	private static final int ONE = 1, TWO = 2, FOUR = 4;
-
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
@@ -351,16 +346,16 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		switch (preference.getAlbumLayout()) {
 			case PreferenceUtils.LAYOUT_SIMPLE:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
-				mList.setNumColumns(ONE);
+				mList.setNumColumns(1);
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
 				if (ApolloUtils.isLandscape(requireContext())) {
 					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
-					mList.setNumColumns(TWO);
+					mList.setNumColumns(2);
 				} else {
 					mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
-					mList.setNumColumns(ONE);
+					mList.setNumColumns(1);
 				}
 				mAdapter.setLoadExtraData();
 				break;
@@ -368,10 +363,10 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 			default:
 				if (ApolloUtils.isLandscape(requireContext())) {
 					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
-					mList.setNumColumns(FOUR);
+					mList.setNumColumns(4);
 				} else {
 					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
-					mList.setNumColumns(TWO);
+					mList.setNumColumns(2);
 				}
 				break;
 		}
