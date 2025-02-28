@@ -22,9 +22,8 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 	<!-- Used to download images -->
 	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<!-- Allows Apollo to read from External Storage -->
-	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:ignore="SelectedPhotoAccess" />
 	<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 	<!-- Allows Apollo to stay in the foreground -->
@@ -35,13 +34,6 @@
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 	<uses-permission android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" tools:node="remove" />
-	<!-- override androidx.media min sdk -->
-	<uses-sdk tools:overrideLibrary="androidx.media" />
-	<queries>
-		<intent>
-			<action android:name="com.andrew.apollo.THEMES" />
-		</intent>
-	</queries>
 
 	<application
 		android:name="org.nuclearfog.apollo.ApolloApplication"
@@ -87,7 +79,7 @@
 			android:launchMode="singleTask"
 			android:clearTaskOnLaunch="false"
 			android:windowSoftInputMode="adjustPan"
-			android:configChanges="keyboardHidden">
+			android:configChanges="keyboardHidden" >
 
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -187,7 +179,7 @@
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.SearchActivity"
 			android:exported="true"
-			android:configChanges="orientation|keyboardHidden">
+			android:configChanges="keyboardHidden">
 
 			<intent-filter>
 				<action android:name="android.intent.action.SEARCH" />
@@ -209,8 +201,7 @@
 		<!-- Themes Activity -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.ThemesActivity"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|keyboardHidden" />
+			android:excludeFromRecents="true" />
 
 		<!-- 4x1 App Widget -->
 		<receiver

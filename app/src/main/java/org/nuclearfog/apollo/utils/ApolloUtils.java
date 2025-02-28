@@ -75,43 +75,6 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * Used to determine if there is an active data connection and what type of
-	 * connection it is if there is one
-	 *
-	 * @param context The {@link Context} to use
-	 * @return True if there is an active data connection, false otherwise.
-	 * Also, if the user has checked to only download via Wi-Fi in the
-	 * settings, the mobile data and other network connections aren't
-	 * returned at all
-	 */
-	public static boolean isOnline(@NonNull Context context) {
-		boolean state = false;
-		boolean onlyOnWifi = PreferenceUtils.getInstance(context).onlyOnWifi();
-		/* Monitor network connections */
-		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		/* Wi-Fi connection */
-		NetworkInfo wifiNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		if (wifiNetwork != null) {
-			state = wifiNetwork.isConnectedOrConnecting();
-		}
-		/* Mobile data connection */
-		NetworkInfo mobile_network = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (mobile_network != null) {
-			if (!onlyOnWifi) {
-				state = mobile_network.isConnectedOrConnecting();
-			}
-		}
-		/* Other networks */
-		NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-		if (activeNetwork != null) {
-			if (!onlyOnWifi) {
-				state = activeNetwork.isConnectedOrConnecting();
-			}
-		}
-		return state;
-	}
-
-	/**
 	 * Display a {@link Toast} letting the user know what an item does when long
 	 * pressed.
 	 *

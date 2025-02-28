@@ -731,7 +731,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
-	 * Searches Google for the artist or album
+	 * Searches for the artist or album
 	 */
 	public void searchWeb() {
 		String query;

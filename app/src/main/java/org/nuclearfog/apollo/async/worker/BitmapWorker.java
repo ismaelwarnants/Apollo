@@ -12,7 +12,6 @@ import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Param;
 import org.nuclearfog.apollo.async.worker.BitmapWorker.Result;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.Constants.ImageType;
 
@@ -61,7 +60,7 @@ public class BitmapWorker extends AsyncExecutor<Param, Result> {
 		}
 
 		// Third, by now we need to download the image
-		if (bitmap == null && ApolloUtils.isOnline(imageFetcher.getContext())) {
+		if (bitmap == null) {
 			// Now define what the artist name, album name, and url are.
 			String mUrl = imageFetcher.downloadImage(mImageType, param.mArtistName, param.mAlbumName);
 			try {

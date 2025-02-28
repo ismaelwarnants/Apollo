@@ -27,7 +27,6 @@ import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ import java.util.List;
 /**
  * Used when the user touches the image in the header in {@link ProfileActivity}
  * . It provides an easy interface for them to choose a new image, use the old
- * image, or search Google for one.
+ * image, or web search for one.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
@@ -96,12 +95,10 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 			case ARTIST:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
-				if (ApolloUtils.isOnline(requireContext())) {
-					// Option to fetch the old artist image
-					mChoices.add(IDX_OLD, getString(R.string.context_menu_fetch_artist_image));
-					// Search Google for the artist name
-					mChoices.add(IDX_SEARCH, getString(R.string.web_search));
-				}
+				// Option to fetch the old artist image
+				mChoices.add(IDX_OLD, getString(R.string.context_menu_fetch_artist_image));
+				// web search for the artist name
+				mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 				break;
 
 			case ALBUM:
@@ -109,16 +106,14 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
 				// Option to fetch the old album image
 				mChoices.add(IDX_OLD, getString(R.string.old_photo));
-				if (ApolloUtils.isOnline(requireContext())) {
-					// Search Google for the album name
-					mChoices.add(IDX_SEARCH, getString(R.string.web_search));
-					// Option to fetch the album image
-					mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_album_art));
-				}
+				// web search for the album name
+				mChoices.add(IDX_SEARCH, getString(R.string.web_search));
+				// Option to fetch the album image
+				mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_album_art));
 				break;
 
-			default:
 			case OTHER:
+			default:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
 				// Option to use the default image

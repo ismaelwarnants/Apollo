@@ -209,7 +209,7 @@ public final class DiskLruCache implements Closeable {
 	 *
 	 * @throws java.io.EOFException if the stream is exhausted before the next newline character.
 	 */
-	public static String readAsciiLine(InputStream in) throws IOException {
+	private static String readAsciiLine(InputStream in) throws IOException {
 		StringBuilder result = new StringBuilder(80);
 
 		int c = in.read();
@@ -229,7 +229,7 @@ public final class DiskLruCache implements Closeable {
 	 * Closes 'closeable', ignoring any checked exceptions. Does nothing if
 	 * 'closeable' is null.
 	 */
-	public static void closeQuietly(Closeable closeable) {
+	private static void closeQuietly(Closeable closeable) {
 		if (closeable != null) {
 			try {
 				closeable.close();
@@ -245,7 +245,7 @@ public final class DiskLruCache implements Closeable {
 	 * Recursively delete everything in {@code dir}.
 	 */
 	// TODO: this should specify paths as Strings rather than as Files
-	public static void deleteContents(File dir) throws IOException {
+	private static void deleteContents(File dir) throws IOException {
 		File[] files = dir.listFiles();
 		if (files == null) {
 			throw new IllegalArgumentException("not a directory: " + dir);
