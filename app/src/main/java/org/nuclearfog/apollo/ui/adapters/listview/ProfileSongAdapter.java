@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.utils.StringUtils;
 
@@ -30,7 +31,7 @@ import org.nuclearfog.apollo.utils.StringUtils;
  * artist, album, playlist, or genre for {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment},
  * {@link org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment},
  * {@link org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment},
- * {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}.
+ * {@link LastAddedSongFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog

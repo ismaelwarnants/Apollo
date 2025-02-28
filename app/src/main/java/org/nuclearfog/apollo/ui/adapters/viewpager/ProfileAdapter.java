@@ -25,7 +25,7 @@ import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 
@@ -92,7 +92,7 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 				break;
 
 			case LAST_ADDED:
-				fragment = new LastAddedFragment();
+				fragment = new LastAddedSongFragment();
 				break;
 
 			case POPULAR:

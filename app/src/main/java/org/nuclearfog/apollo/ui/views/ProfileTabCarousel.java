@@ -118,6 +118,8 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private boolean mTabCarouselIsAnimating;
 	private boolean mEnableSwipe;
 	private CarouselTab mFirstTab, mSecondTab;
+
+	@Nullable
 	private Listener mListener;
 
 	/**
@@ -208,7 +210,9 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 		if (mLastScrollPosition != x) {
 			int scaledL = (int) (x * mScrollScaleFactor);
 			int oldScaledL = (int) (oldX * mScrollScaleFactor);
-			mListener.onScrollChanged(scaledL, oldScaledL);
+			if (mListener != null) {
+				mListener.onScrollChanged(scaledL, oldScaledL);
+			}
 			mLastScrollPosition = x;
 			updateAlphaLayers();
 		}
@@ -219,7 +223,9 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	@Override
 	public void onPhotoClicked() {
-		mListener.onAlbumArtSelected();
+		if (mListener != null) {
+			mListener.onAlbumArtSelected();
+		}
 	}
 
 	/**
@@ -227,14 +233,16 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				mListener.onTouchDown();
-				return true;
+		if (mListener != null) {
+			switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					mListener.onTouchDown();
+					return true;
 
-			case MotionEvent.ACTION_UP:
-				mListener.onTouchUp();
-				return true;
+				case MotionEvent.ACTION_UP:
+					mListener.onTouchUp();
+					return true;
+			}
 		}
 		return super.onTouchEvent(event);
 	}
@@ -245,7 +253,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		boolean mInterceptTouch = super.onInterceptTouchEvent(ev);
-		if (mInterceptTouch) {
+		if (mInterceptTouch && mListener != null) {
 			mListener.onTouchDown();
 		}
 		return mInterceptTouch;
@@ -267,10 +275,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	@Override
 	public void onOverlayClick(View view) {
-		if (view.getId() == R.id.profile_tab_carousel_tab_one) {
-			mListener.onTabSelected(TAB_INDEX_FIRST);
-		} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
-			mListener.onTabSelected(TAB_INDEX_SECOND);
+		if (mListener != null) {
+			if (view.getId() == R.id.profile_tab_carousel_tab_one) {
+				mListener.onTabSelected(TAB_INDEX_FIRST);
+			} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
+				mListener.onTabSelected(TAB_INDEX_SECOND);
+			}
 		}
 	}
 
@@ -425,7 +435,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Set the given {@link Listener} to handle carousel events.
 	 */
-	public void setListener(Listener listener) {
+	public void setListener(@Nullable Listener listener) {
 		mListener = listener;
 	}
 

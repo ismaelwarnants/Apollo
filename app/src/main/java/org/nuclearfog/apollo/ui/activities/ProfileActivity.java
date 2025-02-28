@@ -15,12 +15,12 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
@@ -51,6 +52,15 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
+import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.FolderFragment;
+import org.nuclearfog.apollo.ui.fragments.GenreFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
@@ -82,11 +92,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	public static final String PAGE_FAVORITES = "page_fav";
 	/**
-	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
+	 * mime type of the {@link LastAddedSongFragment}
 	 */
 	public static final String PAGE_LAST_ADDED = "last_added";
 	/**
-	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
+	 * mime type of the {@link LastAddedSongFragment}
 	 */
 	public static final String PAGE_MOST_PLAYED = "page_most";
 
@@ -100,11 +110,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * View pager
 	 */
+	@Nullable
 	private ViewPager mViewPager;
 
 	/**
 	 * Profile header carousel
 	 */
+	@Nullable
 	private ProfileTabCarousel mTabCarousel;
 
 	/**
@@ -126,6 +138,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * MIME type of the profile
 	 */
 	private String mType = "";
+
+	private String year = "";
 
 	/**
 	 * Artist name passed into the class
@@ -174,6 +188,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mViewPager = findViewById(R.id.activity_profile_base_pager);
 		// Initialize the theme resources
@@ -184,9 +199,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		if (actionBar != null) {
 			mResources.themeActionBar(actionBar, R.string.app_name);
 		}
-		String year = "";
-		// Temporary until I can work out a nice landscape layout
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
@@ -225,64 +237,18 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		type = Type.getEnum(mType);
 		// Initialize the pager adapter
 		ProfileAdapter mPagerAdapter = new ProfileAdapter(getSupportFragmentManager(), mArguments, type);
-		mTabCarousel.reset();
 
-		switch (type) {
-			case ALBUM:
-				// Add the carousel images
-				mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
-				// Album profile fragments
-				if (actionBar != null) {
-					// Action bar title = album name
-					actionBar.setTitle(mProfileName);
-					// Action bar subtitle = year released
-					actionBar.setSubtitle(year);
-				}
-				break;
-
-			case ARTIST:
-				// Add the carousel images
-				mTabCarousel.setArtistProfileHeader(mArtistName);
-				// Artist profile fragments
-				if (actionBar != null) {
-					actionBar.setDisplayHomeAsUpEnabled(true);
-					actionBar.setTitle(mArtistName);
-				}
-				break;
-
-			case FOLDER:
-				mTabCarousel.setFolderProfileHeader(folderPath);
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
-			case GENRE:
-				// Add the carousel images
-				mTabCarousel.setGenreProfileHeader(mProfileName);
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
-			case FAVORITE:
-			case PLAYLIST:
-			case LAST_ADDED:
-			case POPULAR:
-				mTabCarousel.setPlaylistProfileHeader(ids[0]);
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
+		initFragments(mArguments);
+		if (mViewPager != null && mTabCarousel != null) {
+			// Attach the adapter
+			mViewPager.setAdapter(mPagerAdapter);
+			// Offscreen limit
+			mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
+			// Attach the page change listener
+			mViewPager.addOnPageChangeListener(this);
+			// Attach the carousel listener
+			mTabCarousel.setListener(this);
 		}
-		// Attach the adapter
-		mViewPager.setAdapter(mPagerAdapter);
-		// Offscreen limit
-		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
-		// Attach the page change listener
-		mViewPager.addOnPageChangeListener(this);
-		// Attach the carousel listener
-		mTabCarousel.setListener(this);
 	}
 
 	/**
@@ -336,10 +302,12 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		getMenuInflater().inflate(R.menu.shuffle, menu);
 		// Sort orders
 		if (type == Type.ARTIST) {
-			if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-				getMenuInflater().inflate(R.menu.artist_song_sort_by, menu);
-			} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-				getMenuInflater().inflate(R.menu.artist_album_sort_by, menu);
+			if (mViewPager != null) {
+				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
+					getMenuInflater().inflate(R.menu.artist_song_sort_by, menu);
+				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
+					getMenuInflater().inflate(R.menu.artist_album_sort_by, menu);
+				}
 			}
 		} else if (type == Type.ALBUM) {
 			getMenuInflater().inflate(R.menu.album_song_sort_by, menu);
@@ -418,66 +386,81 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		}
 		// sort alphabetical
 		else if (item.getItemId() == R.id.menu_sort_by_az) {
-			if (type == Type.ARTIST) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-				}
-			} else if (type == Type.ALBUM) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
-					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
-				}
-			} else if (type == Type.FOLDER) {
-				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_A_Z);
+			switch (type) {
+				case ARTIST:
+					if (mViewPager != null) {
+						if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
+							mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+						} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
+							mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
+						}
+					} else {
+						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
+					}
+					break;
+
+				case ALBUM:
+					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
+					break;
+
+				case FOLDER:
+					mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_A_Z);
+					break;
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort alphabetical reverse
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
-			if (type == Type.ARTIST) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-				}
-			} else if (type == Type.ALBUM) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
+			switch (type) {
+				case ARTIST:
+					if (mViewPager != null) {
+						if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
+							mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+						} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
+							mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
+						}
+					} else {
+						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
+					}
+					break;
+
+				case ALBUM:
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-				}
-			} else if (type == Type.FOLDER) {
-				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_Z_A);
+					break;
+
+				case FOLDER:
+					mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_Z_A);
+					break;
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by album name
 		else if (item.getItemId() == R.id.menu_sort_by_album) {
-			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
-			}
+			mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by release date
 		else if (item.getItemId() == R.id.menu_sort_by_year) {
-			if (type == Type.ARTIST) {
+			if (mViewPager != null) {
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
 				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
 				}
+			} else {
+				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
+				mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by track duration
 		else if (item.getItemId() == R.id.menu_sort_by_duration) {
 			if (type == Type.ARTIST) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-				}
+				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
 			} else if (type == Type.ALBUM) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
-					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-				}
+				mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
 			} else if (type == Type.FOLDER) {
 				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_DURATION);
 			}
@@ -485,9 +468,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		}
 		// sort by date added
 		else if (item.getItemId() == R.id.menu_sort_by_date_added) {
-			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
-			}
+			mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by default order
@@ -502,33 +483,25 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// sort by file name
 		else if (item.getItemId() == R.id.menu_sort_by_filename) {
 			if (type == Type.ARTIST) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-				}
+				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
 			} else if (type == Type.ALBUM) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
-					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-				}
+				mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
 			} else if (type == Type.FOLDER) {
 				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_FILENAME);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
-		// clear popular playlist
-		else if (item.getItemId() == R.id.menu_clear_popular) {
-			if (type == Type.POPULAR) {
-				PopularStore.getInstance(this).removeAll();
-				viewModel.notify(ProfileFragment.REFRESH);
-			}
-		}
 		// sort by track count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
 			if (type == Type.ARTIST) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_TRACK_COUNT);
-				}
+				mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_TRACK_COUNT);
 				viewModel.notify(ProfileFragment.REFRESH);
 			}
+		}
+		// clear popular playlist
+		else if (item.getItemId() == R.id.menu_clear_popular) {
+			PopularStore.getInstance(this).removeAll();
+			viewModel.notify(ProfileFragment.REFRESH);
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -549,7 +522,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		if (!mViewPager.isFakeDragging()) {
+		if (mViewPager != null && mTabCarousel != null && !mViewPager.isFakeDragging()) {
 			int scrollToX = (int) ((position + positionOffset) * mTabCarousel.getAllowedHorizontalScrollLength());
 			mTabCarousel.scrollTo(scrollToX, 0);
 		}
@@ -560,9 +533,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageSelected(int position) {
-		mTabCarousel.setCurrentTab(position);
-		if (type == Type.ARTIST) {
-			viewModel.notify(ProfileFragment.SCROLL_TOP);
+		if (mTabCarousel != null) {
+			mTabCarousel.setCurrentTab(position);
+			if (type == Type.ARTIST) {
+				viewModel.notify(ProfileFragment.SCROLL_TOP);
+			}
 		}
 	}
 
@@ -571,7 +546,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		if (state == ViewPager.SCROLL_STATE_IDLE) {
+		if (mViewPager != null && mTabCarousel != null && state == ViewPager.SCROLL_STATE_IDLE) {
 			mTabCarousel.restoreYCoordinate(75, mViewPager.getCurrentItem());
 		}
 	}
@@ -581,7 +556,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTouchDown() {
-		mViewPager.beginFakeDrag();
+		if (mViewPager != null) {
+			mViewPager.beginFakeDrag();
+		}
 	}
 
 	/**
@@ -589,7 +566,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTouchUp() {
-		if (mViewPager.isFakeDragging()) {
+		if (mViewPager != null && mViewPager.isFakeDragging()) {
 			mViewPager.endFakeDrag();
 		}
 	}
@@ -599,7 +576,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onScrollChanged(int l, int oldL) {
-		if (mViewPager.isFakeDragging()) {
+		if (mViewPager != null && mViewPager.isFakeDragging()) {
 			mViewPager.fakeDragBy(oldL - l);
 		}
 	}
@@ -609,7 +586,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTabSelected(int position) {
-		mViewPager.setCurrentItem(position);
+		if (mViewPager != null) {
+			mViewPager.setCurrentItem(position);
+		}
 	}
 
 	/**
@@ -646,7 +625,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			Intent intent = result.getData();
 			if (intent != null && intent.getData() != null) {
 				Uri imageUri = intent.getData();
-				mTabCarousel.setAlbumArt(imageUri);
+				if (mTabCarousel != null)
+					mTabCarousel.setAlbumArt(imageUri);
 				switch (type) {
 					case ARTIST:
 						mImageFetcher.setArtistImage(mArtistName, imageUri);
@@ -709,15 +689,17 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * Fetch for the artist or album art, otherwise sets the default header image.
 	 */
 	public void selectOldPhoto() {
-		// First remove the old image
-		removeFromCache();
-		// Apply the old photo
-		if (type == Type.ARTIST) {
-			mTabCarousel.setArtistProfileHeader(mArtistName);
-		} else if (type == Type.ALBUM) {
-			mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
-		} else {
-			mTabCarousel.setPlaylistProfileHeader(ids[0]);
+		if (mTabCarousel != null) {
+			// First remove the old image
+			removeFromCache();
+			// Apply the old photo
+			if (type == Type.ARTIST) {
+				mTabCarousel.setArtistProfileHeader(mArtistName);
+			} else if (type == Type.ALBUM) {
+				mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
+			} else {
+				mTabCarousel.setPlaylistProfileHeader(ids[0]);
+			}
 		}
 	}
 
@@ -750,6 +732,98 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (BuildConfig.DEBUG) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * initialize fragment views
+	 *
+	 * @param mArguments arguments to initialize fragments
+	 */
+	private void initFragments(Bundle mArguments) {
+		FragmentContainerView container2 = findViewById(R.id.activity_profile_base_fragment_2);
+		ActionBar actionBar = getSupportActionBar();
+
+		boolean displayHome = false;
+		String actionbarTitle = mProfileName;
+		String actionbarSubTitle = "";
+
+		switch (type) {
+			case ALBUM:
+				if (mTabCarousel != null) {
+					mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, AlbumFragment.class, mArguments).commit();
+				}
+				actionbarSubTitle = year;
+				break;
+
+			case ARTIST:
+				if (mTabCarousel != null) {
+					mTabCarousel.setArtistProfileHeader(mArtistName);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, ArtistSongFragment.class, mArguments)
+							.add(R.id.activity_profile_base_fragment_2, ArtistAlbumFragment.class, mArguments).commit();
+					if (container2 != null) {
+						container2.setVisibility(View.VISIBLE);
+					}
+				}
+				actionbarTitle = mArtistName;
+				displayHome = true;
+				break;
+
+			case FOLDER:
+				if (mTabCarousel != null) {
+					mTabCarousel.setFolderProfileHeader(folderPath);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, FolderFragment.class, mArguments).commit();
+				}
+				break;
+
+			case GENRE:
+				if (mTabCarousel != null) {
+					mTabCarousel.setGenreProfileHeader(mProfileName);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, GenreFragment.class, mArguments).commit();
+				}
+				break;
+
+			case FAVORITE:
+				if (mTabCarousel != null) {
+					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
+				}
+				break;
+
+			case PLAYLIST:
+				if (mTabCarousel != null) {
+					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, PlaylistSongFragment.class, mArguments).commit();
+				}
+				break;
+
+			case LAST_ADDED:
+				if (mTabCarousel != null) {
+					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, LastAddedSongFragment.class, mArguments).commit();
+				}
+				break;
+
+			case POPULAR:
+				if (mTabCarousel != null) {
+					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+				} else {
+					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, PopularSongFragment.class, mArguments).commit();
+				}
+				break;
+		}
+		if (actionBar != null) {
+			actionBar.setTitle(actionbarTitle);
+			actionBar.setSubtitle(actionbarSubTitle);
+			actionBar.setDisplayHomeAsUpEnabled(displayHome);
 		}
 	}
 
@@ -820,8 +894,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					return FAVORITE;
 				case PAGE_MOST_PLAYED:
 					return POPULAR;
-				default:
 				case PAGE_LAST_ADDED:
+				default:
 					return LAST_ADDED;
 			}
 		}

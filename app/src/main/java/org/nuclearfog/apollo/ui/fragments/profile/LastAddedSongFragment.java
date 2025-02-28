@@ -46,7 +46,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class LastAddedFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
+public class LastAddedSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
