@@ -2,6 +2,7 @@ package org.nuclearfog.apollo.ui.fragments.profile;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -183,6 +184,17 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	}
 
 	/**
+	 * scroll to list position
+	 *
+	 * @param position position to scroll
+	 */
+	public void scrollTo(int position) {
+		if (position >= 0 && position < mList.getCount()) {
+			mList.smoothScrollToPosition(position);
+		}
+	}
+
+	/**
 	 * sets text when the list is empty
 	 *
 	 * @param res string resource
@@ -199,14 +211,12 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	}
 
 	/**
-	 * scroll to list position
+	 * check if fragment is shown in portrait mode
 	 *
-	 * @param position position to scroll
+	 * @return true if fragment is in portrait mode
 	 */
-	public void scrollTo(int position) {
-		if (position >= 0 && position < mList.getCount()) {
-			mList.smoothScrollToPosition(position);
-		}
+	protected boolean isPortrait() {
+		return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 	}
 
 	/**

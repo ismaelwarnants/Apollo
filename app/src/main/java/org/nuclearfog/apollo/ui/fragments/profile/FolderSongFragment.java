@@ -18,6 +18,7 @@ import org.nuclearfog.apollo.async.loader.FolderSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DisplaySetting;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -59,7 +60,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 		// init loader
 		mLoader = new FolderSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), ProfileSongAdapter.DISPLAY_DEFAULT_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
 		// set adapter
 		setAdapter(mAdapter);
 		setHasOptionsMenu(true);

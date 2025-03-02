@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
-
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -31,6 +29,7 @@ import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DisplaySetting;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -70,7 +69,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 		// init loader
 		mLoader = new FavoriteSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), false);
 		// set adapter
 		setAdapter(mAdapter);
 		// Enable the options menu

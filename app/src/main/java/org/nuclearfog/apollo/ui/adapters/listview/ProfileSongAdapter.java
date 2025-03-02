@@ -39,21 +39,6 @@ import org.nuclearfog.apollo.utils.StringUtils;
 public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 
 	/**
-	 * Default display setting: title/album
-	 */
-	public static final int DISPLAY_DEFAULT_SETTING = 0x709121EE;
-
-	/**
-	 * Playlist display setting: title/artist-album
-	 */
-	public static final int DISPLAY_PLAYLIST_SETTING = 0x57909C67;
-
-	/**
-	 * Album display setting: title/duration
-	 */
-	public static final int DISPLAY_ALBUM_SETTING = 0xCCCED4CB;
-
-	/**
 	 * The header view
 	 */
 	private static final int ITEM_VIEW_TYPE_HEADER = 0;
@@ -86,12 +71,14 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	/**
 	 * Display setting for the second line in a song fragment
 	 */
-	private int mDisplaySetting;
+	private DisplaySetting mDisplaySetting;
 
 	/**
 	 * flag to set drag and drop icon
 	 */
 	private boolean enableDnD;
+
+	private boolean enableHeader;
 
 	/**
 	 * Constructor of <code>ProfileSongAdapter</code>
@@ -99,7 +86,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 * @param context The {@link Context} to use
 	 * @param setting defines the content of the second line
 	 */
-	public ProfileSongAdapter(Context context, int setting, boolean enableDrag) {
+	public ProfileSongAdapter(Context context, DisplaySetting setting, boolean enableHeader, boolean enableDrag) {
 		super(context, LAYOUT);
 		// create placeholder view
 		mHeader = new ProfileTabCarousel(context);
@@ -107,6 +94,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 		// Know what to put in line two
 		this.mDisplaySetting = setting;
 		this.enableDnD = enableDrag;
+		this.enableHeader = enableHeader;
 	}
 
 	/**
@@ -116,7 +104,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Return a faux header at position 0
-		if (position == 0) {
+		if (enableHeader && position == 0) {
 			return mHeader;
 		}
 		// Recycle MusicHolder's items
@@ -141,10 +129,10 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 			// Set each track name (line one)
 			holder.mLineOne.setText(song.getName());
 			// Set the line two
-			if (mDisplaySetting == DISPLAY_ALBUM_SETTING) {
+			if (mDisplaySetting == DisplaySetting.DISPLAY_ALBUM_SETTING) {
 				holder.mLineOneRight.setVisibility(View.GONE);
 				holder.mLineTwo.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
-			} else if (mDisplaySetting == DISPLAY_PLAYLIST_SETTING) {
+			} else if (mDisplaySetting == DisplaySetting.DISPLAY_PLAYLIST_SETTING) {
 				if (song.getDuration() < 0L) {
 					holder.mLineOneRight.setVisibility(View.GONE);
 				} else {
@@ -167,7 +155,9 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public int getCount() {
-		return super.getCount() + HEADER_COUNT;
+		if (enableHeader)
+			return super.getCount() + HEADER_COUNT;
+		return super.getCount();
 	}
 
 	/**
@@ -210,6 +200,8 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	@Nullable
 	@Override
 	public Song getItem(int position) {
+		if (!enableHeader)
+			return super.getItem(position);
 		if (position >= HEADER_COUNT)
 			return super.getItem(position - HEADER_COUNT);
 		return null;
@@ -220,11 +212,9 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public long getItemId(int position) {
-		if (position >= HEADER_COUNT) {
-			Song song = super.getItem(position - HEADER_COUNT);
-			if (song != null) {
-				return song.getId();
-			}
+		Song song = getItem(position);
+		if (song != null) {
+			return song.getId();
 		}
 		return super.getItemId(position);
 	}
@@ -235,5 +225,24 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	@Override
 	public boolean hasStableIds() {
 		return true;
+	}
+
+
+	public enum DisplaySetting {
+
+		/**
+		 * Default display setting: title/album
+		 */
+		DISPLAY_DEFAULT_SETTING,
+
+		/**
+		 * Playlist display setting: title/artist-album
+		 */
+		DISPLAY_PLAYLIST_SETTING,
+
+		/**
+		 * Album display setting: title/duration
+		 */
+		DISPLAY_ALBUM_SETTING
 	}
 }

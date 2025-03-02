@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
-
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -20,6 +18,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DisplaySetting;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -60,7 +59,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	protected void init(Bundle param) {
 		mLoader = new PopularSongLoader(requireContext());
 		// sets empty list text
-		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), false);
 		setAdapter(mAdapter);
 		setEmptyText(R.string.empty_recents);
 		// start loader

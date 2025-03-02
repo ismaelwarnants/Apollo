@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
-import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.HEADER_COUNT;
-
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -32,6 +29,7 @@ import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DisplaySetting;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListener;
 import org.nuclearfog.apollo.utils.Constants;
@@ -81,7 +79,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	@Override
 	protected void init(Bundle bundle) {
 		mLoader = new PlaylistSongLoader(requireContext());
-		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), true);
 		setAdapter(mAdapter);
 		// Enable the options menu
 		setHasOptionsMenu(true);
@@ -240,14 +238,14 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	@Override
 	public void drop(int from, int to) {
 		if (from > 0 && to > 0 && from != to) {
-			if (MusicUtils.movePlaylistTrack(requireContext(), mPlaylistId, from, to, HEADER_COUNT)) {
+			if (MusicUtils.movePlaylistTrack(requireContext(), mPlaylistId, from, to, ProfileSongAdapter.HEADER_COUNT)) {
 				// update adapter
 				Song selectedSong = mAdapter.getItem(from);
 				mAdapter.remove(selectedSong);
 				mAdapter.insert(selectedSong, to);
 				// move track item in the current queue
 				if (queueIsPlaylist) {
-					MusicUtils.moveQueueItem(requireActivity(), from - HEADER_COUNT, to - HEADER_COUNT);
+					MusicUtils.moveQueueItem(requireActivity(), from - ProfileSongAdapter.HEADER_COUNT, to - ProfileSongAdapter.HEADER_COUNT);
 				}
 			}
 		} else {

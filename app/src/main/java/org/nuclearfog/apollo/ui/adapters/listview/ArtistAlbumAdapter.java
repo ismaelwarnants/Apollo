@@ -71,18 +71,21 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	private View mHeader;
 
+	private boolean enableHeader;
+
 	/**
 	 * Constructor of <code>ArtistAlbumAdapter</code>
 	 *
 	 * @param context The {@link Context} to use
 	 */
-	public ArtistAlbumAdapter(Context context) {
+	public ArtistAlbumAdapter(Context context, boolean enableHeader) {
 		super(context, LAYOUT);
 		// Initialize the cache & image fetcher
 		mImageFetcher = new ImageFetcher(context);
 		// create placeholder view
 		mHeader = new ProfileTabCarousel(context);
 		mHeader.setVisibility(View.INVISIBLE);
+		this.enableHeader = enableHeader;
 	}
 
 	/**
@@ -92,7 +95,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Return a faux header at position 0
-		if (position == 0) {
+		if (enableHeader && position == 0) {
 			return mHeader;
 		}
 		// Recycle MusicHolder's items
@@ -135,7 +138,9 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	@Override
 	public int getCount() {
-		return HEADER_COUNT + super.getCount();
+		if (enableHeader)
+			return HEADER_COUNT + super.getCount();
+		return super.getCount();
 	}
 
 	/**
@@ -144,6 +149,8 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	@Nullable
 	@Override
 	public Album getItem(int position) {
+		if (!enableHeader)
+			return super.getItem(position);
 		if (position >= HEADER_COUNT)
 			return super.getItem(position - HEADER_COUNT);
 		return null;

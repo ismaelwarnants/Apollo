@@ -52,12 +52,12 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.FolderFragment;
-import org.nuclearfog.apollo.ui.fragments.GenreFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
@@ -234,12 +234,12 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			// get folder name if defined
 			folderPath = mArguments.getString(Constants.FOLDER, "");
 		}
-		type = Type.getEnum(mType);
-		// Initialize the pager adapter
-		ProfileAdapter mPagerAdapter = new ProfileAdapter(getSupportFragmentManager(), mArguments, type);
+		type = Type.fromString(mType);
 
-		initFragments(mArguments);
+		initViews(mArguments);
 		if (mViewPager != null && mTabCarousel != null) {
+			// Initialize the pager adapter
+			ProfileAdapter mPagerAdapter = new ProfileAdapter(getSupportFragmentManager(), mArguments, type);
 			// Attach the adapter
 			mViewPager.setAdapter(mPagerAdapter);
 			// Offscreen limit
@@ -740,7 +740,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 *
 	 * @param mArguments arguments to initialize fragments
 	 */
-	private void initFragments(Bundle mArguments) {
+	private void initViews(Bundle mArguments) {
 		FragmentContainerView container2 = findViewById(R.id.activity_profile_base_fragment_2);
 		ActionBar actionBar = getSupportActionBar();
 
@@ -753,7 +753,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, AlbumFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, AlbumSongFragment.class, mArguments).commit();
 				}
 				actionbarSubTitle = year;
 				break;
@@ -762,7 +762,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setArtistProfileHeader(mArtistName);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, ArtistSongFragment.class, mArguments)
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, ArtistSongFragment.class, mArguments)
 							.add(R.id.activity_profile_base_fragment_2, ArtistAlbumFragment.class, mArguments).commit();
 					if (container2 != null) {
 						container2.setVisibility(View.VISIBLE);
@@ -776,7 +776,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setFolderProfileHeader(folderPath);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, FolderFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FolderSongFragment.class, mArguments).commit();
 				}
 				break;
 
@@ -784,7 +784,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setGenreProfileHeader(mProfileName);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, GenreFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, GenreSongFragment.class, mArguments).commit();
 				}
 				break;
 
@@ -792,7 +792,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
 				}
 				break;
 
@@ -800,7 +800,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, PlaylistSongFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, PlaylistSongFragment.class, mArguments).commit();
 				}
 				break;
 
@@ -808,7 +808,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, LastAddedSongFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, LastAddedSongFragment.class, mArguments).commit();
 				}
 				break;
 
@@ -816,7 +816,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mTabCarousel != null) {
 					mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				} else {
-					getSupportFragmentManager().beginTransaction().add(R.id.activity_profile_base_fragment_1, PopularSongFragment.class, mArguments).commit();
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, PopularSongFragment.class, mArguments).commit();
 				}
 				break;
 		}
@@ -878,8 +878,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		LAST_ADDED,
 		POPULAR;
 
-		public static Type getEnum(String mime) {
-			switch (mime) {
+		public static Type fromString(String typeStr) {
+			switch (typeStr) {
 				case Audio.Artists.CONTENT_TYPE:
 					return ARTIST;
 				case Audio.Albums.CONTENT_TYPE:
