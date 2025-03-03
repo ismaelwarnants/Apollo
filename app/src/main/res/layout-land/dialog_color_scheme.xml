@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="horizontal"
+	android:padding="@dimen/color_scheme_view_margin">
+
+	<org.nuclearfog.apollo.ui.views.ColorPickerView
+		android:id="@+id/color_picker_view"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_weight="2" />
+
+	<LinearLayout
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+		android:layout_marginTop="@dimen/color_scheme_view_margin"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_1"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_green"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_2"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_green_light"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_3"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_orange_dark"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_4"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_orange_light"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_5"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_purple"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_6"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:background="@color/holo_red_light"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_7"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:background="@color/white"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_preset_8"
+				android:layout_width="0dp"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:background="@color/black"
+				android:layout_weight="1"
+				style="?android:attr/buttonBarButtonStyle" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginTop="@dimen/color_scheme_view_margin">
+
+			<Button
+				android:id="@+id/color_scheme_dialog_old_color"
+				android:layout_width="wrap_content"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:background="@color/holo_green"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:lines="1"
+				android:text="@string/current_color"
+				android:textSize="@dimen/text_size_micro"
+				android:textStyle="bold"
+				style="?android:attr/buttonBarButtonStyle" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_new_color"
+				android:layout_width="wrap_content"
+				android:layout_height="@dimen/color_scheme_dialog_button_height"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:background="@color/transparent"
+				android:lines="1"
+				android:text="@string/new_color"
+				android:textSize="@dimen/text_size_micro"
+				android:textStyle="bold"
+				style="?android:attr/buttonBarButtonStyle" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginTop="@dimen/color_scheme_view_margin">
+
+			<TextView
+				android:id="@+id/color_scheme_dialog_hex_value_prefix"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:text="@string/hex" />
+
+			<EditText
+				android:id="@+id/color_scheme_dialog_hex_value"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginStart="@dimen/color_scheme_view_margin"
+				android:digits="0123456789ABCDEFabcdef"
+				android:imeOptions="actionGo"
+				android:importantForAutofill="no"
+				android:inputType="textFilter"
+				android:maxLength="8"
+				android:lines="1"
+				android:typeface="monospace"
+				android:background="@color/transparent"
+				tools:ignore="LabelFor" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:gravity="bottom|end">
+
+			<Button
+				android:id="@+id/color_scheme_dialog_cancel"
+				android:layout_width="wrap_content"
+				android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
+				android:background="@color/dialog_button"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:layout_marginEnd="@dimen/color_scheme_view_margin"
+				android:text="@android:string/cancel" />
+
+			<Button
+				android:id="@+id/color_scheme_dialog_apply"
+				android:layout_width="wrap_content"
+				android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
+				android:background="@color/dialog_button"
+				android:layout_marginTop="@dimen/color_scheme_view_margin"
+				android:text="@android:string/ok" />
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+</LinearLayout>

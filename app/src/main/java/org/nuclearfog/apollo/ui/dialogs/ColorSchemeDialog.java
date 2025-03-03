@@ -46,6 +46,8 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 
 	private static final String TAG = "ColorSchemeDialog";
 
+	private static final String KEY_COLOR = "color_val";
+
 	private ColorPickerView mColorPicker;
 	private Button mNewColor;
 	private EditText mHexValue;
@@ -90,9 +92,15 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		Button button8 = mRootView.findViewById(R.id.color_scheme_dialog_preset_8);
 		Button mOldColor = mRootView.findViewById(R.id.color_scheme_dialog_old_color);
 
+		int color;
+		if (savedInstanceState != null) {
+			color = savedInstanceState.getInt(KEY_COLOR);
+		} else {
+			color = mPreferences.getDefaultThemeColor();
+		}
 		mOldColor.setBackgroundColor(mPreferences.getDefaultThemeColor());
-		mColorPicker.setColor(mPreferences.getDefaultThemeColor());
-		onColorChanged(mPreferences.getDefaultThemeColor());
+		mColorPicker.setColor(color);
+		onColorChanged(color);
 
 		mColorPicker.setOnColorChangedListener(this);
 		mHexValue.addTextChangedListener(this);
@@ -109,6 +117,27 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		cancel.setOnClickListener(this);
 
 		return mRootView;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onStart() {
+		super.onStart();
+		// fix: set dialog layout size manually
+		int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
+		int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.75);
+		//Objects.requireNonNull(requireDialog().getWindow()).setLayout(width, height);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putInt(KEY_COLOR, mColorPicker.getColor());
+		super.onSaveInstanceState(outState);
 	}
 
 	/**

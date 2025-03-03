@@ -1,73 +1,73 @@
 plugins {
-    id 'com.android.application'
+	id 'com.android.application'
 }
 
 android {
-    compileSdk 35
-    useLibrary 'org.apache.http.legacy'
-    namespace 'org.nuclearfog.apollo'
+	compileSdk 35
+	useLibrary 'org.apache.http.legacy'
+	namespace 'org.nuclearfog.apollo'
 
-    defaultConfig {
-        applicationId 'org.nuclearfog.apollo'
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 58
-        versionName '1.6.2'
-        // disable vector optimization
-        vectorDrawables.generatedDensities = []
-    }
+	defaultConfig {
+		applicationId 'org.nuclearfog.apollo'
+		minSdkVersion 21
+		targetSdkVersion 35
+		versionCode 59
+		versionName '1.6.3'
+		// disable vector optimization
+		vectorDrawables.generatedDensities = []
+	}
 
-    buildTypes {
-        release {
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            vcsInfo.include false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix 'd'
-        }
-    }
+	buildTypes {
+		release {
+			debuggable false
+			minifyEnabled true
+			shrinkResources true
+			vcsInfo.include false
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+		}
+		debug {
+			applicationIdSuffix '.debug'
+			versionNameSuffix 'd'
+		}
+	}
 
-    buildFeatures {
-        buildConfig true
-        aidl true
-    }
+	buildFeatures {
+		buildConfig true
+		aidl true
+	}
 
-    aaptOptions {
-        // disable png optimization
-        cruncherEnabled = false
-    }
+	aaptOptions {
+		// disable png optimization
+		cruncherEnabled = false
+	}
 
-    dependenciesInfo {
-        // Disables dependency metadata when building APKs.
-        includeInApk = false
-        // Disables dependency metadata when building Android App Bundles.
-        includeInBundle = false
-    }
+	dependenciesInfo {
+		// Disables dependency metadata when building APKs.
+		includeInApk = false
+		// Disables dependency metadata when building Android App Bundles.
+		includeInBundle = false
+	}
 
-    packagingOptions {
-        exclude '/META-INF/CHANGES'
-        exclude '/META-INF/DEPENDENCIES'
-        exclude '/META-INF/README.md'
-        exclude '/META-INF/androidx.*'
-        exclude '/META-INF/kotlin*'
-        exclude '/META-INF/com.*'
-        exclude '/META-INF/services/**'
-        exclude '/META-INF/com/**'
-        exclude '/kotlin/**'
-        exclude '/kotlin-tooling-metadata.json'
-        exclude '/Debug*'
-    }
+	packagingOptions {
+		exclude '/META-INF/CHANGES'
+		exclude '/META-INF/DEPENDENCIES'
+		exclude '/META-INF/README.md'
+		exclude '/META-INF/androidx.*'
+		exclude '/META-INF/kotlin*'
+		exclude '/META-INF/com.*'
+		exclude '/META-INF/services/**'
+		exclude '/META-INF/com/**'
+		exclude '/kotlin/**'
+		exclude '/kotlin-tooling-metadata.json'
+		exclude '/Debug*'
+	}
 }
 
 dependencies {
-    implementation 'androidx.media:media:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.preference:preference:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    //noinspection DifferentStdlibGradleVersion
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21'
+	implementation 'androidx.media:media:1.7.0'
+	implementation 'androidx.appcompat:appcompat:1.7.0'
+	implementation 'androidx.preference:preference:1.2.1'
+	implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+	//noinspection DifferentStdlibGradleVersion
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21'
 }

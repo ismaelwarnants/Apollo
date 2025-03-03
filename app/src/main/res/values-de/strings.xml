@@ -108,7 +108,7 @@
 	<string name="settings_version_title">Version</string>
 	<string name="share_track_using">Titel teilen</string>
 	<string name="menu_clear_popular">Liste leeren</string>
-	<string name="current_color">Momentan</string>
+	<string name="current_color">Alt</string>
 	<string name="new_color">Neu</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (Alternativ)</string>
 	<string name="app_widget_recent">Apollo: Kürzlich gehört</string>

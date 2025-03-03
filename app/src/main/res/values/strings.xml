@@ -177,7 +177,7 @@
 
 	<!-- ColorPicker -->
 	<string name="hex" translatable="false">#</string>
-	<string name="current_color">Current</string>
+	<string name="current_color">Old</string>
 	<string name="new_color">New</string>
 
 	<!-- App widget -->

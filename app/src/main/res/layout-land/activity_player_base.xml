@@ -21,12 +21,21 @@
 	android:layout_height="match_parent"
 	tools:context=".ui.activities.AudioPlayerActivity">
 
+	<androidx.appcompat.widget.Toolbar
+		android:id="@+id/player_toolbar"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/toolbar_height"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:ignore="InconsistentLayout" />
+
 	<org.nuclearfog.apollo.ui.views.Colorstrip
 		android:id="@+id/colorstrip"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/colorstrip_height"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/player_toolbar"
 		app:layout_constraintEnd_toEndOf="parent" />
 
 	<androidx.fragment.app.FragmentContainerView
@@ -34,6 +43,7 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:visibility="invisible"
+		android:name="org.nuclearfog.apollo.ui.fragments.QueueFragment"
 		app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
 		app:layout_constraintTop_toBottomOf="@id/colorstrip"
 		app:layout_constraintBottom_toBottomOf="parent"

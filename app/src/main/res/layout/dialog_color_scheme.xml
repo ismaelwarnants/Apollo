@@ -13,12 +13,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:padding="@dimen/color_scheme_dialog_row_padding">
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:padding="@dimen/color_scheme_view_margin">
 
 	<org.nuclearfog.apollo.ui.views.ColorPickerView
 		android:id="@+id/color_picker_view"
@@ -28,182 +29,180 @@
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_1"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_green"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_preset_2"
-		app:layout_constraintHorizontal_weight="1"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_2"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_green_light"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_preset_1"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_preset_3"
-		app:layout_constraintHorizontal_weight="1"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_3"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_orange_dark"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_preset_2"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_preset_4"
-		app:layout_constraintHorizontal_weight="1"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_4"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_orange_light"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_preset_3"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_old_color"
-		app:layout_constraintHorizontal_weight="1"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_old_color"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_green"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		android:lines="1"
-		android:text="@string/current_color"
-		android:textSize="@dimen/text_size_micro"
-		android:textStyle="bold"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_preset_4"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_new_color"
-		app:layout_constraintHorizontal_weight="2"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_new_color"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/transparent"
-		android:lines="1"
-		android:text="@string/new_color"
-		android:textSize="@dimen/text_size_micro"
-		android:textStyle="bold"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_old_color"
-		app:layout_constraintTop_toBottomOf="@id/color_picker_view"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_weight="2"
-		style="?android:attr/buttonBarButtonStyle" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_5"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_purple"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toStartOf="@id/color_scheme_dialog_preset_1"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_preset_1"
-		app:layout_constraintEnd_toEndOf="@id/color_scheme_dialog_preset_1" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_6"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/holo_red_light"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toStartOf="@id/color_scheme_dialog_preset_2"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_preset_2"
-		app:layout_constraintEnd_toEndOf="@id/color_scheme_dialog_preset_2" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_7"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/white"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toStartOf="@id/color_scheme_dialog_preset_3"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_preset_3"
-		app:layout_constraintEnd_toEndOf="@id/color_scheme_dialog_preset_3" />
-
-	<Button
-		android:id="@+id/color_scheme_dialog_preset_8"
-		android:layout_width="0dp"
-		android:layout_height="@dimen/color_scheme_dialog_button_height"
-		android:background="@color/black"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		app:layout_constraintStart_toStartOf="@id/color_scheme_dialog_preset_4"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_preset_4"
-		app:layout_constraintEnd_toEndOf="@id/color_scheme_dialog_preset_4" />
-
-	<TextView
-		android:id="@+id/color_scheme_dialog_hex_value_prefix"
-		android:layout_width="wrap_content"
+	<GridLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		android:text="@string/hex"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_preset_8"
-		app:layout_constraintTop_toTopOf="@id/color_scheme_dialog_hex_value"
-		app:layout_constraintBottom_toBottomOf="@id/color_scheme_dialog_hex_value"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_hex_value" />
+		android:layout_marginStart="@dimen/color_scheme_view_margin"
+		android:layout_marginTop="@dimen/color_scheme_view_margin"
+		android:layout_marginEnd="@dimen/color_scheme_view_margin"
+		android:columnCount="5">
 
-	<EditText
-		android:id="@+id/color_scheme_dialog_hex_value"
-		android:layout_width="0dp"
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_1"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_green"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_2"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_green_light"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_3"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_orange_dark"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_4"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_orange_light"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_5"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_purple"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_6"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_red_light"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_7"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/white"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_preset_8"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/black"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_old_color"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/holo_green"
+			android:lines="1"
+			android:text="@string/current_color"
+			android:textSize="@dimen/text_size_micro"
+			android:textStyle="bold"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_new_color"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/color_scheme_dialog_button_height"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:layout_marginTop="@dimen/color_scheme_view_margin"
+			android:layout_columnWeight="1"
+			android:background="@color/transparent"
+			android:text="@string/new_color"
+			android:textSize="@dimen/text_size_micro"
+			android:textStyle="bold"
+			style="?android:attr/buttonBarButtonStyle" />
+
+	</GridLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="@dimen/color_scheme_dialog_row_padding"
-		android:digits="0123456789ABCDEFabcdef"
-		android:imeOptions="actionGo"
-		android:importantForAutofill="no"
-		android:inputType="textFilter"
-		android:maxLength="8"
-		android:lines="1"
-		android:typeface="monospace"
-		android:background="@color/transparent"
-		app:layout_constraintStart_toEndOf="@id/color_scheme_dialog_hex_value_prefix"
-		app:layout_constraintTop_toTopOf="@id/color_scheme_dialog_preset_8"
-		app:layout_constraintBottom_toBottomOf="@id/color_scheme_dialog_preset_8"
-		app:layout_constraintEnd_toEndOf="parent"
-		tools:ignore="LabelFor" />
+		android:layout_marginStart="@dimen/color_scheme_view_margin"
+		android:layout_marginTop="@dimen/color_scheme_view_margin"
+		android:layout_marginEnd="@dimen/color_scheme_view_margin"
+		android:orientation="horizontal">
 
-	<androidx.constraintlayout.widget.Barrier
-		android:id="@+id/color_scheme_dialog_confirm_barrier"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:constraint_referenced_ids="color_scheme_dialog_preset_5,color_scheme_dialog_preset_6,color_scheme_dialog_preset_7,color_scheme_dialog_preset_8"
-		app:barrierDirection="bottom" />
+		<TextView
+			android:id="@+id/color_scheme_dialog_hex_value_prefix"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="@dimen/text_size_small"
+			android:text="@string/hex" />
 
-	<Button
-		android:id="@+id/color_scheme_dialog_cancel"
-		android:layout_width="wrap_content"
-		android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
-		android:background="@color/dialog_button"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		android:layout_marginEnd="@dimen/color_scheme_dialog_row_padding"
-		android:text="@android:string/cancel"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_confirm_barrier"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_apply" />
+		<EditText
+			android:id="@+id/color_scheme_dialog_hex_value"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_marginStart="@dimen/color_scheme_view_margin"
+			android:textSize="@dimen/text_size_medium"
+			android:digits="0123456789ABCDEFabcdef"
+			android:imeOptions="actionGo"
+			android:importantForAutofill="no"
+			android:inputType="textFilter"
+			android:maxLength="8"
+			android:lines="1"
+			android:typeface="monospace"
+			android:background="@color/transparent"
+			tools:ignore="LabelFor" />
+	</LinearLayout>
 
-	<Button
-		android:id="@+id/color_scheme_dialog_apply"
-		android:layout_width="wrap_content"
-		android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
-		android:background="@color/dialog_button"
-		android:layout_marginTop="@dimen/color_scheme_dialog_row_padding"
-		android:text="@android:string/ok"
-		app:layout_constraintTop_toBottomOf="@id/color_scheme_dialog_confirm_barrier"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent" />
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:layout_marginStart="@dimen/color_scheme_view_margin"
+		android:layout_marginTop="@dimen/color_scheme_view_margin"
+		android:layout_marginBottom="@dimen/color_scheme_view_margin"
+		android:layout_marginEnd="@dimen/color_scheme_view_margin"
+		android:gravity="end|bottom">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+		<Button
+			android:id="@+id/color_scheme_dialog_cancel"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
+			android:background="@color/dialog_button"
+			android:layout_marginEnd="@dimen/color_scheme_view_margin"
+			android:text="@android:string/cancel"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_apply"
+			style="?android:attr/buttonBarButtonStyle" />
+
+		<Button
+			android:id="@+id/color_scheme_dialog_apply"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
+			android:background="@color/dialog_button"
+			android:text="@android:string/ok"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			style="?android:attr/buttonBarButtonStyle" />
+
+	</LinearLayout>
+
+</LinearLayout>

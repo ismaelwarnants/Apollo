@@ -117,7 +117,7 @@
 	<dimen name="drag_and_drop_handle_margin">10dp</dimen>
 
 	<!-- Color scheme dialog -->
-	<dimen name="color_scheme_dialog_row_padding">8.0dp</dimen>
+	<dimen name="color_scheme_view_margin">8.0dp</dimen>
 	<dimen name="color_scheme_dialog_button_height">45dp</dimen>
 	<dimen name="color_scheme_dialog_button_confirm_height">32dp</dimen>
 

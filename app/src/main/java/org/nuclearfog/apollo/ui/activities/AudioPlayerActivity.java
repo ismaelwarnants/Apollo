@@ -93,6 +93,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private static final String MIME_AUDIO = "audio/*";
 
+	/**
+	 *
+	 */
+	private static final String KEY_QUEUE_VISIBILITY = "queue_visibility";
+
 	private AsyncCallback<List<Song>> onSongsPlay = this::onSongPlay;
 	/**
 	 * Play and pause button
@@ -220,6 +225,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				return;
 			}
 		}
+		// set visibility of the queue layout after screen rotation
+		if (savedInstanceState != null) {
+			boolean queueVisible = savedInstanceState.getBoolean(KEY_QUEUE_VISIBILITY, false);
+			if (queueVisible) {
+				setQueueVisibility(true);
+				setQueueTrack();
+			}
+		}
 		// Bind Apollo's service
 		MusicUtils.bindToService(this, this);
 		ApolloUtils.setWakelock(this);
@@ -284,6 +297,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		MusicUtils.notifyForegroundStateChanged(this, false);
 		mImageFetcher.flush();
 		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+		savedInstanceState.putBoolean(KEY_QUEUE_VISIBILITY, queueContainer.getVisibility() == View.VISIBLE);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	/**
@@ -469,29 +491,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// Show the queue, hide the artwork
 		else if (v.getId() == R.id.audio_player_switch_queue) {
-			AnimatorUtils.fade(queueContainer, true);
-			// switch buttons
-			mAlbumArtSmall.setVisibility(View.VISIBLE);
-			mQueueSwitch.setVisibility(View.INVISIBLE);
-			// Fade out the artwork
-			AnimatorUtils.fade(albumArtBorder1, false);
-			if (albumArtBorder2 != null)
-				AnimatorUtils.fade(albumArtBorder2, false);
-			AnimatorUtils.fade(mAlbumArt, false);
-			// Scroll to the current track
+			setQueueVisibility(true);
 			setQueueTrack();
 		}
 		// Show the artwork, hide the queue
 		else if (v.getId() == R.id.audio_player_switch_album_art) {
-			AnimatorUtils.fade(queueContainer, false);
-			// switch buttons
-			mQueueSwitch.setVisibility(View.VISIBLE);
-			mAlbumArtSmall.setVisibility(View.INVISIBLE);
-			// Fade in the album art
-			AnimatorUtils.fade(albumArtBorder1, true);
-			if (albumArtBorder2 != null)
-				AnimatorUtils.fade(albumArtBorder2, true);
-			AnimatorUtils.fade(mAlbumArt, true);
+			setQueueVisibility(false);
 		}
 		// repeat button clicked
 		else if (v.getId() == R.id.action_button_repeat) {
@@ -628,6 +633,28 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				}
 			}
 		}
+	}
+
+	/**
+	 * set queue layout visibility
+	 *
+	 * @param visible true to make queue layout visible, false to show album artwork
+	 */
+	private void setQueueVisibility(boolean visible) {
+		AnimatorUtils.fade(queueContainer, visible);
+		// switch buttons
+		if (visible) {
+			mAlbumArtSmall.setVisibility(View.VISIBLE);
+			mQueueSwitch.setVisibility(View.INVISIBLE);
+		} else {
+			mAlbumArtSmall.setVisibility(View.INVISIBLE);
+			mQueueSwitch.setVisibility(View.VISIBLE);
+		}
+		// Fade out the artwork
+		AnimatorUtils.fade(albumArtBorder1, !visible);
+		if (albumArtBorder2 != null)
+			AnimatorUtils.fade(albumArtBorder2, !visible);
+		AnimatorUtils.fade(mAlbumArt, !visible);
 	}
 
 	/**
