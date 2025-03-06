@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -65,24 +63,9 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	private TextView emptyInfo;
 
 	/**
-	 * Profile header
-	 */
-	private ProfileTabCarousel mProfileTabCarousel;
-
-	/**
 	 * viewmodel used to communicate with this fragment
 	 */
 	private FragmentViewModel viewModel;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		Activity activity = (Activity) context;
-		mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -97,13 +80,15 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.list_base, container, false);
 		// empty info
 		emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
 		// Initialize the list
 		mList = rootView.findViewById(R.id.list_base);
+		// get profile tab carousel from parent activity
+		ProfileTabCarousel mProfileTabCarousel = requireActivity().findViewById(R.id.activity_profile_base_tab_carousel);
 		// Set empty list info
 		mList.setEmptyView(emptyInfo);
 		// Release any references to the recycled Views

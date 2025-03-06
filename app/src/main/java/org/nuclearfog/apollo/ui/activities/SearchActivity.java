@@ -117,7 +117,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		albumSongLoader = new AlbumSongLoader(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		mLoader = new MusicSearchLoader(this);
-		ThemeUtils mResources = new ThemeUtils(this);
+		ThemeUtils themeUtils = new ThemeUtils(this);
 
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
@@ -125,10 +125,10 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
-			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
-			mResources.setSubtitle(getSupportActionBar(), "\"" + mFilterString + "\"");
+			themeUtils.themeActionBar(getSupportActionBar(), R.string.menu_search);
+			themeUtils.setSubtitle(getSupportActionBar(), "\"" + mFilterString + "\"");
 		}
-		mResources.setBackground(root);
+		themeUtils.setBackground(root);
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
 		// Bind the data

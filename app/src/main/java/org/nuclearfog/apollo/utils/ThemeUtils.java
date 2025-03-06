@@ -84,9 +84,24 @@ public class ThemeUtils {
 	 * @param titleID   The title for the action bar
 	 */
 	public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
+		if (titleID != 0) {
+			String title = resources.getString(titleID);
+			themeActionBar(actionBar, title);
+		} else {
+			themeActionBar(actionBar, "");
+		}
+	}
+
+	/**
+	 * Builds a custom layout and applies it to the action bar, then themes the
+	 * background, title, and subtitle.
+	 *
+	 * @param actionBar The {@link ActionBar} to use.
+	 * @param title     Title text
+	 */
+	public void themeActionBar(ActionBar actionBar, String title) {
 		int backgroundColor = ResourcesCompat.getColor(resources, R.color.action_bar, null);
 		int textColor = ResourcesCompat.getColor(resources, R.color.action_bar_title, null);
-		String title = resources.getString(titleID);
 		// Set the custom layout
 		View mActionBarLayout = View.inflate(actionBar.getThemedContext(), R.layout.action_bar, null);
 		actionBar.setCustomView(mActionBarLayout);

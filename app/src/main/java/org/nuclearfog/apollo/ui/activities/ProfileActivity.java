@@ -188,17 +188,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
-
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mViewPager = findViewById(R.id.activity_profile_base_pager);
-		// Initialize the theme resources
-		ThemeUtils mResources = new ThemeUtils(this);
 		Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
-		setSupportActionBar(toolbar);
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			mResources.themeActionBar(actionBar, R.string.app_name);
-		}
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
@@ -213,8 +205,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		lastAddedLoader = new LastAddedLoader(this);
 		popularSongLoader = new PopularSongLoader(this);
 		folderSongLoader = new FolderSongLoader(this);
-		// Initialize the Bundle
-
+		// set toolbar
+		setSupportActionBar(toolbar);
 		// Get the MIME type
 		if (mArguments != null) {
 			// Get the ID
@@ -736,7 +728,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
-	 * initialize fragment views
+	 * initialize fragment views and toolbar
 	 *
 	 * @param mArguments arguments to initialize fragments
 	 */
@@ -821,8 +813,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 		}
 		if (actionBar != null) {
-			actionBar.setTitle(actionbarTitle);
-			actionBar.setSubtitle(actionbarSubTitle);
+			ThemeUtils themeUtils = new ThemeUtils(this);
+			themeUtils.themeActionBar(actionBar, actionbarTitle);
+			if (!actionbarSubTitle.isEmpty())
+				themeUtils.setSubtitle(actionBar, actionbarSubTitle);
 			actionBar.setDisplayHomeAsUpEnabled(displayHome);
 		}
 	}
