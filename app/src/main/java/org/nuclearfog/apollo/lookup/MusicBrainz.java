@@ -60,9 +60,9 @@ public class MusicBrainz {
 	@Nullable
 	public static ArtistMB getArtistByName(String name) {
 		List<ArtistMB> artists = searchArtists(name, 1);
-		if (artists.isEmpty())
-			return null;
-		return artists.get(0);
+		if (!artists.isEmpty())
+			return artists.get(0);
+		return null;
 	}
 
 	/**
@@ -77,9 +77,9 @@ public class MusicBrainz {
 		if (album.isEmpty())
 			// if album not found, use album name only
 			album = searchAlbumsByName(name, null, 1);
-		if (album.isEmpty())
-			return null;
-		return album.get(0);
+		if (!album.isEmpty())
+			return album.get(0);
+		return null;
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class MusicBrainz {
 			JSONObject json = get(API_COVERART_ARCHIVE, mbid, null);
 			return new Artwork(json);
 		} catch (JSONException e) {
-			Log.e(TAG, "error JSON-Format", e);
+			Log.d(TAG, "getImage() could not load image");
 		}
 		return null;
 	}
@@ -112,19 +112,17 @@ public class MusicBrainz {
 			params.add("query=" + StringUtils.encodeUTF8(name));
 			params.add("limit=" + count);
 			JSONObject json = get(API_MUSICBRAINZ, ENDPOINT_SEARCH_ARTIST, params);
-			JSONArray array = json.optJSONArray("artists");
-			if (array != null) {
-				List<ArtistMB> result = new LinkedList<>();
-				for (int i = 0; i < array.length(); i++) {
-					ArtistMB artist = new ArtistMB(array.getJSONObject(i));
-					result.add(artist);
-				}
-				return result;
+			JSONArray array = json.getJSONArray("artists");
+			List<ArtistMB> result = new LinkedList<>();
+			for (int i = 0; i < array.length(); i++) {
+				ArtistMB artist = new ArtistMB(array.getJSONObject(i));
+				result.add(artist);
 			}
+			return result;
 		} catch (JSONException e) {
 			Log.e(TAG, "error JSON-Format", e);
 		}
-		return new ArrayList<>();
+		return new ArrayList<>(0);
 	}
 
 	/**
@@ -136,7 +134,6 @@ public class MusicBrainz {
 	 * @return list of album matches
 	 */
 	public static List<AlbumMB> searchAlbumsByName(String album, @Nullable String artist, int count) {
-		List<AlbumMB> result = new ArrayList<>();
 		try {
 			List<String> params = new ArrayList<>();
 			if (artist == null)
@@ -148,9 +145,8 @@ public class MusicBrainz {
 		} catch (JSONException e) {
 			Log.e(TAG, "searchAlbumsByName() error JSON format!");
 		}
-		return result;
+		return new ArrayList<>(0);
 	}
-
 
 	/**
 	 * search for albums of an artist
@@ -160,29 +156,30 @@ public class MusicBrainz {
 	 * @return list of album matches
 	 */
 	public static List<AlbumMB> searchAlbumsByArtistId(String mbid, int count) {
-		List<AlbumMB> result = new ArrayList<>();
 		try {
 			List<String> params = new ArrayList<>();
 			params.add("artist=" + mbid);
 			params.add("limit=" + count);
 			return getAlbums(params);
 		} catch (JSONException e) {
-			Log.e(TAG, "searchAlbumsArtistId() error JSON format!");
+			Log.d(TAG, "searchAlbumsArtistId() error JSON format!");
 		}
-		return result;
+		return new ArrayList<>(0);
 	}
 
-
+	/**
+	 * use album endpoint to load a list of albums
+	 *
+	 * @param params parameters used for endpoint
+	 * @return a list of albums
+	 */
 	private static List<AlbumMB> getAlbums(List<String> params) throws JSONException {
 		List<AlbumMB> result = new ArrayList<>();
 		JSONObject json = get(API_MUSICBRAINZ, ENDPOINT_SEARCH_ALBUM, params);
-		JSONArray array = json.optJSONArray("releases");
-		if (array != null) {
-			for (int i = 0; i < array.length(); i++) {
-				AlbumMB album = new AlbumMB(array.getJSONObject(i));
-				result.add(album);
-			}
-			return result;
+		JSONArray array = json.getJSONArray("releases");
+		for (int i = 0; i < array.length(); i++) {
+			AlbumMB album = new AlbumMB(array.getJSONObject(i));
+			result.add(album);
 		}
 		return result;
 	}
@@ -215,12 +212,12 @@ public class MusicBrainz {
 				InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
 				return new JSONObject(new BufferedReader(responseBodyReader).readLine());
 			} else if (connection.getResponseCode() == 404) {
-				Log.e(TAG, "url not found!");
+				Log.d(TAG, "get() url not found!");
 			} else if (connection.getResponseCode() == 503) {
-				Log.e(TAG, "rate limit exceeded!");
+				Log.d(TAG, "get() rate limit exceeded!");
 			}
 		} catch (IOException e) {
-			Log.e(TAG, "connection error", e);
+			Log.e(TAG, "get() connection error", e);
 		}
 		throw new JSONException("no json object");
 	}

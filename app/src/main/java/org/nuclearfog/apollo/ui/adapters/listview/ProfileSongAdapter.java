@@ -49,11 +49,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
 
 	/**
-	 * Number of views (ImageView, TextView, header)
-	 */
-	private static final int VIEW_TYPE_COUNT = 2;
-
-	/**
 	 * Count of the view header
 	 */
 	public static final int HEADER_COUNT = 1;
@@ -183,7 +178,9 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public int getViewTypeCount() {
-		return VIEW_TYPE_COUNT;
+		if (enableHeader)
+			return 2;
+		return 1;
 	}
 
 	/**

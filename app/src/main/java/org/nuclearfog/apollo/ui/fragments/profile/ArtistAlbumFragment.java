@@ -111,12 +111,10 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 			albumSongLoader.execute(id, onPlaySongs);
 		} else {
 			// open Album
-			if (pos > 0) {
-				Album album = mAdapter.getItem(pos);
-				if (album != null) {
-					NavUtils.openAlbumProfile(requireActivity(), album);
-					requireActivity().finish();
-				}
+			Album album = mAdapter.getItem(pos);
+			if (album != null) {
+				NavUtils.openAlbumProfile(requireActivity(), album);
+				requireActivity().finish();
 			}
 		}
 	}

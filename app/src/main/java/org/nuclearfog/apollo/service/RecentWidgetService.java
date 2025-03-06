@@ -48,10 +48,6 @@ public class RecentWidgetService extends RemoteViewsService {
 	 * This is the factory that will provide data to the collection widget.
 	 */
 	private static class WidgetRemoteViewsFactory implements RemoteViewsFactory {
-		/**
-		 * Number of views (ImageView and TextView)
-		 */
-		private static final int VIEW_TYPE_COUNT = 1;
 
 		/**
 		 * max recent item number
@@ -133,7 +129,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public int getViewTypeCount() {
-			return VIEW_TYPE_COUNT;
+			return 1;
 		}
 
 		/**

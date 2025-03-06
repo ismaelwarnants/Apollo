@@ -47,11 +47,6 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
 
 	/**
-	 * Number of views (ImageView, TextView, header)
-	 */
-	private static final int VIEW_TYPE_COUNT = 2;
-
-	/**
 	 * count of header views
 	 */
 	private static final int HEADER_COUNT = 1;
@@ -180,7 +175,9 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	@Override
 	public int getViewTypeCount() {
-		return VIEW_TYPE_COUNT;
+		if (enableHeader)
+			return 2;
+		return 1;
 	}
 
 	/**
