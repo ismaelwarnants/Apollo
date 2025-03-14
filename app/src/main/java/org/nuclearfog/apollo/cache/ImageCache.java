@@ -25,7 +25,6 @@ import android.util.LruCache;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.io.File;
@@ -82,14 +81,15 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * Used to temporarily pause the disk cache while scrolling
 	 */
 	public boolean mPauseDiskAccess = false;
+
 	/**
 	 * LRU cache
 	 */
 	@Nullable
 	private LruCache<String, Bitmap> mLruCache;
+
 	/**
 	 * Disk LRU cache
-	 * todo check if DISKLruCache can be replaced by system class
 	 */
 	@Nullable
 	private DiskLruCache mDiskCache;
@@ -158,53 +158,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Initialize the cache, providing all parameters.
-	 *
-	 * @param context The {@link Context} to use
-	 */
-	private void init(Context context) {
-		// create cache folder
-		File cacheFolder = context.getExternalCacheDir();
-		if (cacheFolder == null)
-			cacheFolder = context.getCacheDir();
-		final File folder = new File(cacheFolder, TAG);
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-
-		// Initialize the disk cache in a background thread
-		new Thread(() -> {
-			try {
-				if ((mDiskCache == null || mDiskCache.isClosed()) && isSpaceAvailable(folder.getPath())) {
-					try {
-						mDiskCache = DiskLruCache.open(folder, 1, 1, DISK_CACHE_SIZE);
-					} catch (IOException e) {
-						if (BuildConfig.DEBUG) {
-							e.printStackTrace();
-						}
-					}
-				}
-			} catch (Exception err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}).start();
-
-		// Set up the memory cache
-		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		int lruCacheSize;
-		if (activityManager != null) {
-			lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);
-		} else {
-			lruCacheSize = 16000000;
-		}
-		mLruCache = new LruCache<>(lruCacheSize);
-		// Release some memory as needed
-		context.registerComponentCallbacks(this);
-	}
-
-	/**
 	 * Adds a new image to the memory and disk caches
 	 *
 	 * @param data   The key used to store the image
@@ -232,17 +185,14 @@ public final class ImageCache implements ComponentCallbacks2 {
 					snapshot.getInputStream(DISK_CACHE_INDEX).close();
 				}
 			} catch (IOException e) {
-				if (BuildConfig.DEBUG) {
-					e.printStackTrace();
-					Log.e(TAG, "addBitmapToCache - " + e);
-				}
+				Log.e(TAG, "addBitmapToCache()" + e);
 			} finally {
 				try {
 					if (out != null) {
 						out.close();
 					}
 				} catch (IOException | IllegalStateException e) {
-					Log.e(TAG, "addBitmapToCache - failed to close output stream");
+					Log.e(TAG, "addBitmapToCache(): failed to close output stream");
 				}
 			}
 		}
@@ -302,19 +252,14 @@ public final class ImageCache implements ComponentCallbacks2 {
 						}
 					}
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-						Log.e(TAG, "getBitmapFromDiskCache - " + e);
-					}
+					Log.e(TAG, "getBitmapFromDiskCache():" + e);
 				} finally {
 					try {
 						if (inputStream != null) {
 							inputStream.close();
 						}
 					} catch (IOException e) {
-						if (BuildConfig.DEBUG) {
-							e.printStackTrace();
-						}
+						Log.e(TAG, "getBitmapFromDiskCache(): failed to close output stream");
 					}
 				}
 			}
@@ -351,10 +296,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 						mDiskCache.flush();
 					}
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-						Log.e(TAG, "flush - " + e);
-					}
+					Log.e(TAG, "flush():" + e);
 				}
 			}
 		}).start();
@@ -403,10 +345,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 				mDiskCache.remove(StringUtils.hashKeyForDisk(key));
 			}
 		} catch (IOException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-				Log.e(TAG, "remove - " + e);
-			}
+			Log.e(TAG, "remove():" + e);
 		}
 		flush();
 	}
@@ -433,5 +372,44 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 */
 	public boolean isDiskCachePaused() {
 		return mPauseDiskAccess;
+	}
+
+	/**
+	 * Initialize the cache, providing all parameters.
+	 *
+	 * @param context The {@link Context} to use
+	 */
+	private void init(Context context) {
+		// create cache folder
+		File cacheFolder = context.getExternalCacheDir();
+		if (cacheFolder == null)
+			cacheFolder = context.getCacheDir();
+		final File folder = new File(cacheFolder, TAG);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		// Initialize the disk cache in a background thread
+		new Thread(() -> {
+			if ((mDiskCache == null || mDiskCache.isClosed()) && isSpaceAvailable(folder.getPath())) {
+				try {
+					mDiskCache = DiskLruCache.open(folder, 1, 1, DISK_CACHE_SIZE);
+				} catch (IOException e) {
+					Log.e(TAG, "init() failed", e);
+				}
+			}
+		}).start();
+
+		// Set up the memory cache
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		int lruCacheSize;
+		if (activityManager != null) {
+			lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);
+		} else {
+			lruCacheSize = 16000000;
+		}
+		mLruCache = new LruCache<>(lruCacheSize);
+		// Release some memory as needed
+		context.registerComponentCallbacks(this);
 	}
 }

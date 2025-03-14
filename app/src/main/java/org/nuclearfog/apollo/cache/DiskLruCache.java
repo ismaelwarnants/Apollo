@@ -11,9 +11,11 @@
 
 package org.nuclearfog.apollo.cache;
 
-import androidx.annotation.Nullable;
+import android.util.Log;
 
-import org.nuclearfog.apollo.BuildConfig;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -88,71 +90,41 @@ import java.util.concurrent.TimeUnit;
  * responding appropriately.
  */
 public final class DiskLruCache implements Closeable {
-	static final String JOURNAL_FILE = "journal";
 
-	static final String JOURNAL_FILE_TMP = "journal.tmp";
+	private static final String TAG = "DiskLruCache";
 
-	static final String MAGIC = "libcore.io.DiskLruCache";
-
-	static final String VERSION_1 = "1";
-
+	private static final String JOURNAL_FILE = "journal";
+	private static final String JOURNAL_FILE_TMP = "journal.tmp";
+	private static final String MAGIC = "libcore.io.DiskLruCache";
+	private static final String VERSION_1 = "1";
 	private static final String CLEAN = "CLEAN";
-
 	private static final String DIRTY = "DIRTY";
-
 	private static final String REMOVE = "REMOVE";
-
 	private static final String READ = "READ";
-
 	private static final int IO_BUFFER_SIZE = 8 * 1024;
 
-	/*
-	 * This cache uses a journal file named "journal". A typical journal file
-	 * looks like this: libcore.io.DiskLruCache 1 100 2 CLEAN
-	 * 3400330d1dfc7f3f7f4b8d4d803dfcf6 832 21054 DIRTY
-	 * 335c4c6028171cfddfbaae1a9c313c52 CLEAN 335c4c6028171cfddfbaae1a9c313c52
-	 * 3934 2342 REMOVE 335c4c6028171cfddfbaae1a9c313c52 DIRTY
-	 * 1ab96a171faeeee38496d8b330771a7a CLEAN 1ab96a171faeeee38496d8b330771a7a
-	 * 1600 234 READ 335c4c6028171cfddfbaae1a9c313c52 READ
-	 * 3400330d1dfc7f3f7f4b8d4d803dfcf6 The first five lines of the journal form
-	 * its header. They are the constant string "libcore.io.DiskLruCache", the
-	 * disk cache's version, the application's version, the value count, and a
-	 * blank line. Each of the subsequent lines in the file is a record of the
-	 * state of a cache entry. Each line contains space-separated values: a
-	 * state, a key, and optional state-specific values. o DIRTY lines track
-	 * that an entry is actively being created or updated. Every successful
-	 * DIRTY action should be followed by a CLEAN or REMOVE action. DIRTY lines
-	 * without a matching CLEAN or REMOVE indicate that temporary files may need
-	 * to be deleted. o CLEAN lines track a cache entry that has been
-	 * successfully published and may be read. A publish line is followed by the
-	 * lengths of each of its values. o READ lines track accesses for LRU. o
-	 * REMOVE lines track entries that have been deleted. The journal file is
-	 * appended to as cache operations occur. The journal may occasionally be
-	 * compacted by dropping redundant lines. A temporary file named
-	 * "journal.tmp" will be used during compaction; that file should be deleted
-	 * if it exists when the cache is opened.
-	 */
-
+	@Nullable
+	private Writer journalWriter;
 	private File directory;
-
 	private File journalFile;
-
 	private File journalFileTmp;
-
 	private int appVersion;
-
 	private long maxSize;
-
 	private int valueCount;
+	private int redundantOpCount;
+	private long size = 0;
 
-	private LinkedHashMap<String, Entry> lruEntries = new LinkedHashMap<>(0, 0.75f, true);
 	/**
 	 * This cache uses a single background thread to evict entries.
 	 */
 	private ExecutorService executorService = new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
-	private long size = 0;
-	private Writer journalWriter;
-	private int redundantOpCount;
+	private LinkedHashMap<String, Entry> lruEntries = new LinkedHashMap<>(0, 0.75f, true);
+
+	/**
+	 * singleton instance of this class
+	 */
+	private static DiskLruCache cache;
+
 
 	private Callable<Void> cleanupCallable = new Callable<Void>() {
 		@Override
@@ -174,7 +146,7 @@ public final class DiskLruCache implements Closeable {
 	/**
 	 *
 	 */
-	private DiskLruCache(File directory, int appVersion, int valueCount, long maxSize) {
+	private DiskLruCache(@NonNull File directory, int appVersion, int valueCount, long maxSize) {
 		this.directory = directory;
 		this.appVersion = appVersion;
 		journalFile = new File(directory, JOURNAL_FILE);
@@ -184,11 +156,165 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
+	 * Opens the cache in {@code directory}, creating a cache if none exists there.
+	 *
+	 * @param directory  a writable directory
+	 * @param valueCount the number of values per cache entry. Must be positive.
+	 * @param maxSize    the maximum number of bytes this cache should use to store
+	 * @throws IOException if reading or writing the cache directory fails
+	 */
+	public static DiskLruCache open(File directory, int appVersion, @IntRange(from = 1) int valueCount, @IntRange(from = 4096) long maxSize) throws IOException {
+		// check if folder cache exists. create new folder if necessary
+		if (!directory.exists() && !directory.mkdirs()) {
+			throw new IOException("could not open cache folder!");
+		}
+		// prefer to pick up where we left off
+		if (cache == null)
+			cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
+		if (cache.journalFile.exists()) {
+			try {
+				cache.readJournal();
+				cache.processJournal();
+				cache.journalWriter = new BufferedWriter(new FileWriter(cache.journalFile, true), IO_BUFFER_SIZE);
+				return cache;
+			} catch (IOException exception) {
+				Log.e(TAG, "open(): corrupt journal file!", exception);
+				cache.delete();
+				cache.rebuildJournal();
+			}
+		}
+		return cache;
+	}
+
+	/**
+	 * Closes this cache. Stored values will remain on the filesystem.
+	 */
+	@Override
+	public synchronized void close() throws IOException {
+		if (journalWriter != null) {
+			for (Entry entry : new ArrayList<>(lruEntries.values())) {
+				if (entry.currentEditor != null) {
+					entry.currentEditor.abort();
+				}
+			}
+			trimToSize();
+			journalWriter.close();
+			journalWriter = null;
+		}
+	}
+
+	/**
+	 * Returns a snapshot of the entry named {@code key}, or null if it doesn't
+	 * exist is not currently readable. If a value is returned, it is moved to
+	 * the head of the LRU queue.
+	 */
+	public synchronized Snapshot get(String key) throws IOException {
+		validateKey(key);
+		Entry entry = lruEntries.get(key);
+		if (entry != null && entry.readable) {
+			/*
+			 * Open all streams eagerly to guarantee that we see a single published
+			 * snapshot. If we opened streams lazily then the streams could come
+			 * from different edits.
+			 */
+			InputStream[] ins = new InputStream[valueCount];
+			try {
+				for (int i = 0; i < valueCount; i++) {
+					ins[i] = new FileInputStream(entry.getCleanFile(i));
+				}
+			} catch (FileNotFoundException e) {
+				// a file must have been deleted manually!
+				return null;
+			}
+			redundantOpCount++;
+			if (journalWriter != null)
+				journalWriter.append(READ + ' ').append(key).append(String.valueOf('\n'));
+			if (journalRebuildRequired())
+				executorService.submit(cleanupCallable);
+			return new Snapshot(ins);
+		}
+		return null;
+	}
+
+	/**
+	 * Returns an editor for the entry named {@code key}, or null if another edit is in progress.
+	 */
+	public synchronized Editor edit(String key) throws IOException {
+		validateKey(key);
+		Entry entry = lruEntries.get(key);
+		if (entry == null) {
+			entry = new Entry(key);
+			lruEntries.put(key, entry);
+		} else if (entry.currentEditor != null) {
+			return null; // another edit is in progress
+		}
+		Editor editor = new Editor(entry);
+		entry.currentEditor = editor;
+		// flush the journal before creating files to prevent file leaks
+		if (journalWriter != null) {
+			journalWriter.write(DIRTY + ' ' + key + '\n');
+			journalWriter.flush();
+		}
+		return editor;
+	}
+
+	/**
+	 * Drops the entry for {@code key} if it exists and can be removed.
+	 * Entries actively being edited cannot be removed.
+	 */
+	public synchronized void remove(String key) throws IOException {
+		validateKey(key);
+		Entry entry = lruEntries.get(key);
+		if (entry != null && entry.currentEditor == null) {
+			for (int i = 0; i < valueCount; i++) {
+				File file = entry.getCleanFile(i);
+				if (!file.delete()) {
+					throw new IOException("failed to delete " + file);
+				}
+				size -= entry.lengths[i];
+				entry.lengths[i] = 0;
+			}
+			redundantOpCount++;
+			if (journalWriter != null)
+				journalWriter.append(REMOVE + ' ').append(key).append(String.valueOf('\n'));
+			lruEntries.remove(key);
+			if (journalRebuildRequired()) {
+				executorService.submit(cleanupCallable);
+			}
+		}
+	}
+
+	/**
+	 * Closes the cache and deletes all of its stored values. This will delete all files
+	 * in the cache directory including files that weren't created by the cache.
+	 */
+	public void delete() throws IOException {
+		close();
+		deleteContents(directory);
+	}
+
+	/**
+	 * Returns true if this cache has been closed.
+	 */
+	public boolean isClosed() {
+		return journalWriter == null;
+	}
+
+	/**
+	 * Force buffered operations to the filesystem.
+	 */
+	public synchronized void flush() throws IOException {
+		if (journalWriter != null) {
+			trimToSize();
+			journalWriter.flush();
+		}
+	}
+
+	/**
 	 *
 	 */
 	private static String[] copyOfRange(String[] original, int end) {
-		int originalLength = original.length; // For exception priority
-		// compatibility.
+		int originalLength = original.length;
 		if (2 > end) {
 			throw new IllegalArgumentException();
 		}
@@ -204,8 +330,7 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Returns the ASCII characters up to but not including the next "\r\n", or
-	 * "\n".
+	 * Returns the ASCII characters up to but not including the next "\r\n", or "\n".
 	 *
 	 * @throws java.io.EOFException if the stream is exhausted before the next newline character.
 	 */
@@ -226,17 +351,14 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Closes 'closeable', ignoring any checked exceptions. Does nothing if
-	 * 'closeable' is null.
+	 * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
 	 */
 	private static void closeQuietly(Closeable closeable) {
 		if (closeable != null) {
 			try {
 				closeable.close();
 			} catch (Exception e) {
-				if (BuildConfig.DEBUG) {
-					e.printStackTrace();
-				}
+				Log.w(TAG, "closeQuietly() failed to close!");
 			}
 		}
 	}
@@ -244,61 +366,18 @@ public final class DiskLruCache implements Closeable {
 	/**
 	 * Recursively delete everything in {@code dir}.
 	 */
-	// TODO: this should specify paths as Strings rather than as Files
 	private static void deleteContents(File dir) throws IOException {
 		File[] files = dir.listFiles();
-		if (files == null) {
-			throw new IllegalArgumentException("not a directory: " + dir);
-		}
-		for (File file : files) {
-			if (file.isDirectory()) {
-				deleteContents(file);
-			}
-			if (!file.delete()) {
-				throw new IOException("failed to delete file: " + file);
-			}
-		}
-	}
-
-	/**
-	 * Opens the cache in {@code directory}, creating a cache if none exists
-	 * there.
-	 *
-	 * @param directory  a writable directory
-	 * @param valueCount the number of values per cache entry. Must be positive.
-	 * @param maxSize    the maximum number of bytes this cache should use to store
-	 * @throws IOException if reading or writing the cache directory fails
-	 */
-	@Nullable
-	public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize) throws IOException {
-		if (maxSize <= 0) {
-			throw new IllegalArgumentException("maxSize <= 0");
-		}
-		if (valueCount <= 0) {
-			throw new IllegalArgumentException("valueCount <= 0");
-		}
-		// prefer to pick up where we left off
-		DiskLruCache cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
-		if (cache.journalFile.exists()) {
-			try {
-				cache.readJournal();
-				cache.processJournal();
-				cache.journalWriter = new BufferedWriter(new FileWriter(cache.journalFile, true), IO_BUFFER_SIZE);
-				return cache;
-			} catch (IOException journalIsCorrupt) {
-				if (BuildConfig.DEBUG) {
-					journalIsCorrupt.printStackTrace();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					deleteContents(file);
 				}
-				cache.delete();
+				if (!file.delete()) {
+					throw new IOException("failed to delete file: " + file);
+				}
 			}
 		}
-		// create a new empty cache
-		if (directory.exists() || directory.mkdirs()) {
-			cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
-			cache.rebuildJournal();
-			return cache;
-		}
-		return null;
 	}
 
 	/**
@@ -343,19 +422,16 @@ public final class DiskLruCache implements Closeable {
 		if (parts.length < 2) {
 			throw new IOException("unexpected journal line: " + line);
 		}
-
 		String key = parts[1];
 		if (parts[0].equals(REMOVE) && parts.length == 2) {
 			lruEntries.remove(key);
 			return;
 		}
-
 		Entry entry = lruEntries.get(key);
 		if (entry == null) {
 			entry = new Entry(key);
 			lruEntries.put(key, entry);
 		}
-
 		if (parts[0].equals(CLEAN) && parts.length == 2 + valueCount) {
 			entry.readable = true;
 			entry.currentEditor = null;
@@ -395,10 +471,9 @@ public final class DiskLruCache implements Closeable {
 	 * current journal if it exists.
 	 */
 	private synchronized void rebuildJournal() throws IOException {
-		if (journalWriter != null) {
+		if (!isClosed()) {
 			journalWriter.close();
 		}
-
 		Writer writer = new BufferedWriter(new FileWriter(journalFileTmp), IO_BUFFER_SIZE);
 		writer.write(MAGIC);
 		writer.write("\n");
@@ -423,77 +498,13 @@ public final class DiskLruCache implements Closeable {
 	}
 
 	/**
-	 * Returns a snapshot of the entry named {@code key}, or null if it doesn't
-	 * exist is not currently readable. If a value is returned, it is moved to
-	 * the head of the LRU queue.
-	 */
-	public synchronized Snapshot get(String key) throws IOException {
-		checkNotClosed();
-		validateKey(key);
-		Entry entry = lruEntries.get(key);
-		if (entry == null || !entry.readable) {
-			return null;
-		}
-		/*
-		 * Open all streams eagerly to guarantee that we see a single published
-		 * snapshot. If we opened streams lazily then the streams could come
-		 * from different edits.
-		 */
-		InputStream[] ins = new InputStream[valueCount];
-		try {
-			for (int i = 0; i < valueCount; i++) {
-				//noinspection resource
-				ins[i] = new FileInputStream(entry.getCleanFile(i));
-			}
-		} catch (FileNotFoundException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
-			// a file must have been deleted manually!
-			return null;
-		}
-
-		redundantOpCount++;
-		journalWriter.append(READ + ' ').append(key).append(String.valueOf('\n'));
-		if (journalRebuildRequired()) {
-			executorService.submit(cleanupCallable);
-		}
-		return new Snapshot(ins);
-	}
-
-	/**
-	 * Returns an editor for the entry named {@code key}, or null if another
-	 * edit is in progress.
-	 */
-	public synchronized Editor edit(String key) throws IOException {
-		checkNotClosed();
-		validateKey(key);
-		Entry entry = lruEntries.get(key);
-		if (entry == null) {
-			entry = new Entry(key);
-			lruEntries.put(key, entry);
-		} else if (entry.currentEditor != null) {
-			return null; // another edit is in progress
-		}
-		Editor editor = new Editor(entry);
-		entry.currentEditor = editor;
-
-		// flush the journal before creating files to prevent file leaks
-		journalWriter.write(DIRTY + ' ' + key + '\n');
-		journalWriter.flush();
-		return editor;
-	}
-
-	/**
 	 *
 	 */
-	private synchronized void completeEdit(Editor editor, boolean success)
-			throws IOException {
+	private synchronized void completeEdit(Editor editor, boolean success) throws IOException {
 		Entry entry = editor.entry;
-		if (entry.currentEditor != editor) {
+		if (entry.currentEditor != editor || journalWriter == null) {
 			throw new IllegalStateException();
 		}
-
 		// if this edit is creating the entry for the first time, every index
 		// must have a value
 		if (success && !entry.readable) {
@@ -504,7 +515,6 @@ public final class DiskLruCache implements Closeable {
 				}
 			}
 		}
-
 		for (int i = 0; i < valueCount; i++) {
 			File dirty = entry.getDirtyFile(i);
 			if (success) {
@@ -520,7 +530,6 @@ public final class DiskLruCache implements Closeable {
 				deleteIfExists(dirty);
 			}
 		}
-
 		redundantOpCount++;
 		entry.currentEditor = null;
 		if (entry.readable | success) {
@@ -530,90 +539,17 @@ public final class DiskLruCache implements Closeable {
 			lruEntries.remove(entry.key);
 			journalWriter.write(REMOVE + ' ' + entry.key + '\n');
 		}
-
 		if (size > maxSize || journalRebuildRequired()) {
 			executorService.submit(cleanupCallable);
 		}
 	}
 
 	/**
-	 * We only rebuild the journal when it will halve the size of the journal
-	 * and eliminate at least 2000 ops.
+	 * We only rebuild the journal when it will halve the size of the journal and eliminate at least 2000 ops.
 	 */
 	private boolean journalRebuildRequired() {
 		int REDUNDANT_OP_COMPACT_THRESHOLD = 2000;
 		return redundantOpCount >= REDUNDANT_OP_COMPACT_THRESHOLD && redundantOpCount >= lruEntries.size();
-	}
-
-	/**
-	 * Drops the entry for {@code key} if it exists and can be removed. Entries
-	 * actively being edited cannot be removed.
-	 */
-	public synchronized void remove(String key) throws IOException {
-		checkNotClosed();
-		validateKey(key);
-		Entry entry = lruEntries.get(key);
-		if (entry == null || entry.currentEditor != null) {
-			return;
-		}
-
-		for (int i = 0; i < valueCount; i++) {
-			File file = entry.getCleanFile(i);
-			if (!file.delete()) {
-				throw new IOException("failed to delete " + file);
-			}
-			size -= entry.lengths[i];
-			entry.lengths[i] = 0;
-		}
-
-		redundantOpCount++;
-		journalWriter.append(REMOVE + ' ').append(key).append(String.valueOf('\n'));
-		lruEntries.remove(key);
-
-		if (journalRebuildRequired()) {
-			executorService.submit(cleanupCallable);
-		}
-
-	}
-
-	/**
-	 * Returns true if this cache has been closed.
-	 */
-	public boolean isClosed() {
-		return journalWriter == null;
-	}
-
-	private void checkNotClosed() {
-		if (journalWriter == null) {
-			throw new IllegalStateException("cache is closed");
-		}
-	}
-
-	/**
-	 * Force buffered operations to the filesystem.
-	 */
-	public synchronized void flush() throws IOException {
-		checkNotClosed();
-		trimToSize();
-		journalWriter.flush();
-	}
-
-	/**
-	 * Closes this cache. Stored values will remain on the filesystem.
-	 */
-	@Override
-	public synchronized void close() throws IOException {
-		if (journalWriter == null) {
-			return; // already closed
-		}
-		for (Entry entry : new ArrayList<>(lruEntries.values())) {
-			if (entry.currentEditor != null) {
-				entry.currentEditor.abort();
-			}
-		}
-		trimToSize();
-		journalWriter.close();
-		journalWriter = null;
 	}
 
 	/**
@@ -625,16 +561,6 @@ public final class DiskLruCache implements Closeable {
 			Map.Entry<String, Entry> toEvict = lruEntries.entrySet().iterator().next();
 			remove(toEvict.getKey());
 		}
-	}
-
-	/**
-	 * Closes the cache and deletes all of its stored values. This will delete
-	 * all files in the cache directory including files that weren't created by
-	 * the cache.
-	 */
-	public void delete() throws IOException {
-		close();
-		deleteContents(directory);
 	}
 
 	/**
@@ -677,14 +603,13 @@ public final class DiskLruCache implements Closeable {
 	 * Edits the values for an entry.
 	 */
 	public final class Editor {
-		private Entry entry;
 
+		private Entry entry;
 		private boolean hasErrors;
 
 		private Editor(Entry entry) {
 			this.entry = entry;
 		}
-
 
 		/**
 		 * Returns a new unbuffered output stream to write the value at
@@ -719,9 +644,10 @@ public final class DiskLruCache implements Closeable {
 		 * Aborts this edit. This releases the edit lock so another edit may be
 		 * started on the same key.
 		 */
-		public void abort() throws IOException {
+		private void abort() throws IOException {
 			completeEdit(this, false);
 		}
+
 
 		private class FaultHidingOutputStream extends FilterOutputStream {
 
@@ -734,9 +660,6 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.write(oneByte);
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
 					hasErrors = true;
 				}
 			}
@@ -746,9 +669,6 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.write(buffer, offset, length);
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
 					hasErrors = true;
 				}
 			}
@@ -758,9 +678,6 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.close();
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
 					hasErrors = true;
 				}
 			}
@@ -770,9 +687,6 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.flush();
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
 					hasErrors = true;
 				}
 			}
@@ -810,7 +724,7 @@ public final class DiskLruCache implements Closeable {
 		}
 
 
-		public String getLengths() {
+		private String getLengths() {
 			StringBuilder result = new StringBuilder();
 			for (long size : lengths) {
 				result.append(' ').append(size);
@@ -844,14 +758,14 @@ public final class DiskLruCache implements Closeable {
 		/**
 		 *
 		 */
-		public File getCleanFile(int i) {
+		private File getCleanFile(int i) {
 			return new File(directory, key + "." + i);
 		}
 
 		/**
 		 *
 		 */
-		public File getDirtyFile(int i) {
+		private File getDirtyFile(int i) {
 			return new File(directory, key + "." + i + ".tmp");
 		}
 	}
