@@ -31,10 +31,7 @@
 	</PreferenceCategory>
 
 	<!-- Data category -->
-	<PreferenceCategory android:title="@string/settings_data_category">
-
-		<!-- Only on Wi-Fi -->
-
+	<PreferenceCategory android:title="@string/settings_data_musicbrainz">
 		<!-- Missing artwork -->
 		<CheckBoxPreference
 			android:defaultValue="false"
@@ -46,11 +43,7 @@
 			android:defaultValue="false"
 			android:key="download_missing_artist_images"
 			android:title="@string/settings_download_artist_images_title" />
-		<CheckBoxPreference
-			android:defaultValue="false"
-			android:key="only_on_wifi"
-			android:summary="@string/settings_download_only_on_wifi_summary"
-			android:title="@string/settings_download_only_on_wifi_title" />
+
 	</PreferenceCategory>
 
 	<!-- Storage category -->

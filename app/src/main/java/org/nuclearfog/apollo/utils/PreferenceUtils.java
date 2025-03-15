@@ -63,8 +63,6 @@ public final class PreferenceUtils {
 	public static final String ALBUM_LAYOUT = "album_layout";
 	// Sets the type of layout to use for the recent list
 	public static final String RECENT_LAYOUT = "recent_layout";
-	// Key used to download images only on Wi-Fi
-	public static final String ONLY_ON_WIFI = "only_on_wifi";
 	// Key that gives permissions to download missing album covers
 	public static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
 	// Key that gives permissions to download missing artist images
@@ -167,14 +165,6 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(DEFAULT_THEME_COLOR, value);
 		editor.apply();
-	}
-
-	/**
-	 * @return True if the user has checked to only download images on Wi-Fi,
-	 * false otherwise
-	 */
-	public boolean onlyOnWifi() {
-		return defaultPref.getBoolean(ONLY_ON_WIFI, true);
 	}
 
 	/**

@@ -150,7 +150,7 @@
 	<string name="settings_ui_category">Interface</string>
 	<string name="settings_storage_category">Storage</string>
 	<string name="settings_other">Other settings</string>
-	<string name="settings_data_category">Data</string>
+	<string name="settings_data_musicbrainz">MusicBrainz</string>
 	<string name="settings_about_apollo">About Apollo</string>
 	<string name="settings_color_scheme_title">Choose Apollo\'s default color scheme</string>
 	<string name="settings_color_scheme_summary">Changes the accent color in Apollo</string>
@@ -159,12 +159,10 @@
 	<string name="settings_delete_cache_summary">Remove all cached images</string>
 	<string name="settings_disable_bat_opt_title">Disable battery optimization</string>
 	<string name="settings_disable_bat_opt_summary">Battery optimization may cause playback to stop when running in the background</string>
-	<string name="settings_download_only_on_wifi_title">Download via Wi-Fi only</string>
 	<string name="settings_prefer_external_equalizer">Prefer external equalizer</string>
 	<string name="settings_keep_screen_on">Wakelock</string>
 	<string name="settings_use_old_notification">Use old notification style</string>
 	<string name="settings_use_old_notification_summary">Enable if notification is not shown correctly</string>
-	<string name="settings_download_only_on_wifi_summary">To reduce carrier charges, don\'t download over mobile networks</string>
 	<string name="settings_download_missing_artwork_title">Download missing album art</string>
 	<string name="settings_download_artist_images_title">Download missing artist images</string>
 	<string name="settings_open_source_licenses">Open source licenses</string>

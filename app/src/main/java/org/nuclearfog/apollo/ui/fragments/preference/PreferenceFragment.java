@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,8 @@ import org.nuclearfog.apollo.utils.Constants;
  */
 public class PreferenceFragment extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
+	private static final String TAG = "PreferenceFragment";
+
 	private static final String DEL_CACHE = "delete_cache";
 	private static final String THEME_SEL = "theme_chooser";
 	private static final String COLOR_SEL = "color_scheme";
@@ -37,17 +40,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 	private static final String BAT_OPT = "disable_battery_opt";
 	private static final String DOWNLOAD_IMAGES = "download_missing_artist_images";
 	private static final String DOWNLOAD_ARTWORK = "download_missing_artwork";
-	private static final String DOWNLOAD_WIFI = "only_on_wifi";
 	private static final String SOURCECODE = "source_code";
 	private static final String LICENSE = "licenses";
-
-
-	@Nullable
-	private CheckBoxPreference downloadImages;
-	@Nullable
-	private CheckBoxPreference downloadArtwork;
-	@Nullable
-	private CheckBoxPreference downloadWifi;
 
 
 	@Override
@@ -59,9 +53,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 		Preference colorScheme = findPreference(COLOR_SEL);
 		Preference batteryOpt = findPreference(BAT_OPT);
 		Preference sourceCode = findPreference(SOURCECODE);
-		downloadImages = findPreference(DOWNLOAD_IMAGES);
-		downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
-		downloadWifi = findPreference(DOWNLOAD_WIFI);
+		CheckBoxPreference downloadImages = findPreference(DOWNLOAD_IMAGES);
+		CheckBoxPreference downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
 		Preference version = findPreference(VERSION);
 
 		if (version != null)
@@ -79,9 +72,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 		if (downloadImages != null && downloadArtwork != null) {
 			downloadImages.setOnPreferenceClickListener(this);
 			downloadArtwork.setOnPreferenceClickListener(this);
-			if (downloadWifi != null) {
-				downloadWifi.setEnabled(downloadImages.isChecked() || downloadArtwork.isChecked());
-			}
 		}
 		if (batteryOpt != null) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -116,21 +106,15 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 				ApolloUtils.redirectToBatteryOptimization(requireActivity());
 				return true;
 
-			case DOWNLOAD_IMAGES:
-			case DOWNLOAD_ARTWORK:
-				if (downloadWifi != null && downloadArtwork != null && downloadImages != null) {
-					downloadWifi.setEnabled(downloadArtwork.isChecked() || downloadImages.isChecked());
-				}
-				break;
-
 			case SOURCECODE:
+				// open source code repository
 				String url = Constants.SOURCE_URL;
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.setData(Uri.parse(url));
 				try {
 					startActivity(intent);
 				} catch (ActivityNotFoundException e) {
-					// ignore
+					Log.w(TAG, "could not redirect to source code repository!");
 				}
 				break;
 		}

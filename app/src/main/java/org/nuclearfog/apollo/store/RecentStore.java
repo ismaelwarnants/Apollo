@@ -15,9 +15,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-
-import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -33,8 +30,7 @@ import java.util.List;
  * <p>
  * In {@link ProfileActivity}, when viewing the profile for an artist, the first
  * image the carousel header is the last album the user listened to for that
- * particular artist. That album is retrieved using
- * {@link #getAlbumName(String)}.
+ * particular artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
@@ -68,11 +64,6 @@ public class RecentStore extends AppStore {
 	 * select recent album by ID
 	 */
 	private static final String RECENT_SELECT_ID = RecentStoreColumns.ID + "=?";
-
-	/**
-	 * select recent album by name
-	 */
-	private static final String RECENT_SELECT_NAME = RecentStoreColumns.ARTISTNAME + "=?";
 
 	/**
 	 * default sort order
@@ -146,27 +137,6 @@ public class RecentStore extends AppStore {
 		SQLiteDatabase database = getWritableDatabase();
 		database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
 		commit();
-	}
-
-	/**
-	 * Used to retrieve the most recently listened album for an artist.
-	 *
-	 * @param artistName The artistName to reference.
-	 * @return The most recently listened album for an artist.
-	 */
-	@Nullable
-	public synchronized String getAlbumName(String artistName) {
-		String result = null;
-		if (!TextUtils.isEmpty(artistName)) {
-			String[] args = {artistName};
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(RecentStoreColumns.NAME, COLUMNS, RECENT_SELECT_NAME, args, null, null, RECENT_ORDER);
-			if (cursor.moveToFirst()) {
-				result = cursor.getString(1);
-			}
-			cursor.close();
-		}
-		return result;
 	}
 
 	/**
