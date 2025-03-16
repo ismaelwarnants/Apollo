@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.views.CarouselTab.OnPhotoClickedListener;
-import org.nuclearfog.apollo.ui.views.FrameLayoutWithOverlay.OnOverlayClickListener;
+import org.nuclearfog.apollo.ui.views.CarouselTab.OnTabClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 
 /**
@@ -42,22 +42,12 @@ import org.nuclearfog.apollo.utils.AnimatorUtils;
  * @author nuclearfog
  * @see CarouselTab
  */
-public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnOverlayClickListener, OnGlobalLayoutListener, AnimatorListener, OnPhotoClickedListener {
+public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnGlobalLayoutListener, AnimatorListener, OnPhotoClickedListener, OnTabClickListener {
 
 	/**
 	 * Number of tabs
 	 */
 	private static final int TAB_COUNT = 2;
-
-	/**
-	 * First tab index
-	 */
-	private static final int TAB_INDEX_FIRST = 0;
-
-	/**
-	 * Second tab index
-	 */
-	private static final int TAB_INDEX_SECOND = 1;
 
 	/**
 	 * Alpha layer to be set on the layer view
@@ -107,7 +97,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Current tab index
 	 */
-	private int mCurrentTab = TAB_INDEX_FIRST;
+	private int mCurrentTab = 0;
 
 	/**
 	 * Factor to scale scroll-amount sent to listeners
@@ -149,10 +139,11 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 		setHorizontalScrollBarEnabled(false);
 		setHorizontalFadingEdgeEnabled(false);
 		setOverScrollMode(OVER_SCROLL_NEVER);
+		setCurrentTab(0);
 
 		mFirstTab.setOnPhotoClickedListener(this);
-		mFirstTab.setOverlayOnClickListener(this);
-		mSecondTab.setOverlayOnClickListener(this);
+		mFirstTab.setOnTabClickListener(this);
+		mSecondTab.setOnTabClickListener(this);
 		setOnTouchListener(this);
 	}
 
@@ -228,6 +219,18 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 		}
 	}
 
+
+	@Override
+	public void onTabClick(View view) {
+		if (mListener != null) {
+			if (view.getId() == R.id.profile_tab_carousel_tab_one) {
+				mListener.onTabSelected(0);
+			} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
+				mListener.onTabSelected(1);
+			}
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -266,22 +269,8 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	public void onGlobalLayout() {
 		/* Layout pass done, unregister for further events */
 		getViewTreeObserver().removeOnGlobalLayoutListener(this);
-		scrollTo(mCurrentTab == TAB_INDEX_FIRST ? 0 : mAllowedHorizontalScrollLength, 0);
+		scrollTo(mCurrentTab == 0 ? 0 : mAllowedHorizontalScrollLength, 0);
 		updateAlphaLayers();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onOverlayClick(View view) {
-		if (mListener != null) {
-			if (view.getId() == R.id.profile_tab_carousel_tab_one) {
-				mListener.onTabSelected(TAB_INDEX_FIRST);
-			} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
-				mListener.onTabSelected(TAB_INDEX_SECOND);
-			}
-		}
 	}
 
 	/**
@@ -322,8 +311,8 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void reset() {
 		scrollTo(0, 0);
-		setCurrentTab(TAB_INDEX_FIRST);
-		moveToYCoordinate(TAB_INDEX_FIRST, 0);
+		setCurrentTab(0);
+		moveToYCoordinate(0, 0);
 	}
 
 	/**
@@ -382,7 +371,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	private void updateAlphaLayers() {
 		float alpha = mLastScrollPosition * MAX_ALPHA / mAllowedHorizontalScrollLength;
-		alpha = AlphaTouchInterceptorOverlay.clamp(alpha, 0.0f, 1.0f);
 		mFirstTab.setAlphaLayerValue(alpha);
 		mSecondTab.setAlphaLayerValue(MAX_ALPHA - alpha);
 	}
@@ -408,14 +396,13 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void setCurrentTab(int position) {
 		CarouselTab selected, deselected;
-
 		switch (position) {
-			case TAB_INDEX_FIRST:
+			case 0:
 				selected = mFirstTab;
 				deselected = mSecondTab;
 				break;
 
-			case TAB_INDEX_SECOND:
+			case 1:
 				selected = mSecondTab;
 				deselected = mFirstTab;
 				break;
@@ -440,14 +427,21 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
+	 * get the current tab position
+	 */
+	public int getCurrentTab() {
+		return mCurrentTab;
+	}
+
+	/**
 	 * Sets the artist image header
 	 *
 	 * @param artistName The artist name used to find the cached artist image
 	 *                   and used to find the last album played by the artist
 	 */
 	public void setArtistProfileHeader(String artistName) {
-		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mSecondTab.setLabel(getResources().getString(R.string.page_albums));
+		mFirstTab.setLabel(R.string.page_songs);
+		mSecondTab.setLabel(R.string.page_albums);
 		mFirstTab.setArtistImage(artistName);
 		mEnableSwipe = true;
 	}
@@ -459,7 +453,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param artistName The artist name used to find the cached artist image
 	 */
 	public void setAlbumProfileHeader(long albumId, String albumName, String artistName) {
-		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setAlbumImage(albumId, artistName, albumName);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
@@ -472,7 +466,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void setPlaylistProfileHeader(long id) {
 		mFirstTab.setDefault();
-		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setPlaylistImage(id);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
@@ -485,7 +479,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void setGenreProfileHeader(String genreName) {
 		mFirstTab.setDefault();
-		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setGenreImage(genreName);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
@@ -498,15 +492,14 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void setFolderProfileHeader(String folder) {
 		mFirstTab.setDefault();
-		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
+		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setFolderImage(folder);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
 
 	/**
-	 * Interface for callbacks invoked when the user interacts with the
-	 * carousel.
+	 * Interface for callbacks invoked when the user interacts with the carousel.
 	 */
 	public interface Listener {
 

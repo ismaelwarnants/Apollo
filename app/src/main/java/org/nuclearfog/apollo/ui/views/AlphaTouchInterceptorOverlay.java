@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.ui.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -30,14 +31,15 @@ import androidx.annotation.Nullable;
  * can specify the View to use as the alpha layer via setAlphaLayer(); in this
  * case you are responsible for managing the z-order of the alpha-layer with
  * respect to your other sub-views. Typically, you would not use this class
- * directly, but rather use another class that uses it, for example
- * {@link FrameLayoutWithOverlay}.
+ * directly, but rather use another class that uses it.
  */
-public class AlphaTouchInterceptorOverlay extends FrameLayout {
+public class AlphaTouchInterceptorOverlay extends FrameLayout implements OnClickListener {
 
 	private View mInterceptorLayer;
-
 	private View mAlphaLayer = this;
+
+	@Nullable
+	private OnOverlayClickListener listener;
 	private float mAlpha = 0.0f;
 
 	/**
@@ -53,16 +55,17 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	public AlphaTouchInterceptorOverlay(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		mInterceptorLayer = new View(context);
-		mInterceptorLayer.setBackgroundColor(0);
 		addView(mInterceptorLayer);
+
+		mInterceptorLayer.setBackgroundColor(0);
+		mInterceptorLayer.setOnClickListener(this);
 	}
 
-	/**
-	 * Sets an alpha value on the view.
-	 */
-	public void setAlphaOnViewBackground(View view, float alpha) {
-		if (view != null) {
-			view.setBackgroundColor((int) (clamp(alpha, 0.0f, 1.0f) * 255) << 24);
+
+	@Override
+	public void onClick(View v) {
+		if (listener != null) {
+			listener.onOverlayClick(this);
 		}
 	}
 
@@ -71,33 +74,19 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	 * it will use itself. Only necessary to set this if some child views need
 	 * to appear above the alpha-layer but below the touch-interceptor.
 	 */
-	public void setAlphaLayer(View alphaLayer) {
-		if (mAlphaLayer == alphaLayer) {
-			return;
-		}
-		// We're no longer the alpha-layer, so make ourself invisible.
-		if (mAlphaLayer == this) {
-			setAlphaOnViewBackground(this, 0.0f);
-		}
-		mAlphaLayer = alphaLayer == null ? this : alphaLayer;
+	public void setAlphaLayer(@NonNull View alphaLayer) {
+		mAlphaLayer = alphaLayer;
 		setAlphaLayerValue(mAlpha);
 	}
 
 	/**
 	 * Sets the alpha value on the alpha layer.
+	 *
+	 * @param alpha transparency value between 0.0 and 1.0
 	 */
 	public void setAlphaLayerValue(float alpha) {
-		mAlpha = alpha;
-		if (mAlphaLayer != null) {
-			setAlphaOnViewBackground(mAlphaLayer, mAlpha);
-		}
-	}
-
-	/**
-	 * Delegate to interceptor-layer.
-	 */
-	public void setOverlayOnClickListener(OnClickListener listener) {
-		mInterceptorLayer.setOnClickListener(listener);
+		mAlpha = Math.max(0f, Math.min(1f, alpha));
+		mAlphaLayer.setBackgroundColor((int) (alpha * 255) << 24);
 	}
 
 	/**
@@ -108,15 +97,22 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	}
 
 	/**
-	 * If the input value lies outside of the specified range, return the nearer
-	 * bound. Otherwise, return the input value, unchanged.
+	 * sets an overlay click listener
 	 */
-	public static float clamp(float input, float lowerBound, float upperBound) {
-		if (input < lowerBound) {
-			return lowerBound;
-		} else if (input > upperBound) {
-			return upperBound;
-		}
-		return input;
+	public void setOnOverlayClickListener(@Nullable OnOverlayClickListener listener) {
+		this.listener = listener;
+	}
+
+	/**
+	 * click listener for the alpha overlay
+	 */
+	public interface OnOverlayClickListener {
+
+		/**
+		 * called if the overlay view was clicked
+		 *
+		 * @param v overlay view
+		 */
+		void onOverlayClick(View v);
 	}
 }

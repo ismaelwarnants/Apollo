@@ -18,15 +18,18 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.ui.views.AlphaTouchInterceptorOverlay.OnOverlayClickListener;
 
 /**
  * a custom view representing a tab. Used by {@link ProfileTabCarousel}
@@ -34,17 +37,20 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListener {
+public class CarouselTab extends FrameLayout implements OnClickListener, OnOverlayClickListener {
 
 	private ImageView mPhoto;
 	private ImageView mAlbumArt;
 	private TextView mLabelView;
 	private View mColorstrip;
+	private AlphaTouchInterceptorOverlay mOverlay;
 
 	private ImageFetcher mFetcher;
 
 	@Nullable
-	private OnPhotoClickedListener listener;
+	private OnPhotoClickedListener photoClickListener;
+	@Nullable
+	private OnTabClickListener tabClickListener;
 
 	/**
 	 *
@@ -59,6 +65,7 @@ public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListen
 	 */
 	public CarouselTab(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
+		mOverlay = new AlphaTouchInterceptorOverlay(context);
 		View view = LayoutInflater.from(context).inflate(R.layout.tab_profile, this, false);
 		View mAlphaLayer = view.findViewById(R.id.profile_tab_alpha_overlay);
 		mColorstrip = view.findViewById(R.id.profile_tab_colorstrip);
@@ -66,11 +73,15 @@ public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListen
 		mAlbumArt = view.findViewById(R.id.profile_tab_album_art);
 		mLabelView = view.findViewById(R.id.profile_tab_label);
 		mFetcher = new ImageFetcher(context);
+
 		// add child views
 		addView(view);
-		// Set the alpha layer
-		setAlphaLayer(mAlphaLayer);
+		addView(mOverlay);
 
+		// Set the alpha layer
+		mOverlay.setAlphaLayer(mAlphaLayer);
+
+		mOverlay.setOnOverlayClickListener(this);
 		mPhoto.setOnClickListener(this);
 	}
 
@@ -93,9 +104,19 @@ public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListen
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.profile_tab_photo) {
-			if (listener != null) {
-				listener.onPhotoClicked();
+			if (photoClickListener != null) {
+				photoClickListener.onPhotoClicked();
 			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onOverlayClick(View v) {
+		if (tabClickListener != null) {
+			tabClickListener.onTabClick(this);
 		}
 	}
 
@@ -184,16 +205,40 @@ public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListen
 	}
 
 	/**
-	 * sets click listener for the first photo
+	 * Delegate to overlay: set the alpha value on the alpha layer.
 	 */
-	public void setOnPhotoClickedListener(OnPhotoClickedListener listener) {
-		this.listener = listener;
+	public void setAlphaLayerValue(float alpha) {
+		mOverlay.setAlphaLayerValue(alpha);
 	}
 
 	/**
-	 * @param label The string to set as the label.
+	 * Delegate to overlay.
 	 */
-	public void setLabel(String label) {
+	public void setOverlayClickable(boolean clickable) {
+		mOverlay.setOverlayClickable(clickable);
+	}
+
+	/**
+	 * sets click listener for the first photo
+	 */
+	public void setOnPhotoClickedListener(OnPhotoClickedListener listener) {
+		photoClickListener = listener;
+	}
+
+	/**
+	 * sets click listener for a tab
+	 */
+	public void setOnTabClickListener(OnTabClickListener listener) {
+		tabClickListener = listener;
+	}
+
+	/**
+	 * sets the tab label
+	 *
+	 * @param res  string resource ID
+	 */
+	public void setLabel(@StringRes int res) {
+		String label = getContext().getString(res);
 		mLabelView.setText(label);
 	}
 
@@ -217,5 +262,13 @@ public class CarouselTab extends FrameLayoutWithOverlay implements OnClickListen
 	public interface OnPhotoClickedListener {
 
 		void onPhotoClicked();
+	}
+
+	/**
+	 * listener called if the tab was clicked
+	 */
+	public interface OnTabClickListener {
+
+		void onTabClick(View v);
 	}
 }

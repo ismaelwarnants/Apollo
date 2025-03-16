@@ -51,6 +51,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
+import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
@@ -250,6 +251,19 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	protected void onPause() {
 		super.onPause();
 		mImageFetcher.flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onBackPressed() {
+		if (mTabCarousel == null || mViewPager == null || mTabCarousel.getCurrentTab() == 0) {
+			super.onBackPressed();
+		} else {
+			mTabCarousel.reset();
+			mViewPager.setCurrentItem(0);
+		}
 	}
 
 	/**
@@ -701,7 +715,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * artwork. This is specifically for fetching the image from MusicBrainz.
 	 */
 	public void fetchAlbumArt() {
-		// todo add image selector dialog
+		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName);
 	}
 
 	/**
