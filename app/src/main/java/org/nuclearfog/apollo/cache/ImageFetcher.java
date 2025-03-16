@@ -37,6 +37,7 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -114,7 +115,7 @@ public class ImageFetcher {
 	 * @return artist image bitmap
 	 */
 	public Bitmap getAlbumImage(String album, String artist) {
-		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, album, artist);
 		Bitmap bitmap = getCachedBitmap(key);
 		if (bitmap == null)
 			return getDefaultArtwork();
@@ -129,7 +130,7 @@ public class ImageFetcher {
 	 * @param uri    local Uri to image file
 	 */
 	public void setAlbumImage(String album, String artist, @Nullable Uri uri) {
-		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, album, artist);
 		if (uri != null) {
 			addImageToCache(uri, key);
 		} else {
@@ -162,7 +163,7 @@ public class ImageFetcher {
 	 * @param imageViews imageview(s) to attach the images
 	 */
 	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
-		String key = generateCacheKey(ImageType.ALBUM, album, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, album, artist);
 		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
 	}
 
@@ -173,7 +174,7 @@ public class ImageFetcher {
 	 * @return artist image bitmap
 	 */
 	public Bitmap getArtistImage(String artist) {
-		String key = generateCacheKey(ImageType.ARTIST, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artist);
 		Bitmap bitmap = getCachedBitmap(key);
 		if (bitmap == null)
 			return getDefaultArtwork();
@@ -187,7 +188,7 @@ public class ImageFetcher {
 	 * @param uri    local Uri of the image file
 	 */
 	public void setArtistImage(String artist, @Nullable Uri uri) {
-		String key = generateCacheKey(ImageType.ARTIST, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artist);
 		if (uri != null) {
 			addImageToCache(uri, key);
 		} else {
@@ -202,7 +203,7 @@ public class ImageFetcher {
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadArtistImage(String artist, ImageView imageView) {
-		String key = generateCacheKey(ImageType.ARTIST, artist);
+		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artist);
 		loadImage(key, artist, "", 0, ImageType.ARTIST, imageView);
 	}
 
@@ -213,7 +214,7 @@ public class ImageFetcher {
 	 * @param uri   local Uri of the image file
 	 */
 	public void setGenreImage(String genre, @Nullable Uri uri) {
-		String key = generateCacheKey(ImageType.GENRE, genre);
+		String key = StringUtils.generateCacheKey(ImageType.GENRE, genre);
 		if (uri != null) {
 			addImageToCache(uri, key);
 		} else {
@@ -228,7 +229,7 @@ public class ImageFetcher {
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadGenreImage(String genre, ImageView imageView) {
-		String key = generateCacheKey(ImageType.GENRE, genre);
+		String key = StringUtils.generateCacheKey(ImageType.GENRE, genre);
 		loadImage(key, "", "", 0, ImageType.GENRE, imageView);
 	}
 
@@ -239,7 +240,7 @@ public class ImageFetcher {
 	 * @param uri local Uri of the image file
 	 */
 	public void setPlaylistImage(long id, @Nullable Uri uri) {
-		String key = generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
+		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
 		if (uri != null) {
 			addImageToCache(uri, key);
 		} else {
@@ -254,7 +255,7 @@ public class ImageFetcher {
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadPlaylistImage(long id, ImageView imageView) {
-		String key = generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
+		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, Long.toString(id));
 		loadImage(key, "", "", 0, ImageType.PLAYLIST, imageView);
 	}
 
@@ -265,7 +266,7 @@ public class ImageFetcher {
 	 * @param uri    local Uri of the image file
 	 */
 	public void setFolderImage(String folder, @Nullable Uri uri) {
-		String key = generateCacheKey(ImageType.FOLDER, folder);
+		String key = StringUtils.generateCacheKey(ImageType.FOLDER, folder);
 		if (uri != null) {
 			addImageToCache(uri, key);
 		} else {
@@ -280,7 +281,7 @@ public class ImageFetcher {
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadFolderImage(String folder, ImageView imageView) {
-		String key = generateCacheKey(ImageType.FOLDER, folder);
+		String key = StringUtils.generateCacheKey(ImageType.FOLDER, folder);
 		loadImage(key, "", "", 0, ImageType.FOLDER, imageView);
 	}
 
@@ -301,7 +302,7 @@ public class ImageFetcher {
 	/**
 	 * get image bitmap directly from cache using cache key
 	 *
-	 * @param key keyword used to find the image
+	 * @param key cache key to find the image
 	 * @return image matching the keyword or null if not found
 	 */
 	@Nullable
@@ -359,7 +360,7 @@ public class ImageFetcher {
 	 */
 	@NonNull
 	public Bitmap getAlbumArtwork(@NonNull Album album) {
-		String cacheKey = generateCacheKey(ImageType.ALBUM, album.getName(), album.getArtist());
+		String cacheKey = StringUtils.generateCacheKey(ImageType.ALBUM, album.getName(), album.getArtist());
 		Bitmap artwork = mImageCache.getBitmapFromDiskCache(cacheKey);
 		if (artwork == null) {
 			artwork = getDefaultArtwork();
@@ -487,21 +488,5 @@ public class ImageFetcher {
 	private Bitmap getDefaultArtwork() {
 		Drawable bitmap = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.default_artwork, null);
 		return ((BitmapDrawable) bitmap).getBitmap();
-	}
-
-	/**
-	 * create unique cache key for specific entry
-	 *
-	 * @param type image type to cache
-	 * @param data string values (e.g. artist, album name) used to calculate cache key
-	 * @return key string
-	 */
-	private String generateCacheKey(ImageType type, String... data) {
-		StringBuilder str = new StringBuilder();
-		for (String key : data) {
-			str.append(key).append('_');
-		}
-		str.append(type.value);
-		return str.toString();
 	}
 }

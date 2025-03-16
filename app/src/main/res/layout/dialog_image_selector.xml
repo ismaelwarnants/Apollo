@@ -9,6 +9,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:textSize="@dimen/text_size_large"
+		android:text="@string/select_albumart"
 		android:lines="1" />
 
 	<EditText
@@ -17,7 +18,11 @@
 		android:layout_height="wrap_content"
 		android:background="@color/transparent"
 		android:textSize="@dimen/text_size_large"
-		android:lines="1" />
+		android:inputType="text"
+		android:importantForAutofill="no"
+		android:hint="@string/album_name_hint"
+		android:lines="1"
+		android:drawableStart="@android:drawable/ic_menu_search"/>
 
 	<ListView
 		android:id="@+id/dialog_image_selector_list"

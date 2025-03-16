@@ -25,8 +25,6 @@
 	<!-- List and grid view padding -->
 	<dimen name="list_preferred_item_padding">10.0dp</dimen>
 	<dimen name="list_empty_text_padding">10.0dp</dimen>
-	<!-- List view fast scroll padding left -->
-	<!-- List view fast scroll padding right -->
 	<!-- grid view vertical and horizontal spacing -->
 	<dimen name="grid_item_spacing">4.0dp</dimen>
 	<!-- List item detailed height -->
@@ -46,6 +44,9 @@
 	<!-- Item theme settings -->
 	<dimen name="item_theme_text_padding">5dp</dimen>
 	<dimen name="item_theme_image_padding">10dp</dimen>
+	<!--Item album art-->
+	<dimen name="item_albumart_image_size">64dp</dimen>
+	<dimen name="item_albumart_item_margins">5dp</dimen>
 
 	<!-- Bottom Action Bar -->
 	<dimen name="bottom_action_bar_height">48.0dp</dimen>

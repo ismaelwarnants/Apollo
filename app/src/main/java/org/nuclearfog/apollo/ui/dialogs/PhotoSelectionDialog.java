@@ -129,20 +129,34 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		ProfileActivity activity = (ProfileActivity) requireActivity();
-		switch (which) {
-			case IDX_NEW:
-				activity.selectNewPhoto();
-				break;
-			case IDX_OLD:
-				activity.selectOldPhoto();
-				break;
-			case IDX_FETCH:
-				activity.fetchAlbumArt();
-				break;
-			case IDX_SEARCH:
-				activity.searchWeb();
-				break;
+		if (getActivity() instanceof OnOptionSelectedListener) {
+			OnOptionSelectedListener listener = (OnOptionSelectedListener) getActivity();
+			switch (which) {
+				case IDX_NEW:
+					listener.selectNewPhoto();
+					break;
+				case IDX_OLD:
+					listener.selectOldPhoto();
+					break;
+				case IDX_FETCH:
+					listener.fetchAlbumArt();
+					break;
+				case IDX_SEARCH:
+					listener.searchWeb();
+					break;
+			}
 		}
+	}
+
+
+	public interface OnOptionSelectedListener {
+
+		void selectNewPhoto();
+
+		void selectOldPhoto();
+
+		void fetchAlbumArt();
+
+		void searchWeb();
 	}
 }

@@ -158,92 +158,22 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Adds a new image to the memory and disk caches
-	 *
-	 * @param data   The key used to store the image
-	 * @param bitmap The {@link Bitmap} to cache
-	 */
-	public void addBitmapToCache(@NonNull String data, @NonNull Bitmap bitmap) {
-		// Add to memory cache
-		addBitmapToMemCache(data, bitmap);
-
-		// Add to disk cache
-		if (mDiskCache != null) {
-			String key = StringUtils.hashKeyForDisk(data);
-			OutputStream out = null;
-			try {
-				DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
-				if (snapshot == null) {
-					DiskLruCache.Editor editor = mDiskCache.edit(key);
-					if (editor != null) {
-						out = editor.newOutputStream(DISK_CACHE_INDEX);
-						bitmap.compress(COMPRESS_FORMAT, COMPRESS_QUALITY, out);
-						editor.commit();
-						flush();
-					}
-				} else {
-					snapshot.getInputStream(DISK_CACHE_INDEX).close();
-				}
-			} catch (IOException e) {
-				Log.e(TAG, "addBitmapToCache()" + e);
-			} finally {
-				try {
-					if (out != null) {
-						out.close();
-					}
-				} catch (IOException | IllegalStateException e) {
-					Log.e(TAG, "addBitmapToCache(): failed to close output stream");
-				}
-			}
-		}
-	}
-
-	/**
-	 * Called to add a new image to the memory cache
-	 *
-	 * @param data   The key identifier
-	 * @param bitmap The {@link Bitmap} to cache
-	 */
-	public void addBitmapToMemCache(@NonNull String data, @NonNull Bitmap bitmap) {
-		// Add to memory cache
-		if (mLruCache != null && getBitmapFromMemCache(data) == null) {
-			mLruCache.put(data, bitmap);
-		}
-	}
-
-	/**
-	 * Fetches a cached image from the memory cache
-	 *
-	 * @param data Unique identifier for which item to get
-	 * @return The {@link Bitmap} if found in cache, null otherwise
-	 */
-	public Bitmap getBitmapFromMemCache(@NonNull String data) {
-		if (mLruCache != null) {
-			return mLruCache.get(data);
-		}
-		return null;
-	}
-
-	/**
 	 * Fetches a cached image from the disk cache
 	 *
 	 * @param data Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
 	public Bitmap getBitmapFromDiskCache(@NonNull String data) {
-		// Check in the memory cache here to avoid going to the disk cache less often
 		if (getBitmapFromMemCache(data) != null) {
 			return getBitmapFromMemCache(data);
 		}
-
 		synchronized (PAUSELOCK) {
-			String key = StringUtils.hashKeyForDisk(data);
+			String hash = StringUtils.hashKeyForDisk(data);
 			if (mDiskCache != null) {
-				InputStream inputStream = null;
 				try {
-					DiskLruCache.Snapshot snapshot = mDiskCache.get(key);
+					DiskLruCache.Snapshot snapshot = mDiskCache.get(hash);
 					if (snapshot != null) {
-						inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+						InputStream inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
 						if (inputStream != null) {
 							Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 							if (bitmap != null) {
@@ -253,14 +183,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 					}
 				} catch (IOException e) {
 					Log.e(TAG, "getBitmapFromDiskCache():" + e);
-				} finally {
-					try {
-						if (inputStream != null) {
-							inputStream.close();
-						}
-					} catch (IOException e) {
-						Log.e(TAG, "getBitmapFromDiskCache(): failed to close output stream");
-					}
 				}
 			}
 			return null;
@@ -268,17 +190,69 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
+	 * Adds a new image to the memory and disk caches
+	 *
+	 * @param key    The key used to store the image
+	 * @param bitmap The {@link Bitmap} to cache
+	 */
+	public void addBitmapToCache(@NonNull String key, @NonNull Bitmap bitmap) {
+		// Add to memory cache
+		addBitmapToMemCache(key, bitmap);
+		// Add to disk cache
+		if (mDiskCache != null) {
+			try {
+				String hash = StringUtils.hashKeyForDisk(key);
+				DiskLruCache.Editor editor = mDiskCache.edit(hash);
+				if (editor != null) {
+					OutputStream out = editor.newOutputStream(DISK_CACHE_INDEX);
+					bitmap.compress(COMPRESS_FORMAT, COMPRESS_QUALITY, out);
+					out.close();
+					editor.commit();
+					flush();
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "addBitmapToCache()" + e);
+			}
+		}
+	}
+
+	/**
+	 * Called to add a new image to the memory cache
+	 *
+	 * @param key    The key identifier of the image
+	 * @param bitmap The {@link Bitmap} to cache
+	 */
+	public void addBitmapToMemCache(@NonNull String key, @NonNull Bitmap bitmap) {
+		if (mLruCache != null && getBitmapFromMemCache(key) == null) {
+			mLruCache.put(key, bitmap);
+		}
+	}
+
+	/**
+	 * Fetches a cached image from the memory cache
+	 *
+	 * @param key The key identifier of the image
+	 * @return The {@link Bitmap} if found in cache, null otherwise
+	 */
+	public Bitmap getBitmapFromMemCache(@NonNull String key) {
+		if (mLruCache != null) {
+			return mLruCache.get(key);
+		}
+		return null;
+	}
+
+	/**
 	 * Tries to return a cached image from memory cache before fetching from the
 	 * disk cache
 	 *
-	 * @param data Unique identifier for which item to get
+	 * @param key Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
 	@Nullable
-	public Bitmap getCachedBitmap(@NonNull String data) {
-		Bitmap cachedImage = getBitmapFromDiskCache(data);
+	public Bitmap getCachedBitmap(@NonNull String key) {
+		Bitmap cachedImage = getBitmapFromDiskCache(key);
 		if (cachedImage != null) {
-			addBitmapToMemCache(data, cachedImage);
+			addBitmapToMemCache(key, cachedImage);
 			return cachedImage;
 		}
 		return null;

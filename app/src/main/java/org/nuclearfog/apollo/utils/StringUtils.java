@@ -152,4 +152,20 @@ public final class StringUtils {
 		}
 		return cacheKey;
 	}
+
+	/**
+	 * create unique cache key for specific entry
+	 *
+	 * @param type image type to cache
+	 * @param data string values (e.g. artist, album name) used to calculate cache key
+	 * @return key string
+	 */
+	public static String generateCacheKey(Constants.ImageType type, String... data) {
+		StringBuilder str = new StringBuilder();
+		for (String key : data) {
+			str.append(key).append('_');
+		}
+		str.append(type.value);
+		return str.toString();
+	}
 }

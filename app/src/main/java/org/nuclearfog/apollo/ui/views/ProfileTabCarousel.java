@@ -15,6 +15,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -110,7 +111,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private CarouselTab mFirstTab, mSecondTab;
 
 	@Nullable
-	private Listener mListener;
+	private OnTabChangeListener mListener;
 
 	/**
 	 *
@@ -385,6 +386,15 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
+	 * set image of the album art
+	 *
+	 * @param bitmap bitmap of the artwork
+	 */
+	public void setAlbumArt(Bitmap bitmap) {
+		mFirstTab.setPhoto(bitmap);
+	}
+
+	/**
 	 * @return True if the carousel is currently animating, false otherwise
 	 */
 	public boolean isTabCarouselIsAnimating() {
@@ -420,9 +430,9 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
-	 * Set the given {@link Listener} to handle carousel events.
+	 * Set the given {@link OnTabChangeListener} to handle carousel events.
 	 */
-	public void setListener(@Nullable Listener listener) {
+	public void setListener(@Nullable OnTabChangeListener listener) {
 		mListener = listener;
 	}
 
@@ -501,7 +511,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Interface for callbacks invoked when the user interacts with the carousel.
 	 */
-	public interface Listener {
+	public interface OnTabChangeListener {
 
 		void onTouchDown();
 

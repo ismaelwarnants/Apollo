@@ -15,6 +15,7 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio;
@@ -47,12 +48,15 @@ import org.nuclearfog.apollo.async.loader.GenreSongLoader;
 import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
+import org.nuclearfog.apollo.async.worker.ArtworkDownloader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
+import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog.OnItemSelectedListener;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
+import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.OnOptionSelectedListener;
 import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
@@ -64,7 +68,7 @@ import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
-import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
+import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.OnTabChangeListener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -72,6 +76,7 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
+import org.nuclearfog.apollo.utils.StringUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -82,7 +87,8 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, OnPageChangeListener, Listener {
+public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, AsyncCallback<Bitmap>,
+		OnPageChangeListener, OnItemSelectedListener, OnTabChangeListener, OnOptionSelectedListener {
 
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
@@ -251,6 +257,15 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	protected void onPause() {
 		super.onPause();
 		mImageFetcher.flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putAll(getIntent().getExtras());
+		super.onSaveInstanceState(outState);
 	}
 
 	/**
@@ -518,9 +533,16 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putAll(getIntent().getExtras());
-		super.onSaveInstanceState(outState);
+	public void onItemSelected(String mbid) {
+		ArtworkDownloader loaderAsync = new ArtworkDownloader(this);
+		String cacheKey;
+		if (type == Type.ALBUM) {
+			cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ALBUM, mProfileName, mArtistName);
+		} else {
+			cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ARTIST, mArtistName);
+		}
+		ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
+		loaderAsync.execute(param, this);
 	}
 
 	/**
@@ -680,8 +702,19 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onResult(@NonNull Bitmap bitmap) {
+		if (mTabCarousel != null) {
+			mTabCarousel.setAlbumArt(bitmap);
+		}
+	}
+
+	/**
 	 * Starts an activity for result that returns an image from the Gallery.
 	 */
+	@Override
 	public void selectNewPhoto() {
 		// First remove the old image
 		removeFromCache();
@@ -694,6 +727,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * Fetch for the artist or album art, otherwise sets the default header image.
 	 */
+	@Override
 	public void selectOldPhoto() {
 		if (mTabCarousel != null) {
 			// First remove the old image
@@ -714,6 +748,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * profile, the image is, most likely, reverted back to the locally found
 	 * artwork. This is specifically for fetching the image from MusicBrainz.
 	 */
+	@Override
 	public void fetchAlbumArt() {
 		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName);
 	}
@@ -721,6 +756,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * Searches for the artist or album
 	 */
+	@Override
 	public void searchWeb() {
 		String query;
 		if (type == Type.ARTIST) {
