@@ -16,6 +16,7 @@ import android.animation.Animator.AnimatorListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -34,6 +35,7 @@ import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.views.CarouselTab.OnPhotoClickedListener;
 import org.nuclearfog.apollo.ui.views.CarouselTab.OnTabClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
+import org.nuclearfog.apollo.utils.ImageUtils;
 
 /**
  * A custom {@link HorizontalScrollView} that displays up to two "tabs" in the
@@ -391,7 +393,10 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param bitmap bitmap of the artwork
 	 */
 	public void setAlbumArt(Bitmap bitmap) {
-		mFirstTab.setPhoto(bitmap);
+		Drawable result = ImageUtils.createTransitionDrawable(getResources(), bitmap);
+		Drawable layerBlur = ImageUtils.createBlurredDrawable(getResources(), bitmap);
+		mFirstTab.setPhoto(result, layerBlur);
+		updateAlphaLayers();
 	}
 
 	/**

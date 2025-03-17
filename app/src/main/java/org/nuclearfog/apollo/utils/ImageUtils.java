@@ -11,24 +11,38 @@
 
 package org.nuclearfog.apollo.utils;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+
+import org.nuclearfog.apollo.R;
 
 /**
  * {@link Bitmap} specific helpers.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public final class BitmapUtils {
+public final class ImageUtils {
 
-	/* Initial blur radius. */
+	/**
+	 * Initial blur radius.
+	 */
 	private static final int DEFAULT_BLUR_RADIUS = 8;
+
+	/**
+	 * Default transition drawable fade time
+	 */
+	private static final int FADE_IN_TIME = 200;
 
 	/**
 	 * This class is never instantiated
 	 */
-	private BitmapUtils() {
+	private ImageUtils() {
 	}
 
 	/**
@@ -289,5 +303,33 @@ public final class BitmapUtils {
 		Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
 		mCanvas.drawBitmap(bitmap, 0, 0, paint);
 		return mTarget;
+	}
+
+	/**
+	 * create a transition drawable from a bitmap
+	 *
+	 * @param bitmap bitmap to use for the transition drawable
+	 * @return transition drawable
+	 */
+	public static Drawable createTransitionDrawable(Resources resources, Bitmap bitmap) {
+		Drawable layerOne = new ColorDrawable(resources.getColor(R.color.transparent));
+		BitmapDrawable layerTwo = new BitmapDrawable(resources, bitmap);
+		layerTwo.setFilterBitmap(false);
+		layerTwo.setDither(false);
+		TransitionDrawable result = new TransitionDrawable(new Drawable[]{layerOne, layerTwo});
+		result.setCrossFadeEnabled(true);
+		result.startTransition(FADE_IN_TIME);
+		return result;
+	}
+
+	/**
+	 * create a blurred drawable le from a bitmap
+	 *
+	 * @param bitmap bitmap to use for the blurred drawable
+	 * @return blurred bitmap drawable
+	 */
+	public static Drawable createBlurredDrawable(Resources resources, Bitmap bitmap) {
+		Bitmap blur = ImageUtils.createBlurredBitmap(bitmap);
+		return new BitmapDrawable(resources, blur);
 	}
 }

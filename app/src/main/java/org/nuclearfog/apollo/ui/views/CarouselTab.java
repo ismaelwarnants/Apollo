@@ -12,7 +12,7 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -133,10 +133,11 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	/**
 	 * sets photo of the first tab
 	 *
-	 * @param bitmap bitmap of the image
+	 * @param drawable bitmap of the image
 	 */
-	public void setPhoto(Bitmap bitmap) {
-		mPhoto.setImageBitmap(bitmap);
+	public void setPhoto(Drawable drawable, Drawable background) {
+		mAlbumArt.setImageDrawable(drawable);
+		mPhoto.setImageDrawable(background);
 	}
 
 	/**

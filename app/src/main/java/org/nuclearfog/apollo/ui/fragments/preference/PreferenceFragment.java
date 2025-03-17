@@ -17,7 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ThemesActivity;
-import org.nuclearfog.apollo.ui.dialogs.CacheClearDialog;
+import org.nuclearfog.apollo.ui.dialogs.ClearCacheDialog;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
 import org.nuclearfog.apollo.ui.dialogs.LicenseDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -91,7 +91,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 				return true;
 
 			case DEL_CACHE:
-				CacheClearDialog.show(getParentFragmentManager());
+				ClearCacheDialog.show(getParentFragmentManager());
 				return true;
 
 			case COLOR_SEL:

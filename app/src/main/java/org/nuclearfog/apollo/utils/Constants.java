@@ -98,7 +98,7 @@ public final class Constants {
 	 */
 	public enum ImageType {
 
-		ARTIST("artist"), ALBUM("album"), GENRE("genre"), PLAYLIST("playlist"), FOLDER("folder");
+		ARTIST("artist"), ALBUM("album"), GENRE("genre"), PLAYLIST("playlist"), FOLDER("folder"), ARTWORK("artwork");
 
 		public final String value;
 

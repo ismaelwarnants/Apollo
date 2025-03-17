@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.cache;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,8 +35,8 @@ import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.lookup.entities.ArtistMB;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.Constants.ImageType;
+import org.nuclearfog.apollo.utils.ImageUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
@@ -90,6 +91,13 @@ public class ImageFetcher {
 	@NonNull
 	public Context getContext() {
 		return mContext;
+	}
+
+	/**
+	 * @return resources associated with the application context
+	 */
+	public Resources getResources() {
+		return mContext.getResources();
 	}
 
 	/**
@@ -165,6 +173,20 @@ public class ImageFetcher {
 	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
 		String key = StringUtils.generateCacheKey(ImageType.ALBUM, album, artist);
 		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
+	}
+
+	/**
+	 *
+	 */
+	public void loadArtworkImage(String album, String artist, String mbid, ImageView imageView) {
+		String key = StringUtils.generateCacheKey(ImageType.ARTWORK, album, artist);
+		setDefaultImage(imageView);
+		if (executePotentialWork(key, imageView) && !mImageCache.isDiskCachePaused()) {
+			// Otherwise run the worker task
+			ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, ImageType.ARTWORK, imageView);
+			imageView.setTag(asyncTag);
+			asyncTag.run(mbid);
+		}
 	}
 
 	/**
@@ -343,10 +365,21 @@ public class ImageFetcher {
 			}
 		}
 		if (mbid != null) {
-			Artwork artwork = MusicBrainz.getImage(mbid);
-			if (artwork != null) {
-				return artwork.getThumbnailUrl();
-			}
+			return downloadImage(mbid);
+		}
+		return null;
+	}
+
+	/**
+	 * download image artwork using mbid
+	 *
+	 * @param mbid musicbrainz ID
+	 * @return url of the image to download
+	 */
+	public String downloadImage(@NonNull String mbid) {
+		Artwork artwork = MusicBrainz.getImage(mbid);
+		if (artwork != null) {
+			return artwork.getThumbnailUrl();
 		}
 		return null;
 	}
@@ -415,7 +448,7 @@ public class ImageFetcher {
 				imageViews[0].setImageBitmap(lruBitmap);
 				// add blurring to the second image if defined
 				if (imageViews.length > 1) {
-					Bitmap blur = BitmapUtils.createBlurredBitmap(lruBitmap);
+					Bitmap blur = ImageUtils.createBlurredBitmap(lruBitmap);
 					imageViews[1].setImageBitmap(blur);
 				}
 			}

@@ -17,23 +17,23 @@ import org.nuclearfog.apollo.cache.ImageCache;
  *
  * @author nuclearfog
  */
-public class CacheClearDialog extends DialogFragment {
+public class ClearCacheDialog extends DialogFragment {
 
-	private static final String TAG = "CacheClearDialog";
+	private static final String TAG = "ClearCacheDialog";
 
 	/**
 	 * show this dialog
 	 */
 	public static void show(FragmentManager fm) {
-		CacheClearDialog cacheClearDialog;
+		ClearCacheDialog clearCacheDialog;
 		Fragment dialog = fm.findFragmentByTag(TAG);
 
-		if (dialog instanceof CacheClearDialog) {
-			cacheClearDialog = (CacheClearDialog) dialog;
+		if (dialog instanceof ClearCacheDialog) {
+			clearCacheDialog = (ClearCacheDialog) dialog;
 		} else {
-			cacheClearDialog = new CacheClearDialog();
+			clearCacheDialog = new ClearCacheDialog();
 		}
-		cacheClearDialog.show(fm, TAG);
+		clearCacheDialog.show(fm, TAG);
 	}
 
 	/**

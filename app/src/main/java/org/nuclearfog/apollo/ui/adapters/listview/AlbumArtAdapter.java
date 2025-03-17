@@ -42,7 +42,7 @@ public class AlbumArtAdapter extends ArrayAdapter<AlbumMB> {
 			String artistname = "";
 			if (album.getArtist() != null)
 				artistname = album.getArtist().getName();
-			mImageFetcher.loadAlbumImage(artistname, album.getName(), 0L, albumart);
+			mImageFetcher.loadArtworkImage(artistname, album.getName(), album.getId(), albumart);
 			title.setText(album.getName());
 			artist.setText(album.getArtist().getName());
 		}
