@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> postavi kao temu</string>
 	<string name="settings_ui_category">Sučelje</string>
 	<string name="settings_storage_category">Pohrana</string>
-	<string name="settings_data_category">Podaci</string>
 	<string name="settings_about_apollo">O Apollo</string>
 	<string name="settings_color_scheme_title">Odaberi Apollo-vu zadanu šemu boja</string>
 	<string name="settings_color_scheme_summary">Promjena naglašene boje Appola</string>
 	<string name="settings_theme_chooser_title">Birač tema</string>
 	<string name="settings_delete_cache_title">Obriši predmemoriju</string>
 	<string name="settings_delete_cache_summary">Obriši sve slike iz predmemorije</string>
-	<string name="settings_download_only_on_wifi_title">Preuzimaj samo preko Wi-Fi</string>
-	<string name="settings_download_only_on_wifi_summary">Kako bi smanjili troškove prenosnika, ne preuzimajte preko mobilnih mreža</string>
 	<string name="settings_download_missing_artwork_title">Preuzmi sliku albuma koja nedostaje</string>
 	<string name="settings_download_artist_images_title">Preuzmi slike umjetnika koje nedostaju</string>
 	<string name="settings_open_source_licenses">Open source licence</string>

@@ -29,5 +29,4 @@
 	<string name="could_not_be_pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> قابل سنجاق شدن به صفحه اصلی شما نیست</string>
 	<string name="set_as_ringtone">\'<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\' به‌عنوان صدای زنگ تنظیم شد</string>
 	<string name="settings_ui_category">رابط کاربری</string>
-	<string name="settings_download_only_on_wifi_title">دریافت فقط از طریق وای‌فای</string>
 </resources>

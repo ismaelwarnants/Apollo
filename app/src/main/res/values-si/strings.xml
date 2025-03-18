@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> තේමාව ලෙස සකසන්න</string>
 	<string name="settings_ui_category">අතුරු මුහුණත</string>
 	<string name="settings_storage_category">ආචයනය</string>
-	<string name="settings_data_category">දත්ත</string>
 	<string name="settings_about_apollo">Apollo පිළිබඳ</string>
 	<string name="settings_color_scheme_title">Apollo ගේ පෙරනිමි වර්ණ ක්‍රමානුරූපය තෝරන්න</string>
 	<string name="settings_color_scheme_summary">Apollo හි උද්දීපන වර්ණය වෙනස් කෙරේ</string>
 	<string name="settings_theme_chooser_title">තේමා තෝරකය</string>
 	<string name="settings_delete_cache_title">හැඹිලිය මකන්න</string>
 	<string name="settings_delete_cache_summary">සියලු හැඹිලිගත පින්තූර ඉවත්කරන්න</string>
-	<string name="settings_download_only_on_wifi_title">Wi-Fi මගින් පමණක් බාගන්න</string>
-	<string name="settings_download_only_on_wifi_summary">වාහක වියදම් අවම කරගැනීමට, ජංගම ජාල හරහා භාගත නොකරන්න</string>
 	<string name="settings_download_missing_artwork_title">දක්නට නොමැති ඇල්බමයේ කවරය බාගන්න</string>
 	<string name="settings_download_artist_images_title">කලාකරුගේ දක්නට නොමැති පින්තූර බාගන්න</string>
 	<string name="settings_open_source_licenses">විවෘත මූලාශ්‍ර බලපත්‍ර</string>

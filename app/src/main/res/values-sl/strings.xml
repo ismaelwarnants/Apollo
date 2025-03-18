@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> nastavljena kot tema</string>
 	<string name="settings_ui_category">Vmesnik</string>
 	<string name="settings_storage_category">Pomnilniška naprava</string>
-	<string name="settings_data_category">Podatki</string>
 	<string name="settings_about_apollo">O Apollu</string>
 	<string name="settings_color_scheme_title">Izberi Apollovo privzeto barvno shemo</string>
 	<string name="settings_color_scheme_summary">Spremeni barvo poudarka v Apollu</string>
 	<string name="settings_theme_chooser_title">Izbirnik tem</string>
 	<string name="settings_delete_cache_title">Izbriši predpomnilnik</string>
 	<string name="settings_delete_cache_summary">Odstrani vse predpomnjene slike</string>
-	<string name="settings_download_only_on_wifi_title">Prenesi samo preko omrežja Wi-Fi</string>
-	<string name="settings_download_only_on_wifi_summary">Za zmanjšanje stroškov ne prenašajte preko mobilnih omrežij</string>
 	<string name="settings_download_missing_artwork_title">Prenesi manjkajoče naslovnice</string>
 	<string name="settings_download_artist_images_title">Prenesi manjkajoče slike izvajalcev</string>
 	<string name="settings_open_source_licenses">Odprtokodne licence</string>

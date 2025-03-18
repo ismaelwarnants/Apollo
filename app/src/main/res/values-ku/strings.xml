@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> خستنه‌ سه‌ر باکگراوه‌ند</string>
 	<string name="settings_ui_category">ڕووکار</string>
 	<string name="settings_storage_category">بیرگەی</string>
-	<string name="settings_data_category">داتا</string>
 	<string name="settings_about_apollo">ده‌رباره‌ی Apollo</string>
 	<string name="settings_color_scheme_title">هه‌ڵبژاردنی ڕه‌نگی ئه‌پۆڵۆ</string>
 	<string name="settings_color_scheme_summary">گۆڕینی ڕه‌نگی جه‌خت له‌ ئه‌پۆڵۆ</string>
 	<string name="settings_theme_chooser_title">گۆڕه‌ری باکگراوه‌ند</string>
 	<string name="settings_delete_cache_title">سڕینه‌وه‌ی حه‌شارگه‌</string>
 	<string name="settings_delete_cache_summary">سڕینه‌وه‌ی هه‌موو وێنه‌ حه‌شارگه‌کان</string>
-	<string name="settings_download_only_on_wifi_title">دابه‌زاندن ته‌نیا له‌ڕێگه‌ی وایه‌رلێسه‌وه‌</string>
-	<string name="settings_download_only_on_wifi_summary">بۆ باڵانس نه‌بردنی سیمکارته‌که‌ت ، دابه‌زاندن مه‌که‌ له‌ڕێگه‌ی سیمکارته‌وه‌</string>
 	<string name="settings_download_missing_artwork_title">دابه‌زاندنی ئه‌لبومه‌ هونه‌رییه‌ ونبوه‌کان</string>
 	<string name="settings_download_artist_images_title">دابه‌زاندنی وێنه‌ هونه‌رمه‌نده‌ ونبوه‌کان</string>
 	<string name="settings_open_source_licenses">Open source licenses</string>

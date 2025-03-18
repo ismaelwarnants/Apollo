@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g>をテーマとして設定しました</string>
 	<string name="settings_ui_category">インターフェース</string>
 	<string name="settings_storage_category">ストレージ</string>
-	<string name="settings_data_category">データ</string>
 	<string name="settings_about_apollo">Apolloについて</string>
 	<string name="settings_color_scheme_title">Apolloのデフォルトの配色を選択</string>
 	<string name="settings_color_scheme_summary">Apolloのアクセントカラーを変更する</string>
 	<string name="settings_theme_chooser_title">テーマを選択</string>
 	<string name="settings_delete_cache_title">キャッシュを削除</string>
 	<string name="settings_delete_cache_summary">キャッシュされたすべての画像を削除する</string>
-	<string name="settings_download_only_on_wifi_title">Wi-Fi経由でのみダウンロード</string>
-	<string name="settings_download_only_on_wifi_summary">パケット通信料を減らすために、モバイルネットワーク経由でダウンロードしない</string>
 	<string name="settings_download_missing_artwork_title">持っていないアルバムアートをダウンロード</string>
 	<string name="settings_download_artist_images_title">持っていないアーティスト画像をダウンロード</string>
 	<string name="settings_open_source_licenses">オープンソースライセンス</string>

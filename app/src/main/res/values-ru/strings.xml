@@ -89,15 +89,12 @@
 	<string name="theme_set">Тема «<xliff:g id="name">%s</xliff:g>» установлена</string>
 	<string name="settings_ui_category">Интерфейс</string>
 	<string name="settings_storage_category">Память</string>
-	<string name="settings_data_category">Данные</string>
 	<string name="settings_about_apollo">Об Apollo</string>
 	<string name="settings_color_scheme_title">Выберите цветовую схему Apollo</string>
 	<string name="settings_color_scheme_summary">Изменение цветовой схемы Apollo</string>
 	<string name="settings_theme_chooser_title">Темы</string>
 	<string name="settings_delete_cache_title">Очистить кэш</string>
 	<string name="settings_delete_cache_summary">Удалить все кэшированные изображения</string>
-	<string name="settings_download_only_on_wifi_title">Загрузка только через Wi-Fi</string>
-	<string name="settings_download_only_on_wifi_summary">Не загружать данные через мобильный интернет</string>
 	<string name="settings_download_missing_artwork_title">Загружать обложки альбомов</string>
 	<string name="settings_download_artist_images_title">Загружать фото исполнителей</string>
 	<string name="settings_open_source_licenses">Лицензии открытого ПО</string>

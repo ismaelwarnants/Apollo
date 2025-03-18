@@ -89,15 +89,12 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> постављено као тема</string>
 	<string name="settings_ui_category">Интерфејс</string>
 	<string name="settings_storage_category">Складиште</string>
-	<string name="settings_data_category">Податак</string>
 	<string name="settings_about_apollo">О Apollo-у</string>
 	<string name="settings_color_scheme_title">Изабери Apollo-ву подразумевану боју шеме</string>
 	<string name="settings_color_scheme_summary">Промена акцента боје у Apollo-у</string>
 	<string name="settings_theme_chooser_title">Бирач теме</string>
 	<string name="settings_delete_cache_title">Избриши кеш</string>
 	<string name="settings_delete_cache_summary">Уклони све кеширане слике</string>
-	<string name="settings_download_only_on_wifi_title">Преузимање само преко Wi-Fi</string>
-	<string name="settings_download_only_on_wifi_summary">Да би смањио трошкове оператера, не преузимај преко мобилних мрежа</string>
 	<string name="settings_download_missing_artwork_title">Преузми омот албума који недостаје</string>
 	<string name="settings_download_artist_images_title">Преузми слике аутора које недостају</string>
 	<string name="settings_open_source_licenses">Open Source лиценце</string>
