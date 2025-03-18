@@ -15,6 +15,8 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 
 /**
+ * ListView adapter used to show a list of album artworks and descriptions
+ *
  * @author nuclearfog
  */
 public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {

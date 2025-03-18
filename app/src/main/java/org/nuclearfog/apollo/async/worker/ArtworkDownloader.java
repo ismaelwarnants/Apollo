@@ -14,6 +14,8 @@ import org.nuclearfog.apollo.lookup.entities.Artwork;
 import java.net.URL;
 
 /**
+ * Async loader to download artwork bitmaps
+ *
  * @author nuclearfog
  */
 public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {

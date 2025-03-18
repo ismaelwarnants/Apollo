@@ -35,6 +35,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
+ * A dialog to search for online artworks
+ *
  * @author nuclearfog
  */
 public class ImageSelectorDialog extends DialogFragment implements AsyncCallback<List<AlbumMB>>, OnItemClickListener, OnScrollListener, TextWatcher {
@@ -151,6 +153,9 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		// Pause disk cache access to ensure smoother scrolling
 		boolean pauseCache = scrollState == OnScrollListener.SCROLL_STATE_FLING || scrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
 		adapter.setPauseDiskCache(pauseCache);
+		if (!pauseCache) {
+			adapter.notifyDataSetChanged();
+		}
 	}
 
 
@@ -171,6 +176,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 
 	@Override
 	public void afterTextChanged(Editable s) {
+		// delay any list updates while typing
 		timer.cancel();
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -178,7 +184,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 			public void run() {
 				loader.execute(new String[]{s.toString()}, ImageSelectorDialog.this);
 			}
-		}, 2000);
+		}, 1000);
 	}
 
 	/**
