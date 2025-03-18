@@ -133,11 +133,13 @@ public class MusicBrainz {
 	 * @param count  max result count
 	 * @return list of album matches
 	 */
-	public static List<AlbumMB> searchAlbumsByName(String album, @Nullable String artist, int count) {
+	public static List<AlbumMB> searchAlbumsByName(@Nullable String album, @Nullable String artist, int count) {
 		try {
 			List<String> params = new ArrayList<>();
 			if (artist == null)
 				params.add("query=" + StringUtils.encodeUTF8(album));
+			if (album == null)
+				params.add("query=" + StringUtils.encodeUTF8("artist:\"" + artist + "\""));
 			else
 				params.add("query=" + StringUtils.encodeUTF8("release:\"" + album + "\" AND artist:\"" + artist + "\""));
 			params.add("limit=" + count);

@@ -6,12 +6,13 @@ import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author nuclearfog
  */
-public class AlbumArtLoader extends AsyncExecutor<String, List<AlbumMB>> {
+public class AlbumArtLoader extends AsyncExecutor<String[], List<AlbumMB>> {
 
 
 	public AlbumArtLoader(Context context) {
@@ -20,7 +21,11 @@ public class AlbumArtLoader extends AsyncExecutor<String, List<AlbumMB>> {
 
 
 	@Override
-	protected List<AlbumMB> doInBackground(String param) {
-		return MusicBrainz.searchAlbumsByName(param, null, 20);
+	protected List<AlbumMB> doInBackground(String[] param) {
+		if (param.length > 1 && param[1].length() > 2)
+			return MusicBrainz.searchAlbumsByName(param[0], param[1], 20);
+		if (param[0].length() > 2)
+			return MusicBrainz.searchAlbumsByName(param[0], "", 20);
+		return new ArrayList<>(0);
 	}
 }

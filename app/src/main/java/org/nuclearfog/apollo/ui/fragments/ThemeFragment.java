@@ -28,8 +28,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.AppTheme;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
-import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter.ThemeHolder;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -92,7 +92,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		// Default theme
 		String defName = getString(R.string.app_name);
 		Drawable defPrev = ResourcesCompat.getDrawable(getResources(), R.drawable.theme_preview, null);
-		ThemeHolder defTheme = new ThemeHolder(defName, defPrev);
+		AppTheme defTheme = new AppTheme(defName, defPrev);
 		mAdapter.add(defTheme);
 	}
 
@@ -101,7 +101,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		ThemeHolder selection = mAdapter.getItem(position);
+		AppTheme selection = mAdapter.getItem(position);
 		if (selection != null) {
 			String name = getString(R.string.theme_set, selection.mName);
 			mPreferences.setThemeSelectionIndex(position);

@@ -19,7 +19,7 @@
 	<dimen name="text_size_micro">12.0sp</dimen>
 	<dimen name="text_size_small">14.0sp</dimen>
 	<dimen name="text_size_medium">16.0sp</dimen>
-	<dimen name="text_size_large">18.0sp</dimen>
+	<dimen name="text_size_large">22.0sp</dimen>
 	<dimen name="text_size_huge">36.0sp</dimen>
 
 	<!-- List and grid view padding -->
@@ -47,6 +47,8 @@
 	<!--Item album art-->
 	<dimen name="item_albumart_image_size">64dp</dimen>
 	<dimen name="item_albumart_item_margins">5dp</dimen>
+	<!--image_selector-->
+	<dimen name="dialog_image_selector_item_margins">5dp</dimen>
 
 	<!-- Bottom Action Bar -->
 	<dimen name="bottom_action_bar_height">48.0dp</dimen>
@@ -122,14 +124,15 @@
 	<dimen name="color_scheme_dialog_button_height">45dp</dimen>
 	<dimen name="color_scheme_dialog_button_confirm_height">32dp</dimen>
 
-	<dimen name="toolbar_height">45dp</dimen>
-	<dimen name="notification_close_button_size">40dp</dimen>
-
 	<!-- ProfileTabCarousel -->
 	<fraction name="tab_width_screen_percentage">75.0%</fraction>
 	<fraction name="tab_height_screen_percentage">42.0%</fraction>
 
 	<!-- Grid search -->
 	<dimen name="grid_search_grid_margin">8dp</dimen>
+
+	<!-- other -->
+	<dimen name="toolbar_height">45dp</dimen>
+	<dimen name="notification_close_button_size">40dp</dimen>
 
 </resources>

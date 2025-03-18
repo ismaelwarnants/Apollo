@@ -1,7 +1,6 @@
 package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,16 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.AppTheme;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
-
 
 /**
  * Populates the {@link GridView} with the available themes
  */
-public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
+public class ThemesAdapter extends ArrayAdapter<AppTheme> {
 
 	/**
 	 * Item layout resource
@@ -56,7 +54,7 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 			holder = (MusicHolder) convertView.getTag();
 		}
 		// Retrieve the data holder
-		ThemeHolder themeHolder = getItem(position);
+		AppTheme themeHolder = getItem(position);
 		if (themeHolder != null) {
 			// Set the theme preview
 			holder.mImage.setImageDrawable(themeHolder.mPreview);
@@ -64,30 +62,5 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 			holder.mLineOne.setText(themeHolder.mName);
 		}
 		return convertView;
-	}
-
-	/**
-	 * holder class for items of {@link ThemesAdapter}
-	 */
-	public final static class ThemeHolder {
-
-		/**
-		 * theme name
-		 */
-		public final String mName;
-
-		/**
-		 * preview drawable
-		 */
-		@Nullable
-		public final Drawable mPreview;
-
-		/**
-		 * Constructor of <code>ThemeHolder</code>
-		 */
-		public ThemeHolder(String name, @Nullable Drawable prev) {
-			mName = name;
-			mPreview = prev;
-		}
 	}
 }

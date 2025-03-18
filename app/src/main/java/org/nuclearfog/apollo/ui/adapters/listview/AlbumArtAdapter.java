@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,8 +14,10 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 
-
-public class AlbumArtAdapter extends ArrayAdapter<AlbumMB> {
+/**
+ * @author nuclearfog
+ */
+public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {
 
 	private ImageFetcher mImageFetcher;
 
@@ -35,20 +36,18 @@ public class AlbumArtAdapter extends ArrayAdapter<AlbumMB> {
 		if (convertView == null) {
 			convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_albumart, parent, false);
 		}
-		ImageView albumart = convertView.findViewById(R.id.list_item_albumart_image);
+		ImageView artwork = convertView.findViewById(R.id.list_item_albumart_image);
 		TextView title = convertView.findViewById(R.id.list_item_albumart_title);
 		TextView artist = convertView.findViewById(R.id.list_item_albumart_artist);
 		if (album != null) {
-			String artistname = "";
-			if (album.getArtist() != null)
-				artistname = album.getArtist().getName();
-			mImageFetcher.loadArtworkImage(artistname, album.getName(), album.getId(), albumart);
+			mImageFetcher.loadArtworkImage(album.getId(), artwork);
 			title.setText(album.getName());
-			artist.setText(album.getArtist().getName());
+			if (album.getArtist() != null) {
+				artist.setText(album.getArtist().getName());
+			}
 		}
 		return convertView;
 	}
-
 
 	/**
 	 * @param pause True to temporarily pause the disk cache, false otherwise.

@@ -178,8 +178,8 @@ public class ImageFetcher {
 	/**
 	 *
 	 */
-	public void loadArtworkImage(String album, String artist, String mbid, ImageView imageView) {
-		String key = StringUtils.generateCacheKey(ImageType.ARTWORK, album, artist);
+	public void loadArtworkImage(String mbid, ImageView imageView) {
+		String key = StringUtils.generateCacheKey(ImageType.ARTWORK, mbid);
 		setDefaultImage(imageView);
 		if (executePotentialWork(key, imageView) && !mImageCache.isDiskCachePaused()) {
 			// Otherwise run the worker task

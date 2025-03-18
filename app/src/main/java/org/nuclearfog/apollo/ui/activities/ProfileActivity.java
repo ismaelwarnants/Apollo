@@ -533,6 +533,47 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onActivityResult(ActivityResult result) {
+		if (result.getResultCode() == RESULT_OK) {
+			Intent intent = result.getData();
+			if (intent != null && intent.getData() != null) {
+				Uri imageUri = intent.getData();
+				if (mTabCarousel != null)
+					mTabCarousel.setAlbumArt(imageUri);
+				switch (type) {
+					case ARTIST:
+						mImageFetcher.setArtistImage(mArtistName, imageUri);
+						break;
+
+					case ALBUM:
+						mImageFetcher.setAlbumImage(mProfileName, mArtistName, imageUri);
+						break;
+
+					case FOLDER:
+						mImageFetcher.setFolderImage(folderPath, imageUri);
+						break;
+
+					case GENRE:
+						mImageFetcher.setGenreImage(mProfileName, imageUri);
+						break;
+
+					case PLAYLIST:
+					case FAVORITE:
+					case POPULAR:
+					case LAST_ADDED:
+						mImageFetcher.setPlaylistImage(ids[0], imageUri);
+						break;
+				}
+			} else {
+				selectOldPhoto();
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onItemSelected(String mbid) {
 		ArtworkDownloader loaderAsync = new ArtworkDownloader(this);
 		String cacheKey;
@@ -648,47 +689,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onActivityResult(ActivityResult result) {
-		if (result.getResultCode() == RESULT_OK) {
-			Intent intent = result.getData();
-			if (intent != null && intent.getData() != null) {
-				Uri imageUri = intent.getData();
-				if (mTabCarousel != null)
-					mTabCarousel.setAlbumArt(imageUri);
-				switch (type) {
-					case ARTIST:
-						mImageFetcher.setArtistImage(mArtistName, imageUri);
-						break;
-
-					case ALBUM:
-						mImageFetcher.setAlbumImage(mProfileName, mArtistName, imageUri);
-						break;
-
-					case FOLDER:
-						mImageFetcher.setFolderImage(folderPath, imageUri);
-						break;
-
-					case GENRE:
-						mImageFetcher.setGenreImage(mProfileName, imageUri);
-						break;
-
-					case PLAYLIST:
-					case FAVORITE:
-					case POPULAR:
-					case LAST_ADDED:
-						mImageFetcher.setPlaylistImage(ids[0], imageUri);
-						break;
-				}
-			} else {
-				selectOldPhoto();
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void onRefresh() {
 		viewModel.notify(ProfileFragment.REFRESH);
 	}
@@ -744,13 +744,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
-	 * When the user chooses {@code #selectOldPhoto()} while viewing an album
+	 * When the user chooses {@code #fetchArtwork()} while viewing an album
 	 * profile, the image is, most likely, reverted back to the locally found
 	 * artwork. This is specifically for fetching the image from MusicBrainz.
 	 */
 	@Override
-	public void fetchAlbumArt() {
-		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName);
+	public void fetchArtwork() {
+		ImageSelectorDialog.open(getSupportFragmentManager(), mProfileName, mArtistName);
 	}
 
 	/**

@@ -1,6 +1,11 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,28 +28,40 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumArtLoader;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumArtAdapter;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author nuclearfog
  */
-public class ImageSelectorDialog extends DialogFragment implements AsyncCallback<List<AlbumMB>>, OnItemClickListener, OnScrollListener {
+public class ImageSelectorDialog extends DialogFragment implements AsyncCallback<List<AlbumMB>>, OnItemClickListener, OnScrollListener, TextWatcher {
 
 	private static final String TAG = "ImageSelectorDialog";
 
+	private static final String KEY_SEARCH_ALBUM = "search-album";
+	private static final String KEY_SEARCH_ARTIST = "search-artist";
 	private static final String KEY_SEARCH = "search";
 
 	private EditText search;
 
 	private AlbumArtLoader loader;
 	private AlbumArtAdapter adapter;
+	private Timer timer = new Timer();
 
-
-	public static void open(FragmentManager fm, String search) {
+	/**
+	 * show this dialog
+	 *
+	 * @param album  additional album name to search for
+	 * @param artist artist name to search for
+	 */
+	public static void open(FragmentManager fm, String album, String artist) {
 		ImageSelectorDialog dialog;
 		Bundle bundle = new Bundle();
-		bundle.putString(KEY_SEARCH, search);
+		bundle.putString(KEY_SEARCH_ALBUM, album);
+		bundle.putString(KEY_SEARCH_ARTIST, artist);
 		Fragment fragment = fm.findFragmentByTag(TAG);
 		if (fragment instanceof ImageSelectorDialog) {
 			dialog = (ImageSelectorDialog) fragment;
@@ -60,23 +78,45 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		super.onCreate(savedInstanceState);
 		View view = inflater.inflate(R.layout.dialog_image_selector, container, false);
 		ListView listView = view.findViewById(R.id.dialog_image_selector_list);
+		ProgressBar emptyView = view.findViewById(R.id.dialog_image_selector_loading);
 		search = view.findViewById(R.id.dialog_image_selector_search);
 		adapter = new AlbumArtAdapter(requireContext());
 		loader = new AlbumArtLoader(requireContext());
+		String searchStr = null;
+		String album = null;
+		String artist = null;
 
-		listView.setAdapter(adapter);
-		if (savedInstanceState == null) {
-			savedInstanceState = getArguments();
-		}
 		if (savedInstanceState != null) {
-			String searchStr = savedInstanceState.getString(KEY_SEARCH);
-			search.setText(searchStr);
-			loader.execute(searchStr, this);
+			searchStr = savedInstanceState.getString(KEY_SEARCH);
+		} else if (getArguments() != null) {
+			album = getArguments().getString(KEY_SEARCH_ALBUM);
+			artist = getArguments().getString(KEY_SEARCH_ARTIST);
 		}
-
+		if (searchStr != null) {
+			search.setText(searchStr);
+			loader.execute(new String[]{searchStr}, this);
+		} else if (album != null && !album.isEmpty()) {
+			search.setText(album + ", " + artist);
+			loader.execute(new String[]{album, artist}, this);
+		} else if (artist != null) {
+			search.setText(artist);
+			loader.execute(new String[]{"", artist}, this);
+		}
+		Drawable icon = emptyView.getIndeterminateDrawable();
+		icon.setColorFilter(new PorterDuffColorFilter(PreferenceUtils.getInstance(requireContext()).getDefaultThemeColor(), PorterDuff.Mode.SRC_IN));
+		listView.setEmptyView(emptyView);
+		listView.setAdapter(adapter);
+		search.addTextChangedListener(this);
 		listView.setOnScrollListener(this);
 		listView.setOnItemClickListener(this);
 		return view;
+	}
+
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		outState.putString(KEY_SEARCH, search.getText().toString());
+		super.onSaveInstanceState(outState);
 	}
 
 
@@ -103,22 +143,14 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		for (AlbumMB album: albums) {
 			adapter.add(album);
 		}
-		adapter.notifyDataSetChanged();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// Pause disk cache access to ensure smoother scrolling
-		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-				|| scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-			adapter.setPauseDiskCache(true);
-		} else {
-			adapter.setPauseDiskCache(false);
-			adapter.notifyDataSetChanged();
-		}
+		boolean pauseCache = scrollState == OnScrollListener.SCROLL_STATE_FLING || scrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
+		adapter.setPauseDiskCache(pauseCache);
 	}
 
 
@@ -127,8 +159,38 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	}
 
 
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+	}
+
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	}
+
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		timer.cancel();
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				loader.execute(new String[]{s.toString()}, ImageSelectorDialog.this);
+			}
+		}, 2000);
+	}
+
+	/**
+	 * callback used to return selected album's MBID to activity
+	 */
 	public interface OnItemSelectedListener {
 
+		/**
+		 * called if an album is selected
+		 *
+		 * @param mbid album ID
+		 */
 		void onItemSelected(String mbid);
 	}
 }

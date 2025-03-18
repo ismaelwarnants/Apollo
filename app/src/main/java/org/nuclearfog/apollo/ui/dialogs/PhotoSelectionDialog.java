@@ -37,22 +37,23 @@ import java.util.List;
  * image, or web search for one.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
 	public static final String TAG = "PhotoSelectionDialog";
 
-	public static final int ARTIST = 10;
-	public static final int ALBUM = 11;
-	public static final int OTHER = 12;
-
 	private static final String KEY_TITLE = "photo_title";
 	private static final String KEY_TYPE = "photo_type";
 
+	public static final int ARTIST = 10;
+	public static final int ALBUM = 11;
+	public static final int OTHER = 0;
+
 	private static final int IDX_NEW = 0;
 	private static final int IDX_OLD = 1;
-	private static final int IDX_SEARCH = 2;
-	private static final int IDX_FETCH = 3;
+	private static final int IDX_FETCH = 2;
+	private static final int IDX_SEARCH = 3;
 
 	private List<String> mChoices = new ArrayList<>(5);
 
@@ -84,19 +85,19 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 		int type = OTHER;
 		String title = "";
-		if (savedInstanceState == null) {
-			savedInstanceState = getArguments();
-		}
-		if (savedInstanceState != null) {
-			type = savedInstanceState.getInt(KEY_TYPE, OTHER);
-			title = savedInstanceState.getString(KEY_TITLE, "");
+
+		if (getArguments() != null) {
+			type = getArguments().getInt(KEY_TYPE, OTHER);
+			title = getArguments().getString(KEY_TITLE, "");
 		}
 		switch (type) {
 			case ARTIST:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
+				// Option to fetch the old album image
+				mChoices.add(IDX_OLD, getString(R.string.old_photo));
 				// Option to fetch the old artist image
-				mChoices.add(IDX_OLD, getString(R.string.context_menu_fetch_artist_image));
+				mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_artist_image));
 				// web search for the artist name
 				mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 				break;
@@ -106,13 +107,12 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
 				// Option to fetch the old album image
 				mChoices.add(IDX_OLD, getString(R.string.old_photo));
-				// web search for the album name
-				mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 				// Option to fetch the album image
 				mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_album_art));
+				// web search for the album name
+				mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 				break;
 
-			case OTHER:
 			default:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
@@ -135,12 +135,15 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				case IDX_NEW:
 					listener.selectNewPhoto();
 					break;
+
 				case IDX_OLD:
 					listener.selectOldPhoto();
 					break;
+
 				case IDX_FETCH:
-					listener.fetchAlbumArt();
+					listener.fetchArtwork();
 					break;
+
 				case IDX_SEARCH:
 					listener.searchWeb();
 					break;
@@ -148,15 +151,29 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 		}
 	}
 
-
+	/**
+	 * callback used to send back result to activity
+	 */
 	public interface OnOptionSelectedListener {
 
+		/**
+		 * called to select a new photo local from gallery
+		 */
 		void selectNewPhoto();
 
+		/**
+		 * called to set the previous photo
+		 */
 		void selectOldPhoto();
 
-		void fetchAlbumArt();
+		/**
+		 * called to select online photos
+		 */
+		void fetchArtwork();
 
+		/**
+		 * called to search online for artist/album
+		 */
 		void searchWeb();
 	}
 }
