@@ -15,7 +15,6 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -366,9 +365,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param bitmap bitmap of the artwork
 	 */
 	public void setAlbumArt(Bitmap bitmap) {
-		Drawable result = ImageUtils.createTransitionDrawable(getResources(), bitmap);
-		Drawable layerBlur = ImageUtils.createBlurredDrawable(getResources(), bitmap);
-		mFirstTab.setPhoto(result, layerBlur);
+		mFirstTab.setPhoto(ImageUtils.createTransitionDrawable(getResources(), bitmap));
 		updateAlphaLayers();
 	}
 

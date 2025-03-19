@@ -134,9 +134,8 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 *
 	 * @param drawable bitmap of the image
 	 */
-	public void setPhoto(Drawable drawable, Drawable background) {
-		mAlbumArt.setImageDrawable(drawable);
-		mPhoto.setImageDrawable(background);
+	public void setPhoto(Drawable drawable) {
+		mPhoto.setImageDrawable(drawable);
 	}
 
 	/**
