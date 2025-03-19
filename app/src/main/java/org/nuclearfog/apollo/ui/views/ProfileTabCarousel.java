@@ -33,7 +33,6 @@ import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.views.CarouselTab.OnPhotoClickedListener;
 import org.nuclearfog.apollo.ui.views.CarouselTab.OnTabClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
-import org.nuclearfog.apollo.utils.ImageUtils;
 
 /**
  * A custom {@link HorizontalScrollView} that displays up to two "tabs" in the
@@ -365,7 +364,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param bitmap bitmap of the artwork
 	 */
 	public void setAlbumArt(Bitmap bitmap) {
-		mFirstTab.setPhoto(ImageUtils.createTransitionDrawable(getResources(), bitmap));
+		mFirstTab.setPhoto(bitmap);
 		updateAlphaLayers();
 	}
 

@@ -12,7 +12,7 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -30,6 +30,7 @@ import androidx.annotation.StringRes;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.ui.views.AlphaTouchInterceptorOverlay.OnOverlayClickListener;
+import org.nuclearfog.apollo.utils.ImageUtils;
 
 /**
  * a custom view representing a tab. Used by {@link ProfileTabCarousel}
@@ -132,10 +133,15 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	/**
 	 * sets photo of the first tab
 	 *
-	 * @param drawable bitmap of the image
+	 * @param bitmap bitmap of the image
 	 */
-	public void setPhoto(Drawable drawable) {
-		mPhoto.setImageDrawable(drawable);
+	public void setPhoto(Bitmap bitmap) {
+		if (mAlbumArt.getVisibility() != VISIBLE) {
+			mPhoto.setImageDrawable(ImageUtils.createTransitionDrawable(getResources(), bitmap));
+		} else {
+			mAlbumArt.setImageDrawable(ImageUtils.createTransitionDrawable(getResources(), bitmap));
+			mPhoto.setImageDrawable(ImageUtils.createBlurredDrawable(getResources(), bitmap));
+		}
 	}
 
 	/**
