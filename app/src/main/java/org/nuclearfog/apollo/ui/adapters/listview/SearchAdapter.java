@@ -96,7 +96,7 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 			// Get the song count
 			holder.mLineThree.setText(StringUtils.makeLabel(context, R.plurals.Nsongs, artist.getTrackCount()));
 			// Asynchronously load the artist image into the adapter
-			mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
+			mImageFetcher.loadArtistImage(artist.getId(), holder.mImage);
 			// Highlight the query
 			mHighlighter.setText(holder.mLineOne, artist.getName(), mPrefix);
 		} else if (music instanceof Album) {
@@ -107,7 +107,7 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 			// Get the artist name
 			holder.mLineTwo.setText(album.getArtist());
 			// Asynchronously load the album images into the adapter
-			mImageFetcher.loadAlbumImage(album, holder.mImage);
+			mImageFetcher.loadAlbumImage(album.getId(), holder.mImage);
 			// Highlight the query
 			mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
 		} else if (music instanceof Song) {

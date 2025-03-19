@@ -214,8 +214,12 @@ public final class CursorFactory {
 	/**
 	 * select specific artist matching name
 	 */
-	private static final String ARTIST_SELECT = Artists.ARTIST + " LIKE ?";
+	private static final String ARTIST_NAME_SELECT = Artists.ARTIST + " LIKE ?";
 
+	/**
+	 * select specific artist matching name
+	 */
+	private static final String ARTIST_ID_SELECT = Artists._ID + "=?";
 	/**
 	 * select specific artist matching name
 	 */
@@ -454,7 +458,22 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 
 		String[] args = {"%" + artistName + "%"};
-		return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_SELECT, args, null);
+		return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_NAME_SELECT, args, null);
+	}
+
+	/**
+	 * create a cursor for an artist row with fixed column order
+	 * {@link #ARTIST_COLUMNS}
+	 *
+	 * @param artistId ID of the artist
+	 * @return cursor with artist information
+	 */
+	@Nullable
+	public static Cursor makeArtistCursor(Context context, long artistId) {
+		ContentResolver resolver = context.getContentResolver();
+
+		String[] args = {Long.toString(artistId)};
+		return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_ID_SELECT, args, null);
 	}
 
 	/**

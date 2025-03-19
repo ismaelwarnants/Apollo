@@ -123,18 +123,6 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onStart() {
-		super.onStart();
-		// fix: set dialog layout size manually
-		int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
-		int height = (int) (getResources().getDisplayMetrics().heightPixels * 0.75);
-		//Objects.requireNonNull(requireDialog().getWindow()).setLayout(width, height);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putInt(KEY_COLOR, mColorPicker.getColor());
 		super.onSaveInstanceState(outState);

@@ -157,15 +157,26 @@ public final class StringUtils {
 	 * create unique cache key for specific entry
 	 *
 	 * @param type image type to cache
-	 * @param data string values (e.g. artist, album name) used to calculate cache key
+	 * @param ids  at least one ID to identify
 	 * @return key string
 	 */
-	public static String generateCacheKey(Constants.ImageType type, String... data) {
+	public static String generateCacheKey(Constants.ImageType type, long... ids) {
 		StringBuilder str = new StringBuilder();
-		for (String key : data) {
-			str.append(key).append('_');
+		for (long id : ids) {
+			str.append(id).append('_');
 		}
 		str.append(type.value);
 		return str.toString();
+	}
+
+	/**
+	 * create unique cache key for specific entry
+	 *
+	 * @param type image type to cache
+	 * @param mbid MusicBrainz ID
+	 * @return key string
+	 */
+	public static String generateCacheKey(Constants.ImageType type, String mbid) {
+		return type.value + "_" + mbid;
 	}
 }

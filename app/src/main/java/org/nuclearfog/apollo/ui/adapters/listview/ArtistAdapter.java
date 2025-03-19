@@ -91,7 +91,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 			// Set the number of albums (line two)
 			holder.mLineTwo.setText(numAlbums);
 			// Asynchronously load the artist image into the adapter
-			mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
+			mImageFetcher.loadArtistImage(artist.getId(), holder.mImage);
 			if (mLoadExtraData) {
 				// Number of songs (line three)
 				String numTracks = StringUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());

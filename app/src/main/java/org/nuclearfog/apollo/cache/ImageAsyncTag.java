@@ -1,5 +1,6 @@
 package org.nuclearfog.apollo.cache;
 
+import android.content.Context;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -27,13 +28,13 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 	private ImageView[] imageViews;
 
 	/**
-	 * key used to identify this tag
+	 * unique key used to identify this tag
 	 */
 	private String mKey;
 
 
-	public ImageAsyncTag(ImageFetcher imgWorker, @NonNull String mKey, ImageType imageType, ImageView... imageViews) {
-		imageWorker = new ImageWorker(imgWorker, imageType);
+	public ImageAsyncTag(Context context, @NonNull String mKey, ImageView... imageViews) {
+		imageWorker = new ImageWorker(context);
 		this.imageViews = imageViews;
 		this.mKey = mKey;
 	}
@@ -43,7 +44,7 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 	public void onResult(@NonNull Result result) {
 		if (imageViews != null) {
 			imageViews[0].setImageDrawable(result.drawable);
-			if (imageViews.length > 1) {
+			if (imageViews.length > 1 && imageViews[1] != null) {
 				imageViews[1].setImageDrawable(result.blurredDrawable);
 			}
 		}
@@ -52,16 +53,16 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 	/**
 	 * execute background task
 	 */
-	public void run(String artistName, String albumName, long albumId) {
-		Param param = new Param(mKey, albumName, artistName, albumId);
+	public void run(ImageType type, long id) {
+		Param param = new Param(type, mKey, id);
 		imageWorker.execute(param, this);
 	}
 
 	/**
 	 *
 	 */
-	public void run(String mbid) {
-		Param param = new Param(mKey, mbid);
+	public void run(ImageType type, String mbid) {
+		Param param = new Param(type, mKey, mbid);
 		imageWorker.execute(param, this);
 	}
 

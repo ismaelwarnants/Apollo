@@ -118,15 +118,16 @@ public final class ApolloUtils {
 	 */
 	public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {
 		try {
-			Bitmap bitmap;
+			Bitmap bitmap = null;
 			ImageFetcher fetcher = new ImageFetcher(activity);
 			if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
-				bitmap = fetcher.getAlbumImage(displayName, artistName);
+				bitmap = fetcher.getAlbumImage(ids[0]);
 			} else if (mimeType.equals(MediaStore.Audio.Artists.CONTENT_TYPE)) {
-				bitmap = fetcher.getArtistImage(artistName);
-			} else {
-				// todo implement bitmap loader for genre/folder
-				bitmap = null;
+				bitmap = fetcher.getArtistImage(ids[0]);
+			} else if (mimeType.equals(MediaStore.Audio.Genres.CONTENT_TYPE)) {
+				bitmap = fetcher.getGenreImage(ids);
+			} else if (mimeType.equals(MediaStore.Audio.Playlists.CONTENT_TYPE)) {
+				bitmap = fetcher.getPlaylistImage(ids[0]);
 			}
 			if (bitmap == null) {
 				bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.default_artwork);

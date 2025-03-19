@@ -37,11 +37,6 @@ import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 public class ProfileAdapter extends FragmentStatePagerAdapter {
 
 	/**
-	 * index of the album song fragment
-	 */
-	public static final int IDX_ALBUM_SONG = 0;
-
-	/**
 	 * index of the artist song fragment
 	 */
 	public static final int IDX_ARTIST_SONG = 0;

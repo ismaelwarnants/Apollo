@@ -103,7 +103,7 @@ public class RecentWidgetService extends RemoteViewsService {
 			// Set the artist names
 			mViews.setTextViewText(R.id.app_widget_recents_line_two, album.getArtist());
 			// Set the album art
-			Bitmap bitmap = mFetcher.getAlbumImage(album.getName(), album.getArtist());
+			Bitmap bitmap = mFetcher.getAlbumImage(album.getId());
 			if (bitmap != null) {
 				mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
 			} else {

@@ -684,9 +684,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			// Set the artist name
 			mArtistName.setText(song.getArtist());
 			// Set the album art
-			mImageFetcher.loadAlbumImage(album, mAlbumArt);
+			mImageFetcher.loadAlbumImage(album.getId(), mAlbumArt);
 			// Set the small artwork
-			mImageFetcher.loadAlbumImage(album, mAlbumArtSmall);
+			mImageFetcher.loadAlbumImage(album.getId(), mAlbumArtSmall);
 		}
 	}
 

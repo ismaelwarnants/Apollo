@@ -30,7 +30,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
@@ -82,10 +81,11 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 import java.util.List;
 
 /**
- * The {@link AppCompatActivity} is used to display the data for specific
- * artists, albums, playlists, and genres. This class is only used on phones.
+ * This activity shows detailed information to albums, artists, playlists and more using the {@link ProfileFragment}
  *
+ * @see ProfileFragment
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, AsyncCallback<Bitmap>,
 		OnPageChangeListener, OnItemSelectedListener, OnTabChangeListener, OnOptionSelectedListener {
@@ -542,11 +542,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mTabCarousel.setAlbumArt(imageUri);
 				switch (type) {
 					case ARTIST:
-						mImageFetcher.setArtistImage(mArtistName, imageUri);
+						mImageFetcher.setArtistImage(ids[0], imageUri);
 						break;
 
 					case ALBUM:
-						mImageFetcher.setAlbumImage(mProfileName, mArtistName, imageUri);
+						mImageFetcher.setAlbumImage(ids[0], imageUri);
 						break;
 
 					case FOLDER:
@@ -554,7 +554,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 						break;
 
 					case GENRE:
-						mImageFetcher.setGenreImage(mProfileName, imageUri);
+						mImageFetcher.setGenreImage(ids, imageUri);
 						break;
 
 					case PLAYLIST:
@@ -574,16 +574,28 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+			MusicUtils.refresh(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onItemSelected(String mbid) {
 		ArtworkDownloader loaderAsync = new ArtworkDownloader(this);
-		String cacheKey;
 		if (type == Type.ALBUM) {
-			cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ALBUM, mProfileName, mArtistName);
-		} else {
-			cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ARTIST, mArtistName);
+			String cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ALBUM, ids[0]);
+			ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
+			loaderAsync.execute(param, this);
+		} else if (type == Type.ARTIST) {
+			String cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ARTIST, ids[0]);
+			ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
+			loaderAsync.execute(param, this);
 		}
-		ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
-		loaderAsync.execute(param, this);
 	}
 
 	/**
@@ -664,24 +676,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAlbumArtSelected() {
+	public void onArtworkSelected() {
 		if (type == Type.ARTIST) {
 			PhotoSelectionDialog.show(getSupportFragmentManager(), mArtistName, PhotoSelectionDialog.ARTIST);
 		} else if (type == Type.ALBUM) {
 			PhotoSelectionDialog.show(getSupportFragmentManager(), mProfileName, PhotoSelectionDialog.ALBUM);
 		} else {
 			PhotoSelectionDialog.show(getSupportFragmentManager(), mProfileName, PhotoSelectionDialog.OTHER);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
-		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
-			MusicUtils.refresh(this);
 		}
 	}
 
@@ -734,11 +735,12 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			removeFromCache();
 			// Apply the old photo
 			if (type == Type.ARTIST) {
-				mTabCarousel.setArtistProfileHeader(mArtistName);
+				mTabCarousel.setArtistProfileHeader(ids[0]);
 			} else if (type == Type.ALBUM) {
-				mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
+				mTabCarousel.setAlbumProfileHeader(ids[0]);
 			} else {
-				mTabCarousel.setPlaylistProfileHeader(ids[0]);
+				mTabCarousel.setDefault();
+				removeFromCache();
 			}
 		}
 	}
@@ -793,7 +795,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		switch (type) {
 			case ALBUM:
 				if (mTabCarousel != null) {
-					mTabCarousel.setAlbumProfileHeader(ids[0], mProfileName, mArtistName);
+					mTabCarousel.setAlbumProfileHeader(ids[0]);
 				} else {
 					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, AlbumSongFragment.class, mArguments).commit();
 				}
@@ -802,7 +804,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 			case ARTIST:
 				if (mTabCarousel != null) {
-					mTabCarousel.setArtistProfileHeader(mArtistName);
+					mTabCarousel.setArtistProfileHeader(ids[0]);
 				} else {
 					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, ArtistSongFragment.class, mArguments)
 							.add(R.id.activity_profile_base_fragment_2, ArtistAlbumFragment.class, mArguments).commit();
@@ -824,7 +826,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 			case GENRE:
 				if (mTabCarousel != null) {
-					mTabCarousel.setGenreProfileHeader(mProfileName);
+					mTabCarousel.setGenreProfileHeader(ids);
 				} else {
 					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, GenreSongFragment.class, mArguments).commit();
 				}
@@ -877,11 +879,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	private void removeFromCache() {
 		switch (type) {
 			case ARTIST:
-				mImageFetcher.setArtistImage(mArtistName, null);
+				mImageFetcher.setArtistImage(ids[0], null);
 				break;
 
 			case ALBUM:
-				mImageFetcher.setAlbumImage(mArtistName, mProfileName, null);
+				mImageFetcher.setAlbumImage(ids[0], null);
 				break;
 
 			case FOLDER:
@@ -889,7 +891,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 
 			case GENRE:
-				mImageFetcher.setGenreImage(mProfileName, null);
+				mImageFetcher.setGenreImage(ids, null);
 				break;
 
 			case PLAYLIST:

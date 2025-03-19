@@ -7,7 +7,7 @@ import android.util.Log;
 
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.async.worker.ArtworkDownloader.Param;
-import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
 
@@ -22,27 +22,25 @@ public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {
 
 	private static final String TAG = "ArtworkDownloader";
 
+	private ImageCache imageCache;
+
 
 	public ArtworkDownloader(Context context) {
 		super(context);
+		imageCache = ImageCache.getInstance(context);
 	}
 
 
 	@Override
 	protected Bitmap doInBackground(Param param) {
 		try {
-			if (getContext() != null) {
-				ImageFetcher imageFetcher = new ImageFetcher(getContext());
-				Artwork artwork = MusicBrainz.getImage(param.mbid);
-				if (artwork != null) {
-					Bitmap bitmap = null;
-					String url = artwork.getThumbnailUrl();
-					if (url != null)
-						bitmap = BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream());
-					if (bitmap != null) {
-						imageFetcher.addImageToCache(bitmap, param.cacheKey);
-						return bitmap;
-					}
+			Artwork artwork = MusicBrainz.getImage(param.mbid);
+			if (artwork != null) {
+				String url = artwork.getThumbnailUrl();
+				Bitmap bitmap = BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream());
+				if (bitmap != null) {
+					imageCache.addBitmapToCache(param.cacheKey, bitmap);
+					return bitmap;
 				}
 			}
 		} catch (Exception exception) {
@@ -51,7 +49,9 @@ public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {
 		return null;
 	}
 
-
+	/**
+	 *
+	 */
 	public static class Param {
 
 		String cacheKey, mbid;

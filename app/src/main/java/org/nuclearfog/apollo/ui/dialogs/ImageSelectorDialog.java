@@ -9,8 +9,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
@@ -39,7 +37,7 @@ import java.util.TimerTask;
  *
  * @author nuclearfog
  */
-public class ImageSelectorDialog extends DialogFragment implements AsyncCallback<List<AlbumMB>>, OnItemClickListener, OnScrollListener, TextWatcher {
+public class ImageSelectorDialog extends DialogFragment implements AsyncCallback<List<AlbumMB>>, OnItemClickListener, TextWatcher {
 
 	private static final String TAG = "ImageSelectorDialog";
 
@@ -109,7 +107,6 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		listView.setEmptyView(emptyView);
 		listView.setAdapter(adapter);
 		search.addTextChangedListener(this);
-		listView.setOnScrollListener(this);
 		listView.setOnItemClickListener(this);
 		return view;
 	}
@@ -145,22 +142,6 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		for (AlbumMB album: albums) {
 			adapter.add(album);
 		}
-	}
-
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		// Pause disk cache access to ensure smoother scrolling
-		boolean pauseCache = scrollState == OnScrollListener.SCROLL_STATE_FLING || scrollState == OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
-		adapter.setPauseDiskCache(pauseCache);
-		if (!pauseCache) {
-			adapter.notifyDataSetChanged();
-		}
-	}
-
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 	}
 
 

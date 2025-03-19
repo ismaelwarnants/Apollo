@@ -414,7 +414,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// Set the album art
 		if (album != null) {
-			imageFetcher.loadAlbumImage(album, mAlbumArt);
+			imageFetcher.loadAlbumImage(album.getId(), mAlbumArt);
 		} else {
 			mAlbumArt.setImageResource(0);
 		}

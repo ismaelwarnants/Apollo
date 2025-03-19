@@ -1,8 +1,12 @@
 package org.nuclearfog.apollo.async.worker;
 
+import android.content.ContentUris;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,13 +15,23 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.async.worker.ImageWorker.Param;
 import org.nuclearfog.apollo.async.worker.ImageWorker.Result;
-import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.cache.ImageCache;
+import org.nuclearfog.apollo.lookup.MusicBrainz;
+import org.nuclearfog.apollo.lookup.entities.AlbumMB;
+import org.nuclearfog.apollo.lookup.entities.ArtistMB;
+import org.nuclearfog.apollo.lookup.entities.Artwork;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.ImageUtils;
+import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Async worker to download image artworks
@@ -28,60 +42,95 @@ public class ImageWorker extends AsyncExecutor<Param, Result> {
 
 	private static final String TAG = "ImageWorker";
 
-	private WeakReference<ImageFetcher> callback;
-	private ImageType mImageType;
+	private static final Uri URI_ARTWORK = Uri.parse("content://media/external/audio/albumart");
+
+	private PreferenceUtils mPrefs;
+	private ImageCache mImageCache;
 
 
-	public ImageWorker(ImageFetcher worker, ImageType mImageType) {
-		super(null);
-		callback = new WeakReference<>(worker);
-		this.mImageType = mImageType;
+	public ImageWorker(Context context) {
+		super(context);
+		mImageCache = ImageCache.getInstance(context);
+		mPrefs = PreferenceUtils.getInstance(context);
 	}
 
 
 	@Override
 	protected Result doInBackground(Param param) {
-		ImageFetcher imageFetcher = callback.get();
-		if (imageFetcher == null) {
+		Context context = getContext();
+		if (context == null) {
 			return null;
 		}
 
 		// First, check the disk cache for the image
-		Bitmap bitmap = imageFetcher.getCachedBitmap(param.cacheKey);
+		Bitmap bitmap = mImageCache.getCachedBitmap(param.cacheKey);
 
-		// second, check the media store for any album art
-		if (bitmap == null && mImageType == ImageType.ALBUM && param.albumId != 0) {
-			bitmap = imageFetcher.getAlbumArtwork(param.albumId);
-			if (bitmap != null) {
-				imageFetcher.addImageToCache(bitmap, param.cacheKey);
+		// second, check the MediaStore database for any album art
+		if (bitmap == null && param.type == ImageType.ALBUM) {
+			try {
+				Uri uri = ContentUris.withAppendedId(URI_ARTWORK, param.id);
+				ParcelFileDescriptor descriptor = context.getContentResolver().openFileDescriptor(uri, "r");
+				if (descriptor != null) {
+					FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
+					bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+					mImageCache.addBitmapToCache(param.cacheKey, bitmap);
+					descriptor.close();
+				}
+			} catch (FileNotFoundException e) {
+				// proceed without file
+			} catch (Exception e) {
+				Log.w(TAG, "could not load local thumbnail! ID=" + param.id);
 			}
 		}
 
 		// Third, by now we need to download the image
 		if (bitmap == null) {
-			String mUrl;
-			// Now define what the artist name, album name, and url are.
-			if (param.mbid != null) {
-				mUrl = imageFetcher.downloadImage(param.mbid);
-			} else {
-				mUrl = imageFetcher.downloadImage(mImageType, param.mArtistName, param.mAlbumName);
-			}
-			try {
-				if (mUrl != null)
-					bitmap = BitmapFactory.decodeStream(new URL(mUrl).openConnection().getInputStream());
-				if (bitmap != null) {
-					imageFetcher.addImageToCache(bitmap, param.cacheKey);
+			// if MBID is not defined, search for a mbid using local MediaStore ID
+			if (param.mbid == null) {
+				if (param.type == ImageType.ARTIST && mPrefs.downloadMissingArtistImages()) {
+					Artist artist = MusicUtils.getArtistForId(context, param.id);
+					if (artist != null) {
+						// fetch artist information
+						ArtistMB artistMb = MusicBrainz.getArtistByName(artist.getName());
+						if (artistMb != null) {
+							// fetch the most recent album of the artist
+							List<AlbumMB> albums = MusicBrainz.searchAlbumsByArtistId(artistMb.getId(), 1);
+							if (!albums.isEmpty()) {
+								param.mbid = albums.get(0).getId();
+							}
+						}
+					}
+				} else if (param.type == ImageType.ALBUM && mPrefs.downloadMissingArtwork()) {
+					Album album = MusicUtils.getAlbumForId(context, param.id);
+					if (album != null) {
+						AlbumMB albumMb = MusicBrainz.getReleaseByName(album.getName(), album.getArtist());
+						if (albumMb != null) {
+							param.mbid = albumMb.getId();
+						}
+					}
 				}
-			} catch (IOException e) {
-				Log.w(TAG, "could not download image!");
-				// proceed without bitmap
+			}
+			// download artwork if MBID is defined
+			if (param.mbid != null) {
+				Artwork artwork = MusicBrainz.getImage(param.mbid);
+				if (artwork != null) {
+					try {
+						String mUrl = artwork.getThumbnailUrl();
+						bitmap = BitmapFactory.decodeStream(new URL(mUrl).openConnection().getInputStream());
+						if (bitmap != null) {
+							mImageCache.addBitmapToCache(param.cacheKey, bitmap);
+						}
+					} catch (IOException e) {
+						Log.w(TAG, "could not download image!");
+					}
+				}
 			}
 		}
 
 		// Fourth, add the new image to the cache and create drawables
 		if (bitmap != null) {
-			Drawable result = ImageUtils.createTransitionDrawable(imageFetcher.getResources(), bitmap);
-			Drawable layerBlur = ImageUtils.createBlurredDrawable(imageFetcher.getResources(), bitmap);
+			Drawable result = ImageUtils.createTransitionDrawable(context.getResources(), bitmap);
+			Drawable layerBlur = ImageUtils.createBlurredDrawable(context.getResources(), bitmap);
 			return new Result(result, layerBlur);
 		}
 		return null;
@@ -92,21 +141,23 @@ public class ImageWorker extends AsyncExecutor<Param, Result> {
 	 */
 	public static class Param {
 
-		String cacheKey;
+		final ImageType type;
+		final long id;
+		final String cacheKey;
 		@Nullable
-		String mbid, mArtistName, mAlbumName;
-		long albumId;
+		String mbid = null;
 
-		public Param(String cacheKey, @NonNull String mAlbumName, @NonNull String mArtistName, long albumId) {
+		public Param(ImageType type, @NonNull String cacheKey, @NonNull String mbid) {
+			this.mbid = mbid;
+			this.type = type;
 			this.cacheKey = cacheKey;
-			this.mAlbumName = mAlbumName;
-			this.mArtistName = mArtistName;
-			this.albumId = albumId;
+			id = 0;
 		}
 
-		public Param(String cacheKey, @NonNull String mbid) {
+		public Param(ImageType type, @NonNull String cacheKey, long id) {
+			this.id = id;
+			this.type = type;
 			this.cacheKey = cacheKey;
-			this.mbid = mbid;
 		}
 	}
 

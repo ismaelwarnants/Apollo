@@ -26,7 +26,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
@@ -106,7 +105,7 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	public void onClick(View v) {
 		if (v.getId() == R.id.profile_tab_photo) {
 			if (photoClickListener != null) {
-				photoClickListener.onPhotoClicked();
+				photoClickListener.onPhotoClick(this);
 			}
 		}
 	}
@@ -143,13 +142,11 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	/**
 	 * load album art from cache
 	 *
-	 * @param id     album ID
-	 * @param artist artist name of the album
-	 * @param album  album name
+	 * @param id album ID
 	 */
-	public void setAlbumImage(long id, String artist, String album) {
-		if (!TextUtils.isEmpty(album) && !TextUtils.isEmpty(artist)) {
-			mFetcher.loadAlbumImage(artist, album, id, mAlbumArt, mPhoto);
+	public void setAlbumImage(long id) {
+		if (id != 0L) {
+			mFetcher.loadAlbumImage(id, mAlbumArt, mPhoto);
 			mAlbumArt.setVisibility(View.VISIBLE);
 		} else {
 			setDefault();
@@ -159,24 +156,24 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	/**
 	 * load artist image from cache
 	 *
-	 * @param artist artist name
+	 * @param id artist ID
 	 */
-	public void setArtistImage(String artist) {
-		if (!TextUtils.isEmpty(artist)) {
-			mFetcher.loadArtistImage(artist, mPhoto);
+	public void setArtistImage(long id) {
+		if (id != 0L) {
+			mFetcher.loadArtistImage(id, mPhoto);
 		} else {
 			setDefault();
 		}
 	}
 
 	/**
-	 * load genre image from cache
+	 * load genre profile image from cache
 	 *
-	 * @param genre genre name
+	 * @param ids genre IDs
 	 */
-	public void setGenreImage(String genre) {
-		if (!TextUtils.isEmpty(genre)) {
-			mFetcher.loadGenreImage(genre, mPhoto);
+	public void setGenreImage(long[] ids) {
+		if (ids.length > 0) {
+			mFetcher.loadGenreImage(ids, mPhoto);
 		} else {
 			setDefault();
 		}
@@ -212,7 +209,14 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 * set default photo
 	 */
 	public void setDefault() {
-		mPhoto.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.header_temp));
+		mFetcher.setDefaultImage(mPhoto, mAlbumArt);
+	}
+
+	/**
+	 * clear image
+	 */
+	public void removeImage() {
+		mPhoto.setImageResource(0);
 	}
 
 	/**
@@ -272,7 +276,7 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 */
 	public interface OnPhotoClickedListener {
 
-		void onPhotoClicked();
+		void onPhotoClick(View v);
 	}
 
 	/**

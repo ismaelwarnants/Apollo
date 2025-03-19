@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.views;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -48,11 +47,6 @@ import org.nuclearfog.apollo.utils.ImageUtils;
 public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnGlobalLayoutListener, AnimatorListener, OnPhotoClickedListener, OnTabClickListener {
 
 	/**
-	 * Number of tabs
-	 */
-	private static final int TAB_COUNT = 2;
-
-	/**
 	 * Alpha layer to be set on the layer view
 	 */
 	private static final float MAX_ALPHA = 0.6f;
@@ -60,7 +54,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Y coordinate of the tab at the given index was selected
 	 */
-	private static final float[] mYCoordinateArray = new float[TAB_COUNT];
+	private final float[] mYCoordinateArray = new float[2];
 
 	/**
 	 * Tab width as defined as a fraction of the screen width
@@ -110,6 +104,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private boolean mScrollToCurrentTab = false;
 	private boolean mTabCarouselIsAnimating;
 	private boolean mEnableSwipe;
+
 	private CarouselTab mFirstTab, mSecondTab;
 
 	@Nullable
@@ -158,7 +153,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 		int screenWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int tabWidth = Math.round(tabWidthScreenWidthFraction * screenWidth);
 		int tabHeight = Math.round(screenWidth * tabHeightScreenWidthFraction) + mTabShadowHeight;
-		mAllowedHorizontalScrollLength = tabWidth * TAB_COUNT - screenWidth;
+		mAllowedHorizontalScrollLength = tabWidth * mYCoordinateArray.length - screenWidth;
 		if (mAllowedHorizontalScrollLength == 0) {
 			mScrollScaleFactor = 1.0f;
 		} else {
@@ -169,7 +164,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 			if (mEnableSwipe) {
 				// Add 1 dip of separation between the tabs
 				int separatorPixels = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()) + 0.5f);
-				int width = MeasureSpec.makeMeasureSpec(TAB_COUNT * tabWidth + separatorPixels, MeasureSpec.EXACTLY);
+				int width = MeasureSpec.makeMeasureSpec(mYCoordinateArray.length * tabWidth + separatorPixels, MeasureSpec.EXACTLY);
 				int height = MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY);
 				child.measure(width, height);
 			} else {
@@ -185,7 +180,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint("DrawAllocation")
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
@@ -209,28 +203,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 			}
 			mLastScrollPosition = x;
 			updateAlphaLayers();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onPhotoClicked() {
-		if (mListener != null) {
-			mListener.onAlbumArtSelected();
-		}
-	}
-
-
-	@Override
-	public void onTabClick(View view) {
-		if (mListener != null) {
-			if (view.getId() == R.id.profile_tab_carousel_tab_one) {
-				mListener.onTabSelected(0);
-			} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
-				mListener.onTabSelected(1);
-			}
 		}
 	}
 
@@ -309,6 +281,32 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onPhotoClick(View v) {
+		if (v.getId() == R.id.profile_tab_carousel_tab_one) {
+			if (mListener != null) {
+				mListener.onArtworkSelected();
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onTabClick(View view) {
+		if (mListener != null) {
+			if (view.getId() == R.id.profile_tab_carousel_tab_one) {
+				mListener.onTabSelected(0);
+			} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
+				mListener.onTabSelected(1);
+			}
+		}
+	}
+
+	/**
 	 * Reset the carousel to the start position (i.e. because new data will be
 	 * loaded in for a different contact).
 	 */
@@ -339,22 +337,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
-	 * Store this information as the last requested Y coordinate for the given
-	 * tabIndex.
-	 */
-	public void storeYCoordinate(int tabIndex, float y) {
-		mYCoordinateArray[tabIndex] = y;
-	}
-
-	/**
-	 * Returns the stored Y coordinate of this view the last time the user was
-	 * on the selected tab given by tabIndex.
-	 */
-	public float getStoredYCoordinateForTab(int tabIndex) {
-		return mYCoordinateArray[tabIndex];
-	}
-
-	/**
 	 * Returns the number of pixels that this view can be scrolled horizontally.
 	 */
 	public int getAllowedHorizontalScrollLength() {
@@ -367,15 +349,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public int getAllowedVerticalScrollLength() {
 		return mAllowedVerticalScrollLength;
-	}
-
-	/**
-	 * Sets the correct alpha layers over the tabs.
-	 */
-	private void updateAlphaLayers() {
-		float alpha = mLastScrollPosition * MAX_ALPHA / mAllowedHorizontalScrollLength;
-		mFirstTab.setAlphaLayerValue(alpha);
-		mSecondTab.setAlphaLayerValue(MAX_ALPHA - alpha);
 	}
 
 	/**
@@ -451,25 +424,23 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Sets the artist image header
 	 *
-	 * @param artistName The artist name used to find the cached artist image
-	 *                   and used to find the last album played by the artist
+	 * @param artistId MediaStore ID of the artist
 	 */
-	public void setArtistProfileHeader(String artistName) {
+	public void setArtistProfileHeader(long artistId) {
 		mFirstTab.setLabel(R.string.page_songs);
 		mSecondTab.setLabel(R.string.page_albums);
-		mFirstTab.setArtistImage(artistName);
+		mFirstTab.setArtistImage(artistId);
 		mEnableSwipe = true;
 	}
 
 	/**
 	 * Sets the album image header
 	 *
-	 * @param albumName  The key used to find the cached album art
-	 * @param artistName The artist name used to find the cached artist image
+	 * @param albumId MediaStore ID of the album
 	 */
-	public void setAlbumProfileHeader(long albumId, String albumName, String artistName) {
+	public void setAlbumProfileHeader(long albumId) {
 		mFirstTab.setLabel(R.string.page_songs);
-		mFirstTab.setAlbumImage(albumId, artistName, albumName);
+		mFirstTab.setAlbumImage(albumId);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
@@ -477,7 +448,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Sets the playlist image header
 	 *
-	 * @param id playlist ID
+	 * @param id MediaStore playlist ID
 	 */
 	public void setPlaylistProfileHeader(long id) {
 		mFirstTab.setDefault();
@@ -490,12 +461,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Sets the genre image header
 	 *
-	 * @param genreName The key used to find the cached image for a genre
+	 * @param ids grouped MediaStore genre IDs
 	 */
-	public void setGenreProfileHeader(String genreName) {
+	public void setGenreProfileHeader(long[] ids) {
 		mFirstTab.setDefault();
 		mFirstTab.setLabel(R.string.page_songs);
-		mFirstTab.setGenreImage(genreName);
+		mFirstTab.setGenreImage(ids);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
@@ -514,6 +485,39 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
+	 * clear current images
+	 */
+	public void setDefault() {
+		mFirstTab.setDefault();
+		mSecondTab.removeImage();
+	}
+
+	/**
+	 * Store this information as the last requested Y coordinate for the given
+	 * tabIndex.
+	 */
+	private void storeYCoordinate(int tabIndex, float y) {
+		mYCoordinateArray[tabIndex] = y;
+	}
+
+	/**
+	 * Returns the stored Y coordinate of this view the last time the user was
+	 * on the selected tab given by tabIndex.
+	 */
+	private float getStoredYCoordinateForTab(int tabIndex) {
+		return mYCoordinateArray[tabIndex];
+	}
+
+	/**
+	 * Sets the correct alpha layers over the tabs.
+	 */
+	private void updateAlphaLayers() {
+		float alpha = mLastScrollPosition * MAX_ALPHA / mAllowedHorizontalScrollLength;
+		mFirstTab.setAlphaLayerValue(alpha);
+		mSecondTab.setAlphaLayerValue(MAX_ALPHA - alpha);
+	}
+
+	/**
 	 * Interface for callbacks invoked when the user interacts with the carousel.
 	 */
 	public interface OnTabChangeListener {
@@ -526,6 +530,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 
 		void onTabSelected(int position);
 
-		void onAlbumArtSelected();
+		void onArtworkSelected();
 	}
 }

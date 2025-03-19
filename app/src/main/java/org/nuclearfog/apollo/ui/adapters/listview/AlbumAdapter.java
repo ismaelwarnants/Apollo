@@ -90,7 +90,7 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 			// Set the artist name (line two)
 			holder.mLineTwo.setText(album.getArtist());
 			// Asynchronously load the album images into the adapter
-			mImageFetcher.loadAlbumImage(album, holder.mImage);
+			mImageFetcher.loadAlbumImage(album.getId(), holder.mImage);
 			// List view only items
 			if (mLoadExtraData) {
 				// Set the number of songs (line three)

@@ -45,6 +45,7 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
@@ -621,23 +622,48 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Returns the ID for an album.
+	 * get single entry from MediaStore using ID
 	 *
-	 * @param context    The {@link Context} to use.
-	 * @param albumName  The name of the album.
-	 * @param artistName The name of the artist
-	 * @return The ID for an album.
+	 * @param id artist ID
+	 * @return artist entry or null if not found
 	 */
-	public static long getIdForAlbum(Context context, String albumName, String artistName) {
-		Cursor cursor = CursorFactory.makeAlbumCursor(context, albumName, artistName);
-		long id = -1L;
+	@Nullable
+	public static Artist getArtistForId(Context context, long id) {
+		Artist artist = null;
+		Cursor cursor = CursorFactory.makeArtistCursor(context, id);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				id = cursor.getLong(0);
+				String artistName = cursor.getString(1);
+				int albumCount = cursor.getInt(2);
+				int songCount = cursor.getInt(3);
+				artist = new Artist(id, artistName, songCount, albumCount, true);
 			}
 			cursor.close();
 		}
-		return id;
+		return artist;
+	}
+
+	/**
+	 * get single entry from MediaStore using ID
+	 *
+	 * @param id album ID
+	 * @return album entry or null if not found
+	 */
+	@Nullable
+	public static Album getAlbumForId(Context context, long id) {
+		Album album = null;
+		Cursor cursor = CursorFactory.makeArtistCursor(context, id);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				String albumName = cursor.getString(1);
+				String artist = cursor.getString(2);
+				int songCount = cursor.getInt(3);
+				String year = cursor.getString(4);
+				album = new Album(id, albumName, artist, songCount, year, true);
+			}
+			cursor.close();
+		}
+		return album;
 	}
 
 	/**
@@ -850,25 +876,6 @@ public final class MusicUtils {
 			}
 			cursor.close();
 		}
-	}
-
-	/**
-	 * @param context The {@link Context} to use.
-	 * @param id      The id of the album.
-	 * @return The release date for an album.
-	 */
-	public static String getReleaseDateForAlbum(Context context, long id) {
-		String releaseDate = "";
-		if (id >= 0) {
-			Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					releaseDate = cursor.getString(4);
-				}
-				cursor.close();
-			}
-		}
-		return releaseDate;
 	}
 
 	/**

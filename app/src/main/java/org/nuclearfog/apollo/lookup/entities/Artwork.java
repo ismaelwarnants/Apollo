@@ -1,5 +1,7 @@
 package org.nuclearfog.apollo.lookup.entities;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +26,8 @@ public class Artwork {
 			String url_thumb = thumbs.getString("small");
 			this.url_full = url_full.replace("http://", "https://");
 			this.url_thumb = url_thumb.replace("http://", "https://");
+		} else {
+			throw new JSONException("JSON missing images!");
 		}
 	}
 
@@ -32,6 +36,7 @@ public class Artwork {
 	 *
 	 * @return url
 	 */
+	@NonNull
 	public String getThumbnailUrl() {
 		return url_thumb;
 	}
@@ -41,6 +46,7 @@ public class Artwork {
 	 *
 	 * @return url
 	 */
+	@NonNull
 	public String getImageUrl() {
 		return url_full;
 	}

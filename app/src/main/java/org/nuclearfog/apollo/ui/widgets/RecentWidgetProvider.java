@@ -26,6 +26,7 @@ import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.service.RecentWidgetService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
@@ -131,11 +132,13 @@ public class RecentWidgetProvider extends AppWidgetBase {
 			} else if (OPEN_PROFILE.equals(action)) {
 				// Transfer the album name and MIME type
 				// Open the album profile
+				Album album = MusicUtils.getAlbumForId(context, albumId);
 				Intent profileIntent = new Intent(context, ProfileActivity.class);
 				profileIntent.putExtra(Constants.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
 				profileIntent.putExtra(Constants.NAME, intent.getStringExtra(Constants.NAME));
 				profileIntent.putExtra(Constants.ARTIST_NAME, intent.getStringExtra(Constants.ARTIST_NAME));
-				profileIntent.putExtra(Constants.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
+				if (album != null)
+					profileIntent.putExtra(Constants.ALBUM_YEAR, album.getRelease());
 				profileIntent.putExtra(Constants.ID, albumId);
 				profileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(profileIntent);

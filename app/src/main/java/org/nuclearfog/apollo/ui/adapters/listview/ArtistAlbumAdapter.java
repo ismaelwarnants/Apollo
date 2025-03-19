@@ -113,7 +113,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 			// Set the album year (line three)
 			holder.mLineThree.setText(album.getRelease());
 			// Asynchronously load the album images into the adapter
-			mImageFetcher.loadAlbumImage(album, holder.mImage);
+			mImageFetcher.loadAlbumImage(album.getId(), holder.mImage);
 			// register album art click listener
 			ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
 		}
