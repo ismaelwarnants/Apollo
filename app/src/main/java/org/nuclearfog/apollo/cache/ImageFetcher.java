@@ -103,11 +103,11 @@ public class ImageFetcher {
 	/**
 	 * get album image from cache
 	 *
-	 * @param id album ID
-	 * @return artist image bitmap
+	 * @param albumId local MediaStore ID of the album
+	 * @return album image bitmap
 	 */
-	public Bitmap getAlbumImage(long id) {
-		String key = StringUtils.generateCacheKey(ImageType.ALBUM, id);
+	public Bitmap getAlbumImage(long albumId) {
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, albumId);
 		Bitmap bitmap = mImageCache.getCachedBitmap(key);
 		if (bitmap == null)
 			return getDefaultArtwork();
@@ -115,35 +115,42 @@ public class ImageFetcher {
 	}
 
 	/**
-	 * cache the album image
+	 * add album image to cache
 	 *
-	 * @param id  album ID
-	 * @param uri local Uri to image file
+	 * @param albumId local MediaStore ID of the album
+	 * @param uri     local Uri to image file or null to remove from cache
 	 */
-	public void setAlbumImage(long id, @Nullable Uri uri) {
-		String key = StringUtils.generateCacheKey(ImageType.ALBUM, id);
-		if (uri != null) {
-			addImageToCache(uri, key);
-		} else {
-			mImageCache.removeFromCache(key);
-		}
+	public void setAlbumImage(long albumId, @Nullable Uri uri) {
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, albumId);
+		addImageToCache(key, uri);
+	}
+
+	/**
+	 * add album image to cache
+	 *
+	 * @param albumId local MediaStore ID of the album
+	 * @param bitmap  image bitmap or null to remove existing entry from cache
+	 */
+	public void setAlbumImage(long albumId, @Nullable Bitmap bitmap) {
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, albumId);
+		addImageToCache(key, bitmap);
 	}
 
 	/**
 	 * load album images asynchronously into the imageview(s)
 	 *
-	 * @param id         MediaStore ID of the album
+	 * @param albumId    local MediaStore ID of the album
 	 * @param imageViews imageview(s) to attach the images
 	 */
-	public void loadAlbumImage(long id, ImageView... imageViews) {
-		String key = StringUtils.generateCacheKey(ImageType.ALBUM, id);
-		loadImage(ImageType.ALBUM, key, id, imageViews);
+	public void loadAlbumImage(long albumId, ImageView... imageViews) {
+		String key = StringUtils.generateCacheKey(ImageType.ALBUM, albumId);
+		loadImage(ImageType.ALBUM, key, albumId, imageViews);
 	}
 
 	/**
 	 * get artist image from cache
 	 *
-	 * @param artistId artist ID
+	 * @param artistId local MediaStore ID of the artist
 	 * @return artist image bitmap
 	 */
 	public Bitmap getArtistImage(long artistId) {
@@ -155,24 +162,31 @@ public class ImageFetcher {
 	}
 
 	/**
-	 * cache artist image
+	 * add artist image to cache
 	 *
-	 * @param artistId artist ID
-	 * @param uri      local Uri of the image file
+	 * @param artistId local MediaStore ID of the artist
+	 * @param uri      local Uri to image file or null to remove from cache
 	 */
 	public void setArtistImage(long artistId, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artistId);
-		if (uri != null) {
-			addImageToCache(uri, key);
-		} else {
-			mImageCache.removeFromCache(key);
-		}
+		addImageToCache(key, uri);
+	}
+
+	/**
+	 * add artist image to cache
+	 *
+	 * @param artistId local MediaStore ID of the artist
+	 * @param bitmap   image bitmap or null to remove existing entry from cache
+	 */
+	public void setArtistImage(long artistId, @Nullable Bitmap bitmap) {
+		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artistId);
+		addImageToCache(key, bitmap);
 	}
 
 	/**
 	 * load artist image asynchronously into imageview
 	 *
-	 * @param artistId  artist name
+	 * @param artistId  local MediaStore ID of the artist
 	 * @param imageView imageview to attach the image
 	 */
 	public void loadArtistImage(long artistId, ImageView imageView) {
@@ -203,7 +217,7 @@ public class ImageFetcher {
 	public void setGenreImage(long[] ids, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.GENRE, ids);
 		if (uri != null) {
-			addImageToCache(uri, key);
+			addImageToCache(key, uri);
 		} else {
 			mImageCache.removeFromCache(key);
 		}
@@ -237,13 +251,13 @@ public class ImageFetcher {
 	/**
 	 * caches the playlist image
 	 *
-	 * @param id  ID of the playlist
-	 * @param uri local Uri of the image file
+	 * @param playlistId ID of the playlist
+	 * @param uri        local Uri of the image file
 	 */
-	public void setPlaylistImage(long id, @Nullable Uri uri) {
-		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, id);
+	public void setPlaylistImage(long playlistId, @Nullable Uri uri) {
+		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, playlistId);
 		if (uri != null) {
-			addImageToCache(uri, key);
+			addImageToCache(key, uri);
 		} else {
 			mImageCache.removeFromCache(key);
 		}
@@ -252,12 +266,12 @@ public class ImageFetcher {
 	/**
 	 * loads the playlist image into imageview asynchronously
 	 *
-	 * @param id        ID of the playlist
-	 * @param imageView imageview to attach the image
+	 * @param playlistId ID of the playlist
+	 * @param imageView  imageview to attach the image
 	 */
-	public void loadPlaylistImage(long id, ImageView imageView) {
-		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, id);
-		loadImage(ImageType.PLAYLIST, key, id, imageView);
+	public void loadPlaylistImage(long playlistId, ImageView imageView) {
+		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, playlistId);
+		loadImage(ImageType.PLAYLIST, key, playlistId, imageView);
 	}
 
 	/**
@@ -269,7 +283,7 @@ public class ImageFetcher {
 	public void setFolderImage(String folder, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.FOLDER, folder);
 		if (uri != null) {
-			addImageToCache(uri, key);
+			addImageToCache(key, uri);
 		} else {
 			mImageCache.removeFromCache(key);
 		}
@@ -317,9 +331,9 @@ public class ImageFetcher {
 	/**
 	 * Called to fetch the artist or album art.
 	 *
-	 * @param type Type of image to load into imageview
-	 * @param key  cache key to identify cached images
-	 * @param id   MediaStore ID of album/artist used with {@link ImageType#ALBUM,ImageType#ARTIST}
+	 * @param type       Type of image to load into imageview
+	 * @param key        cache key to identify cached images
+	 * @param id         MediaStore ID of album/artist used with {@link ImageType#ALBUM,ImageType#ARTIST}
 	 * @param imageViews at least one ImageView to set the loaded image
 	 */
 	private void loadImage(ImageType type, String key, long id, ImageView... imageViews) {
@@ -373,16 +387,30 @@ public class ImageFetcher {
 	 * @param uri local Uri to image or null to remove image
 	 * @param key cache key used to identify image
 	 */
-	private void addImageToCache(Uri uri, String key) {
-		try {
-			Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-			if (bitmap != null) {
-				mImageCache.addBitmapToCache(key, bitmap);
-			} else {
-				mImageCache.removeFromCache(key);
+	private void addImageToCache(String key, @Nullable Uri uri) {
+		if (uri != null) {
+			try {
+				Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+				addImageToCache(key, bitmap);
+			} catch (IOException exception) {
+				Log.e(TAG, "could not load local image to cache!", exception);
 			}
-		} catch (IOException exception) {
-			Log.e(TAG, "could not load local image to cache!", exception);
+		} else {
+			mImageCache.removeFromCache(key);
+		}
+	}
+
+	/**
+	 * add image to local cache using Uri
+	 *
+	 * @param bitmap image bitmap to add to cache
+	 * @param key    cache key used to identify image
+	 */
+	private void addImageToCache(String key, @Nullable Bitmap bitmap) {
+		if (bitmap != null) {
+			mImageCache.addBitmapToCache(key, bitmap);
+		} else {
+			mImageCache.removeFromCache(key);
 		}
 	}
 

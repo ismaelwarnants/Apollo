@@ -16,12 +16,14 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -156,5 +158,15 @@ public class ThemeUtils {
 	public void setBackgroundColor(View view) {
 		Drawable background = new HoloSelector(mPref.getDefaultThemeColor());
 		view.setBackground(background);
+	}
+
+	/**
+	 * set theme color of the progress bar
+	 *
+	 * @param progressBar progressbar to set the color
+	 */
+	public void themeProgressbar(ProgressBar progressBar) {
+		Drawable icon = progressBar.getIndeterminateDrawable();
+		icon.setColorFilter(new PorterDuffColorFilter(mPref.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN));
 	}
 }

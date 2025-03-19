@@ -70,12 +70,12 @@ import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.OnTabChangeListener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
+import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
-import org.nuclearfog.apollo.utils.StringUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -83,9 +83,9 @@ import java.util.List;
 /**
  * This activity shows detailed information to albums, artists, playlists and more using the {@link ProfileFragment}
  *
- * @see ProfileFragment
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
+ * @see ProfileFragment
  */
 public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, AsyncCallback<Bitmap>,
 		OnPageChangeListener, OnItemSelectedListener, OnTabChangeListener, OnOptionSelectedListener {
@@ -588,12 +588,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	public void onItemSelected(String mbid) {
 		ArtworkDownloader loaderAsync = new ArtworkDownloader(this);
 		if (type == Type.ALBUM) {
-			String cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ALBUM, ids[0]);
-			ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
+			ArtworkDownloader.Param param = new ArtworkDownloader.Param(ImageType.ALBUM, ids[0], mbid);
 			loaderAsync.execute(param, this);
 		} else if (type == Type.ARTIST) {
-			String cacheKey = StringUtils.generateCacheKey(Constants.ImageType.ARTIST, ids[0]);
-			ArtworkDownloader.Param param = new ArtworkDownloader.Param(cacheKey, mbid);
+			ArtworkDownloader.Param param = new ArtworkDownloader.Param(ImageType.ARTIST, ids[0], mbid);
 			loaderAsync.execute(param, this);
 		}
 	}
@@ -879,11 +877,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	private void removeFromCache() {
 		switch (type) {
 			case ARTIST:
-				mImageFetcher.setArtistImage(ids[0], null);
+				mImageFetcher.setArtistImage(ids[0], (Uri) null);
 				break;
 
 			case ALBUM:
-				mImageFetcher.setAlbumImage(ids[0], null);
+				mImageFetcher.setAlbumImage(ids[0], (Uri) null);
 				break;
 
 			case FOLDER:

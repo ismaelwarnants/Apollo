@@ -7,9 +7,10 @@ import android.util.Log;
 
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.async.worker.ArtworkDownloader.Param;
-import org.nuclearfog.apollo.cache.ImageCache;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.lookup.MusicBrainz;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
+import org.nuclearfog.apollo.utils.Constants.ImageType;
 
 import java.net.URL;
 
@@ -22,12 +23,11 @@ public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {
 
 	private static final String TAG = "ArtworkDownloader";
 
-	private ImageCache imageCache;
-
+	private ImageFetcher imgFetcher;
 
 	public ArtworkDownloader(Context context) {
 		super(context);
-		imageCache = ImageCache.getInstance(context);
+		imgFetcher = new ImageFetcher(context);
 	}
 
 
@@ -39,7 +39,11 @@ public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {
 				String url = artwork.getThumbnailUrl();
 				Bitmap bitmap = BitmapFactory.decodeStream(new URL(url).openConnection().getInputStream());
 				if (bitmap != null) {
-					imageCache.addBitmapToCache(param.cacheKey, bitmap);
+					if (param.type == ImageType.ARTIST) {
+						imgFetcher.setArtistImage(param.id, bitmap);
+					} else if (param.type == ImageType.ALBUM) {
+						imgFetcher.setAlbumImage(param.id, bitmap);
+					}
 					return bitmap;
 				}
 			}
@@ -54,11 +58,14 @@ public class ArtworkDownloader extends AsyncExecutor<Param, Bitmap> {
 	 */
 	public static class Param {
 
-		String cacheKey, mbid;
+		String mbid;
+		long id;
+		ImageType type;
 
-		public Param(String cacheKey, String mbid) {
-			this.cacheKey = cacheKey;
+		public Param(ImageType type, long id, String mbid) {
+			this.type = type;
 			this.mbid = mbid;
+			this.id = id;
 		}
 	}
 }

@@ -24,12 +24,12 @@
 		android:importantForAutofill="no"
 		android:hint="@string/album_name_hint"
 		android:lines="1"
-		android:drawableStart="@android:drawable/ic_menu_search"/>
+		android:drawableStart="@android:drawable/ic_menu_search" />
 
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="@dimen/dialog_image_selector_item_margins" >
+		android:layout_margin="@dimen/dialog_image_selector_item_margins">
 
 		<ListView
 			android:id="@+id/dialog_image_selector_list"
@@ -40,7 +40,14 @@
 			android:id="@+id/dialog_image_selector_loading"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"/>
+			android:layout_gravity="center" />
+
+		<TextView
+			android:id="@+id/dialog_image_Selector_empty"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/empty_search"
+			android:layout_gravity="center" />
 
 	</FrameLayout>
 

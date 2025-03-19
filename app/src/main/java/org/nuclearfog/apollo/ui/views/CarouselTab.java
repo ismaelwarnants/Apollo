@@ -255,7 +255,7 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	/**
 	 * sets the tab label
 	 *
-	 * @param res  string resource ID
+	 * @param res string resource ID
 	 */
 	public void setLabel(@StringRes int res) {
 		String label = getContext().getString(res);

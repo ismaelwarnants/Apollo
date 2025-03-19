@@ -1,8 +1,5 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +11,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +24,7 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumArtLoader;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumArtAdapter;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
 import java.util.Timer;
@@ -46,6 +44,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	private static final String KEY_SEARCH = "search";
 
 	private EditText search;
+	private ProgressBar loading;
 
 	private AlbumArtLoader loader;
 	private AlbumArtAdapter adapter;
@@ -78,10 +77,12 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		super.onCreate(savedInstanceState);
 		View view = inflater.inflate(R.layout.dialog_image_selector, container, false);
 		ListView listView = view.findViewById(R.id.dialog_image_selector_list);
-		ProgressBar emptyView = view.findViewById(R.id.dialog_image_selector_loading);
+		TextView emptyView = view.findViewById(R.id.dialog_image_Selector_empty);
+		loading = view.findViewById(R.id.dialog_image_selector_loading);
 		search = view.findViewById(R.id.dialog_image_selector_search);
 		adapter = new AlbumArtAdapter(requireContext());
 		loader = new AlbumArtLoader(requireContext());
+		ThemeUtils theme = new ThemeUtils(requireContext());
 		String searchStr = null;
 		String album = null;
 		String artist = null;
@@ -102,8 +103,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 			search.setText(artist);
 			loader.execute(new String[]{"", artist}, this);
 		}
-		Drawable icon = emptyView.getIndeterminateDrawable();
-		icon.setColorFilter(new PorterDuffColorFilter(PreferenceUtils.getInstance(requireContext()).getDefaultThemeColor(), PorterDuff.Mode.SRC_IN));
+		theme.themeProgressbar(loading);
 		listView.setEmptyView(emptyView);
 		listView.setAdapter(adapter);
 		search.addTextChangedListener(this);
@@ -138,8 +138,9 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 
 	@Override
 	public void onResult(@NonNull List<AlbumMB> albums) {
+		loading.setVisibility(View.INVISIBLE);
 		adapter.clear();
-		for (AlbumMB album: albums) {
+		for (AlbumMB album : albums) {
 			adapter.add(album);
 		}
 	}
@@ -158,6 +159,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	@Override
 	public void afterTextChanged(Editable s) {
 		// delay any list updates while typing
+		loading.setVisibility(View.VISIBLE);
 		timer.cancel();
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
