@@ -150,7 +150,7 @@
 	<string name="settings_ui_category">Interface</string>
 	<string name="settings_storage_category">Storage</string>
 	<string name="settings_other">Other settings</string>
-	<string name="settings_data_musicbrainz">MusicBrainz</string>
+	<string name="settings_data_musicbrainz">MusicBrainz database</string>
 	<string name="settings_about_apollo">About Apollo</string>
 	<string name="settings_color_scheme_title">Choose Apollo\'s default color scheme</string>
 	<string name="settings_color_scheme_summary">Changes the accent color in Apollo</string>

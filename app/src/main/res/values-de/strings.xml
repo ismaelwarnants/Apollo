@@ -164,4 +164,5 @@
 	<string name="settings_source_code_descr">Im Browser öffnen</string>
 	<string name="settings_keep_screen_on">Bildschirm eingeschaltet lassen</string>
 	<string name="item_hidden">Eintrag erfolgreich versteckt</string>
+	<string name="settings_data_musicbrainz">MusicBrainz Datenbank</string>
 </resources>
