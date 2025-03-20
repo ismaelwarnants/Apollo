@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.EqualizerHolder;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.text.NumberFormat;
@@ -21,7 +22,7 @@ import java.text.NumberFormat;
  *
  * @author nuclearfog
  */
-public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.EqualizerHolder> {
+public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerHolder> {
 
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
 
@@ -42,9 +43,12 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 		level = new int[frequency.length];
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	@NonNull
 	@Override
-	public EqualizerAdapter.EqualizerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public EqualizerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		final EqualizerHolder holder = new EqualizerHolder(parent);
 		holder.slider.setMax((range[1] - range[0]) / 100);
 		holder.slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -73,8 +77,11 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 		return holder;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	@Override
-	public void onBindViewHolder(@NonNull EqualizerAdapter.EqualizerHolder holder, int position) {
+	public void onBindViewHolder(@NonNull EqualizerHolder holder, int position) {
 		// set enabled
 		holder.slider.setEnabled(enabled);
 		// calculate seekbar position
@@ -90,6 +97,9 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 		}
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public int getItemCount() {
 		return Math.min(level.length, frequency.length);
@@ -121,7 +131,7 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 		final SeekBar slider;
 		final TextView level, frequency;
 
-		public EqualizerHolder(ViewGroup parent) {
+		EqualizerHolder(ViewGroup parent) {
 			super(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_equalizer_band, parent, false));
 			slider = itemView.findViewById(R.id.eq_seekbar);
 			level = itemView.findViewById(R.id.eq_level);

@@ -47,6 +47,7 @@ public class ArtistMB {
 	 * The artist area, indicates the area with which an artist is primarily identified with. (e.g. birth/formation country)
 	 *
 	 * @return area name
+	 * @noinspection unused
 	 */
 	public String getArea() {
 		return area;

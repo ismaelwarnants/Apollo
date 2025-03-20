@@ -38,37 +38,37 @@ public final class PreferenceUtils {
 	private static final String TAG = "PreferenceUtils";
 
 	/* Default start page (Artist page) */
-	public static final int DEFAULT_PAGE = 3;
+	private static final int DEFAULT_PAGE = 3;
 	/**
 	 * Saves the last page the pager was on in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
 	 */
-	public static final String START_PAGE = "start_page";
+	private static final String START_PAGE = "start_page";
 	// Sort order for the artist list
-	public static final String ARTIST_SORT_ORDER = "artist_sort_order";
+	private static final String ARTIST_SORT_ORDER = "artist_sort_order";
 	// Sort order for the artist song list
-	public static final String ARTIST_SONG_SORT_ORDER = "artist_song_sort_order";
+	private static final String ARTIST_SONG_SORT_ORDER = "artist_song_sort_order";
 	// Sort order for the artist album list
-	public static final String ARTIST_ALBUM_SORT_ORDER = "artist_album_sort_order";
+	private static final String ARTIST_ALBUM_SORT_ORDER = "artist_album_sort_order";
 	// Sort order for the album list
-	public static final String ALBUM_SORT_ORDER = "album_sort_order";
+	private static final String ALBUM_SORT_ORDER = "album_sort_order";
 	// Sort order for the album song list
-	public static final String ALBUM_SONG_SORT_ORDER = "album_song_sort_order";
+	private static final String ALBUM_SONG_SORT_ORDER = "album_song_sort_order";
 	// Sort order for the album song list
-	public static final String FOLDER_SONG_SORT_ORDER = "folder_song_sort_order";
+	private static final String FOLDER_SONG_SORT_ORDER = "folder_song_sort_order";
 	// Sort order for the song list
-	public static final String SONG_SORT_ORDER = "song_sort_order";
+	private static final String SONG_SORT_ORDER = "song_sort_order";
 	// Sets the type of layout to use for the artist list
-	public static final String ARTIST_LAYOUT = "artist_layout";
+	private static final String ARTIST_LAYOUT = "artist_layout";
 	// Sets the type of layout to use for the album list
-	public static final String ALBUM_LAYOUT = "album_layout";
+	private static final String ALBUM_LAYOUT = "album_layout";
 	// Sets the type of layout to use for the recent list
-	public static final String RECENT_LAYOUT = "recent_layout";
+	private static final String RECENT_LAYOUT = "recent_layout";
 	// Key that gives permissions to download missing album covers
-	public static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
+	private static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
 	// Key that gives permissions to download missing artist images
-	public static final String DOWNLOAD_MISSING_ARTIST_IMAGES = "download_missing_artist_images";
+	private static final String DOWNLOAD_MISSING_ARTIST_IMAGES = "download_missing_artist_images";
 	// Key used to set the overall theme color
-	public static final String DEFAULT_THEME_COLOR = "default_theme_color";
+	private static final String DEFAULT_THEME_COLOR = "default_theme_color";
 	public static final String LAYOUT_SIMPLE = "simple";
 	public static final String LAYOUT_DETAILED = "detailed";
 	public static final String LAYOUT_GRID = "grid";

@@ -53,13 +53,6 @@ public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {
 	}
 
 	/**
-	 * @param pause True to temporarily pause the disk cache, false otherwise.
-	 */
-	public void setPauseDiskCache(boolean pause) {
-		mImageFetcher.setPauseDiskCache(pause);
-	}
-
-	/**
 	 * Flushes the disk cache.
 	 */
 	public void flush() {

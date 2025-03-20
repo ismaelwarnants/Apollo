@@ -45,6 +45,7 @@ public class Artwork {
 	 * get url of the full sized image
 	 *
 	 * @return url
+	 * @noinspection unused
 	 */
 	@NonNull
 	public String getImageUrl() {

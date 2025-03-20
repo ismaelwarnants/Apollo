@@ -584,25 +584,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Returns The ID for a playlist.
-	 *
-	 * @param context The {@link Context} to use.
-	 * @param name    The name of the playlist.
-	 * @return The ID for a playlist.
-	 */
-	public static long getIdForPlaylist(Context context, String name) {
-		Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
-		long playlistId = -1L;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				playlistId = cursor.getLong(0);
-			}
-			cursor.close();
-		}
-		return playlistId;
-	}
-
-	/**
 	 * Returns the Id for an artist.
 	 *
 	 * @param context The {@link Context} to use.
@@ -753,7 +734,7 @@ public final class MusicUtils {
 		try {
 			// setting new name
 			ContentValues values = new ContentValues(1);
-			values.put(Playlists.NAME, StringUtils.capitalize(name));
+			values.put(Playlists.NAME, name);
 			// update old playlist
 			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, id);
 			ContentResolver resolver = activity.getContentResolver();
@@ -1124,5 +1105,24 @@ public final class MusicUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns The ID for a playlist.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param name    The name of the playlist.
+	 * @return The ID for a playlist.
+	 */
+	private static long getIdForPlaylist(Context context, String name) {
+		Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
+		long playlistId = -1L;
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				playlistId = cursor.getLong(0);
+			}
+			cursor.close();
+		}
+		return playlistId;
 	}
 }

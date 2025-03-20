@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -36,7 +37,6 @@ import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
-import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.util.List;
 
@@ -76,6 +76,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	/**
 	 * Search query from a voice action
 	 */
+	@Nullable
 	private String mVoiceQuery;
 
 	private AsyncCallback<List<Song>> onSongsLoaded = this::onSongsLoaded;
@@ -90,7 +91,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		mIntent = getIntent();
 		mLoader = new SearchLoader(this);
 		shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
-		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
+		mVoiceQuery = mIntent.getStringExtra(SearchManager.QUERY);
 		// go to home activity if there is any missing permission
 		for (String permission : Constants.PERMISSIONS) {
 			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
@@ -136,10 +137,9 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	@Override
 	public void onServiceConnected() {
 		// Check for a voice query
-		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
+		if (mIntent.getAction() != null && mVoiceQuery != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
 			mLoader.execute(mVoiceQuery, onSongsLoaded);
 		} else {
-			//sHandler.post(new AsyncHandler(this));
 			String requestedMimeType = mIntent.getStringExtra(Constants.MIME_TYPE);
 			long id = mIntent.getLongExtra(Constants.ID, -1L);
 			if (requestedMimeType == null) {

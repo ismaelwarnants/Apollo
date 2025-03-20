@@ -14,7 +14,7 @@ public class AudioPreset implements Serializable {
 
 	private static final long serialVersionUID = 3461944920100641078L;
 
-	public static final int MAX_NAME = 15;
+	private static final int MAX_NAME = 15;
 
 	private String name;
 	private int[] eq_bands;

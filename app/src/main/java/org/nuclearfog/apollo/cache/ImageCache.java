@@ -80,7 +80,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 * Used to temporarily pause the disk cache while scrolling
 	 */
-	public boolean mPauseDiskAccess = false;
+	private boolean mPauseDiskAccess = false;
 
 	/**
 	 * LRU cache
@@ -158,38 +158,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Fetches a cached image from the disk cache
-	 *
-	 * @param data Unique identifier for which item to get
-	 * @return The {@link Bitmap} if found in cache, null otherwise
-	 */
-	public Bitmap getBitmapFromDiskCache(@NonNull String data) {
-		if (getBitmapFromMemCache(data) != null) {
-			return getBitmapFromMemCache(data);
-		}
-		synchronized (PAUSELOCK) {
-			String hash = StringUtils.hashKeyForDisk(data);
-			if (mDiskCache != null) {
-				try {
-					DiskLruCache.Snapshot snapshot = mDiskCache.get(hash);
-					if (snapshot != null) {
-						InputStream inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
-						if (inputStream != null) {
-							Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-							if (bitmap != null) {
-								return bitmap;
-							}
-						}
-					}
-				} catch (IOException e) {
-					Log.e(TAG, "getBitmapFromDiskCache():" + e);
-				}
-			}
-			return null;
-		}
-	}
-
-	/**
 	 * Adds a new image to the memory and disk caches
 	 *
 	 * @param key    The key used to store the image
@@ -214,31 +182,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 				Log.e(TAG, "addBitmapToCache()" + e);
 			}
 		}
-	}
-
-	/**
-	 * Called to add a new image to the memory cache
-	 *
-	 * @param key    The key identifier of the image
-	 * @param bitmap The {@link Bitmap} to cache
-	 */
-	public void addBitmapToMemCache(@NonNull String key, @NonNull Bitmap bitmap) {
-		if (mLruCache != null && getBitmapFromMemCache(key) == null) {
-			mLruCache.put(key, bitmap);
-		}
-	}
-
-	/**
-	 * Fetches a cached image from the memory cache
-	 *
-	 * @param key The key identifier of the image
-	 * @return The {@link Bitmap} if found in cache, null otherwise
-	 */
-	public Bitmap getBitmapFromMemCache(@NonNull String key) {
-		if (mLruCache != null) {
-			return mLruCache.get(key);
-		}
-		return null;
 	}
 
 	/**
@@ -304,25 +247,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * @param key The key used to identify which cache entries to delete.
-	 */
-	public void removeFromCache(@NonNull String key) {
-		// Remove the Lru entry
-		if (mLruCache != null) {
-			mLruCache.remove(key);
-		}
-		try {
-			// Remove the disk entry
-			if (mDiskCache != null) {
-				mDiskCache.remove(StringUtils.hashKeyForDisk(key));
-			}
-		} catch (IOException e) {
-			Log.e(TAG, "remove():" + e);
-		}
-		flush();
-	}
-
-	/**
 	 * Used to temporarily pause the disk cache while the user is scrolling to
 	 * improve scrolling.
 	 *
@@ -340,10 +264,74 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
+	 * Fetches a cached image from the memory cache
+	 *
+	 * @param key The key identifier of the image
+	 * @return The {@link Bitmap} if found in cache, null otherwise
+	 */
+	Bitmap getBitmapFromMemCache(@NonNull String key) {
+		if (mLruCache != null) {
+			return mLruCache.get(key);
+		}
+		return null;
+	}
+
+	/**
 	 * @return True if the user is scrolling, false otherwise.
 	 */
-	public boolean isDiskCachePaused() {
+	boolean isDiskCachePaused() {
 		return mPauseDiskAccess;
+	}
+
+	/**
+	 * @param key The key used to identify which cache entries to delete.
+	 */
+	void removeFromCache(@NonNull String key) {
+		// Remove the Lru entry
+		if (mLruCache != null) {
+			mLruCache.remove(key);
+		}
+		try {
+			// Remove the disk entry
+			if (mDiskCache != null) {
+				mDiskCache.remove(StringUtils.hashKeyForDisk(key));
+			}
+		} catch (IOException e) {
+			Log.e(TAG, "remove():" + e);
+		}
+		flush();
+	}
+
+	/**
+	 * Fetches a cached image from the disk cache
+	 *
+	 * @param data Unique identifier for which item to get
+	 * @return The {@link Bitmap} if found in cache, null otherwise
+	 */
+	Bitmap getBitmapFromDiskCache(@NonNull String data) {
+		if (getBitmapFromMemCache(data) != null) {
+			return getBitmapFromMemCache(data);
+		}
+		synchronized (PAUSELOCK) {
+			String hash = StringUtils.hashKeyForDisk(data);
+			if (mDiskCache != null) {
+				try {
+					DiskLruCache.Snapshot snapshot = mDiskCache.get(hash);
+					if (snapshot != null) {
+						InputStream inputStream = snapshot.getInputStream(DISK_CACHE_INDEX);
+						if (inputStream != null) {
+							Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+							if (bitmap != null) {
+								return bitmap;
+							}
+						}
+					}
+				} catch (IOException e) {
+					Log.e(TAG, "getBitmapFromDiskCache():" + e);
+				}
+			}
+			return null;
+		}
 	}
 
 	/**
@@ -383,5 +371,17 @@ public final class ImageCache implements ComponentCallbacks2 {
 		mLruCache = new LruCache<>(lruCacheSize);
 		// Release some memory as needed
 		context.registerComponentCallbacks(this);
+	}
+
+	/**
+	 * Called to add a new image to the memory cache
+	 *
+	 * @param key    The key identifier of the image
+	 * @param bitmap The {@link Bitmap} to cache
+	 */
+	private void addBitmapToMemCache(@NonNull String key, @NonNull Bitmap bitmap) {
+		if (mLruCache != null && getBitmapFromMemCache(key) == null) {
+			mLruCache.put(key, bitmap);
+		}
 	}
 }

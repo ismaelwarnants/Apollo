@@ -1,7 +1,6 @@
 package org.nuclearfog.apollo.utils;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -23,41 +22,6 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Capitalizes the first character in a string
-	 *
-	 * @param str The string to capitalize
-	 * @return A capitalized string
-	 */
-	public static String capitalize(String str) {
-		return capitalize(str, null);
-	}
-
-	/**
-	 * Capitalizes the first character in a string
-	 *
-	 * @param str        The string to capitalize
-	 * @param delimiters The delimiters
-	 * @return A capitalized string
-	 */
-	public static String capitalize(String str, char[] delimiters) {
-		if (TextUtils.isEmpty(str) || delimiters == null || delimiters.length == 0) {
-			return str;
-		}
-		char[] buffer = str.toCharArray();
-		boolean capitalizeNext = true;
-		for (int i = 0; i < buffer.length; i++) {
-			char ch = buffer[i];
-			if (isDelimiter(ch, delimiters)) {
-				capitalizeNext = true;
-			} else if (capitalizeNext) {
-				buffer[i] = Character.toTitleCase(ch);
-				capitalizeNext = false;
-			}
-		}
-		return new String(buffer);
-	}
-
-	/**
 	 * Used to create a formatted time string for the duration of tracks.
 	 *
 	 * @param context  The {@link Context} to use.
@@ -75,25 +39,6 @@ public final class StringUtils {
 		if (hour > 0)
 			return String.format(context.getString(R.string.duration_format_long), hour, min % 60, sec % 60);
 		return String.format(context.getString(R.string.duration_format_short), min % 60, sec % 60);
-	}
-
-	/**
-	 * Is the character a delimiter.
-	 *
-	 * @param ch         the character to check
-	 * @param delimiters the delimiters
-	 * @return true if it is a delimiter
-	 */
-	private static boolean isDelimiter(char ch, char[] delimiters) {
-		if (delimiters == null) {
-			return Character.isWhitespace(ch);
-		}
-		for (char delimiter : delimiters) {
-			if (ch == delimiter) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

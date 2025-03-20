@@ -65,7 +65,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout implements OnClick
 	@Override
 	public void onClick(View v) {
 		if (listener != null) {
-			listener.onOverlayClick(this);
+			listener.onOverlayClick();
 		}
 	}
 
@@ -110,9 +110,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout implements OnClick
 
 		/**
 		 * called if the overlay view was clicked
-		 *
-		 * @param v overlay view
 		 */
-		void onOverlayClick(View v);
+		void onOverlayClick();
 	}
 }

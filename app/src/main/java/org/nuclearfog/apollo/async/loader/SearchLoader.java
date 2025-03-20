@@ -42,7 +42,7 @@ public class SearchLoader extends AsyncExecutor<String, List<Song>> {
 	protected List<Song> doInBackground(String param) {
 		List<Song> result = new LinkedList<>();
 		Context context = getContext();
-		if (context != null && param != null) {
+		if (context != null) {
 			try {
 				// Gather the data
 				Cursor mCursor = CursorFactory.makeSearchCursor(context, param);

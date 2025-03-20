@@ -42,7 +42,7 @@ public final class CursorFactory {
 	 * SQL Projection of an album row
 	 */
 	@SuppressLint("InlinedApi")
-	public static final String[] ALBUM_COLUMN = {
+	private static final String[] ALBUM_COLUMN = {
 			Albums._ID,
 			Albums.ALBUM,
 			Albums.ARTIST,
@@ -55,7 +55,7 @@ public final class CursorFactory {
 	 * SQL Projection of an album row
 	 */
 	@SuppressLint("InlinedApi")
-	public static final String[] ARTIST_ALBUM_COLUMN = {
+	private static final String[] ARTIST_ALBUM_COLUMN = {
 			ALBUM_ID,
 			Artists.Albums.ALBUM,
 			Artists.Albums.ARTIST,
@@ -68,7 +68,7 @@ public final class CursorFactory {
 	 * SQL Projection to get song information in a fixed order
 	 */
 	@SuppressLint("InlinedApi")
-	public static final String[] TRACK_COLUMNS = {
+	private static final String[] TRACK_COLUMNS = {
 			Media._ID,
 			Media.TITLE,
 			Media.ARTIST,
@@ -83,7 +83,7 @@ public final class CursorFactory {
 	/**
 	 * projection of the column
 	 */
-	public static final String[] ARTIST_COLUMNS = {
+	private static final String[] ARTIST_COLUMNS = {
 			Artists._ID,
 			Artists.ARTIST,
 			Artists.NUMBER_OF_ALBUMS,
@@ -93,14 +93,14 @@ public final class CursorFactory {
 	/**
 	 * Projection of the columns
 	 */
-	public static final String[] PLAYLIST_COLUMNS = {
+	private static final String[] PLAYLIST_COLUMNS = {
 			Playlists._ID,
 			Playlists.NAME
 	};
 
 
 	@SuppressLint("InlinedApi")
-	public static final String[] PLAYLIST_TRACK_COLUMNS = {
+	private static final String[] PLAYLIST_TRACK_COLUMNS = {
 			Playlists.Members.AUDIO_ID,
 			Playlists.Members.TITLE,
 			Playlists.Members.ARTIST,
@@ -169,12 +169,12 @@ public final class CursorFactory {
 	 * Selection to filter songs with empty name
 	 */
 	@SuppressLint("InlinedApi")
-	public static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
+	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
 
 	/**
 	 *
 	 */
-	public static final String LAST_ADDED_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATE_ADDED + ">?";
+	private static final String LAST_ADDED_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATE_ADDED + ">?";
 
 	/**
 	 * folder track selection
@@ -190,11 +190,6 @@ public final class CursorFactory {
 	 * SQL Query
 	 */
 	private static final String ALBUM_SONG_SELECT = TRACK_FILTER_SELECT + " AND " + Media.ALBUM_ID + "=?";
-
-	/**
-	 * select specific album matching artist and name
-	 */
-	private static final String ALBUM_NAME_SELECT = Albums.ALBUM + "=? AND " + Albums.ARTIST + "=?";
 
 	/**
 	 * select track matching an audio ID
@@ -258,7 +253,7 @@ public final class CursorFactory {
 	/**
 	 * default order to sort last added tracks
 	 */
-	public static final String ORDER_TIME = Media.DATE_ADDED + DEF_SORT;
+	private static final String ORDER_TIME = Media.DATE_ADDED + DEF_SORT;
 
 	/**
 	 *
@@ -553,23 +548,6 @@ public final class CursorFactory {
 		String[] args = {Long.toString(id)};
 		String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
 		return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_ID_SELECT, args, sortOrder);
-	}
-
-	/**
-	 * Creates cursor to search for albums with fixed column order
-	 * {@link #ALBUM_COLUMN}
-	 *
-	 * @param album  album name
-	 * @param artist artist name of the album
-	 * @return Cursor with matching albums
-	 */
-	@Nullable
-	public static Cursor makeAlbumCursor(Context context, @NonNull String album, @NonNull String artist) {
-		ContentResolver resolver = context.getContentResolver();
-
-		String[] args = {album, artist};
-		String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
-		return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_NAME_SELECT, args, sortOrder);
 	}
 
 	/**

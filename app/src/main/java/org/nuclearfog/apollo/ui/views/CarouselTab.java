@@ -115,7 +115,7 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onOverlayClick(View v) {
+	public void onOverlayClick() {
 		if (tabClickListener != null) {
 			tabClickListener.onTabClick(this);
 		}

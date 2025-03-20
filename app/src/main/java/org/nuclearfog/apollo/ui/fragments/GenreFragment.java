@@ -67,16 +67,6 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 */
 	private static final int GROUP_ID = 0x2D9C34D;
 
-	/**
-	 *
-	 */
-	private static final String TAG = "ArtistFragment";
-
-	/**
-	 *
-	 */
-	public static final String REFRESH = TAG + ".REFRESH";
-
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 	private AsyncCallback<Boolean> onGenreHidden = this::onGenreHidden;
@@ -247,11 +237,8 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 */
 	@Override
 	public void onChanged(String action) {
-		switch (action) {
-			case REFRESH:
-			case MusicBrowserPhoneFragment.REFRESH:
-				genreLoader.execute(null, this);
-				break;
+		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
+			genreLoader.execute(null, this);
 		}
 	}
 

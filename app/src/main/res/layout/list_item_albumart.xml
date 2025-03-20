@@ -8,7 +8,8 @@
 		android:id="@+id/list_item_albumart_image"
 		android:layout_width="@dimen/item_albumart_image_size"
 		android:layout_height="@dimen/item_albumart_image_size"
-		android:layout_margin="@dimen/item_albumart_item_margins" />
+		android:layout_margin="@dimen/item_albumart_item_margins"
+		android:contentDescription="@string/accessibility_album_art" />
 
 	<LinearLayout
 		android:layout_width="0dp"

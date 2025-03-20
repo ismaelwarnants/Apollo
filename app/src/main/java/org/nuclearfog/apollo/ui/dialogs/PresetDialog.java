@@ -29,7 +29,7 @@ import org.nuclearfog.apollo.model.AudioPreset;
  */
 public class PresetDialog extends DialogFragment implements OnClickListener, TextWatcher {
 
-	public static final String TAG = "PresetDialog";
+	private static final String TAG = "PresetDialog";
 
 	private static final String KEY_PRESET = "dialog_preset";
 

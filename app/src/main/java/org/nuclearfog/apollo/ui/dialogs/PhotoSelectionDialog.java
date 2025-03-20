@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
-	public static final String TAG = "PhotoSelectionDialog";
+	private static final String TAG = "PhotoSelectionDialog";
 
 	private static final String KEY_TITLE = "photo_title";
 	private static final String KEY_TYPE = "photo_type";

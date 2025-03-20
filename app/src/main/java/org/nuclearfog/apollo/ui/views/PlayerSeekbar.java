@@ -242,14 +242,14 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		/**
 		 * time to refresh seekbar/position
 		 */
-		public static final int CYCLE_MS = 250;
+		static final int CYCLE_MS = 250;
 
 		private WeakReference<PlayerSeekbar> callback;
 
 		/**
 		 * @param player callback to this view
 		 */
-		public TimeHandler(PlayerSeekbar player) {
+		TimeHandler(PlayerSeekbar player) {
 			callback = new WeakReference<>(player);
 		}
 

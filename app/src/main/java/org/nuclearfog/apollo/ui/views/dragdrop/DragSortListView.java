@@ -70,9 +70,10 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * item position?
 	 */
 	public final static int DRAG_NEG_Y = 0x8;
-	public final static int STOP = -1;
-	public final static int UP = 0;
-	public final static int DOWN = 1;
+
+	private final static int STOP = -1;
+	private final static int UP = 0;
+	private final static int DOWN = 1;
 	/**
 	 * Drag state enum.
 	 */
@@ -570,23 +571,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	}
 
 	/**
-	 * Set the width of each drag scroll region by specifying a fraction of the
-	 * ListView height.
-	 *
-	 * @param upperFrac Fraction of ListView height for up-scroll bound. Capped
-	 *                  at 0.5f.
-	 * @param lowerFrac Fraction of ListView height for down-scroll bound.
-	 *                  Capped at 0.5f.
-	 */
-	public void setDragScrollStarts(float upperFrac, float lowerFrac) {
-		mDragDownScrollStartFrac = Math.min(lowerFrac, 0.5f);
-		mDragUpScrollStartFrac = Math.min(upperFrac, 0.5f);
-		if (getHeight() != 0) {
-			updateScrollStarts();
-		}
-	}
-
-	/**
 	 * Start a drag of item at <code>position</code> using the registered
 	 * FloatViewManager. Calls through to
 	 * {@link #startDrag(int, View, int, int, int)} after obtaining the floating
@@ -616,66 +600,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		} else {
 			return startDrag(position, v, dragFlags, deltaX, deltaY);
 		}
-	}
-
-	/**
-	 * Start a drag of item at <code>position</code> without using a
-	 * FloatViewManager.
-	 *
-	 * @param position  Item to drag.
-	 * @param floatView Floating View.
-	 * @param dragFlags Flags that restrict some movements of the floating View.
-	 *                  For example, set <code>dragFlags |=
-	 *                  ~{@link #DRAG_NEG_X}</code> to allow dragging the floating View in all
-	 *                  directions except off the screen to the left.
-	 * @param deltaX    Offset in x of the touch coordinate from the left edge of
-	 *                  the floating View (i.e. touch-x minus float View left).
-	 * @param deltaY    Offset in y of the touch coordinate from the top edge of
-	 *                  the floating View (i.e. touch-y minus float View top).
-	 * @return True if the drag was started, false otherwise. This
-	 * <code>startDrag</code> will fail if we are not currently in a
-	 * touch event, <code>floatView</code> is null, or there is a drag
-	 * in progress.
-	 */
-	public boolean startDrag(int position, View floatView, int dragFlags, int deltaX, int deltaY) {
-		if (!mInTouchEvent || mFloatView != null || floatView == null) {
-			return false;
-		}
-		if (getParent() != null) {
-			getParent().requestDisallowInterceptTouchEvent(true);
-		}
-		int pos = position + getHeaderViewsCount();
-		mFirstExpPos = pos;
-		mSecondExpPos = pos;
-		mSrcPos = pos;
-		mFloatPos = pos;
-		// mDragState = dragType;
-		mDragState = DRAGGING;
-		mDragFlags = 0;
-		mDragFlags |= dragFlags;
-		mFloatView = floatView;
-		measureFloatView();
-		// sets mFloatViewHeight
-		mDragDeltaX = deltaX;
-		mDragDeltaY = deltaY;
-		updateFloatView(mX - mDragDeltaX, mY - mDragDeltaY);
-		// set src item invisible
-		View srcItem = getChildAt(mSrcPos - getFirstVisiblePosition());
-		if (srcItem != null) {
-			srcItem.setVisibility(View.INVISIBLE);
-		}
-		// once float view is created, events are no longer passed to ListView
-		switch (mCancelMethod) {
-			case ON_TOUCH_EVENT:
-				super.onTouchEvent(mCancelEvent);
-				break;
-
-			case ON_INTERCEPT_TOUCH_EVENT:
-				super.onInterceptTouchEvent(mCancelEvent);
-				break;
-		}
-		requestLayout();
-		return true;
 	}
 
 	/**
@@ -845,6 +769,81 @@ public class DragSortListView extends ListView implements OnScrollListener {
 			}
 			measureItemAndGetHeights(position, v, heights);
 		}
+	}
+
+	/**
+	 * Set the width of each drag scroll region by specifying a fraction of the
+	 * ListView height.
+	 *
+	 * @param upperFrac Fraction of ListView height for up-scroll bound. Capped at 0.5f.
+	 * @param lowerFrac Fraction of ListView height for down-scroll bound. Capped at 0.5f.
+	 */
+	private void setDragScrollStarts(float upperFrac, float lowerFrac) {
+		mDragDownScrollStartFrac = Math.min(lowerFrac, 0.5f);
+		mDragUpScrollStartFrac = Math.min(upperFrac, 0.5f);
+		if (getHeight() != 0) {
+			updateScrollStarts();
+		}
+	}
+
+	/**
+	 * Start a drag of item at <code>position</code> without using a
+	 * FloatViewManager.
+	 *
+	 * @param position  Item to drag.
+	 * @param floatView Floating View.
+	 * @param dragFlags Flags that restrict some movements of the floating View.
+	 *                  For example, set <code>dragFlags |=
+	 *                  ~{@link #DRAG_NEG_X}</code> to allow dragging the floating View in all
+	 *                  directions except off the screen to the left.
+	 * @param deltaX    Offset in x of the touch coordinate from the left edge of
+	 *                  the floating View (i.e. touch-x minus float View left).
+	 * @param deltaY    Offset in y of the touch coordinate from the top edge of
+	 *                  the floating View (i.e. touch-y minus float View top).
+	 * @return True if the drag was started, false otherwise. This
+	 * <code>startDrag</code> will fail if we are not currently in a
+	 * touch event, <code>floatView</code> is null, or there is a drag
+	 * in progress.
+	 */
+	private boolean startDrag(int position, View floatView, int dragFlags, int deltaX, int deltaY) {
+		if (!mInTouchEvent || mFloatView != null || floatView == null) {
+			return false;
+		}
+		if (getParent() != null) {
+			getParent().requestDisallowInterceptTouchEvent(true);
+		}
+		int pos = position + getHeaderViewsCount();
+		mFirstExpPos = pos;
+		mSecondExpPos = pos;
+		mSrcPos = pos;
+		mFloatPos = pos;
+		// mDragState = dragType;
+		mDragState = DRAGGING;
+		mDragFlags = 0;
+		mDragFlags |= dragFlags;
+		mFloatView = floatView;
+		measureFloatView();
+		// sets mFloatViewHeight
+		mDragDeltaX = deltaX;
+		mDragDeltaY = deltaY;
+		updateFloatView(mX - mDragDeltaX, mY - mDragDeltaY);
+		// set src item invisible
+		View srcItem = getChildAt(mSrcPos - getFirstVisiblePosition());
+		if (srcItem != null) {
+			srcItem.setVisibility(View.INVISIBLE);
+		}
+		// once float view is created, events are no longer passed to ListView
+		switch (mCancelMethod) {
+			case ON_TOUCH_EVENT:
+				super.onTouchEvent(mCancelEvent);
+				break;
+
+			case ON_INTERCEPT_TOUCH_EVENT:
+				super.onInterceptTouchEvent(mCancelEvent);
+				break;
+		}
+		requestLayout();
+		return true;
 	}
 
 	/**

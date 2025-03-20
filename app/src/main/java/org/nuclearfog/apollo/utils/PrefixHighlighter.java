@@ -56,7 +56,7 @@ public class PrefixHighlighter {
 	 * @param text   the text to which to apply the highlight
 	 * @param prefix the prefix to look for
 	 */
-	public CharSequence apply(CharSequence text, char[] prefix) {
+	private CharSequence apply(CharSequence text, char[] prefix) {
 		int mIndex = indexOfWordPrefix(text, prefix);
 		if (mIndex != -1) {
 			if (mPrefixColorSpan == null) {

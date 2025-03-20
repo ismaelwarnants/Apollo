@@ -69,6 +69,7 @@ public class AlbumMB {
 	 * get release date of the album
 	 *
 	 * @return release time
+	 * @noinspection unused
 	 */
 	public long getReleaseDate() {
 		return release;
