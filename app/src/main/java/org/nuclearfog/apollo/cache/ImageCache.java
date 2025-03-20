@@ -266,9 +266,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 		new Thread(() -> {
 			if (mDiskCache != null) {
 				try {
-					if (!mDiskCache.isClosed()) {
-						mDiskCache.flush();
-					}
+					mDiskCache.flush();
 				} catch (IOException e) {
 					Log.e(TAG, "flush():" + e);
 				}

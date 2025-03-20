@@ -31,6 +31,8 @@ import org.nuclearfog.apollo.utils.ImageUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading
@@ -61,19 +63,30 @@ public class ImageFetcher {
 	private ImageCache mImageCache;
 
 	/**
+	 * references to all created tasks
+	 */
+	private List<ImageAsyncTag> tasks;
+
+	/**
 	 *
 	 */
 	public ImageFetcher(Context context) {
 		mContext = context.getApplicationContext();
 		mImageCache = ImageCache.getInstance(mContext);
+		tasks = new LinkedList<>();
 	}
 
 	/**
-	 * flush() is called to synchronize up other methods that are accessing the
-	 * cache first
+	 * flush ImageCache and clear all running tasks
 	 */
-	public void flush() {
+	public void clear() {
 		mImageCache.flush();
+		while (!tasks.isEmpty()) {
+			ImageAsyncTag task = tasks.remove(0);
+			if (!task.isFinished()) {
+				task.cancel();
+			}
+		}
 	}
 
 	/**
@@ -97,6 +110,7 @@ public class ImageFetcher {
 			ImageAsyncTag asyncTag = new ImageAsyncTag(mContext, key, imageView);
 			imageView.setTag(asyncTag);
 			asyncTag.run(ImageType.ARTWORK, mbid);
+			tasks.add(asyncTag);
 		}
 	}
 

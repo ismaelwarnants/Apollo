@@ -23,6 +23,7 @@ public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {
 
 	private ImageFetcher mImageFetcher;
 
+
 	public AlbumArtAdapter(@NonNull Context context) {
 		super(context, R.layout.list_item_albumart);
 		mImageFetcher = new ImageFetcher(context);
@@ -56,5 +57,12 @@ public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {
 	 */
 	public void setPauseDiskCache(boolean pause) {
 		mImageFetcher.setPauseDiskCache(pause);
+	}
+
+	/**
+	 * Flushes the disk cache.
+	 */
+	public void flush() {
+		mImageFetcher.clear();
 	}
 }

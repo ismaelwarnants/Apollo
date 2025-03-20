@@ -295,7 +295,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
-		mImageFetcher.flush();
+		mImageFetcher.clear();
 		super.onStop();
 	}
 

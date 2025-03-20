@@ -256,7 +256,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mImageFetcher.flush();
+		mImageFetcher.clear();
 	}
 
 	/**

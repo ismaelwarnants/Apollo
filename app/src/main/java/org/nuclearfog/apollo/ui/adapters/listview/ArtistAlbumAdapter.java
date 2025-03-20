@@ -203,6 +203,6 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 * Flushes the disk cache.
 	 */
 	public void flush() {
-		mImageFetcher.flush();
+		mImageFetcher.clear();
 	}
 }

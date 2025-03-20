@@ -122,6 +122,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	@Override
 	public void onDestroyView() {
 		loader.cancel();
+		adapter.flush();
 		super.onDestroyView();
 	}
 
