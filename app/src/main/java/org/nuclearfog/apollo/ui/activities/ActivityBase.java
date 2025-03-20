@@ -326,13 +326,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// repeat button clicked
 		else if (v.getId() == R.id.action_button_repeat) {
-			int mode = MusicUtils.cycleRepeat(this);
-			mRepeatButton.updateRepeatState(mode);
+			mRepeatButton.updateRepeatState(MusicUtils.cycleRepeat(this));
 		}
 		// shuffle button clicked
 		else if (v.getId() == R.id.action_button_shuffle) {
-			MusicUtils.cycleRepeat(this);
-			mShuffleButton.updateShuffleState(MusicUtils.getRepeatMode(this));
+			mShuffleButton.updateShuffleState(MusicUtils.cycleShuffle(this));
 		}
 		// play button clicked
 		else if (v.getId() == R.id.action_button_play) {

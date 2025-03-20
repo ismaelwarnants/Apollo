@@ -320,11 +320,15 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				Song song = MusicUtils.getCurrentTrack(requireActivity());
-				if (song != null) {
-					for (int i = 0; i < mAdapter.getCount(); i++) {
-						Artist artist = mAdapter.getItem(i);
+				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
+				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE) {
+					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+						Artist artist = mAdapter.getItem(pos);
 						if (artist != null && artist.getId() == song.getArtistId()) {
-							mList.setSelection(i);
+							if (pos > 0 && pos < mAdapter.getCount() - 1)
+								mList.smoothScrollToPosition(pos);
+							else
+								mList.setSelection(pos);
 							break;
 						}
 					}

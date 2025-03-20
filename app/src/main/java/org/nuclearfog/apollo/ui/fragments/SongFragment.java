@@ -280,10 +280,14 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				// current unique track ID
 				Song song = MusicUtils.getCurrentTrack(requireActivity());
-				if (song != null) {
+				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
+				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE) {
 					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 						if (mAdapter.getItemId(pos) == song.getId()) {
-							mList.setSelection(pos);
+							if (pos > 0 && pos < mAdapter.getCount() - 1)
+								mList.smoothScrollToPosition(pos);
+							else
+								mList.setSelection(pos);
 							break;
 						}
 					}

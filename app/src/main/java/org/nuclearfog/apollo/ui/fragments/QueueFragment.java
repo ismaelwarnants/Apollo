@@ -347,8 +347,12 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Item
 	private void setCurrentTrack() {
 		int pos = MusicUtils.getQueuePosition(requireActivity());
 		if (pos >= 0 && pos < mList.getCount()) {
-			mList.smoothScrollToPosition(pos);
 			mAdapter.setCurrentTrackPos(pos);
+			if (pos > 0 && pos < mAdapter.getCount() - 1) {
+				mList.smoothScrollToPosition(pos);
+			} else {
+				mList.setSelection(pos);
+			}
 		}
 	}
 }
