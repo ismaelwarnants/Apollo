@@ -49,6 +49,7 @@ import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.async.worker.ArtworkDownloader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.model.Playlist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
@@ -540,30 +541,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				Uri imageUri = intent.getData();
 				if (mTabCarousel != null)
 					mTabCarousel.setAlbumArt(imageUri);
-				switch (type) {
-					case ARTIST:
-						mImageFetcher.setArtistImage(ids[0], imageUri);
-						break;
-
-					case ALBUM:
-						mImageFetcher.setAlbumImage(ids[0], imageUri);
-						break;
-
-					case FOLDER:
-						mImageFetcher.setFolderImage(folderPath, imageUri);
-						break;
-
-					case GENRE:
-						mImageFetcher.setGenreImage(ids, imageUri);
-						break;
-
-					case PLAYLIST:
-					case FAVORITE:
-					case POPULAR:
-					case LAST_ADDED:
-						mImageFetcher.setPlaylistImage(ids[0], imageUri);
-						break;
-				}
+				setProfileImage(imageUri);
 			} else {
 				selectOldPhoto();
 			}
@@ -830,14 +808,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				}
 				break;
 
-			case FAVORITE:
-				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(ids[0]);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
-				}
-				break;
-
 			case PLAYLIST:
 				if (mTabCarousel != null) {
 					mTabCarousel.setPlaylistProfileHeader(ids[0]);
@@ -846,9 +816,17 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				}
 				break;
 
+			case FAVORITE:
+				if (mTabCarousel != null) {
+					mTabCarousel.setPlaylistProfileHeader(Playlist.FAVORITE_ID);
+				} else {
+					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
+				}
+				break;
+
 			case LAST_ADDED:
 				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+					mTabCarousel.setPlaylistProfileHeader(Playlist.LAST_ADDED_ID);
 				} else {
 					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, LastAddedSongFragment.class, mArguments).commit();
 				}
@@ -856,7 +834,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 			case POPULAR:
 				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(ids[0]);
+					mTabCarousel.setPlaylistProfileHeader(Playlist.POPULAR_ID);
 				} else {
 					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, PopularSongFragment.class, mArguments).commit();
 				}
@@ -875,28 +853,46 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * Removes the header image from the cache.
 	 */
 	private void removeFromCache() {
+		setProfileImage(null);
+	}
+
+	/**
+	 * set image for the current profile
+	 *
+	 * @param uri local uri of the image or null to remove the current image
+	 */
+	private void setProfileImage(@Nullable Uri uri) {
 		switch (type) {
 			case ARTIST:
-				mImageFetcher.setArtistImage(ids[0], (Uri) null);
+				mImageFetcher.setArtistImage(ids[0], uri);
 				break;
 
 			case ALBUM:
-				mImageFetcher.setAlbumImage(ids[0], (Uri) null);
+				mImageFetcher.setAlbumImage(ids[0], uri);
 				break;
 
 			case FOLDER:
-				mImageFetcher.setFolderImage(folderPath, null);
+				mImageFetcher.setFolderImage(folderPath, uri);
 				break;
 
 			case GENRE:
-				mImageFetcher.setGenreImage(ids, null);
+				mImageFetcher.setGenreImage(ids, uri);
 				break;
 
 			case PLAYLIST:
+				mImageFetcher.setPlaylistImage(ids[0], uri);
+				break;
+
 			case FAVORITE:
+				mImageFetcher.setPlaylistImage(Playlist.FAVORITE_ID, uri);
+				break;
+
 			case POPULAR:
+				mImageFetcher.setPlaylistImage(Playlist.POPULAR_ID, uri);
+				break;
+
 			case LAST_ADDED:
-				mImageFetcher.setPlaylistImage(ids[0], null);
+				mImageFetcher.setPlaylistImage(Playlist.LAST_ADDED_ID, uri);
 				break;
 		}
 	}
@@ -922,7 +918,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		LAST_ADDED,
 		POPULAR;
 
-		public static Type fromString(String typeStr) {
+		static Type fromString(String typeStr) {
 			switch (typeStr) {
 				case Audio.Artists.CONTENT_TYPE:
 					return ARTIST;

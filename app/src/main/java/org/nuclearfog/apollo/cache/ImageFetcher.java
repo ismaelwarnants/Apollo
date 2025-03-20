@@ -132,7 +132,7 @@ public class ImageFetcher {
 	 * add album image to cache
 	 *
 	 * @param albumId local MediaStore ID of the album
-	 * @param uri     local Uri to image file or null to remove from cache
+	 * @param uri     local Uri of the image file or null to remove the current image
 	 */
 	public void setAlbumImage(long albumId, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.ALBUM, albumId);
@@ -179,7 +179,7 @@ public class ImageFetcher {
 	 * add artist image to cache
 	 *
 	 * @param artistId local MediaStore ID of the artist
-	 * @param uri      local Uri to image file or null to remove from cache
+	 * @param uri      local Uri of the image file or null to remove the current image
 	 */
 	public void setArtistImage(long artistId, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artistId);
@@ -226,7 +226,7 @@ public class ImageFetcher {
 	 * caches the genre image
 	 *
 	 * @param ids genre IDs
-	 * @param uri local Uri of the image file
+	 * @param uri local Uri of the image file or null to remove the current image
 	 */
 	public void setGenreImage(long[] ids, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.GENRE, ids);
@@ -266,7 +266,7 @@ public class ImageFetcher {
 	 * caches the playlist image
 	 *
 	 * @param playlistId ID of the playlist
-	 * @param uri        local Uri of the image file
+	 * @param uri        local Uri of the image file or null to remove the current image
 	 */
 	public void setPlaylistImage(long playlistId, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, playlistId);
@@ -292,7 +292,7 @@ public class ImageFetcher {
 	 * caches the music folder image
 	 *
 	 * @param folder music folder path
-	 * @param uri    local Uri of the image file
+	 * @param uri    local Uri of the image file or null to remove the current image
 	 */
 	public void setFolderImage(String folder, @Nullable Uri uri) {
 		String key = StringUtils.generateCacheKey(ImageType.FOLDER, folder);
@@ -398,7 +398,7 @@ public class ImageFetcher {
 	/**
 	 * add image to local cache using Uri
 	 *
-	 * @param uri local Uri to image or null to remove image
+	 * @param uri local Uri of the image file or null to remove the current image
 	 * @param key cache key used to identify image
 	 */
 	private void addImageToCache(String key, @Nullable Uri uri) {
