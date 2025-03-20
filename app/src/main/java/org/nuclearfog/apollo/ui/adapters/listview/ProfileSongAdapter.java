@@ -59,11 +59,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * invisible placeholder view used to determine the space used by the carousel view
-	 */
-	private View mHeader;
-
-	/**
 	 * Display setting for the second line in a song fragment
 	 */
 	private DisplaySetting mDisplaySetting;
@@ -73,6 +68,9 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	private boolean enableDnD;
 
+	/**
+	 * true to put an invisible placeholder in the first place
+	 */
 	private boolean enableHeader;
 
 	/**
@@ -83,10 +81,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	public ProfileSongAdapter(Context context, DisplaySetting setting, boolean enableHeader, boolean enableDrag) {
 		super(context, LAYOUT);
-		// create placeholder view
-		mHeader = new ProfileTabCarousel(context);
-		mHeader.setVisibility(View.INVISIBLE);
-		// Know what to put in line two
 		this.mDisplaySetting = setting;
 		this.enableDnD = enableDrag;
 		this.enableHeader = enableHeader;
@@ -100,6 +94,8 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Return a faux header at position 0
 		if (enableHeader && position == 0) {
+			ProfileTabCarousel mHeader = new ProfileTabCarousel(parent.getContext());
+			mHeader.setVisibility(View.INVISIBLE);
 			return mHeader;
 		}
 		// Recycle MusicHolder's items

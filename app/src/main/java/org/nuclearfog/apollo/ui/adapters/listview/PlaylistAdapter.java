@@ -38,18 +38,12 @@ public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * Constructor of <code>PlaylistAdapter</code>
 	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public PlaylistAdapter(Context context) {
 		super(context, LAYOUT);
-		inflater = LayoutInflater.from(context);
 	}
 
 	/**
@@ -61,7 +55,7 @@ public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 		// Recycle ViewHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(LAYOUT, parent, false);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
 			// Hide the second and third lines of text
 			holder.mLineTwo.setVisibility(View.GONE);

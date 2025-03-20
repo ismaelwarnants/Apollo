@@ -24,7 +24,9 @@ public class PresetAdapter extends BaseAdapter {
 
 	private List<AudioPreset> items = new ArrayList<>();
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -40,7 +42,9 @@ public class PresetAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@Nullable
 	@Override
 	public AudioPreset getItem(int position) {
@@ -49,13 +53,17 @@ public class PresetAdapter extends BaseAdapter {
 		return items.get(position - 1);
 	}
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public int getCount() {
 		return items.size() + 1;

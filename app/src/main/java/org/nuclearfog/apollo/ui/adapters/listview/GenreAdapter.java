@@ -27,7 +27,7 @@ import org.nuclearfog.apollo.utils.Constants;
 
 /**
  * This adapter is used to display all of the genres on a user's
- * device for {@link org.nuclearfog.apollo.ui.fragments.GenreFragment} .
+ * device for {@link org.nuclearfog.apollo.ui.fragments.GenreFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
@@ -40,18 +40,12 @@ public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * Constructor of <code>GenreAdapter</code>
 	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public GenreAdapter(Context context) {
 		super(context, LAYOUT);
-		inflater = LayoutInflater.from(context);
 	}
 
 	/**
@@ -63,7 +57,7 @@ public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 		// Recycle ViewHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(LAYOUT, parent, false);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
 			// Hide the second and third lines of text
 			holder.mLineTwo.setVisibility(View.GONE);

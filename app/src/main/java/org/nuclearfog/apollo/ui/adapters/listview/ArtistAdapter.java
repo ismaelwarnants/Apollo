@@ -35,14 +35,14 @@ import org.nuclearfog.apollo.utils.StringUtils;
 public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 
 	/**
-	 * The resource Id of the layout to inflate
-	 */
-	private int mLayoutId;
-
-	/**
 	 * Image cache and image fetcher
 	 */
 	private ImageFetcher mImageFetcher;
+
+	/**
+	 * The resource Id of the layout to inflate
+	 */
+	private int mLayoutId;
 
 	/**
 	 * Loads line three and the background image if the user decides to.

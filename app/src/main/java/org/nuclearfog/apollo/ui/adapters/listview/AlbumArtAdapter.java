@@ -23,8 +23,10 @@ public class AlbumArtAdapter extends AlphabeticalAdapter<AlbumMB> {
 
 	private ImageFetcher mImageFetcher;
 
-
-	public AlbumArtAdapter(@NonNull Context context) {
+	/**
+	 *
+	 */
+	public AlbumArtAdapter(Context context) {
 		super(context, R.layout.list_item_albumart);
 		mImageFetcher = new ImageFetcher(context);
 	}

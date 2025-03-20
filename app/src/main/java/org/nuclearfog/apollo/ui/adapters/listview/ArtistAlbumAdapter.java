@@ -62,10 +62,8 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	private ImageFetcher mImageFetcher;
 
 	/**
-	 * Placeholder view
+	 * true to put an invisible placeholder in the first place
 	 */
-	private View mHeader;
-
 	private boolean enableHeader;
 
 	/**
@@ -75,11 +73,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	public ArtistAlbumAdapter(Context context, boolean enableHeader) {
 		super(context, LAYOUT);
-		// Initialize the cache & image fetcher
 		mImageFetcher = new ImageFetcher(context);
-		// create placeholder view
-		mHeader = new ProfileTabCarousel(context);
-		mHeader.setVisibility(View.INVISIBLE);
 		this.enableHeader = enableHeader;
 	}
 
@@ -91,7 +85,9 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Return a faux header at position 0
 		if (enableHeader && position == 0) {
-			return mHeader;
+			ProfileTabCarousel placeHolder = new ProfileTabCarousel(parent.getContext());
+			placeHolder.setVisibility(View.INVISIBLE);
+			return placeHolder;
 		}
 		// Recycle MusicHolder's items
 		MusicHolder holder;

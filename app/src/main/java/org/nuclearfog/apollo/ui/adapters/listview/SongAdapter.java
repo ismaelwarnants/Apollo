@@ -48,11 +48,6 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	private static final int TRANSPARENCY_MASK = 0x40FFFFFF;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * current item position of the current track
 	 */
 	private int nowplayingPos = -1;
@@ -76,7 +71,6 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 		super(context, LAYOUT);
 		PreferenceUtils prefs = PreferenceUtils.getInstance(context);
 		selectedColor = prefs.getDefaultThemeColor() & TRANSPARENCY_MASK;
-		inflater = LayoutInflater.from(context);
 		enableDnD = enableDrag;
 	}
 
@@ -89,7 +83,7 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 		// Recycle ViewHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(LAYOUT, parent, false);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false);
 			if (enableDnD)
 				convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
 			holder = new MusicHolder(convertView);

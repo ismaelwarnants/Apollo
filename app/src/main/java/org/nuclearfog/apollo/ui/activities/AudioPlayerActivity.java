@@ -446,12 +446,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		refreshQueue();
 	}
 
-
-	@Override
-	public void onSeek(long position) {
-		MusicUtils.seek(this, position);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -569,6 +563,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 		// Set the shuffle image
 		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
+	}
+
+	@Override
+	public void onSeek(long position) {
+		MusicUtils.seek(this, position);
 	}
 
 

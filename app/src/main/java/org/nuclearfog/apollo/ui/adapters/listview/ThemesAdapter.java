@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +13,7 @@ import org.nuclearfog.apollo.model.AppTheme;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 /**
- * Populates the {@link GridView} with the available themes
+ * Populates the {@link android.widget.GridView} with the available themes
  */
 public class ThemesAdapter extends ArrayAdapter<AppTheme> {
 
@@ -24,18 +23,12 @@ public class ThemesAdapter extends ArrayAdapter<AppTheme> {
 	private static final int ITEM_LAYOUT = R.layout.fragment_themes_base;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * Constructor of <code>ThemesAdapter</code>
 	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public ThemesAdapter(Context context) {
 		super(context, ITEM_LAYOUT);
-		inflater = LayoutInflater.from(context);
 	}
 
 	/**
@@ -44,10 +37,9 @@ public class ThemesAdapter extends ArrayAdapter<AppTheme> {
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		/* Recycle ViewHolder's items */
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(ITEM_LAYOUT, parent, false);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(ITEM_LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
 			convertView.setTag(holder);
 		} else {

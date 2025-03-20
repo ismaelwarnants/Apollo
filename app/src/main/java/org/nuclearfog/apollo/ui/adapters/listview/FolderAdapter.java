@@ -29,17 +29,10 @@ public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * @param context application context
 	 */
 	public FolderAdapter(Context context) {
 		super(context, LAYOUT);
-		// layout inflater from context
-		inflater = LayoutInflater.from(context);
 	}
 
 	/**
@@ -51,7 +44,7 @@ public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 		MusicHolder holder;
 		if (convertView == null) {
 			// inflate view
-			convertView = inflater.inflate(LAYOUT, container, false);
+			convertView = LayoutInflater.from(container.getContext()).inflate(LAYOUT, container, false);
 			holder = new MusicHolder(convertView);
 			// disable unnecessary views
 			holder.mLineTwo.setVisibility(GONE);

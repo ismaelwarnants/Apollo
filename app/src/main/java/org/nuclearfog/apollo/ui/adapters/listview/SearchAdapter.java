@@ -35,11 +35,6 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 	private static final int LAYOUT = R.layout.list_item_detailed;
 
 	/**
-	 * fragment layout inflater
-	 */
-	private LayoutInflater inflater;
-
-	/**
 	 * Image cache and image fetcher
 	 */
 	private final ImageFetcher mImageFetcher;
@@ -65,8 +60,6 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 		mImageFetcher = new ImageFetcher(activity);
 		// Create the prefix highlighter
 		mHighlighter = new PrefixHighlighter(activity);
-		// get inflater from fragment
-		inflater = activity.getLayoutInflater();
 	}
 
 	/**
@@ -77,7 +70,7 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(LAYOUT, parent, false);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
 			convertView.setTag(holder);
 		} else {
