@@ -47,12 +47,6 @@ public class ImageFetcher {
 	private static final String TAG = "ImageWorker";
 
 	/**
-	 * size of the artist/album art of the notification image
-	 */
-	private static final int NOTIFICATION_SIZE = 200;
-
-
-	/**
 	 * The Context to use
 	 */
 	private Context mContext;
@@ -324,12 +318,11 @@ public class ImageFetcher {
 	@NonNull
 	public Bitmap getAlbumArtwork(@NonNull Album album) {
 		String cacheKey = StringUtils.generateCacheKey(ImageType.ALBUM, album.getId());
-		Bitmap artwork = mImageCache.getBitmapFromDiskCache(cacheKey);
-		if (artwork == null) {
-			artwork = getDefaultArtwork();
+		Bitmap bitmap = mImageCache.getBitmapFromDiskCache(cacheKey);
+		if (bitmap == null) {
+			bitmap = getDefaultArtwork();
 		}
-		// scale down image
-		return Bitmap.createScaledBitmap(artwork, NOTIFICATION_SIZE, NOTIFICATION_SIZE, false);
+		return bitmap;
 	}
 
 	/**

@@ -30,7 +30,7 @@
 			android:title="@string/settings_theme_chooser_title" />
 	</PreferenceCategory>
 
-	<!-- Data category -->
+	<!-- MusicBrainz category -->
 	<PreferenceCategory android:title="@string/settings_data_musicbrainz">
 		<!-- Missing artwork -->
 		<CheckBoxPreference
@@ -77,12 +77,6 @@
 			android:key="fx_prefer_external"
 			android:title="@string/settings_prefer_external_equalizer" />
 
-		<!--use external equalizer if exists-->
-		<CheckBoxPreference
-			android:defaultValue="false"
-			android:key="old_notification_layout"
-			android:title="@string/settings_use_old_notification"
-			android:summary="@string/settings_use_old_notification_summary" />
 	</PreferenceCategory>
 
 	<!-- About -->

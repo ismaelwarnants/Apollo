@@ -16,12 +16,10 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
-import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationChannelCompat;
@@ -34,7 +32,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -84,18 +81,12 @@ class NotificationHelper {
 	private NotificationCompat.Builder notificationBuilder;
 
 	/**
-	 * notification views
-	 */
-	private RemoteViews mSmallContent, mExpandedView;
-
-	/**
 	 * callbacks to the service
 	 */
 	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious, callbackStop;
 
 	private ImageFetcher imageFetcher;
 
-	private boolean legacyLayout;
 
 	/**
 	 * @param service  callback to the service
@@ -103,8 +94,6 @@ class NotificationHelper {
 	 */
 	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
-		PreferenceUtils mPreferences = PreferenceUtils.getInstance(service);
-		legacyLayout = mPreferences.oldNotificationLayoutEnabled();
 		imageFetcher = new ImageFetcher(mService);
 
 		// init notification manager & channel
@@ -124,6 +113,13 @@ class NotificationHelper {
 		callbackStop = createIntent(MusicPlaybackService.ACTION_STOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
+		// style for the notification
+		MediaStyle mediaStyle = new MediaStyle();
+		mediaStyle.setMediaSession(mSession.getSessionToken());
+		mediaStyle.setCancelButtonIntent(callbackStop);
+		mediaStyle.setShowCancelButton(true);
+		mediaStyle.setShowActionsInCompactView(0, 1, 2);
+
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
@@ -132,37 +128,9 @@ class NotificationHelper {
 				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 				.setCategory(NotificationCompat.CATEGORY_PROGRESS)
 				.setWhen(System.currentTimeMillis())
-				.setProgress(0, 0, true)
-				.setAutoCancel(false)
-				.setShowWhen(false)
-				.setOngoing(true)
-				.setSilent(true);
-
-		// use embedded media control notification of Android
-		if (!legacyLayout) {
-			MediaStyle mediaStyle = new MediaStyle();
-			mediaStyle.setMediaSession(mSession.getSessionToken());
-			mediaStyle.setCancelButtonIntent(callbackStop);
-			mediaStyle.setShowCancelButton(true);
-			mediaStyle.setShowActionsInCompactView(0, 1, 2);
-			notificationBuilder.setStyle(mediaStyle);
-		}
-		// use custom notification layout for old Android version
-		else {
-			// initialize small notification view
-			mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_base);
-			mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbackPlayPause);
-			mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbackNext);
-			mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbackPrevious);
-			mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbackStop);
-			// initialize expanded notification view
-			mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_expanded);
-			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, callbackPlayPause);
-			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, callbackNext);
-			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);
-			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbackStop);
-			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
-		}
+				.setProgress(0, 0, true).setAutoCancel(false)
+				.setShowWhen(false).setOngoing(true)
+				.setSilent(true).setStyle(mediaStyle);
 	}
 
 	/**
@@ -198,46 +166,21 @@ class NotificationHelper {
 		Album album = mService.getCurrentAlbum();
 		Song song = mService.getCurrentSong();
 		// build integrated media control
-		if (!legacyLayout) {
-			if (song != null && album != null) {
-				notificationBuilder.setContentTitle(song.getName());
-				notificationBuilder.setContentText(song.getArtist());
-				notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
-			}
-			// init media control (fallback if not supported by MediaStyle)
-			notificationBuilder.clearActions();
-			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
-			if (mService.isPlaying()) {
-				notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
-			} else {
-				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
-			}
-			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
-			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
+		if (song != null && album != null) {
+			notificationBuilder.setContentTitle(song.getName());
+			notificationBuilder.setContentText(song.getArtist());
+			notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
 		}
-		// build legacy notification
-		else {
-			if (album != null && song != null) {
-				Bitmap artwork = imageFetcher.getAlbumArtwork(album);
-				mSmallContent.setTextViewText(R.id.notification_base_line_one, song.getName());
-				mSmallContent.setTextViewText(R.id.notification_base_line_two, song.getArtist());
-				mSmallContent.setImageViewBitmap(R.id.notification_base_image, artwork);
-				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, song.getName());
-				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, album.getName());
-				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, song.getArtist());
-				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, artwork);
-			}
-			if (mService.isPlaying()) {
-				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
-				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_pause);
-			} else {
-				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play);
-				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_play);
-			}
-			// add view to notification
-			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+		// init media control (fallback if not supported by MediaStyle)
+		notificationBuilder.clearActions();
+		notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
+		if (mService.isPlaying()) {
+			notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
+		} else {
+			notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
 		}
-
+		notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+		notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
 		return notificationBuilder.build();
 	}
 

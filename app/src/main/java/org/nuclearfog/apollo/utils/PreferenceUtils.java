@@ -90,7 +90,6 @@ public final class PreferenceUtils {
 	private static final String ID_CARD = "cardid";
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
-	private static final String NOTIFICATION_LAYOUT = "old_notification_layout";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 
@@ -723,14 +722,5 @@ public final class PreferenceUtils {
 	 */
 	public boolean isExternalAudioFxPreferred() {
 		return defaultPref.getBoolean(FX_PREFER_EXT, false);
-	}
-
-	/**
-	 * check if old notification layout is enabled
-	 *
-	 * @return true if old notification layout should be used
-	 */
-	public boolean oldNotificationLayoutEnabled() {
-		return defaultPref.getBoolean(NOTIFICATION_LAYOUT, false);
 	}
 }
