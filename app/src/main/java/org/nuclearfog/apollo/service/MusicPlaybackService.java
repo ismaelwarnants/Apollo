@@ -682,15 +682,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void gotoPrev() {
 		if (!mPlayer.busy()) {
+			// go to previous track if playback position is at beginning
 			if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
 				mPlayPos = decrementPosition(mPlayPos);
-				stop();
-				openCurrentAndNext();
-				play();
-			} else {
-				seekTo(0);
-				play();
 			}
+			stop();
+			openCurrentAndNext();
+			play();
 		}
 	}
 
