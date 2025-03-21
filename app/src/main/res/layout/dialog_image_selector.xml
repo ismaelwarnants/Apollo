@@ -48,7 +48,7 @@
 			android:layout_height="wrap_content"
 			android:text="@string/empty_search"
 			android:layout_gravity="center"
-			android:lines="1"/>
+			android:lines="1" />
 
 	</FrameLayout>
 
