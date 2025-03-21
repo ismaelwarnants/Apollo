@@ -74,7 +74,6 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		mPreferences = PreferenceUtils.getInstance(inflater.getContext());
 		View mRootView = View.inflate(getContext(), R.layout.dialog_color_scheme, null);
 		mColorPicker = mRootView.findViewById(R.id.color_picker_view);

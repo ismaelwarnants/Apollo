@@ -1,5 +1,6 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,7 +32,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * A dialog to search for online artworks
+ * This dialog shows an online image browser to select an artist/album artwork
  *
  * @author nuclearfog
  */
@@ -71,10 +72,11 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		dialog.show(fm, TAG);
 	}
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		View view = inflater.inflate(R.layout.dialog_image_selector, container, false);
 		ListView listView = view.findViewById(R.id.dialog_image_selector_list);
 		TextView emptyView = view.findViewById(R.id.dialog_image_Selector_empty);
@@ -97,7 +99,10 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 			search.setText(searchStr);
 			loader.execute(new String[]{searchStr}, this);
 		} else if (album != null && !album.isEmpty()) {
-			search.setText(album + ", " + artist);
+			if (artist != null && !artist.isEmpty())
+				search.setText(album + ", " + artist);
+			else
+				search.setText(album);
 			loader.execute(new String[]{album, artist}, this);
 		} else if (artist != null) {
 			search.setText(artist);
@@ -111,14 +116,27 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 		return view;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		// lock layout width
+		view.getLayoutParams().width = Math.round(Resources.getSystem().getDisplayMetrics().widthPixels * 0.8f);
+	}
 
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putString(KEY_SEARCH, search.getText().toString());
 		super.onSaveInstanceState(outState);
 	}
 
-
+	/**
+	 * @inheritDoc
+	 */
 	@Override
 	public void onDestroyView() {
 		loader.cancel();

@@ -2,6 +2,7 @@ package org.nuclearfog.apollo.lookup;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -76,7 +77,7 @@ public class MusicBrainz {
 		List<AlbumMB> album = searchAlbumsByName(name, artist, 1);
 		if (album.isEmpty())
 			// if album not found, use album name only
-			album = searchAlbumsByName(name, null, 1);
+			album = searchAlbumsByName(name, "", 1);
 		if (!album.isEmpty())
 			return album.get(0);
 		return null;
@@ -133,15 +134,16 @@ public class MusicBrainz {
 	 * @param count  max result count
 	 * @return list of album matches
 	 */
-	public static List<AlbumMB> searchAlbumsByName(@Nullable String album, @Nullable String artist, int count) {
+	public static List<AlbumMB> searchAlbumsByName(@NonNull String album, @NonNull String artist, int count) {
 		try {
 			List<String> params = new ArrayList<>();
-			if (artist == null)
-				params.add("query=" + StringUtils.encodeUTF8(album));
-			if (album == null)
-				params.add("query=" + StringUtils.encodeUTF8("artist:\"" + artist + "\""));
-			else
+			if (!album.isEmpty() && !artist.isEmpty()) {
 				params.add("query=" + StringUtils.encodeUTF8("release:\"" + album + "\" AND artist:\"" + artist + "\""));
+			} else if (!album.isEmpty()) {
+				params.add("query=" + StringUtils.encodeUTF8(album));
+			} else {
+				params.add("query=" + StringUtils.encodeUTF8("artist:\"" + artist + "\""));
+			}
 			params.add("limit=" + count);
 			return getAlbums(params);
 		} catch (JSONException e) {
