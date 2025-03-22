@@ -18,23 +18,23 @@
 	<color name="action_bar">@color/action_bar_color</color>
 
 	<!-- The action bar title color -->
-	<color name="action_bar_title">@color/white</color>
+	<color name="action_bar_title">@android:color/white</color>
 
 	<!-- The action bar sub title color -->
 	<color name="action_bar_subtitle">@color/transparent_white</color>
 
 	<!-- Adapter lines -->
-	<color name="line_one">@color/white</color>
+	<color name="line_one">@android:color/white</color>
 	<color name="line_two">@color/transparent_white</color>
 	<color name="line_three">@color/transparent_white</color>
 
 	<!-- Now playing -->
-	<color name="audio_player_current_time">@color/white</color>
-	<color name="audio_player_line_one">@color/white</color>
+	<color name="audio_player_current_time">@android:color/white</color>
+	<color name="audio_player_line_one">@android:color/white</color>
 	<color name="audio_player_line_two">@color/transparent_white</color>
 
 	<!-- Bottom action bar -->
-	<color name="bab_line_one">@color/white</color>
+	<color name="bab_line_one">@android:color/white</color>
 	<color name="bab_line_two">@color/transparent_white</color>
 
 	<!-- Action bar items -->

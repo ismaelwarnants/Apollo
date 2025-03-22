@@ -20,8 +20,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 
-import org.nuclearfog.apollo.R;
-
 /**
  * {@link Bitmap} specific helpers.
  *
@@ -312,7 +310,7 @@ public final class ImageUtils {
 	 * @return transition drawable
 	 */
 	public static Drawable createTransitionDrawable(Resources resources, Bitmap bitmap) {
-		Drawable layerOne = new ColorDrawable(resources.getColor(R.color.transparent));
+		Drawable layerOne = new ColorDrawable(resources.getColor(android.R.color.transparent));
 		BitmapDrawable layerTwo = new BitmapDrawable(resources, bitmap);
 		layerTwo.setFilterBitmap(false);
 		layerTwo.setDither(false);

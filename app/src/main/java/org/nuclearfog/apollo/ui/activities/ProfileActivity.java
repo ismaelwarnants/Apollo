@@ -716,7 +716,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				mTabCarousel.setAlbumProfileHeader(ids[0]);
 			} else {
 				mTabCarousel.setDefault();
-				removeFromCache();
 			}
 		}
 	}

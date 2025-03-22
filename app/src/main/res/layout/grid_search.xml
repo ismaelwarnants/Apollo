@@ -31,7 +31,7 @@
 		android:id="@+id/grid_search"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
-		android:cacheColorHint="@color/transparent"
+		android:cacheColorHint="@android:color/transparent"
 		android:drawSelectorOnTop="true"
 		android:fadingEdge="vertical"
 		android:fastScrollEnabled="true"

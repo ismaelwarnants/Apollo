@@ -74,13 +74,14 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 		mAlbumArt = view.findViewById(R.id.profile_tab_album_art);
 		mLabelView = view.findViewById(R.id.profile_tab_label);
 		mFetcher = new ImageFetcher(context);
-
 		// add child views
 		addView(view);
 		addView(mOverlay);
-
 		// Set the alpha layer
 		mOverlay.setAlphaLayer(mAlphaLayer);
+		// make views opaque
+		mPhoto.setBackgroundColor(getResources().getColor(R.color.apollo_dark));
+		mAlbumArt.setBackgroundColor(getResources().getColor(R.color.apollo_dark));
 
 		mOverlay.setOnOverlayClickListener(this);
 		mPhoto.setOnClickListener(this);

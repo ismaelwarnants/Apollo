@@ -47,7 +47,7 @@
 		android:layout_height="wrap_content"
 		android:padding="@dimen/list_item_detailed_padding"
 		android:maxLines="2"
-		android:textColor="@color/white"
+		android:textColor="@android:color/white"
 		android:textSize="@dimen/text_size_medium"
 		android:textStyle="bold"
 		app:layout_constraintStart_toEndOf="@id/image"

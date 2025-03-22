@@ -156,9 +156,9 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		} else if (v.getId() == R.id.color_scheme_dialog_preset_6) {
 			mColorPicker.setColorResource(R.color.holo_red_light);
 		} else if (v.getId() == R.id.color_scheme_dialog_preset_7) {
-			mColorPicker.setColorResource(R.color.white);
+			mColorPicker.setColorResource(android.R.color.white);
 		} else if (v.getId() == R.id.color_scheme_dialog_preset_8) {
-			mColorPicker.setColorResource(R.color.black);
+			mColorPicker.setColorResource(android.R.color.black);
 		} else if (v.getId() == R.id.color_scheme_dialog_old_color) {
 			mColorPicker.setColor(mPreferences.getDefaultThemeColor());
 		} else if (v.getId() == R.id.color_scheme_dialog_cancel) {

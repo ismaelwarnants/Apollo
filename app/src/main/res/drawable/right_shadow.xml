@@ -18,7 +18,7 @@
 
 	<gradient
 		android:angle="180"
-		android:endColor="@color/transparent"
-		android:startColor="@color/black" />
+		android:endColor="@android:color/transparent"
+		android:startColor="@android:color/black" />
 
 </shape>
