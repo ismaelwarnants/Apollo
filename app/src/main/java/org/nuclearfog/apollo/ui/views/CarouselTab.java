@@ -14,8 +14,10 @@ package org.nuclearfog.apollo.ui.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +34,8 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.ui.views.AlphaTouchInterceptorOverlay.OnOverlayClickListener;
 import org.nuclearfog.apollo.utils.ImageUtils;
 
+import java.io.IOException;
+
 /**
  * a custom view representing a tab. Used by {@link ProfileTabCarousel}
  *
@@ -39,6 +43,8 @@ import org.nuclearfog.apollo.utils.ImageUtils;
  * @author nuclearfog
  */
 public class CarouselTab extends FrameLayout implements OnClickListener, OnOverlayClickListener {
+
+	private static final String TAG = "CarouselTab";
 
 	private ImageView mPhoto;
 	private ImageView mAlbumArt;
@@ -128,7 +134,14 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 * @param uri local uri of the image file
 	 */
 	public void setPhoto(Uri uri) {
-		mPhoto.setImageURI(uri);
+		try {
+			Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+			if (bitmap != null) {
+				setPhoto(bitmap);
+			}
+		} catch (IOException e) {
+			Log.w(TAG, "could not load bitmap!");
+		}
 	}
 
 	/**
@@ -215,7 +228,12 @@ public class CarouselTab extends FrameLayout implements OnClickListener, OnOverl
 	 * set default photo
 	 */
 	public void setDefault() {
-		mFetcher.setDefaultImage(mPhoto, mAlbumArt);
+		if (mAlbumArt.getVisibility() != VISIBLE) {
+			mPhoto.setImageResource(R.drawable.default_artwork);
+		} else {
+			mAlbumArt.setImageResource(R.drawable.default_artwork);
+			mPhoto.setImageResource(0);
+		}
 	}
 
 	/**

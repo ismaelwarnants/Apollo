@@ -444,12 +444,11 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * Sets the playlist image header
 	 *
-	 * @param id MediaStore playlist ID
+	 * @param playlistId MediaStore playlist ID
 	 */
-	public void setPlaylistProfileHeader(long id) {
-		mFirstTab.setDefault();
+	public void setPlaylistProfileHeader(long playlistId) {
 		mFirstTab.setLabel(R.string.page_songs);
-		mFirstTab.setPlaylistImage(id);
+		mFirstTab.setPlaylistImage(playlistId);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
@@ -460,7 +459,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param ids grouped MediaStore genre IDs
 	 */
 	public void setGenreProfileHeader(long[] ids) {
-		mFirstTab.setDefault();
 		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setGenreImage(ids);
 		mSecondTab.setVisibility(View.GONE);
@@ -473,7 +471,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * @param folder folder path
 	 */
 	public void setFolderProfileHeader(String folder) {
-		mFirstTab.setDefault();
 		mFirstTab.setLabel(R.string.page_songs);
 		mFirstTab.setFolderImage(folder);
 		mSecondTab.setVisibility(View.GONE);

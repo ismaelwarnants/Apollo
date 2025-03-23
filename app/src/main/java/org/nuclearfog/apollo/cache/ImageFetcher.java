@@ -398,7 +398,9 @@ public class ImageFetcher {
 		if (uri != null) {
 			try {
 				Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
-				addImageToCache(key, bitmap);
+				if (bitmap != null) {
+					addImageToCache(key, bitmap);
+				}
 			} catch (IOException exception) {
 				Log.e(TAG, "could not load local image to cache!", exception);
 			}
