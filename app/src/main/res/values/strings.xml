@@ -160,6 +160,7 @@
 	<string name="settings_disable_bat_opt_title">Disable battery optimization</string>
 	<string name="settings_disable_bat_opt_summary">Battery optimization may cause playback to stop when running in the background</string>
 	<string name="settings_prefer_external_equalizer">Prefer external equalizer</string>
+	<string name="settings_scroll_current_track">Autoscroll to current track</string>
 	<string name="settings_keep_screen_on">Wakelock</string>
 	<string name="settings_download_missing_artwork_title">Download missing album art</string>
 	<string name="settings_download_artist_images_title">Download missing artist images</string>

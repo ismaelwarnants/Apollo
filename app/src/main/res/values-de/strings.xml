@@ -64,6 +64,7 @@
 	<string name="new_photo">Foto aus Galerie auswählen</string>
 	<string name="use_default">Standardfoto verwenden</string>
 	<string name="old_photo">Altes Foto verwenden</string>
+	<string name="web_search">Internetsuche</string>
 	<string name="context_menu_play_selection">Wiedergeben</string>
 	<string name="context_menu_play_next">Als nächstes wiedergeben</string>
 	<string name="context_menu_more_by_artist">Weitere Titel des Interpreten</string>
@@ -85,6 +86,7 @@
 	<string name="accessibility_repeat_one">Aktuellen Titel wiederholen</string>
 	<string name="pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> zum Startbildschirm hinzugefügt</string>
 	<string name="could_not_be_pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> konnte nicht zum Startbildschirm hinzugefügt werden</string>
+	<string name="info_removed_playlist">Playlist entfernt!</string>
 	<string name="set_as_ringtone">\"<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\" wurde als Klingelton gesetzt</string>
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> wurde als Design eingestellt</string>
 	<string name="settings_ui_category">Oberfläche</string>
@@ -131,6 +133,7 @@
 	<string name="accessibility_album_art">Albumcover</string>
 	<string name="label_reverb">Raumgröße</string>
 	<string name="context_menu_copy_playlist">Kopieren</string>
+	<string name="error_delete_playlist">Playlist konnte nicht gelöscht werden!</string>
 	<string name="error_duplicate_playlistname">Playlistname existiert bereits!</string>
 	<string name="context_menu_hide_album">verstecke Album</string>
 	<string name="context_menu_hide_track">verstecke Track</string>
@@ -151,6 +154,7 @@
 	<string name="preset_name_hint">Name eingeben</string>
 	<string name="empty_preset_name">Name darf nicht leer sein!</string>
 	<string name="label_preset">Voreinstellung:</string>
+	<string name="album_name_hint">Albumnamen eingeben</string>
 	<string name="preset_custom">Benutzerdefiniert</string>
 	<string name="rename_playlist">Playlist umbenennen</string>
 	<string name="copy_playlist">Playlist kopieren</string>
@@ -160,7 +164,9 @@
 	<string name="menu_delete_preset">Voreinstellung löschen</string>
 	<string name="settings_source_code">Quellcode</string>
 	<string name="settings_source_code_descr">Im Browser öffnen</string>
+	<string name="settings_scroll_current_track">Autom. zum aktuellen Track scrollen</string>
 	<string name="settings_keep_screen_on">Bildschirm eingeschaltet lassen</string>
 	<string name="item_hidden">Eintrag erfolgreich versteckt</string>
 	<string name="settings_data_musicbrainz">MusicBrainz Datenbank</string>
+	<string name="select_albumart">Artwork auswählen</string>
 </resources>

@@ -107,4 +107,8 @@
 	<string name="no_effects_for_you">L\'égaliseur ne peut pas être ouvert.</string>
 	<string name="empty_music">Utilisez un câble USB pour copier de la musique depuis votre ordinateur vers votre appareil.</string>
 	<string name="empty_search">Aucun résultat de recherche</string>
+	<string name="settings_disable_bat_opt_title">Désactiver l\'optimisation de la batterie</string>
+	<string name="settings_disable_bat_opt_summary">L\'optimisation de la batterie peut entraîner une interruption de la musique.</string>
+	<string name="label_enable_equalizer">activer l\'equalizer</string>
+	<string name="accessibility_album_art">illustration de l\'album</string>
 </resources>

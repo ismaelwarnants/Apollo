@@ -27,6 +27,7 @@ import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListen
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollController;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * this fragment hosts a {@link ListView} with a {@link ProfileTabCarousel} header
@@ -67,6 +68,8 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	private FragmentViewModel viewModel;
 
+	private PreferenceUtils mPrefs;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,6 +92,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 		mList = rootView.findViewById(R.id.list_base);
 		// get profile tab carousel from parent activity
 		ProfileTabCarousel mProfileTabCarousel = requireActivity().findViewById(R.id.activity_profile_base_tab_carousel);
+		mPrefs = PreferenceUtils.getInstance(requireContext());
 		// Set empty list info
 		mList.setEmptyView(emptyInfo);
 		// Release any references to the recycled Views
@@ -174,7 +178,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * @param position position to scroll
 	 */
 	public void scrollTo(int position) {
-		if (position >= 0 && position < mList.getCount()) {
+		if (position >= 0 && position < mList.getCount() && mPrefs.autoScrollEnabled()) {
 			mList.smoothScrollToPosition(position);
 		}
 	}

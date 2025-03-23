@@ -314,10 +314,9 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				Album current = MusicUtils.getCurrentAlbum(requireActivity());
 				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
-				if (current != null && shuffleMode == MusicUtils.SHUFFLE_NONE) {
+				if (current != null && shuffleMode == MusicUtils.SHUFFLE_NONE && preference.autoScrollEnabled()) {
 					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-						Album item = mAdapter.getItem(pos);
-						if (item != null && item.getId() == current.getId()) {
+						if (mAdapter.getItemId(pos) == current.getId()) {
 							if (pos > 0 && pos < mAdapter.getCount() - 1)
 								mList.smoothScrollToPosition(pos);
 							else

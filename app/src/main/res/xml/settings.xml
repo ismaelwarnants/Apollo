@@ -77,6 +77,12 @@
 			android:key="fx_prefer_external"
 			android:title="@string/settings_prefer_external_equalizer" />
 
+		<!--autoscroll to current track-->
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="autoscroll_current"
+			android:title="@string/settings_scroll_current_track" />
+
 	</PreferenceCategory>
 
 	<!-- About -->

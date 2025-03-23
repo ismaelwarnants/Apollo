@@ -92,6 +92,7 @@ public final class PreferenceUtils {
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
+	private static final String AUTOSCROLL = "autoscroll_current";
 
 	private static PreferenceUtils sInstance;
 
@@ -676,6 +677,13 @@ public final class PreferenceUtils {
 	 */
 	public boolean getWakelockStatus() {
 		return defaultPref.getBoolean(KEEP_SCREEN_ON, false);
+	}
+
+	/**
+	 * check if autoscroll to current track is enabled
+	 */
+	public boolean autoScrollEnabled() {
+		return defaultPref.getBoolean(AUTOSCROLL, true);
 	}
 
 	/**

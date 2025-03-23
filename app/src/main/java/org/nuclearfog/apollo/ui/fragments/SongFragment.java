@@ -281,7 +281,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 				// current unique track ID
 				Song song = MusicUtils.getCurrentTrack(requireActivity());
 				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
-				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE) {
+				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE && preference.autoScrollEnabled()) {
 					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 						if (mAdapter.getItemId(pos) == song.getId()) {
 							if (pos > 0 && pos < mAdapter.getCount() - 1)
