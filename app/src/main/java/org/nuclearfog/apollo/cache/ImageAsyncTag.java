@@ -32,8 +32,11 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 	 */
 	private String mKey;
 
-
-	public ImageAsyncTag(Context context, @NonNull String mKey, ImageView... imageViews) {
+	/**
+	 * @param mKey       cache key used to identify thumbnail image
+	 * @param imageViews imageview(s) to show the downloaded images
+	 */
+	public ImageAsyncTag(Context context, String mKey, ImageView... imageViews) {
 		imageWorker = new ImageWorker(context);
 		this.imageViews = imageViews;
 		this.mKey = mKey;
@@ -42,16 +45,17 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 
 	@Override
 	public void onResult(@NonNull Result result) {
-		if (imageViews != null) {
-			imageViews[0].setImageDrawable(result.drawable);
-			if (imageViews.length > 1 && imageViews[1] != null) {
-				imageViews[1].setImageDrawable(result.blurredDrawable);
-			}
+		imageViews[0].setImageDrawable(result.drawable);
+		if (imageViews.length > 1) {
+			imageViews[1].setImageDrawable(result.blurredDrawable);
 		}
 	}
 
 	/**
-	 * execute background task
+	 * execute the background task
+	 *
+	 * @param id   local MediaStore ID of an album/artist entry to load the local image
+	 * @param type type of the image to download
 	 */
 	public void run(ImageType type, long id) {
 		Param param = new Param(type, mKey, id);
@@ -59,7 +63,10 @@ public class ImageAsyncTag implements AsyncCallback<Result> {
 	}
 
 	/**
+	 * execute the background task
 	 *
+	 * @param mbid online MusicBrainz ID to download the image
+	 * @param type type of the image to download
 	 */
 	public void run(ImageType type, String mbid) {
 		Param param = new Param(type, mKey, mbid);

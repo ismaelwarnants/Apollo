@@ -72,6 +72,10 @@ public final class Constants {
 	 */
 	public static final float OPACITY_HIDDEN = 0.4f;
 	/**
+	 * width ratio percentage of a dialog window
+	 */
+	public static final float DIALOG_WIDTH_PERCENTAGE = 0.8f;
+	/**
 	 * animation duration in milliseconds
 	 */
 	public static final long ANIMATION_SPEED = 500;

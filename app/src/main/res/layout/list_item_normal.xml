@@ -17,8 +17,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="@dimen/item_normal_height"
-	tools:ignore="ContentDescription">
+	android:layout_height="@dimen/item_normal_height">
 
 	<ImageView
 		android:id="@+id/list_item_background"
@@ -39,6 +38,7 @@
 		android:layout_alignParentStart="true"
 		android:layout_alignParentTop="true"
 		android:scaleType="fitCenter"
+		android:contentDescription="@string/accessibility_album_art"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,6 +50,7 @@
 		android:layout_above="@+id/line_two"
 		android:layout_toEndOf="@+id/image"
 		android:lines="1"
+		android:ellipsize="end"
 		android:textColor="@color/line_one"
 		android:textSize="@dimen/text_size_medium"
 		android:textStyle="bold"
@@ -67,6 +68,7 @@
 		android:layout_alignParentBottom="true"
 		android:layout_toEndOf="@+id/image"
 		android:lines="1"
+		android:ellipsize="end"
 		android:textColor="@color/line_two"
 		android:textSize="@dimen/text_size_small"
 		app:layout_constraintStart_toEndOf="@id/image"

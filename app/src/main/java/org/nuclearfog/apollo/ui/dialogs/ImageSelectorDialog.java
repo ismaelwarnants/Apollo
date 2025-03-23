@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,6 +25,7 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumArtLoader;
 import org.nuclearfog.apollo.lookup.entities.AlbumMB;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumArtAdapter;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -78,7 +79,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.dialog_image_selector, container, false);
-		ListView listView = view.findViewById(R.id.dialog_image_selector_list);
+		GridView gridView = view.findViewById(R.id.dialog_image_selector_list);
 		TextView emptyView = view.findViewById(R.id.dialog_image_Selector_empty);
 		loading = view.findViewById(R.id.dialog_image_selector_loading);
 		search = view.findViewById(R.id.dialog_image_selector_search);
@@ -109,10 +110,10 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 			loader.execute(new String[]{"", artist}, this);
 		}
 		theme.themeProgressbar(loading);
-		listView.setEmptyView(emptyView);
-		listView.setAdapter(adapter);
+		gridView.setEmptyView(emptyView);
+		gridView.setAdapter(adapter);
 		search.addTextChangedListener(this);
-		listView.setOnItemClickListener(this);
+		gridView.setOnItemClickListener(this);
 		return view;
 	}
 
@@ -122,7 +123,9 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		// lock layout width
-		view.getLayoutParams().width = Math.round(Resources.getSystem().getDisplayMetrics().widthPixels * 0.8f);
+		if (view.getLayoutParams() != null) {
+			view.getLayoutParams().width = Math.round(Resources.getSystem().getDisplayMetrics().widthPixels * Constants.DIALOG_WIDTH_PERCENTAGE);
+		}
 	}
 
 	/**

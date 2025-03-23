@@ -45,8 +45,6 @@
 	<dimen name="item_theme_text_padding">5dp</dimen>
 	<dimen name="item_theme_image_padding">10dp</dimen>
 	<!--Item album art-->
-	<dimen name="item_albumart_image_size">64dp</dimen>
-	<dimen name="item_albumart_item_margins">5dp</dimen>
 	<!--image_selector-->
 	<dimen name="dialog_image_selector_item_margins">5dp</dimen>
 
@@ -78,7 +76,6 @@
 	<dimen name="audio_player_header_margin">8.0dp</dimen>
 	<dimen name="audio_player_time_width">30.0sp</dimen>
 	<dimen name="audio_player_seek_bar_margin_bottom">2.0dp</dimen>
-	<dimen name="audio_player_controls_informations_min_width">250.0dp</dimen>
 	<dimen name="audio_player_controls_end_button_width">40.0dp</dimen>
 	<dimen name="audio_player_controls_end_button_height">40.0dp</dimen>
 	<dimen name="audio_player_controls_main_button_width">50.0dp</dimen>
@@ -127,5 +124,6 @@
 
 	<!-- other -->
 	<dimen name="toolbar_height">45dp</dimen>
+	<dimen name="equalizer_seekbar_width">64dp</dimen>
 
 </resources>

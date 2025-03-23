@@ -30,10 +30,12 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="@dimen/dialog_image_selector_item_margins">
 
-		<ListView
+		<GridView
 			android:id="@+id/dialog_image_selector_list"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content"
+			android:verticalSpacing="@dimen/grid_item_spacing"
+			android:numColumns="1" />
 
 		<ProgressBar
 			android:id="@+id/dialog_image_selector_loading"
