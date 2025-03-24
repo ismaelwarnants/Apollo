@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class ImageFetcher {
 
-	private static final String TAG = "ImageWorker";
+	private static final String TAG = "ImageFetcher";
 
 	/**
 	 * The Context to use

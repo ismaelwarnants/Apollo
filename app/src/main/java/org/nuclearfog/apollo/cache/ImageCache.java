@@ -40,7 +40,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 *
 	 */
-	private static final String TAG = "image_cache";
+	private static final String TAG = "ImageCache";
 
 	/**
 	 * Default memory cache size as a percent of device memory class

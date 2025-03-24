@@ -27,7 +27,7 @@ public class Artwork {
 			this.url_full = url_full.replace("http://", "https://");
 			this.url_thumb = url_thumb.replace("http://", "https://");
 		} else {
-			throw new JSONException("JSON missing images!");
+			throw new JSONException("Artwork JSON invalid!");
 		}
 	}
 
