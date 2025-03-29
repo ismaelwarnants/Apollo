@@ -77,7 +77,10 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	public static final String META_CHANGED = TAG + ".meta_changed";
 
-	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	/**
+	 *
+	 */
+	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 
 	/**
 	 * Pager
@@ -221,7 +224,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		// Shuffle all the songs
 		if (item.getItemId() == R.id.menu_shuffle) {
-			songLoader.execute(null, onPlaySongs);
+			songLoader.execute(null, onShuffleSongs);
 		}
 		// Toggle the current track as a favorite and update the menu item
 		else if (item.getItemId() == R.id.menu_favorite) {
@@ -393,8 +396,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	/**
 	 * play loaded songs
 	 */
-	private void onPlaySongs(List<Song> songs) {
+	private void onShuffleSongs(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(requireActivity(), ids, 0, false);
+		MusicUtils.playAll(requireActivity(), ids, 0, true);
 	}
 }

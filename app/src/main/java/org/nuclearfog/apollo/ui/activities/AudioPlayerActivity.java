@@ -98,7 +98,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private static final String KEY_QUEUE_VISIBILITY = "queue_visibility";
 
-	private AsyncCallback<List<Song>> onSongsPlay = this::onSongPlay;
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 	/**
 	 * Play and pause button
 	 */
@@ -385,7 +386,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			NavUtils.goHome(this);
 		} else if (vId == R.id.menu_shuffle) {
 			// Shuffle all the songs
-			songLoader.execute(null, onSongsPlay);
+			songLoader.execute(null, onShuffleSongs);
 		} else if (vId == R.id.menu_favorite) {
 			// Toggle the current track as a favorite and update the menu item
 			Song song = MusicUtils.getCurrentTrack(this);
@@ -467,14 +468,18 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		return true;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onQueryTextChange(String newText) {
 		// Nothing to do
 		return false;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(@NonNull View v) {
 		if (v.getId() == R.id.audio_player_artist_name || v.getId() == R.id.audio_player_track_name) {
@@ -509,7 +514,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				playerSeekbar.setPlayStatus(!isPlaying);
 				playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
 			} else {
-				songLoader.execute(null, onSongsPlay);
+				songLoader.execute(null, onPlaySongs);
 			}
 		}
 		// go to previous track
@@ -522,7 +527,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onRepeat(@NonNull View v, int repeatCount) {
 		if (v.getId() == R.id.action_button_previous) {
@@ -534,7 +541,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onMetaChange() {
 		// Current info
@@ -545,7 +554,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		setQueueTrack();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStateChange() {
 		// Set the play and pause image
@@ -556,7 +567,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		playerSeekbar.setCurrentTime(position);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onModeChange() {
 		// Set the repeat image
@@ -565,12 +578,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onSeek(long position) {
 		MusicUtils.seek(this, position);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void refresh() {
 	}
@@ -612,7 +630,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				long id = parseIdFromIntent(intent, "playlistId", "playlist");
 				if (id != -1L) {
 					playPos = 0;
-					playlistSongLoader.execute(id, onSongsPlay);
+					playlistSongLoader.execute(id, onPlaySongs);
 				}
 			}
 			// open album
@@ -620,7 +638,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				long id = parseIdFromIntent(intent, "albumId", "album");
 				if (id != -1L) {
 					playPos = intent.getIntExtra("position", 0);
-					albumSongLoader.execute(id, onSongsPlay);
+					albumSongLoader.execute(id, onPlaySongs);
 				}
 			}
 			// open artist
@@ -628,7 +646,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				long id = parseIdFromIntent(intent, "artistId", "artist");
 				if (id != -1L) {
 					playPos = intent.getIntExtra("position", 0);
-					artistSongLoader.execute(id, onSongsPlay);
+					artistSongLoader.execute(id, onPlaySongs);
 				}
 			}
 		}
@@ -748,10 +766,20 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * called after songs loaded asynchronously to play
 	 */
-	private void onSongPlay(List<Song> songs) {
+	private void onPlaySongs(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.playAll(this, ids, playPos, false);
 		refreshQueue();
 		playPos = 0;
+	}
+
+	/**
+	 * called after songs loaded asynchronously to play
+	 */
+	private void onShuffleSongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(this, ids, -1, true);
+		playPos = MusicUtils.getQueuePosition(this);
+		refreshQueue();
 	}
 }

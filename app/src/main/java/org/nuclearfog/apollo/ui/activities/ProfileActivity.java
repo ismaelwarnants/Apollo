@@ -113,7 +113,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
 
-	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 
 	/**
 	 * View pager
@@ -373,36 +373,36 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_shuffle) {
 			switch (type) {
 				case ARTIST:
-					artistSongLoader.execute(ids[0], onPlaySongs);
+					artistSongLoader.execute(ids[0], onShuffleSongs);
 					break;
 
 				case ALBUM:
-					albumSongLoader.execute(ids[0], onPlaySongs);
+					albumSongLoader.execute(ids[0], onShuffleSongs);
 					break;
 
 				case GENRE:
 					String genreIds = ApolloUtils.serializeIDs(ids);
-					genreSongLoader.execute(genreIds, onPlaySongs);
+					genreSongLoader.execute(genreIds, onShuffleSongs);
 					break;
 
 				case PLAYLIST:
-					playlistSongLoader.execute(ids[0], onPlaySongs);
+					playlistSongLoader.execute(ids[0], onShuffleSongs);
 					break;
 
 				case FAVORITE:
-					favoriteSongLoader.execute(null, onPlaySongs);
+					favoriteSongLoader.execute(null, onShuffleSongs);
 					break;
 
 				case LAST_ADDED:
-					lastAddedLoader.execute(null, onPlaySongs);
+					lastAddedLoader.execute(null, onShuffleSongs);
 					break;
 
 				case POPULAR:
-					popularSongLoader.execute(null, onPlaySongs);
+					popularSongLoader.execute(null, onShuffleSongs);
 					break;
 
 				case FOLDER:
-					folderSongLoader.execute(folderPath, onPlaySongs);
+					folderSongLoader.execute(folderPath, onShuffleSongs);
 					break;
 			}
 		}
@@ -899,7 +899,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * called to play asynchronously loaded songs
 	 */
-	private void onPlaySongs(List<Song> songs) {
+	private void onShuffleSongs(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.playAll(this, ids, 0, true);
 	}

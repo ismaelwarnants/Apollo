@@ -68,10 +68,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	private Intent mIntent;
 
 	private SearchLoader mLoader;
-	/**
-	 * Used to shuffle the tracks or play them in order
-	 */
-	private boolean mShouldShuffle;
+
 	private boolean shouldOpenAudioPlayer;
 	/**
 	 * Search query from a voice action
@@ -79,7 +76,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	@Nullable
 	private String mVoiceQuery;
 
-	private AsyncCallback<List<Song>> onSongsLoaded = this::onSongsLoaded;
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 
 	/**
 	 * {@inheritDoc}
@@ -137,8 +135,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	@Override
 	public void onServiceConnected() {
 		// Check for a voice query
-		if (mIntent.getAction() != null && mVoiceQuery != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
-			mLoader.execute(mVoiceQuery, onSongsLoaded);
+		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH) && mVoiceQuery != null) {
+			mLoader.execute(mVoiceQuery, onPlaySongs);
 		} else {
 			String requestedMimeType = mIntent.getStringExtra(Constants.MIME_TYPE);
 			long id = mIntent.getLongExtra(Constants.ID, -1L);
@@ -147,70 +145,54 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 			}
 			switch (requestedMimeType) {
 				case MediaStore.Audio.Artists.CONTENT_TYPE:
-					// Shuffle the artist track list
-					mShouldShuffle = true;
 					// Get the artist song list
 					ArtistSongLoader artistSongLoader = new ArtistSongLoader(this);
-					artistSongLoader.execute(id, onSongsLoaded);
+					artistSongLoader.execute(id, onShuffleSongs);
 					break;
 
 				case MediaStore.Audio.Albums.CONTENT_TYPE:
-					// Shuffle the album track list
-					mShouldShuffle = true;
 					// Get the album song list
 					AlbumSongLoader albumSongLoader = new AlbumSongLoader(this);
-					albumSongLoader.execute(id, onSongsLoaded);
+					albumSongLoader.execute(id, onShuffleSongs);
 					break;
 
 				case MediaStore.Audio.Genres.CONTENT_TYPE:
-					// Shuffle the genre track list
-					mShouldShuffle = true;
 					// Get the genre song list
 					String ids = mIntent.getStringExtra(Constants.IDS);
 					GenreSongLoader genreSongLoader = new GenreSongLoader(this);
-					genreSongLoader.execute(ids, onSongsLoaded);
+					genreSongLoader.execute(ids, onShuffleSongs);
 					break;
 
 				case MediaStore.Audio.Playlists.CONTENT_TYPE:
-					// Don't shuffle the playlist track list
-					mShouldShuffle = false;
 					// Get the playlist song list
 					PlaylistSongLoader playlistLoader = new PlaylistSongLoader(this);
-					playlistLoader.execute(id, onSongsLoaded);
+					playlistLoader.execute(id, onPlaySongs);
 					break;
 
 				case ProfileActivity.PAGE_FAVORITES:
-					// Don't shuffle the Favorites track list
-					mShouldShuffle = false;
 					// Get the Favorites song list
 					FavoriteSongLoader favoriteLoader = new FavoriteSongLoader(this);
-					favoriteLoader.execute(null, onSongsLoaded);
+					favoriteLoader.execute(null, onPlaySongs);
 					break;
 
 				case ProfileActivity.PAGE_MOST_PLAYED:
-					// Don't shuffle the popular track list
-					mShouldShuffle = false;
 					// Get the popular song list
 					PopularSongLoader popularLoader = new PopularSongLoader(this);
-					popularLoader.execute(null, onSongsLoaded);
+					popularLoader.execute(null, onPlaySongs);
 					break;
 
 				case ProfileActivity.PAGE_FOLDERS:
-					// Don't shuffle the folders track list
-					mShouldShuffle = false;
 					// get folder path
 					String folder = mIntent.getStringExtra(Constants.NAME);
 					// Get folder song list
 					FolderSongLoader folderSongLoader = new FolderSongLoader(this);
-					folderSongLoader.execute(folder, onSongsLoaded);
+					folderSongLoader.execute(folder, onPlaySongs);
 					break;
 
 				case ProfileActivity.PAGE_LAST_ADDED:
-					// Don't shuffle the last added track list
-					mShouldShuffle = false;
 					// Get the Last added song list
 					LastAddedLoader lastAddedLoader = new LastAddedLoader(this);
-					lastAddedLoader.execute(null, onSongsLoaded);
+					lastAddedLoader.execute(null, onPlaySongs);
 					break;
 			}
 		}
@@ -221,19 +203,32 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 *
 	 * @param items list of songs
 	 */
-	private void onSongsLoaded(List<Song> items) {
+	private void onPlaySongs(List<Song> items) {
 		long[] mList = MusicUtils.getIDsFromSongList(items);
-		// Play the list
-		if (mList.length > 0) {
-			MusicUtils.playAll(this, mList, 0, mShouldShuffle);
-		}
-		// Open the now playing screen
+		MusicUtils.playAll(this, mList, 0, false);
+		redirectToPlayerActivity();
+	}
+
+	/**
+	 * set song ID list after loading asynchronously
+	 *
+	 * @param items list of songs
+	 */
+	private void onShuffleSongs(List<Song> items) {
+		long[] mList = MusicUtils.getIDsFromSongList(items);
+		MusicUtils.playAll(this, mList, -1, true);
+		redirectToPlayerActivity();
+	}
+
+	/**
+	 * open {@link AudioPlayerActivity} and close this activity
+	 */
+	private void redirectToPlayerActivity() {
 		if (shouldOpenAudioPlayer) {
 			Intent intent = new Intent(this, AudioPlayerActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 		}
-		// All done
 		finish();
 	}
 }
