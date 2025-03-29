@@ -22,12 +22,13 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.ArtistFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
- * This adapter is used to display all artists to {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
+ * This adapter is used to display all artists to {@link ArtistFragment}
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog

@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
@@ -32,10 +33,6 @@ import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
-import org.nuclearfog.apollo.ui.fragments.RecentFragment;
-import org.nuclearfog.apollo.ui.fragments.SongFragment;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -60,7 +57,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener {
+public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener, MenuProvider {
 
 	/**
 	 *
@@ -104,11 +101,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
 	private SongLoader songLoader;
 
-	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public MusicBrowserPhoneFragment() {
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -141,9 +133,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
 		// Attach the ViewPager
 		pageIndicator.setViewPager(mViewPager);
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Scroll to the current artist, album, or song
+
+		requireActivity().addMenuProvider(this);
 		pageIndicator.setOnCenterItemClickListener(this);
 		return rootView;
 	}
@@ -163,26 +154,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onPrepareOptionsMenu(@NonNull Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-		MenuItem favorite = menu.findItem(R.id.menu_favorite);
-		MenuItem visibility = menu.findItem(R.id.menu_show_hidden);
-		if (visibility != null) {
-			visibility.setChecked(mPreferences.getExcludeTracks());
-		}
-		Song song = MusicUtils.getCurrentTrack(requireActivity());
-		if (song != null) {
-			boolean isFavorite = FavoritesStore.getInstance(requireContext()).exists(song.getId());
-			mResources.setFavoriteIcon(favorite, isFavorite);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
+	public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 		// Favorite action
 		inflater.inflate(R.menu.favorite, menu);
 		// Shuffle all
@@ -215,13 +187,24 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 				inflater.inflate(R.menu.item_visibility, menu);
 				break;
 		}
+		// setup menu entries
+		MenuItem favorite = menu.findItem(R.id.menu_favorite);
+		MenuItem showHidden = menu.findItem(R.id.menu_show_hidden);
+		if (showHidden != null) {
+			showHidden.setChecked(mPreferences.getExcludeTracks());
+		}
+		Song song = MusicUtils.getCurrentTrack(requireActivity());
+		if (song != null) {
+			boolean isFavorite = FavoritesStore.getInstance(requireContext()).exists(song.getId());
+			mResources.setFavoriteIcon(favorite, isFavorite);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+	public boolean onMenuItemSelected(@NonNull MenuItem item) {
 		// Shuffle all the songs
 		if (item.getItemId() == R.id.menu_shuffle) {
 			songLoader.execute(null, onShuffleSongs);
@@ -364,7 +347,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 			mPreferences.setExcludeTracks(isChecked);
 			viewModel.notify(REFRESH);
 		} else {
-			return super.onOptionsItemSelected(item);
+			return false;
 		}
 		return true;
 	}

@@ -81,8 +81,6 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 		mLoader = new PlaylistSongLoader(requireContext());
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), true);
 		setAdapter(mAdapter);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// sets empty list text
 		setEmptyText(R.string.empty_playlist);
 		// Start the loader

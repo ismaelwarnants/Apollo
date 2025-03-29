@@ -23,13 +23,14 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This adapter is used to display all of the songs on a user's
- * device for {@link org.nuclearfog.apollo.ui.fragments.SongFragment}. It is also used to show the queue in
+ * device for {@link SongFragment}. It is also used to show the queue in
  * {@link org.nuclearfog.apollo.ui.fragments.QueueFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)

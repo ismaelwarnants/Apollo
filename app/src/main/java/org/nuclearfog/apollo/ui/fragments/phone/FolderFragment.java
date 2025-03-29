@@ -1,4 +1,4 @@
-package org.nuclearfog.apollo.ui.fragments;
+package org.nuclearfog.apollo.ui.fragments.phone;
 
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
 import static org.nuclearfog.apollo.utils.Constants.FOLDER;
@@ -38,7 +38,6 @@ import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -102,8 +101,6 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		folderLoader = new FolderLoader(requireContext());
 		folderSongLoader = new FolderSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		//
-		setHasOptionsMenu(true);
 		// set listview
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyHolder);

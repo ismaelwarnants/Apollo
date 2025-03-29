@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.fragments;
+package org.nuclearfog.apollo.ui.fragments.phone;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -36,15 +36,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumLoader;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
-import org.nuclearfog.apollo.async.loader.RecentLoader;
+import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -56,18 +56,17 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import java.util.List;
 
 /**
- * This class is used to display all of the recently listened to albums by the
- * user.
+ * This class is used to display all of the albums on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class RecentFragment extends Fragment implements AsyncCallback<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
+public class AlbumFragment extends Fragment implements OnScrollListener, OnItemClickListener, AsyncCallback<List<Album>>, Observer<String> {
 
 	/**
 	 *
 	 */
-	private static final String TAG = "RecentFragment";
+	private static final String TAG = "AlbumFragment";
 
 	/**
 	 *
@@ -82,18 +81,19 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
-	private static final int GROUP_ID = 0x4FFF2B51;
-
-	/**
-	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
-	 */
-	private static final int ONE = 1, TWO = 2, FOUR = 4;
+	private static final int GROUP_ID = 0x515A2A6B;
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
 	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
 	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+	private AsyncCallback<Boolean> onAlbumHide = this::onAlbumHide;
+
+	/**
+	 * app settings
+	 */
+	private PreferenceUtils preference;
 
 	/**
 	 * The adapter for the grid
@@ -101,17 +101,9 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	private AlbumAdapter mAdapter;
 
 	/**
-	 * The Listview
+	 * list
 	 */
 	private GridView mList;
-
-	/**
-	 * app global prefs
-	 */
-	private PreferenceUtils preference;
-
-	private RecentLoader recentLoader;
-	private AlbumSongLoader albumSongLoader;
 
 	/**
 	 * viewmodel used for communication with hosting activity
@@ -125,40 +117,35 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	private Album selectedAlbum = null;
 	private long selectedPlaylistId = -1;
 
+	private AlbumLoader albumLoader;
+	private AlbumSongLoader albumSongLoader;
+	private ExcludeMusicWorker excludeMusicWorker;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// init views
+		// initialize views
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
 		//
 		preference = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		recentLoader = new RecentLoader(requireContext());
+		albumLoader = new AlbumLoader(requireContext());
 		albumSongLoader = new AlbumSongLoader(requireContext());
-		// initialize list and adapter
+		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
+		// init list
 		initList();
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// sets the empty view
-		emptyInfo.setText(R.string.empty_recents);
 		mList.setEmptyView(emptyInfo);
-		// Set the data behind the list
-		mList.setAdapter(mAdapter);
-		// Release any references to the recycled Views
 		mList.setRecyclerListener(new RecycleHolder());
-		// Listen for ContextMenus to be created
 		mList.setOnCreateContextMenuListener(this);
-		// Show the albums and songs from the selected artist
 		mList.setOnItemClickListener(this);
-		// To help make scrolling smooth
 		mList.setOnScrollListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// start loader
-		recentLoader.execute(null, this);
+		// Start the loader
+		albumLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -177,8 +164,9 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		recentLoader.cancel();
+		albumLoader.cancel();
 		albumSongLoader.cancel();
+		excludeMusicWorker.cancel();
 		super.onDestroyView();
 	}
 
@@ -203,13 +191,17 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// View more content by the album artist
 				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				// hide album from list
+				if (selectedAlbum.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ALBUM, Menu.NONE, R.string.context_menu_hide_album);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ALBUM, Menu.NONE, R.string.context_menu_unhide_album);
+				}
 				// Remove the album from the list
-				menu.add(GROUP_ID, ContextMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
-				// Delete the album
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
 		} else {
-			// remove selection if an error occurs
+			// remove selection
 			selectedAlbum = null;
 		}
 	}
@@ -247,13 +239,12 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 					}
 					return true;
 
-				case ContextMenuItems.REMOVE_FROM_RECENT:
-					RecentStore.getInstance(requireActivity()).removeAlbum(selectedAlbum.getId());
-					MusicUtils.refresh(requireActivity());
-					return true;
-
 				case ContextMenuItems.DELETE:
 					albumSongLoader.execute(selectedAlbum.getId(), onSongsDelete);
+					return true;
+
+				case ContextMenuItems.HIDE_ALBUM:
+					excludeMusicWorker.execute(selectedAlbum, onAlbumHide);
 					return true;
 			}
 		}
@@ -266,7 +257,8 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// Pause disk cache access to ensure smoother scrolling
-		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
+				|| scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
 			mAdapter.setPauseDiskCache(true);
 		} else {
 			mAdapter.setPauseDiskCache(false);
@@ -282,16 +274,14 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		if (view.getId() == R.id.image) {
 			albumSongLoader.execute(id, onPlaySongs);
 		} else {
-			Album selection = mAdapter.getItem(position);
-			if (selection != null) {
-				NavUtils.openAlbumProfile(requireActivity(), selection);
+			Album selectedAlbum = mAdapter.getItem(position);
+			if (selectedAlbum != null) {
+				NavUtils.openAlbumProfile(requireActivity(), selectedAlbum);
 			}
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
 	public void onResult(@NonNull List<Album> albums) {
 		if (isAdded()) {
@@ -299,8 +289,45 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 			mAdapter.clear();
 			// Add the data to the adapter
 			for (Album album : albums) {
-				mAdapter.add(album);
+				if (preference.getExcludeTracks() || album.isVisible()) {
+					mAdapter.add(album);
+				}
 			}
+		}
+	}
+
+
+	@Override
+	public void onChanged(String action) {
+		switch (action) {
+			case REFRESH:
+				// re init list
+				initList();
+
+			case MusicBrowserPhoneFragment.REFRESH:
+				albumLoader.execute(null, this);
+				break;
+
+			case MusicBrowserPhoneFragment.META_CHANGED:
+				Album current = MusicUtils.getCurrentAlbum(requireActivity());
+				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
+				if (current != null && shuffleMode == MusicUtils.SHUFFLE_NONE && preference.autoScrollEnabled()) {
+					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+						if (mAdapter.getItemId(pos) == current.getId()) {
+							if (pos > 0 && pos < mAdapter.getCount() - 1)
+								mList.smoothScrollToPosition(pos);
+							else
+								mList.setSelection(pos);
+							break;
+						}
+					}
+				}
+				break;
+
+			case SCROLL_TOP:
+				if (mList.getCount() > 0)
+					mList.smoothScrollToPosition(0);
+				break;
 		}
 	}
 
@@ -313,48 +340,22 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onChanged(String action) {
-		switch (action) {
-			case REFRESH:
-				// re init list
-				initList();
-
-			case MusicBrowserPhoneFragment.META_CHANGED:
-				if (mList.getCount() > 0) {
-					mList.smoothScrollToPosition(0);
-				}
-				// fall through
-			case MusicBrowserPhoneFragment.REFRESH:
-				recentLoader.execute(null, this);
-				break;
-
-			case SCROLL_TOP:
-				if (mList.getCount() > 0)
-					mList.smoothScrollToPosition(0);
-				break;
-		}
-	}
-
-	/**
 	 * initialize adapter & list
 	 */
 	private void initList() {
-		switch (preference.getRecentLayout()) {
+		switch (preference.getAlbumLayout()) {
 			case PreferenceUtils.LAYOUT_SIMPLE:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
-				mList.setNumColumns(ONE);
+				mList.setNumColumns(1);
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
 				if (ApolloUtils.isLandscape(requireContext())) {
 					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
-					mList.setNumColumns(TWO);
+					mList.setNumColumns(2);
 				} else {
-					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.list_item_detailed);
-					mList.setNumColumns(ONE);
+					mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
+					mList.setNumColumns(1);
 				}
 				mAdapter.setLoadExtraData();
 				break;
@@ -362,10 +363,10 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 			default:
 				if (ApolloUtils.isLandscape(requireContext())) {
 					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
-					mList.setNumColumns(FOUR);
+					mList.setNumColumns(4);
 				} else {
 					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
-					mList.setNumColumns(TWO);
+					mList.setNumColumns(2);
 				}
 				break;
 		}
@@ -412,5 +413,17 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
 		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
+	}
+
+	/**
+	 * called after selected album was hidden
+	 */
+	private void onAlbumHide(Boolean hidden) {
+		if (getActivity() != null && selectedAlbum != null) {
+			if (hidden) {
+				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+			}
+			MusicUtils.refresh(requireActivity());
+		}
 	}
 }

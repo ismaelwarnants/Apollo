@@ -69,7 +69,9 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	private AudioEffects audioEffects;
 	private PresetLoader presetLoader;
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -127,21 +129,27 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		reverb.setOnSeekBarChangeListener(this);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onDestroy() {
 		presetLoader.cancel();
 		super.onDestroy();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.audiofx, menu);
 		return true;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_preset) {
@@ -159,14 +167,18 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		return true;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onBandLevelChange(int pos, int level) {
 		audioEffects.setBandLevel(pos, level);
 		setCustomPreset();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (buttonView.getId() == R.id.audiofx_enable) {
@@ -175,7 +187,9 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (fromUser) {
@@ -190,12 +204,16 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		if (seekBar.getId() == R.id.audiofx_bass_boost || seekBar.getId() == R.id.audiofx_reverb) {
@@ -203,14 +221,18 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onResult(@NonNull List<AudioPreset> audioPresets) {
 		presetAdapter.setItems(audioPresets);
 		setPreset();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if (parent.getId() == R.id.audiofx_preset) {
@@ -222,12 +244,16 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onPresetSave(AudioPreset preset) {
 		PresetLoader.Param param = new PresetLoader.Param(PresetLoader.Param.SAVE, preset);

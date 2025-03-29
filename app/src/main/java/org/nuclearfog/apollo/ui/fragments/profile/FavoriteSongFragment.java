@@ -72,8 +72,6 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), false);
 		// set adapter
 		setAdapter(mAdapter);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// sets empty list text
 		setEmptyText(R.string.empty_favorites);
 		// Start the loader

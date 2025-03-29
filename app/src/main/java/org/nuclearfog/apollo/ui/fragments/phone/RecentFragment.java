@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.fragments;
+package org.nuclearfog.apollo.ui.fragments.phone;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -36,16 +36,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.ArtistLoader;
-import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
-import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
-import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.loader.RecentLoader;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
+import org.nuclearfog.apollo.store.RecentStore;
+import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -57,17 +55,18 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import java.util.List;
 
 /**
- * This class is used to display all of the artists on a user's device.
+ * This class is used to display all of the recently listened to albums by the
+ * user.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class ArtistFragment extends Fragment implements AsyncCallback<List<Artist>>, OnScrollListener, OnItemClickListener, Observer<String> {
+public class RecentFragment extends Fragment implements AsyncCallback<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	private static final String TAG = "ArtistFragment";
+	private static final String TAG = "RecentFragment";
 
 	/**
 	 *
@@ -82,7 +81,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
-	private static final int GROUP_ID = 0x793F54E4;
+	private static final int GROUP_ID = 0x4FFF2B51;
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -94,72 +93,69 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
 	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
 	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
-	private AsyncCallback<Boolean> onArtistHide = this::onArtistHidden;
 
 	/**
 	 * The adapter for the grid
 	 */
-	private ArtistAdapter mAdapter;
+	private AlbumAdapter mAdapter;
 
 	/**
-	 * The grid view
+	 * The Listview
 	 */
 	private GridView mList;
 
 	/**
-	 * app preferences
+	 * app global prefs
 	 */
 	private PreferenceUtils preference;
+
+	private RecentLoader recentLoader;
+	private AlbumSongLoader albumSongLoader;
 
 	/**
 	 * viewmodel used for communication with hosting activity
 	 */
 	private FragmentViewModel viewModel;
 
-	private ArtistLoader artistLoader;
-	private ArtistSongLoader artistSongLoader;
-	private ExcludeMusicWorker excludeMusicWorker;
-
 	/**
-	 * Represents an artist
+	 * context menu selection
 	 */
 	@Nullable
-	private Artist selectedArtist = null;
+	private Album selectedAlbum = null;
 	private long selectedPlaylistId = -1;
-
-	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public ArtistFragment() {
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// init views
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
-		TextView emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
+		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		//
 		preference = PreferenceUtils.getInstance(requireContext());
-		artistLoader = new ArtistLoader(requireContext());
-		artistSongLoader = new ArtistSongLoader(requireContext());
-		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// init list
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		recentLoader = new RecentLoader(requireContext());
+		albumSongLoader = new AlbumSongLoader(requireContext());
+		// initialize list and adapter
 		initList();
-		// setup list view
+		// sets the empty view
+		emptyInfo.setText(R.string.empty_recents);
+		mList.setEmptyView(emptyInfo);
+		// Set the data behind the list
 		mList.setAdapter(mAdapter);
-		mList.setEmptyView(emptyHolder);
+		// Release any references to the recycled Views
 		mList.setRecyclerListener(new RecycleHolder());
+		// Listen for ContextMenus to be created
 		mList.setOnCreateContextMenuListener(this);
+		// Show the albums and songs from the selected artist
 		mList.setOnItemClickListener(this);
+		// To help make scrolling smooth
 		mList.setOnScrollListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Start the loader
-		artistLoader.execute(null, this);
+		// start loader
+		recentLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -178,9 +174,8 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		artistLoader.cancel();
-		artistSongLoader.cancel();
-		excludeMusicWorker.cancel();
+		recentLoader.cancel();
+		albumSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -193,28 +188,26 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		if (menuInfo instanceof AdapterContextMenuInfo) {
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-			// Create a new model
-			selectedArtist = mAdapter.getItem(info.position);
-			if (selectedArtist != null) {
-				// Play the artist
+			// Create a new album
+			selectedAlbum = mAdapter.getItem(info.position);
+			if (selectedAlbum != null) {
+				// Play the album
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-				// Add the artist to the queue
+				// Add the album to the queue
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-				// Add the artist to a playlist
+				// Add the album to a playlist
 				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
-				// hide artist from list
-				if (selectedArtist.isVisible()) {
-					menu.add(GROUP_ID, ContextMenuItems.HIDE_ARTIST, Menu.NONE, R.string.context_menu_hide_artist);
-				} else {
-					menu.add(GROUP_ID, ContextMenuItems.HIDE_ARTIST, Menu.NONE, R.string.context_menu_unhide_artist);
-				}
-				// Delete the artist
+				// View more content by the album artist
+				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				// Remove the album from the list
+				menu.add(GROUP_ID, ContextMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
+				// Delete the album
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
 		} else {
-			// remove selection
-			selectedArtist = null;
+			// remove selection if an error occurs
+			selectedAlbum = null;
 		}
 	}
 
@@ -223,36 +216,41 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && selectedArtist != null) {
-			// Create a list of the artist's songs
+		// Avoid leaking context menu selections
+		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					artistSongLoader.execute(selectedArtist.getId(), onPlaySongs);
+					albumSongLoader.execute(selectedAlbum.getId(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					artistSongLoader.execute(selectedArtist.getId(), onAddToQueue);
+					albumSongLoader.execute(selectedAlbum.getId(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					artistSongLoader.execute(selectedArtist.getId(), onAddToNewPlaylist);
+					albumSongLoader.execute(selectedAlbum.getId(), onAddToNewPlaylist);
+					return true;
+
+				case ContextMenuItems.MORE_BY_ARTIST:
+					NavUtils.openArtistProfile(requireActivity(), selectedAlbum.getArtist());
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					if (item.getIntent() != null) {
 						selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
 						if (selectedPlaylistId != -1) {
-							artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
+							albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
 						}
 					}
 					return true;
 
-				case ContextMenuItems.HIDE_ARTIST:
-					excludeMusicWorker.execute(selectedArtist, onArtistHide);
+				case ContextMenuItems.REMOVE_FROM_RECENT:
+					RecentStore.getInstance(requireActivity()).removeAlbum(selectedAlbum.getId());
+					MusicUtils.refresh(requireActivity());
 					return true;
 
 				case ContextMenuItems.DELETE:
-					artistSongLoader.execute(selectedArtist.getId(), onSongsDelete);
+					albumSongLoader.execute(selectedAlbum.getId(), onSongsDelete);
 					return true;
 			}
 		}
@@ -277,13 +275,13 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
-			artistSongLoader.execute(id, onPlaySongs);
+			albumSongLoader.execute(id, onPlaySongs);
 		} else {
-			Artist selectedArtist = mAdapter.getItem(position);
-			if (selectedArtist != null) {
-				NavUtils.openArtistProfile(requireActivity(), selectedArtist.getName());
+			Album selection = mAdapter.getItem(position);
+			if (selection != null) {
+				NavUtils.openAlbumProfile(requireActivity(), selection);
 			}
 		}
 	}
@@ -292,52 +290,14 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onResult(@NonNull List<Artist> artists) {
+	public void onResult(@NonNull List<Album> albums) {
 		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
-			for (Artist artist : artists) {
-				if (preference.getExcludeTracks() || artist.isVisible()) {
-					mAdapter.add(artist);
-				}
+			for (Album album : albums) {
+				mAdapter.add(album);
 			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onChanged(String action) {
-		switch (action) {
-			case REFRESH:
-				initList();
-
-			case MusicBrowserPhoneFragment.REFRESH:
-				artistLoader.execute(null, this);
-				break;
-
-			case MusicBrowserPhoneFragment.META_CHANGED:
-				Song song = MusicUtils.getCurrentTrack(requireActivity());
-				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
-				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE && preference.autoScrollEnabled()) {
-					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-						if (mAdapter.getItemId(pos) == song.getArtistId()) {
-							if (pos > 0 && pos < mAdapter.getCount() - 1)
-								mList.smoothScrollToPosition(pos);
-							else
-								mList.setSelection(pos);
-							break;
-						}
-					}
-				}
-				break;
-
-			case SCROLL_TOP:
-				if (mList.getCount() > 0)
-					mList.smoothScrollToPosition(0);
-				break;
 		}
 	}
 
@@ -350,21 +310,47 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onChanged(String action) {
+		switch (action) {
+			case REFRESH:
+				// re init list
+				initList();
+
+			case MusicBrowserPhoneFragment.META_CHANGED:
+				if (mList.getCount() > 0) {
+					mList.smoothScrollToPosition(0);
+				}
+				// fall through
+			case MusicBrowserPhoneFragment.REFRESH:
+				recentLoader.execute(null, this);
+				break;
+
+			case SCROLL_TOP:
+				if (mList.getCount() > 0)
+					mList.smoothScrollToPosition(0);
+				break;
+		}
+	}
+
+	/**
 	 * initialize adapter & list
 	 */
 	private void initList() {
-		switch (preference.getArtistLayout()) {
+		switch (preference.getRecentLayout()) {
 			case PreferenceUtils.LAYOUT_SIMPLE:
-				mAdapter = new ArtistAdapter(requireActivity(), 1, R.layout.list_item_normal);
+				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
 				mList.setNumColumns(ONE);
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
 				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new ArtistAdapter(requireActivity(), 2, R.layout.list_item_detailed);
+					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
 					mList.setNumColumns(TWO);
 				} else {
-					mAdapter = new ArtistAdapter(requireActivity(), 1, R.layout.list_item_detailed);
+					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.list_item_detailed);
 					mList.setNumColumns(ONE);
 				}
 				mAdapter.setLoadExtraData();
@@ -372,10 +358,10 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 
 			default:
 				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new ArtistAdapter(requireActivity(), 4, R.layout.grid_item_normal);
+					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
 					mList.setNumColumns(FOUR);
 				} else {
-					mAdapter = new ArtistAdapter(requireActivity(), 2, R.layout.grid_item_normal);
+					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
 					mList.setNumColumns(TWO);
 				}
 				break;
@@ -421,19 +407,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 */
 	private void onSongsDelete(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		String name = selectedArtist != null ? selectedArtist.getName() : "";
+		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
 		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
-	}
-
-	/**
-	 * called after an entry was hidden
-	 */
-	private void onArtistHidden(Boolean hidden) {
-		if (getActivity() != null && selectedArtist != null) {
-			if (hidden) {
-				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
-			}
-			MusicUtils.refresh(requireActivity());
-		}
 	}
 }

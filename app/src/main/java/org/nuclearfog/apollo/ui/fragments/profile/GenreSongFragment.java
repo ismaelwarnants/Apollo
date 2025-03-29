@@ -74,8 +74,6 @@ public class GenreSongFragment extends ProfileFragment implements AsyncCallback<
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
 		// set adapter
 		setAdapter(mAdapter);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// Start the loader
 		if (param != null) {
 			genreIds = param.getString(Constants.IDS, "");

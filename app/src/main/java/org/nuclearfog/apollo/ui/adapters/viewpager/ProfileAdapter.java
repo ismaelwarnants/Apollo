@@ -34,6 +34,7 @@ import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
  *
  * @author nuclearfog
  */
+@SuppressWarnings("deprecation")
 public class ProfileAdapter extends FragmentStatePagerAdapter {
 
 	/**

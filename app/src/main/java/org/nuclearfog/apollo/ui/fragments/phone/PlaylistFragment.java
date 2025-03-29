@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.fragments;
+package org.nuclearfog.apollo.ui.fragments.phone;
 
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FAVORITES;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
@@ -50,7 +50,6 @@ import org.nuclearfog.apollo.ui.adapters.listview.PlaylistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.DeletePlaylistDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -112,8 +111,6 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		mAdapter = new PlaylistAdapter(requireContext());
 		playlistLoader = new PlaylistLoader(requireContext());
 		playlistSongLoader = new PlaylistSongLoader(requireContext());
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// setup list view
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyInfo);

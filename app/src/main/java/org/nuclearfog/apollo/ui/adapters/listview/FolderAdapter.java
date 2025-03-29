@@ -14,10 +14,11 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.FolderFragment;
 import org.nuclearfog.apollo.utils.Constants;
 
 /**
- * This adapter displays all folder containing music files to {@link org.nuclearfog.apollo.ui.fragments.FolderFragment}
+ * This adapter displays all folder containing music files to {@link FolderFragment}
  *
  * @author nuclearfog
  */

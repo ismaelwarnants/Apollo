@@ -27,6 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -57,7 +58,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class QueueFragment extends Fragment implements OnItemClickListener, ItemChangeListener, DragScrollProfile, AsyncCallback<List<Song>>, Observer<String> {
+public class QueueFragment extends Fragment implements OnItemClickListener, MenuProvider, ItemChangeListener, DragScrollProfile, AsyncCallback<List<Song>>, Observer<String> {
 
 	/**
 	 *
@@ -123,10 +124,9 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Item
 		// setup listview
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		emptyInfo.setVisibility(View.INVISIBLE);
-		//
+
+		requireActivity().addMenuProvider(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
@@ -149,25 +149,24 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Item
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+	public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 		inflater.inflate(R.menu.queue, menu);
-		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+	public boolean onMenuItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_queue) {
 			MusicUtils.saveQueue(requireActivity());
-			return true;
 		} else if (item.getItemId() == R.id.menu_clear_queue) {
 			MusicUtils.clearQueue(requireActivity());
 			requireActivity().finish();
-			return true;
+		} else {
+			return false;
 		}
-		return super.onOptionsItemSelected(item);
+		return true;
 	}
 
 	/**

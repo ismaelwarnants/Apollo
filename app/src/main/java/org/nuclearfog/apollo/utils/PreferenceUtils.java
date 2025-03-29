@@ -21,6 +21,9 @@ import androidx.preference.PreferenceManager;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.ArtistFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -196,7 +199,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the artist list in {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
+	 * @return The sort order used for the artist list in {@link ArtistFragment}
 	 */
 	public String getArtistSortOrder() {
 		// This is only to prevent return an invalid field name caused by bug BUGDUMP-21136
@@ -252,7 +255,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the album list in {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}
+	 * @return The sort order used for the album list in {@link AlbumFragment}
 	 */
 	public String getAlbumSortOrder() {
 		return defaultPref.getString(ALBUM_SORT_ORDER, SortOrder.AlbumSortOrder.ALBUM_A_Z);
@@ -331,7 +334,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the song list in {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
+	 * @return The sort order used for the song list in {@link SongFragment}
 	 */
 	public String getSongSortOrder() {
 		return defaultPref.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);

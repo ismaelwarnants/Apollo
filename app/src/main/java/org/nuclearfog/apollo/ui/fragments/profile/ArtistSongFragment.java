@@ -73,8 +73,6 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
 		setAdapter(mAdapter);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// Start the loader
 		if (param != null) {
 			artistId = param.getLong(Constants.ID);

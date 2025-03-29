@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.fragments;
+package org.nuclearfog.apollo.ui.fragments.phone;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -42,7 +42,6 @@ import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -134,8 +133,6 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		songLoader = new SongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// setup the list view
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyText);

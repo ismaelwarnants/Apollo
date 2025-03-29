@@ -75,8 +75,6 @@ public class AlbumSongFragment extends ProfileFragment implements AsyncCallback<
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_ALBUM_SETTING, isPortrait(), false);
 		// init loader
 		mLoader = new AlbumSongLoader(requireContext());
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		setAdapter(mAdapter);
 		// Start the loader
 		if (args != null) {

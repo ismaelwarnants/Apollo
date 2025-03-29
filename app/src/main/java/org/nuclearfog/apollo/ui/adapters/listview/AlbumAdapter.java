@@ -25,14 +25,16 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.RecentFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This adapter is used to display all of the albums on a user's
- * device for {@link org.nuclearfog.apollo.ui.fragments.RecentFragment}
- * and {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}.
+ * device for {@link RecentFragment}
+ * and {@link AlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog

@@ -8,18 +8,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
-import org.nuclearfog.apollo.ui.fragments.FolderFragment;
-import org.nuclearfog.apollo.ui.fragments.GenreFragment;
-import org.nuclearfog.apollo.ui.fragments.PlaylistFragment;
-import org.nuclearfog.apollo.ui.fragments.RecentFragment;
-import org.nuclearfog.apollo.ui.fragments.SongFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.ArtistFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.FolderFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.GenreFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.PlaylistFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.RecentFragment;
+import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 
 import java.util.Locale;
 
 /**
- * {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment} adapter used to show lists of the main page
+ * ViewPager adapter to show fragments for {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
  *
  * @author nuclearfog
  */

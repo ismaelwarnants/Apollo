@@ -63,7 +63,6 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
 		// set adapter
 		setAdapter(mAdapter);
-		setHasOptionsMenu(true);
 		// init loader
 		if (param != null) {
 			path_music_folder = param.getString(Constants.FOLDER, "");

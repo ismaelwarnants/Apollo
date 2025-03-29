@@ -23,11 +23,12 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.GenreFragment;
 import org.nuclearfog.apollo.utils.Constants;
 
 /**
  * This adapter is used to display all of the genres on a user's
- * device for {@link org.nuclearfog.apollo.ui.fragments.GenreFragment}.
+ * device for {@link GenreFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
