@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -90,9 +89,7 @@ public final class NavUtils {
 				activity.startActivity(effects);
 			} catch (ActivityNotFoundException exception) {
 				AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);
-				if (BuildConfig.DEBUG) {
-					exception.printStackTrace();
-				}
+				Log.w(TAG, "couldn't open external equalizer!", exception);
 			}
 		} else {
 			AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);

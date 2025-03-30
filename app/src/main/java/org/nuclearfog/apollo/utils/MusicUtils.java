@@ -203,10 +203,8 @@ public final class MusicUtils {
 				service.gotoNext();
 				int sessionId = service.getAudioSessionId();
 				AudioEffects.getInstance(activity, sessionId);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "next()", exception);
 			}
 		}
 	}
@@ -221,10 +219,8 @@ public final class MusicUtils {
 				service.gotoPrev();
 				int sessionId = service.getAudioSessionId();
 				AudioEffects.getInstance(activity, sessionId);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "previous()", exception);
 			}
 		}
 	}
@@ -248,10 +244,8 @@ public final class MusicUtils {
 					return false;
 				}
 				return true;
-			} catch (Exception err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (Exception exception) {
+				Log.e(TAG, "togglePlayPause()", exception);
 			}
 		}
 		return false;
@@ -283,10 +277,8 @@ public final class MusicUtils {
 				}
 				int sessionId = service.getAudioSessionId();
 				AudioEffects.getInstance(activity, sessionId);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "cycleRepeat()", exception);
 			}
 		}
 		return REPEAT_NONE;
@@ -314,10 +306,8 @@ public final class MusicUtils {
 						service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 						return SHUFFLE_NONE;
 				}
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "cycleShuffle()", exception);
 			}
 		}
 		return SHUFFLE_NONE;
@@ -331,10 +321,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.isPlaying();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "isPlaying()", exception);
 			}
 		}
 		return false;
@@ -359,10 +347,8 @@ public final class MusicUtils {
 					case MusicPlaybackService.SHUFFLE_NONE:
 						return SHUFFLE_NONE;
 				}
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getShuffleMode()", exception);
 			}
 		}
 		return SHUFFLE_NONE;
@@ -386,10 +372,8 @@ public final class MusicUtils {
 						return REPEAT_CURRENT;
 				}
 				return service.getRepeatMode();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getRepeatMode()", exception);
 			}
 		}
 		return REPEAT_NONE;
@@ -404,10 +388,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getCurrentTrack();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getCurrentTrack()", exception);
 			}
 		}
 		return null;
@@ -422,10 +404,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getCurrentAlbum();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getCurrentAlbum()", exception);
 			}
 		}
 		return null;
@@ -439,10 +419,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getAudioSessionId();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getAudioSessionId()", exception);
 			}
 		}
 		return 0;
@@ -457,10 +435,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getQueue();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getQueue()", exception);
 			}
 		}
 		return EMPTY_LIST;
@@ -476,10 +452,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.removeTrack(pos);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "removeQueueItem()", exception);
 			}
 		}
 	}
@@ -492,10 +466,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getQueuePosition();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getQueuePosition()", exception);
 			}
 		}
 		return 0;
@@ -509,10 +481,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.setQueuePosition(position);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "setQueuePosition()", exception);
 			}
 		}
 	}
@@ -527,10 +497,8 @@ public final class MusicUtils {
 				int sessionId = service.getAudioSessionId();
 				AudioEffects.getInstance(activity, sessionId);
 				service.openFile(uri);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "playFile()", exception);
 			}
 		}
 	}
@@ -553,10 +521,8 @@ public final class MusicUtils {
 				}
 				int sessionId = service.getAudioSessionId();
 				AudioEffects.getInstance(activity, sessionId);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "playAll()", exception);
 			}
 		}
 	}
@@ -652,11 +618,9 @@ public final class MusicUtils {
 	 * @return A new playlist ID.
 	 */
 	public static long createPlaylist(Activity activity, String name) {
+		long id = -1;
 		try {
-			if (name != null && !name.trim().isEmpty()) {
-				// check if playlist already exists
-				if (getIdForPlaylist(activity, name) != -1)
-					return -1;
+			if (name != null && !name.trim().isEmpty() && getIdForPlaylist(activity, name) == -1) {
 				Cursor cursor = CursorFactory.makePlaylistCursor(activity, name);
 				// check if playlist exists
 				if (cursor != null) {
@@ -667,20 +631,16 @@ public final class MusicUtils {
 						values.put(Playlists.NAME, name);
 						Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
 						if (uri != null && uri.getLastPathSegment() != null) {
-							return Long.parseLong(uri.getLastPathSegment());
+							id = Long.parseLong(uri.getLastPathSegment());
 						}
 					}
 					cursor.close();
 				}
 			}
 		} catch (Exception exception) {
-			// thrown when the app does not own the playlist
 			AppMsg.makeText(activity, R.string.error_create_playlist, AppMsg.STYLE_CONFIRM).show();
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
 		}
-		return -1L;
+		return id;
 	}
 
 	/**
@@ -716,11 +676,8 @@ public final class MusicUtils {
 				cursor.close();
 			}
 		} catch (Exception exception) {
-			// thrown when the app does not own the playlist
+			// thrown when the app doesn't own the playlist
 			AppMsg.makeText(activity, R.string.error_add_playlist, AppMsg.STYLE_CONFIRM).show();
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
 		}
 	}
 
@@ -740,11 +697,8 @@ public final class MusicUtils {
 			ContentResolver resolver = activity.getContentResolver();
 			resolver.update(uri, values, null, null);
 		} catch (Exception exception) {
-			// thrown when the app does not own the playlist
+			// thrown when the app doesn't own the playlist
 			AppMsg.makeText(activity, R.string.error_rename_playlist, AppMsg.STYLE_CONFIRM).show();
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
 		}
 	}
 
@@ -760,10 +714,10 @@ public final class MusicUtils {
 	public static boolean movePlaylistTrack(Context context, long playlistId, int from, int to, int off) {
 		ContentResolver resolver = context.getContentResolver();
 		try {
-			// may throw exception on some Android versions
 			return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
 		} catch (Exception exception) {
-			Log.w(TAG, "could not move playlist item!", exception);
+			// thrown when the app doesn't own the playlist
+			Log.w(TAG, "could not move playlist item!");
 			return false;
 		}
 	}
@@ -786,6 +740,7 @@ public final class MusicUtils {
 			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			return true;
 		} else {
+			// thrown when the app doesn't own the playlist
 			Log.w(TAG, "could not remove playlist item!");
 			return false;
 		}
@@ -800,10 +755,8 @@ public final class MusicUtils {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_LAST);
 				AppMsg.makeText(activity, R.plurals.NNNtrackstoqueue, list.length, AppMsg.STYLE_CONFIRM).show();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "addToQueue()", exception);
 			}
 		}
 	}
@@ -837,10 +790,8 @@ public final class MusicUtils {
 				resolver.update(uri, values, null, null);
 				Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
 			}
-		} catch (Exception err) {
-			if (BuildConfig.DEBUG) {
-				err.printStackTrace();
-			}
+		} catch (Exception exception) {
+			Log.e(TAG, "setRingtone()", exception);
 			return;
 		}
 		// print message if succeeded
@@ -868,10 +819,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.moveQueueItem(from, to);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "moveQueueItem()", exception);
 			}
 		}
 	}
@@ -913,10 +862,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "playNext()", exception);
 			}
 		}
 	}
@@ -953,9 +900,7 @@ public final class MusicUtils {
 				cursor.close();
 			}
 		} catch (Exception exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "makePlaylistMenu()", exception);
 		}
 	}
 
@@ -967,10 +912,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.refresh();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "refresh()", exception);
 			}
 		}
 	}
@@ -985,10 +928,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.setPlayerPosition(position);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "seek()", exception);
 			}
 		}
 	}
@@ -1001,10 +942,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				return service.getPlayerPosition();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getPositionMillis()", exception);
 			}
 		}
 		return 0;
@@ -1020,10 +959,8 @@ public final class MusicUtils {
 				Song song = service.getCurrentTrack();
 				if (song != null)
 					return song.getDuration();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "getDurationMillis()", exception);
 			}
 		}
 		return 0;
@@ -1047,10 +984,8 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.clearQueue();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "clearQueue()", exception);
 			}
 		}
 	}
@@ -1071,11 +1006,9 @@ public final class MusicUtils {
 					uris.add(Media.getContentUri(MediaStore.VOLUME_EXTERNAL, id));
 				PendingIntent requestRemove = MediaStore.createDeleteRequest(activity.getContentResolver(), uris);
 				activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
-			} catch (Exception err) {
+			} catch (Exception exception) {
 				// thrown when no audio file were found
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+				Log.e(TAG, "openDeleteDialog() failed to open dialog!");
 			}
 		} else {
 			DeleteTracksDialog.show(activity.getSupportFragmentManager(), title, ids);

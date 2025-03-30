@@ -23,6 +23,7 @@ import java.util.Locale;
  *
  * @author nuclearfog
  */
+@SuppressWarnings("deprecation")
 public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 
 	public static final int IDX_PLAYLIST = 0;

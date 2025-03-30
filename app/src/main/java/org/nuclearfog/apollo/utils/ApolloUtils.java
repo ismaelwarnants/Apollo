@@ -171,9 +171,7 @@ public final class ApolloUtils {
 				}
 			}
 		} catch (Exception e) {
-			if (BuildConfig.DEBUG) {
-				Log.e("ApolloUtils", "createShortcutIntent", e);
-			}
+			Log.e(TAG, "createShortcutIntent()", e);
 			String resultMsg = activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName);
 			AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
 		}
@@ -218,17 +216,16 @@ public final class ApolloUtils {
 	public static long[] readSerializedIDs(String idsStr) {
 		String[] items = idsStr.split(";");
 		long[] ids = new long[items.length];
-		for (int i = 0; i < items.length; i++) {
-			String item = items[i];
-			try {
+		try {
+			for (int i = 0; i < items.length; i++) {
+				String item = items[i];
 				ids[i] = Long.parseLong(item);
-			} catch (NumberFormatException exception) {
-				ids[i] = -1L;
-				if (BuildConfig.DEBUG) {
-					Log.w(TAG, "bad id: " + item);
-				}
 			}
+		} catch (NumberFormatException exception) {
+			Log.w(TAG, "readSerializedIDs() number format!");
+			return new long[0];
 		}
+
 		return ids;
 	}
 
@@ -301,9 +298,6 @@ public final class ApolloUtils {
 				activity.startActivity(intent);
 			} catch (Exception exception) {
 				Log.d(TAG, "could not open battery optimization settings");
-				if (BuildConfig.DEBUG) {
-					exception.printStackTrace();
-				}
 			}
 		}
 	}

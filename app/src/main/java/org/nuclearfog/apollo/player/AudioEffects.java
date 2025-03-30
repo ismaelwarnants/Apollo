@@ -8,7 +8,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.model.AudioPreset;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -62,9 +61,7 @@ public final class AudioEffects {
 			if (sessionId != 0) {
 				if (instance == null || instance.sessionId != sessionId) {
 					instance = new AudioEffects(context, sessionId);
-					if (BuildConfig.DEBUG) {
-						Log.d(TAG, "audio_session_id=" + sessionId);
-					}
+					Log.d(TAG, "audio_session_id=" + sessionId);
 				}
 			} else {
 				Log.e(TAG, "init audio effects failed, audio session id is '0'!");
@@ -86,9 +83,7 @@ public final class AudioEffects {
 				instance.bassBooster.release();
 				instance.reverb.release();
 			} catch (RuntimeException exception) {
-				if (BuildConfig.DEBUG) {
-					exception.printStackTrace();
-				}
+				Log.e(TAG, "release()", exception);
 			}
 		}
 	}
@@ -134,9 +129,7 @@ public final class AudioEffects {
 				setEffectValues();
 			}
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "enableAudioFx()", exception);
 		}
 	}
 
@@ -150,9 +143,7 @@ public final class AudioEffects {
 			short[] ranges = equalizer.getBandLevelRange();
 			return new int[]{ranges[0], ranges[1]};
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "getBandLevelRange()", exception);
 		}
 		return new int[2];
 	}
@@ -171,9 +162,7 @@ public final class AudioEffects {
 			}
 			return freq;
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "getBandFrequencies()", exception);
 		}
 		return new int[0];
 	}
@@ -192,9 +181,7 @@ public final class AudioEffects {
 			}
 			return level;
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "getBandLevel()", exception);
 		}
 		return new int[0];
 	}
@@ -217,9 +204,7 @@ public final class AudioEffects {
 			}
 			prefs.setEqualizerBands(bands);
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "setBandLevel()", exception);
 		}
 	}
 
@@ -235,9 +220,7 @@ public final class AudioEffects {
 			}
 			prefs.setEqualizerBands(bands);
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "setBandLevel()", exception);
 		}
 	}
 
@@ -250,9 +233,7 @@ public final class AudioEffects {
 		try {
 			return bassBooster.getRoundedStrength();
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "getBassLevel()", exception);
 		}
 		return 0;
 	}
@@ -267,9 +248,7 @@ public final class AudioEffects {
 			bassBooster.setStrength((short) level);
 			prefs.setBassLevel(level);
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "setBassLevel()", exception);
 		}
 	}
 
@@ -282,9 +261,7 @@ public final class AudioEffects {
 		try {
 			return reverb.getPreset();
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "getReverbLevel()", exception);
 		}
 		return 0;
 	}
@@ -299,9 +276,7 @@ public final class AudioEffects {
 			reverb.setPreset((short) level);
 			prefs.setReverbLevel(level);
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "setReverbLevel()", exception);
 		}
 	}
 
@@ -343,9 +318,7 @@ public final class AudioEffects {
 				equalizer.setBandLevel(i, (short) bandLevel[i]);
 			}
 		} catch (RuntimeException exception) {
-			if (BuildConfig.DEBUG) {
-				exception.printStackTrace();
-			}
+			Log.e(TAG, "setEffectValues()", exception);
 		}
 	}
 }

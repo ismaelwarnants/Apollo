@@ -35,7 +35,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -1455,38 +1454,24 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		@Override
 		public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 			RelativeLayout view;
-			View child;
 			if (convertView instanceof RelativeLayout) {
 				view = (RelativeLayout) convertView;
 				View oldChild = view.getChildAt(0);
-				try {
-					child = mAdapter.getView(position, oldChild, view);
-					if (child != oldChild && view.getChildCount() > 0) {
-						view.removeViewAt(0);
-						view.addView(child);
-					}
-				} catch (Exception e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
+				View child = mAdapter.getView(position, oldChild, view);
+				if (child != oldChild && view.getChildCount() > 0) {
+					view.removeViewAt(0);
+					view.addView(child);
 				}
 			} else {
-				AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-						ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+				AbsListView.LayoutParams params = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 				view = new RelativeLayout(getContext());
 				view.setLayoutParams(params);
-				try {
-					child = mAdapter.getView(position, null, view);
-					// remove from old parent if any
-					if (child.getParent() instanceof ViewGroup) {
-						((ViewGroup) child.getParent()).removeView(child);
-					}
-					view.addView(child);
-				} catch (Exception e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-					}
+				View child = mAdapter.getView(position, null, view);
+				// remove from old parent if any
+				if (child.getParent() instanceof ViewGroup) {
+					((ViewGroup) child.getParent()).removeView(child);
 				}
+				view.addView(child);
 			}
 			adjustItem(position + getHeaderViewsCount(), view, true);
 			return view;

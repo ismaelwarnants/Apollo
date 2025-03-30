@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Playlists;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,6 +88,8 @@ import java.util.List;
  */
 public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnPlayerSeekListener,
 		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
+
+	private static final String TAG = "AudioPlayerActivity";
 
 	/**
 	 * MIME type for sharing songs
@@ -741,10 +744,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1)
 					shareIntent.setClipData(ClipData.newRawUri("", fileUri));
 				startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
-			} catch (Exception err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+			} catch (Exception exception) {
+				Log.e(TAG, "couldn't share track!", exception);
 			}
 		}
 	}

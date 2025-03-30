@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +37,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -90,6 +90,8 @@ import java.util.List;
  */
 public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, AsyncCallback<Bitmap>,
 		OnPageChangeListener, OnItemSelectedListener, OnTabChangeListener, OnOptionSelectedListener {
+
+	private static final String TAG = "ProfileActivity";
 
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
@@ -748,9 +750,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		try {
 			startActivity(webSearch);
 		} catch (ActivityNotFoundException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.w(TAG, "couldn't open browser!");
 		}
 	}
 

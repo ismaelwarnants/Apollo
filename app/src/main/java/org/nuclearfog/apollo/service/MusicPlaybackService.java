@@ -1124,9 +1124,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mCursor.close();
 			}
 		} catch (Exception e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.e(TAG, "getCardId()", e);
 		}
 	}
 
@@ -1479,9 +1477,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				clearShuffleList();
 			}
 		} catch (RuntimeException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.e(TAG, "makeShuffleList()", e);
 		}
 		return false;
 	}

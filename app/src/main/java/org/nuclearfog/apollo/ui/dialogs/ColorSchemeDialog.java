@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,7 +29,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -46,6 +46,9 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 
 	private static final String TAG = "ColorSchemeDialog";
 
+	/**
+	 * bundle key used to save selected color from previous instance (after screen rotation)
+	 */
 	private static final String KEY_COLOR = "color_val";
 
 	private ColorPickerView mColorPicker;
@@ -182,10 +185,8 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 			int color = Color.parseColor("#" + mHexValue.getText().toString().toUpperCase(Locale.getDefault()));
 			mColorPicker.setColor(color);
 			mNewColor.setBackgroundColor(color);
-		} catch (Exception e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+		} catch (IllegalArgumentException e) {
+			Log.w(TAG, "color hex format invalid: " + s);
 		}
 	}
 

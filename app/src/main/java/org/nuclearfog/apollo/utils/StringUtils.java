@@ -1,8 +1,8 @@
 package org.nuclearfog.apollo.utils;
 
 import android.content.Context;
+import android.util.Log;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 
 import java.io.UnsupportedEncodingException;
@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
  * @author nuclearfog
  */
 public final class StringUtils {
+
+	private static final String TAG = "StringUtils";
 
 	/* This class is never initiated */
 	private StringUtils() {
@@ -90,9 +92,8 @@ public final class StringUtils {
 			}
 			cacheKey = builder.toString();
 		} catch (NoSuchAlgorithmException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.e(TAG, "hashKeyForDisk()", e);
+			// use fallback hash code
 			cacheKey = String.valueOf(key.hashCode());
 		}
 		return cacheKey;
