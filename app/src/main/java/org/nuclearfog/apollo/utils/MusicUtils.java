@@ -49,7 +49,6 @@ import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
-import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
@@ -823,14 +822,6 @@ public final class MusicUtils {
 				Log.e(TAG, "moveQueueItem()", exception);
 			}
 		}
-	}
-
-	/**
-	 * @return True if the current song is a favorite, false otherwise.
-	 */
-	public static boolean isFavorite(Song song, Context context) {
-		FavoritesStore mFavoritesCache = FavoritesStore.getInstance(context.getApplicationContext());
-		return mFavoritesCache.exists(song.getId());
 	}
 
 	/**

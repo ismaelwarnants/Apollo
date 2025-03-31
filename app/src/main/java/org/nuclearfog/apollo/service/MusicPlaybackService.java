@@ -49,11 +49,11 @@ import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
 import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
@@ -239,11 +239,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Recently listened database
 	 */
-	private RecentStore mRecentsCache;
+	private RecentStore recenentStore;
 	/**
 	 * most played tracks database
 	 */
-	private PopularStore mPopularCache;
+	private PopularStore popularStore;
+	/**
+	 *
+	 */
+	private FavoritesStore favoriteStore;
 	/**
 	 * Used to know when the service is active
 	 */
@@ -316,9 +320,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// Initialize the favorites and recents databases
-		mRecentsCache = RecentStore.getInstance(this);
-		mPopularCache = PopularStore.getInstance(this);
+		// Initialize the database instances
+		recenentStore = RecentStore.getInstance(this);
+		popularStore = PopularStore.getInstance(this);
+		favoriteStore = FavoritesStore.getInstance(this);
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
@@ -749,7 +754,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			intent.putExtra("artist", song.getArtist());
 			intent.putExtra("album", song.getAlbum());
 			intent.putExtra("track", song.getName());
-			intent.putExtra("isfavorite", MusicUtils.isFavorite(song, this));
+			intent.putExtra("isfavorite", favoriteStore.exists(song.getId()));
 		}
 		Intent musicIntent = new Intent(intent);
 		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
@@ -760,9 +765,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case CHANGED_META:
 				// Increase the play count for favorite songs.
 				if (song != null)
-					mPopularCache.addSong(song);
+					popularStore.addSong(song);
 				if (album != null)
-					mRecentsCache.addAlbum(album);
+					recenentStore.addAlbum(album);
 				updateMetadata();
 				// fall through
 
@@ -1243,7 +1248,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					long artistId = cursor.getLong(5);
 					long albumId = cursor.getLong(6);
 					String path = cursor.getString(7);
-					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
+					boolean isFavorite = favoriteStore.exists(songId);
+					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path, isFavorite);
 				}
 				cursor.close();
 			}

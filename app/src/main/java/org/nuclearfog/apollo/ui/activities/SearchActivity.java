@@ -106,7 +106,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(Bundle savedInstanceState) {
+	protected void init(@Nullable Bundle savedInstanceState) {
 		// init view
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);

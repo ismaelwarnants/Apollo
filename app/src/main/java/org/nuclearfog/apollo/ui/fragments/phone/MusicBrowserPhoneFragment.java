@@ -45,14 +45,7 @@ import java.util.List;
 
 /**
  * This class is used to hold the {@link ViewPager} used for swiping between the
- * playlists, recent, artists, albums, songs, and genre {@link Fragment}
- * s for phones.
- * <p>
- * #note  The reason the sort orders are taken care of in this fragment rather
- * than the individual fragments is to keep from showing all of the menu
- * items on tablet interfaces. That being said, I have a tablet interface
- * worked out, but I'm going to keep it in the Play Store version of
- * Apollo for a couple of weeks or so before merging it with CM.
+ * playlists, recent, artists, albums, songs, and genre {@link Fragment} for phones.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
@@ -101,38 +94,30 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
 	private SongLoader songLoader;
 
+	private FavoritesStore favoritesStore;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
-		// Initialize the adapter
-		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
-		// Initialize the ViewPager
+		TitlePageIndicator pageIndicator = rootView.findViewById(R.id.fragment_home_phone_pager_titles);
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
-		// Get the preferences
+
+		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
 		mPreferences = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// Initialize the theme resources
 		mResources = new ThemeUtils(requireContext());
 		songLoader = new SongLoader(requireContext());
-		// Attach the adapter
+		favoritesStore = FavoritesStore.getInstance(requireContext());
+
 		mViewPager.setAdapter(adapter);
-		// Offscreen pager loading limit
 		mViewPager.setOffscreenPageLimit(adapter.getCount());
-		// Start on the last page the user was on
 		mViewPager.setCurrentItem(mPreferences.getStartPage());
-		// Initialize the TPI
-		TitlePageIndicator pageIndicator = rootView.findViewById(R.id.fragment_home_phone_pager_titles);
-		// Theme the selected text color
-		pageIndicator.setSelectedColor(ResourcesCompat.getColor(getResources(), R.color.tpi_selected_text_color, null));
-		// Theme the unselected text color
-		pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
-		// Attach the ViewPager
 		pageIndicator.setViewPager(mViewPager);
+		pageIndicator.setSelectedColor(ResourcesCompat.getColor(getResources(), R.color.tpi_selected_text_color, null));
+		pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
 
 		requireActivity().addMenuProvider(this);
 		pageIndicator.setOnCenterItemClickListener(this);
@@ -193,9 +178,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		if (showHidden != null) {
 			showHidden.setChecked(mPreferences.getExcludeTracks());
 		}
-		Song song = MusicUtils.getCurrentTrack(requireActivity());
+		Song song = MusicUtils.getCurrentTrack(getActivity());
 		if (song != null) {
-			boolean isFavorite = FavoritesStore.getInstance(requireContext()).exists(song.getId());
+			boolean isFavorite = favoritesStore.exists(song.getId());
 			mResources.setFavoriteIcon(favorite, isFavorite);
 		}
 	}

@@ -196,7 +196,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@SuppressLint("SourceLockedOrientationActivity")
 	@Override
-	protected void init(Bundle savedInstanceState) {
+	protected void init(@Nullable Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mViewPager = findViewById(R.id.activity_profile_base_pager);
@@ -759,7 +759,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 *
 	 * @param mArguments arguments to initialize fragments
 	 */
-	private void initViews(Bundle mArguments) {
+	private void initViews(@Nullable Bundle mArguments) {
 		FragmentContainerView container2 = findViewById(R.id.activity_profile_base_fragment_2);
 		ActionBar actionBar = getSupportActionBar();
 

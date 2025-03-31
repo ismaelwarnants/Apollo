@@ -53,7 +53,7 @@ public class HomeActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(Bundle savedInstanceState) {
+	protected void init(@Nullable Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
@@ -63,7 +63,10 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
+		// fixme prevent Fragment created twice after screen rotation
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
+		}
 	}
 
 	/**

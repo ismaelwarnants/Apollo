@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
@@ -116,7 +117,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		setContentView(getContentView());
@@ -449,7 +450,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * initialize activity
 	 */
-	protected abstract void init(Bundle savedInstanceState);
+	protected abstract void init(@Nullable Bundle savedInstanceState);
 
 	/**
 	 * notify sub classes to reload information

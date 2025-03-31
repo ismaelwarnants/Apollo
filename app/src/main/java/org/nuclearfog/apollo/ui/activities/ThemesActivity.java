@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.ui.activities;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
 import org.nuclearfog.apollo.R;
@@ -39,7 +40,7 @@ public class ThemesActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(Bundle savedInstanceState) {
+	protected void init(@Nullable Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
