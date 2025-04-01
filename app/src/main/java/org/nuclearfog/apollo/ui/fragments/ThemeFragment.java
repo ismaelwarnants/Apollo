@@ -42,6 +42,8 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  */
 public class ThemeFragment extends Fragment implements OnItemClickListener {
 
+	public static final String TAG = "ThemeFragment";
+
 	/**
 	 * grid list adapter to show themes
 	 */

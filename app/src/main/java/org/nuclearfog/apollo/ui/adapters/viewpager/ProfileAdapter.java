@@ -11,14 +11,16 @@
 
 package org.nuclearfog.apollo.ui.adapters.viewpager;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.activities.ProfileActivity.Type;
 import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
@@ -47,16 +49,28 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 	 */
 	public static final int IDX_ARTIST_ALBUM = 1;
 
-	private ProfileActivity.Type type;
+	private Type type;
 	private Bundle args;
+	private boolean landscape;
 
 	/**
-	 * Constructor of <code>PagerAdapter<code>
+	 *
 	 */
-	public ProfileAdapter(FragmentManager fm, Bundle args, ProfileActivity.Type type) {
-		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+	public ProfileAdapter(FragmentActivity activity, Bundle args, Type type) {
+		super(activity.getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+		landscape = activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 		this.type = type;
 		this.args = args;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public float getPageWidth(int position) {
+		if (landscape && getCount() > 1)
+			return .5f;
+		return 1f;
 	}
 
 	/**

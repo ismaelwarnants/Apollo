@@ -16,6 +16,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.ThemeFragment;
@@ -50,8 +51,9 @@ public class ThemesActivity extends ActivityBase {
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		// Transact the theme fragment
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, ThemeFragment.class, null).commit();
+		FragmentManager fm = getSupportFragmentManager();
+		if (fm.findFragmentByTag(ThemeFragment.TAG) == null) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, ThemeFragment.class, null, ThemeFragment.TAG).commit();
 		}
 	}
 

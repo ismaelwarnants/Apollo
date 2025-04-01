@@ -19,6 +19,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
@@ -63,9 +64,9 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		// fixme prevent Fragment created twice after screen rotation
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
+		FragmentManager fm = getSupportFragmentManager();
+		if (fm.findFragmentByTag(MusicBrowserPhoneFragment.TAG) == null) {
+			fm.beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null, MusicBrowserPhoneFragment.TAG).commit();
 		}
 	}
 

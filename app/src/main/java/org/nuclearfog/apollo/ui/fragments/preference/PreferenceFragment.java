@@ -31,7 +31,7 @@ import org.nuclearfog.apollo.utils.Constants;
  */
 public class PreferenceFragment extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
-	private static final String TAG = "PreferenceFragment";
+	public static final String TAG = "PreferenceFragment";
 
 	private static final String DEL_CACHE = "delete_cache";
 	private static final String THEME_SEL = "theme_chooser";

@@ -36,7 +36,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  */
 public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>, ItemChangeListener, DragScrollProfile {
 
-	private static final String TAG = "ProfileFragment";
+	public static final String TAG = "ProfileFragment";
 
 	/**
 	 * notification used to reload content of the fragment

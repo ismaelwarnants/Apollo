@@ -15,6 +15,7 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
@@ -57,15 +57,7 @@ import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog.OnItemSelectedListener;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.OnOptionSelectedListener;
-import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.OnTabChangeListener;
@@ -120,13 +112,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * View pager
 	 */
-	@Nullable
 	private ViewPager mViewPager;
 
 	/**
 	 * Profile header carousel
 	 */
-	@Nullable
 	private ProfileTabCarousel mTabCarousel;
 
 	/**
@@ -237,20 +227,18 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			folderPath = mArguments.getString(Constants.FOLDER, "");
 		}
 		type = Type.fromString(mType);
+		initViews();
 
-		initViews(mArguments);
-		if (mViewPager != null && mTabCarousel != null) {
-			// Initialize the pager adapter
-			ProfileAdapter mPagerAdapter = new ProfileAdapter(getSupportFragmentManager(), mArguments, type);
-			// Attach the adapter
-			mViewPager.setAdapter(mPagerAdapter);
-			// Offscreen limit
-			mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
-			// Attach the page change listener
-			mViewPager.addOnPageChangeListener(this);
-			// Attach the carousel listener
-			mTabCarousel.setListener(this);
-		}
+		// Initialize the pager adapter
+		ProfileAdapter mPagerAdapter = new ProfileAdapter(this, mArguments, type);
+		// Attach the adapter
+		mViewPager.setAdapter(mPagerAdapter);
+		// Offscreen limit
+		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
+		// Attach the page change listener
+		mViewPager.addOnPageChangeListener(this);
+		// Attach the carousel listener
+		mTabCarousel.setListener(this);
 	}
 
 	/**
@@ -276,7 +264,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onBackPressed() {
-		if (mTabCarousel == null || mViewPager == null || mTabCarousel.getCurrentTab() == 0) {
+		if (mTabCarousel.getCurrentTab() == 0) {
 			super.onBackPressed();
 		} else {
 			mTabCarousel.reset();
@@ -541,8 +529,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			Intent intent = result.getData();
 			if (intent != null && intent.getData() != null) {
 				Uri imageUri = intent.getData();
-				if (mTabCarousel != null)
-					mTabCarousel.setAlbumArt(imageUri);
+				mTabCarousel.setAlbumArt(imageUri);
 				setProfileImage(imageUri);
 			} else {
 				selectOldPhoto();
@@ -581,7 +568,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		if (mViewPager != null && mTabCarousel != null && !mViewPager.isFakeDragging()) {
+		if (!mViewPager.isFakeDragging()) {
 			int scrollToX = (int) ((position + positionOffset) * mTabCarousel.getAllowedHorizontalScrollLength());
 			mTabCarousel.scrollTo(scrollToX, 0);
 		}
@@ -592,11 +579,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageSelected(int position) {
-		if (mTabCarousel != null) {
-			mTabCarousel.setCurrentTab(position);
-			if (type == Type.ARTIST) {
-				viewModel.notify(ProfileFragment.SCROLL_TOP);
-			}
+		mTabCarousel.setCurrentTab(position);
+		if (type == Type.ARTIST) {
+			viewModel.notify(ProfileFragment.SCROLL_TOP);
 		}
 	}
 
@@ -605,7 +590,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		if (mViewPager != null && mTabCarousel != null && state == ViewPager.SCROLL_STATE_IDLE) {
+		if (state == ViewPager.SCROLL_STATE_IDLE) {
 			mTabCarousel.restoreYCoordinate(75, mViewPager.getCurrentItem());
 		}
 	}
@@ -685,9 +670,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onResult(@NonNull Bitmap bitmap) {
-		if (mTabCarousel != null) {
-			mTabCarousel.setAlbumArt(bitmap);
-		}
+		mTabCarousel.setAlbumArt(bitmap);
 	}
 
 	/**
@@ -708,17 +691,15 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void selectOldPhoto() {
-		if (mTabCarousel != null) {
-			// First remove the old image
-			removeFromCache();
-			// Apply the old photo
-			if (type == Type.ARTIST) {
-				mTabCarousel.setArtistProfileHeader(ids[0]);
-			} else if (type == Type.ALBUM) {
-				mTabCarousel.setAlbumProfileHeader(ids[0]);
-			} else {
-				mTabCarousel.setDefault();
-			}
+		// First remove the old image
+		removeFromCache();
+		// Apply the old photo
+		if (type == Type.ARTIST) {
+			mTabCarousel.setArtistProfileHeader(ids[0]);
+		} else if (type == Type.ALBUM) {
+			mTabCarousel.setAlbumProfileHeader(ids[0]);
+		} else {
+			mTabCarousel.setDefault();
 		}
 	}
 
@@ -756,88 +737,52 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 	/**
 	 * initialize fragment views and toolbar
-	 *
-	 * @param mArguments arguments to initialize fragments
 	 */
-	private void initViews(@Nullable Bundle mArguments) {
-		FragmentContainerView container2 = findViewById(R.id.activity_profile_base_fragment_2);
+	private void initViews() {
 		ActionBar actionBar = getSupportActionBar();
-
 		boolean displayHome = false;
 		String actionbarTitle = mProfileName;
 		String actionbarSubTitle = "";
 
 		switch (type) {
 			case ALBUM:
-				if (mTabCarousel != null) {
-					mTabCarousel.setAlbumProfileHeader(ids[0]);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, AlbumSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setAlbumProfileHeader(ids[0]);
 				actionbarSubTitle = year;
 				break;
 
 			case ARTIST:
-				if (mTabCarousel != null) {
-					mTabCarousel.setArtistProfileHeader(ids[0]);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, ArtistSongFragment.class, mArguments)
-							.add(R.id.activity_profile_base_fragment_2, ArtistAlbumFragment.class, mArguments).commit();
-					if (container2 != null) {
-						container2.setVisibility(View.VISIBLE);
-					}
-				}
+				mTabCarousel.setArtistProfileHeader(ids[0]);
 				actionbarTitle = mArtistName;
 				displayHome = true;
 				break;
 
 			case FOLDER:
-				if (mTabCarousel != null) {
-					mTabCarousel.setFolderProfileHeader(folderPath);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FolderSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setFolderProfileHeader(folderPath);
 				break;
 
 			case GENRE:
-				if (mTabCarousel != null) {
-					mTabCarousel.setGenreProfileHeader(ids);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, GenreSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setGenreProfileHeader(ids);
 				break;
 
 			case PLAYLIST:
-				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(ids[0]);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, PlaylistSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setPlaylistProfileHeader(ids[0]);
 				break;
 
 			case FAVORITE:
-				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(Playlist.FAVORITE_ID);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, FavoriteSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setPlaylistProfileHeader(Playlist.FAVORITE_ID);
 				break;
 
 			case LAST_ADDED:
-				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(Playlist.LAST_ADDED_ID);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, LastAddedSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setPlaylistProfileHeader(Playlist.LAST_ADDED_ID);
 				break;
 
 			case POPULAR:
-				if (mTabCarousel != null) {
-					mTabCarousel.setPlaylistProfileHeader(Playlist.POPULAR_ID);
-				} else {
-					getSupportFragmentManager().beginTransaction().replace(R.id.activity_profile_base_fragment_1, PopularSongFragment.class, mArguments).commit();
-				}
+				mTabCarousel.setPlaylistProfileHeader(Playlist.POPULAR_ID);
 				break;
+		}
+		// disable carousel view on landscape mode
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			mTabCarousel.setVisibility(View.GONE);
 		}
 		if (actionBar != null) {
 			ThemeUtils themeUtils = new ThemeUtils(this);

@@ -45,7 +45,6 @@ import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -350,24 +349,14 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
-				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
-					mList.setNumColumns(2);
-				} else {
-					mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
-					mList.setNumColumns(1);
-				}
+				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
 				mAdapter.setLoadExtraData();
+				mList.setNumColumns(1);
 				break;
 
 			default:
-				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
-					mList.setNumColumns(4);
-				} else {
-					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
-					mList.setNumColumns(2);
-				}
+				mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
+				mList.setNumColumns(2);
 				break;
 		}
 		// set adapter and empty view for the list

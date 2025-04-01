@@ -55,7 +55,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	/**
 	 *
 	 */
-	private static final String TAG = "MusicBrowserPhoneFragment";
+	public static final String TAG = "MusicBrowserPhoneFragment";
 
 	/**
 	 *
@@ -105,7 +105,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		TitlePageIndicator pageIndicator = rootView.findViewById(R.id.fragment_home_phone_pager_titles);
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
 
-		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
+		MusicBrowserAdapter adapter = new MusicBrowserAdapter(this);
 		mPreferences = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mResources = new ThemeUtils(requireContext());

@@ -215,18 +215,19 @@ public final class ApolloUtils {
 	 */
 	public static long[] readSerializedIDs(String idsStr) {
 		String[] items = idsStr.split(";");
-		long[] ids = new long[items.length];
-		try {
-			for (int i = 0; i < items.length; i++) {
-				String item = items[i];
-				ids[i] = Long.parseLong(item);
+		if (items.length > 0) {
+			long[] ids = new long[items.length];
+			try {
+				for (int i = 0; i < items.length; i++) {
+					String item = items[i];
+					ids[i] = Long.parseLong(item);
+				}
+				return ids;
+			} catch (NumberFormatException exception) {
+				Log.w(TAG, "readSerializedIDs() number format!");
 			}
-		} catch (NumberFormatException exception) {
-			Log.w(TAG, "readSerializedIDs() number format!");
-			return new long[0];
 		}
-
-		return ids;
+		return new long[1];
 	}
 
 	/**

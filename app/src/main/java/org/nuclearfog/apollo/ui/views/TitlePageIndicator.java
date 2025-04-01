@@ -183,16 +183,10 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 	@Override
 	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
-
-		if (mViewPager == null) {
+		if (mViewPager == null || mViewPager.getAdapter() == null) {
 			return;
 		}
-		int count;
-		if (mViewPager.getAdapter() != null) {
-			count = mViewPager.getAdapter().getCount();
-		} else {
-			return;
-		}
+		int count = mViewPager.getAdapter().getCount();
 		// mCurrentPage is -1 on first start and after orientation changed. If so, retrieve the correct index from viewpager.
 		if (mCurrentPage == -1 && mViewPager != null) {
 			mCurrentPage = mViewPager.getCurrentItem();
@@ -205,7 +199,6 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			setCurrentItem(boundsSize - 1);
 			return;
 		}
-		int countMinusOne = count - 1;
 		float halfWidth = getWidth() / 2f;
 		int left = getLeft();
 		float leftClip = left + mClipPadding;
@@ -257,7 +250,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			}
 		}
 		//Right views starting from the current position
-		if (mCurrentPage < countMinusOne) {
+		if (mCurrentPage < (count - 1)) {
 			for (int i = mCurrentPage + 1; i < count; i++) {
 				Rect bound = bounds.get(i);
 				//If right side is outside the screen
@@ -546,9 +539,6 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		}
 		if (mViewPager != null) {
 			mViewPager.removeOnPageChangeListener(this);
-		}
-		if (view.getAdapter() == null) {
-			throw new IllegalStateException("ViewPager does not have adapter instance.");
 		}
 		mViewPager = view;
 		mViewPager.addOnPageChangeListener(this);

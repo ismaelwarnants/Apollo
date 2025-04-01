@@ -1,10 +1,9 @@
 package org.nuclearfog.apollo.ui.adapters.viewpager;
 
-import android.content.Context;
+import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import org.nuclearfog.apollo.R;
@@ -15,8 +14,6 @@ import org.nuclearfog.apollo.ui.fragments.phone.GenreFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.PlaylistFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.RecentFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
-
-import java.util.Locale;
 
 /**
  * ViewPager adapter to show fragments for {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
@@ -38,12 +35,25 @@ public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 
 	private String[] titles;
 
+	private boolean landscape;
+
 	/**
 	 *
 	 */
-	public MusicBrowserAdapter(Context context, FragmentManager fm) {
-		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-		titles = context.getResources().getStringArray(R.array.page_titles);
+	public MusicBrowserAdapter(Fragment fragment) {
+		super(fragment.getParentFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+		titles = fragment.getResources().getStringArray(R.array.page_titles);
+		landscape = fragment.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public float getPageWidth(int position) {
+		if (landscape)
+			return .5f;
+		return 1f;
 	}
 
 	/**
@@ -90,6 +100,6 @@ public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 	 */
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return titles[position].toUpperCase(Locale.getDefault());
+		return titles[position];
 	}
 }

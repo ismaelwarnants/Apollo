@@ -44,7 +44,6 @@ import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -82,11 +81,6 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x4FFF2B51;
-
-	/**
-	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
-	 */
-	private static final int ONE = 1, TWO = 2, FOUR = 4;
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
@@ -342,28 +336,18 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		switch (preference.getRecentLayout()) {
 			case PreferenceUtils.LAYOUT_SIMPLE:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
-				mList.setNumColumns(ONE);
+				mList.setNumColumns(1);
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
-				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
-					mList.setNumColumns(TWO);
-				} else {
-					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.list_item_detailed);
-					mList.setNumColumns(ONE);
-				}
+				mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.list_item_detailed);
 				mAdapter.setLoadExtraData();
+				mList.setNumColumns(1);
 				break;
 
 			default:
-				if (ApolloUtils.isLandscape(requireContext())) {
-					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
-					mList.setNumColumns(FOUR);
-				} else {
-					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
-					mList.setNumColumns(TWO);
-				}
+				mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
+				mList.setNumColumns(2);
 				break;
 		}
 		// set adapter and empty view for the list
