@@ -138,10 +138,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	private String mType = "";
 
+	/**
+	 * release year of an album
+	 */
 	private String year = "";
 
 	/**
-	 * Artist name passed into the class
+	 * Artist name of an album
 	 */
 	private String mArtistName = "";
 
@@ -313,7 +316,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		getMenuInflater().inflate(R.menu.shuffle, menu);
 		// Sort orders
 		if (type == Type.ARTIST) {
-			if (mViewPager != null) {
+			if (!ApolloUtils.isLandscape(this)) {
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 					getMenuInflater().inflate(R.menu.artist_song_sort_by, menu);
 				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
@@ -399,14 +402,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_sort_by_az) {
 			switch (type) {
 				case ARTIST:
-					if (mViewPager != null) {
-						if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-							mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-						} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-							mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-						}
-					} else {
+					if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+					} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
 						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
 					}
 					break;
@@ -425,14 +423,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
 			switch (type) {
 				case ARTIST:
-					if (mViewPager != null) {
-						if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-							mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-						} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-							mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-						}
-					} else {
+					if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+					} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
 						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
 					}
 					break;
@@ -454,14 +447,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		}
 		// sort by release date
 		else if (item.getItemId() == R.id.menu_sort_by_year) {
-			if (mViewPager != null) {
-				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
-				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
-				}
-			} else {
+			if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
+			} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
 				mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
@@ -599,9 +587,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTouchDown() {
-		if (mViewPager != null) {
-			mViewPager.beginFakeDrag();
-		}
+		mViewPager.beginFakeDrag();
 	}
 
 	/**
@@ -609,7 +595,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTouchUp() {
-		if (mViewPager != null && mViewPager.isFakeDragging()) {
+		if (mViewPager.isFakeDragging()) {
 			mViewPager.endFakeDrag();
 		}
 	}
@@ -619,7 +605,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onScrollChanged(int l, int oldL) {
-		if (mViewPager != null && mViewPager.isFakeDragging()) {
+		if (mViewPager.isFakeDragging()) {
 			mViewPager.fakeDragBy(oldL - l);
 		}
 	}
@@ -629,9 +615,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onTabSelected(int position) {
-		if (mViewPager != null) {
-			mViewPager.setCurrentItem(position);
-		}
+		mViewPager.setCurrentItem(position);
 	}
 
 	/**

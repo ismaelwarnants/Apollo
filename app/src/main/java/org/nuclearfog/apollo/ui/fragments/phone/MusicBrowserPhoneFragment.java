@@ -34,6 +34,7 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -138,34 +139,29 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		inflater.inflate(R.menu.favorite, menu);
 		// Shuffle all
 		inflater.inflate(R.menu.shuffle, menu);
-		// Sort orders
-		switch (mViewPager.getCurrentItem()) {
-			case MusicBrowserAdapter.IDX_RECENT:
-				inflater.inflate(R.menu.view_as, menu);
-				break;
+		// enable sort/view options
+		if (!ApolloUtils.isLandscape(getContext())) {
+			switch (mViewPager.getCurrentItem()) {
+				case MusicBrowserAdapter.IDX_RECENT:
+					inflater.inflate(R.menu.view_as, menu);
+					break;
 
-			case MusicBrowserAdapter.IDX_ARTIST:
-				inflater.inflate(R.menu.artist_sort_by, menu);
-				inflater.inflate(R.menu.view_as, menu);
-				inflater.inflate(R.menu.item_visibility, menu);
-				break;
+				case MusicBrowserAdapter.IDX_ARTIST:
+					inflater.inflate(R.menu.artist_sort_by, menu);
+					inflater.inflate(R.menu.view_as, menu);
+					break;
 
-			case MusicBrowserAdapter.IDX_TRACKS:
-				inflater.inflate(R.menu.song_sort_by, menu);
-				inflater.inflate(R.menu.item_visibility, menu);
-				break;
+				case MusicBrowserAdapter.IDX_TRACKS:
+					inflater.inflate(R.menu.song_sort_by, menu);
+					break;
 
-			case MusicBrowserAdapter.IDX_ALBUM:
-				inflater.inflate(R.menu.album_sort_by, menu);
-				inflater.inflate(R.menu.view_as, menu);
-				inflater.inflate(R.menu.item_visibility, menu);
-				break;
-
-			case MusicBrowserAdapter.IDX_GENRE:
-			case MusicBrowserAdapter.IDX_FOLDER:
-				inflater.inflate(R.menu.item_visibility, menu);
-				break;
+				case MusicBrowserAdapter.IDX_ALBUM:
+					inflater.inflate(R.menu.album_sort_by, menu);
+					inflater.inflate(R.menu.view_as, menu);
+					break;
+			}
 		}
+		inflater.inflate(R.menu.item_visibility, menu);
 		// setup menu entries
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
 		MenuItem showHidden = menu.findItem(R.id.menu_show_hidden);
