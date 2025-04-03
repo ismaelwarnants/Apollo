@@ -85,7 +85,6 @@ public class FavoritesStore extends AppStore {
 	 */
 	public static FavoritesStore getInstance(Context context) {
 		if (sInstance == null) {
-			// use application context to avoid memory leak
 			sInstance = new FavoritesStore(context.getApplicationContext());
 		}
 		return sInstance;

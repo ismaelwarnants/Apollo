@@ -94,8 +94,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
 	private SongLoader songLoader;
 
-	private FavoritesStore favoritesStore;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -110,7 +108,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mResources = new ThemeUtils(requireContext());
 		songLoader = new SongLoader(requireContext());
-		favoritesStore = FavoritesStore.getInstance(requireContext());
 
 		mViewPager.setAdapter(adapter);
 		mViewPager.setOffscreenPageLimit(adapter.getCount());
@@ -180,6 +177,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		}
 		Song song = MusicUtils.getCurrentTrack(getActivity());
 		if (song != null) {
+			FavoritesStore favoritesStore = FavoritesStore.getInstance(requireContext());
 			boolean isFavorite = favoritesStore.exists(song.getId());
 			mResources.setFavoriteIcon(favorite, isFavorite);
 		}
@@ -198,7 +196,12 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		else if (item.getItemId() == R.id.menu_favorite) {
 			Song song = MusicUtils.getCurrentTrack(requireActivity());
 			if (song != null) {
-				FavoritesStore.getInstance(requireContext()).addFavorite(song);
+				FavoritesStore favoritesStore = FavoritesStore.getInstance(requireContext());
+				if (favoritesStore.exists(song.getId())) {
+					favoritesStore.removeFavorite(song.getId());
+				} else {
+					favoritesStore.addFavorite(song);
+				}
 				requireActivity().invalidateOptionsMenu();
 			}
 		}

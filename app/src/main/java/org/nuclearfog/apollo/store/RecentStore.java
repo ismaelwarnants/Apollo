@@ -95,7 +95,6 @@ public class RecentStore extends AppStore {
 	 */
 	public static RecentStore getInstance(Context context) {
 		if (sInstance == null) {
-			// initialize with application context to avoid memory leak
 			sInstance = new RecentStore(context.getApplicationContext());
 		}
 		return sInstance;

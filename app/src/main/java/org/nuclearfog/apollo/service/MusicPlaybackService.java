@@ -1248,8 +1248,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					long artistId = cursor.getLong(5);
 					long albumId = cursor.getLong(6);
 					String path = cursor.getString(7);
-					boolean isFavorite = favoriteStore.exists(songId);
-					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path, isFavorite);
+					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
 				}
 				cursor.close();
 			}

@@ -82,17 +82,14 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 */
 	private String path = "";
 
-	private boolean isFavorite = false;
-
 	/**
 	 * @param artist_id Id of the song artist
 	 */
-	public Song(long song_id, long artist_id, long album_id, String song_name, String artist_name, String album_name, long length, String path, boolean isFavorite) {
+	public Song(long song_id, long artist_id, long album_id, String song_name, String artist_name, String album_name, long length, String path) {
 		this(song_id, song_name, artist_name, album_name, length);
 		this.artist_id = artist_id;
 		this.album_id = album_id;
 		this.path = path;
-		this.isFavorite = isFavorite;
 	}
 
 	/**
@@ -230,13 +227,6 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 */
 	public int getPlaylistIndex() {
 		return playlist_index;
-	}
-
-	/**
-	 * @return true if track is marked as favorite
-	 */
-	public boolean isFavorite() {
-		return isFavorite;
 	}
 
 	/**
