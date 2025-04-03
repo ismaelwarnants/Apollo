@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -113,8 +112,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		mViewPager.setOffscreenPageLimit(adapter.getCount());
 		mViewPager.setCurrentItem(mPreferences.getStartPage());
 		pageIndicator.setViewPager(mViewPager);
-		pageIndicator.setSelectedColor(ResourcesCompat.getColor(getResources(), R.color.tpi_selected_text_color, null));
-		pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
 
 		requireActivity().addMenuProvider(this);
 		pageIndicator.setOnCenterItemClickListener(this);

@@ -23,15 +23,15 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Colorstrip extends View {
+public class ColorStrip extends View {
 
 	/**
 	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public Colorstrip(Context context, AttributeSet attrs) {
+	public ColorStrip(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// Theme the colorstrip
+		// Theme the color strip
 		int color = PreferenceUtils.getInstance(context).getDefaultThemeColor();
 		setBackgroundColor(color);
 	}
