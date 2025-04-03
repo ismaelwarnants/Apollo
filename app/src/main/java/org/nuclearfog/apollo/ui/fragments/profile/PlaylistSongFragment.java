@@ -79,7 +79,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	@Override
 	protected void init(Bundle bundle) {
 		mLoader = new PlaylistSongLoader(requireContext());
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), true);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, true);
 		setAdapter(mAdapter);
 		// sets empty list text
 		setEmptyText(R.string.empty_playlist);

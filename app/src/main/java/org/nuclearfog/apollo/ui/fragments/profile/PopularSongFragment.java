@@ -59,7 +59,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	protected void init(Bundle param) {
 		mLoader = new PopularSongLoader(requireContext());
 		// sets empty list text
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, false);
 		setAdapter(mAdapter);
 		setEmptyText(R.string.empty_recents);
 		// start loader

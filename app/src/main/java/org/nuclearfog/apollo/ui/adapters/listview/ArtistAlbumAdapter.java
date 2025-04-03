@@ -71,10 +71,10 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 *
 	 * @param context The {@link Context} to use
 	 */
-	public ArtistAlbumAdapter(Context context, boolean enableHeader) {
+	public ArtistAlbumAdapter(Context context) {
 		super(context, LAYOUT);
 		mImageFetcher = new ImageFetcher(context);
-		this.enableHeader = enableHeader;
+		this.enableHeader = !ApolloUtils.isLandscape(context);
 	}
 
 	/**

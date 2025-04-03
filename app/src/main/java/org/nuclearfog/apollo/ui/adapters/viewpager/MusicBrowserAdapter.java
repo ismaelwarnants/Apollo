@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.ui.adapters.viewpager;
 
-import android.content.res.Configuration;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -14,6 +12,7 @@ import org.nuclearfog.apollo.ui.fragments.phone.GenreFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.PlaylistFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.RecentFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
  * ViewPager adapter to show fragments for {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
@@ -43,7 +42,7 @@ public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 	public MusicBrowserAdapter(Fragment fragment) {
 		super(fragment.getParentFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		titles = fragment.getResources().getStringArray(R.array.page_titles);
-		landscape = fragment.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+		landscape = ApolloUtils.isLandscape(fragment.getContext());
 	}
 
 	/**

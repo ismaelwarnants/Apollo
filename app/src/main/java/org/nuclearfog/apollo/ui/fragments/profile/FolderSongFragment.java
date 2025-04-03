@@ -60,7 +60,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 		// init loader
 		mLoader = new FolderSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, false);
 		// set adapter
 		setAdapter(mAdapter);
 		// init loader

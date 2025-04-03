@@ -1,6 +1,5 @@
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -197,15 +196,6 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	protected void setAdapter(ListAdapter adapter) {
 		mList.setAdapter(adapter);
-	}
-
-	/**
-	 * check if fragment is shown in portrait mode
-	 *
-	 * @return true if fragment is in portrait mode
-	 */
-	protected boolean isPortrait() {
-		return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 	}
 
 	/**

@@ -24,6 +24,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
@@ -79,11 +80,11 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 * @param context The {@link Context} to use
 	 * @param setting defines the content of the second line
 	 */
-	public ProfileSongAdapter(Context context, DisplaySetting setting, boolean enableHeader, boolean enableDrag) {
+	public ProfileSongAdapter(Context context, DisplaySetting setting, boolean enableDrag) {
 		super(context, LAYOUT);
 		this.mDisplaySetting = setting;
 		this.enableDnD = enableDrag;
-		this.enableHeader = enableHeader;
+		this.enableHeader = !ApolloUtils.isLandscape(context);
 	}
 
 	/**

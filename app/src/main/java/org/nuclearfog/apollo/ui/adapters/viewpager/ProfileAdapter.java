@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.adapters.viewpager;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,6 +29,7 @@ import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
  * {@link ProfileActivity} viewpager adapter
@@ -58,7 +58,7 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 	 */
 	public ProfileAdapter(FragmentActivity activity, Bundle args, Type type) {
 		super(activity.getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-		landscape = activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+		landscape = ApolloUtils.isLandscape(activity);
 		this.type = type;
 		this.args = args;
 	}

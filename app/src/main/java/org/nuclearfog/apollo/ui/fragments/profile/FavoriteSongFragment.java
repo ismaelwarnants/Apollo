@@ -69,7 +69,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 		// init loader
 		mLoader = new FavoriteSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, isPortrait(), false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, false);
 		// set adapter
 		setAdapter(mAdapter);
 		// sets empty list text

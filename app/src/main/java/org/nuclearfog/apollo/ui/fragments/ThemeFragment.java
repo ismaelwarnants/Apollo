@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import org.nuclearfog.apollo.model.AppTheme;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -75,12 +75,12 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnCreateContextMenuListener(this);
 		mGridView.setAdapter(mAdapter);
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			// Limit the columns to one in portrait mode
-			mGridView.setNumColumns(1);
-		} else {
+		if (ApolloUtils.isLandscape(getContext())) {
 			// And two for landscape
 			mGridView.setNumColumns(2);
+		} else {
+			// Limit the columns to one in portrait mode
+			mGridView.setNumColumns(1);
 		}
 		return rootView;
 	}

@@ -81,7 +81,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 		artistAlbumLoader = new ArtistAlbumLoader(requireContext());
 		albumSongLoader = new AlbumSongLoader(requireContext());
 		// set adapter
-		mAdapter = new ArtistAlbumAdapter(requireContext(), isPortrait());
+		mAdapter = new ArtistAlbumAdapter(requireContext());
 		// sets empty list text
 		setEmptyText(R.string.empty_artist_albums);
 		// set adapter

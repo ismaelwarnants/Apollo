@@ -72,7 +72,7 @@ public class AlbumSongFragment extends ProfileFragment implements AsyncCallback<
 	@Override
 	protected void init(Bundle args) {
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_ALBUM_SETTING, isPortrait(), false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_ALBUM_SETTING, false);
 		// init loader
 		mLoader = new AlbumSongLoader(requireContext());
 		setAdapter(mAdapter);

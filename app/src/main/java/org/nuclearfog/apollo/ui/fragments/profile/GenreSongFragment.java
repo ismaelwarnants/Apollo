@@ -71,7 +71,7 @@ public class GenreSongFragment extends ProfileFragment implements AsyncCallback<
 		// init loader
 		mLoader = new GenreSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, isPortrait(), false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, false);
 		// set adapter
 		setAdapter(mAdapter);
 		// Start the loader

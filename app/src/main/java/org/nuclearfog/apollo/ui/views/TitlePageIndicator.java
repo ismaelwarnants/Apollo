@@ -41,6 +41,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
@@ -161,10 +162,13 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		if (mViewPager == null || mViewPager.getAdapter() == null) {
 			return;
 		}
-		int count = mViewPager.getAdapter().getCount();
+		int count = getCount();
 		// mCurrentPage is -1 on first start and after orientation changed. If so, retrieve the correct index from viewpager.
 		if (mCurrentPage == -1 && mViewPager != null) {
 			mCurrentPage = mViewPager.getCurrentItem();
+		}
+		if (ApolloUtils.isLandscape(getContext()) && count > 0 && mCurrentPage == count) {
+			mCurrentPage--;
 		}
 		//Calculate views bounds
 		ArrayList<Rect> bounds = calculateAllBounds(mPaintText);
@@ -310,7 +314,6 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			canvas.drawPath(mPath, mPaintFooterIndicator);
 			mPaintFooterIndicator.setAlpha(0xFF);
 		}
-
 	}
 
 	/**
@@ -322,7 +325,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		if (super.onTouchEvent(ev)) {
 			return true;
 		}
-		if ((mViewPager == null) || mViewPager.getAdapter() != null && (mViewPager.getAdapter().getCount() == 0)) {
+		if ((mViewPager == null) || mViewPager.getAdapter() != null && (getCount() == 0)) {
 			return false;
 		}
 
@@ -357,7 +360,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			case MotionEvent.ACTION_CANCEL:
 			case MotionEvent.ACTION_UP:
 				if (!mIsDragging) {
-					int count = mViewPager.getAdapter().getCount();
+					int count = getCount();
 					int width = getWidth();
 					float halfWidth = width / 2f;
 					float sixthWidth = width / 6f;
@@ -540,9 +543,9 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		ArrayList<Rect> list = new ArrayList<>();
 		//For each views (If no values then add a fake one)
 		if (mViewPager != null && mViewPager.getAdapter() != null) {
-			int count = mViewPager.getAdapter().getCount();
 			int width = getWidth();
 			int halfWidth = width / 2;
+			int count = getCount();
 			for (int i = 0; i < count; i++) {
 				Rect bounds = calcBounds(i, paint);
 				int w = bounds.right - bounds.left;
@@ -590,6 +593,22 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		if (mViewPager != null && mViewPager.getAdapter() != null)
 			title = mViewPager.getAdapter().getPageTitle(i);
 		return title;
+	}
+
+	/**
+	 * get page count of the view pager
+	 *
+	 * @return page count
+	 */
+	private int getCount() {
+		int count = 0;
+		if (mViewPager != null && mViewPager.getAdapter() != null) {
+			count = mViewPager.getAdapter().getCount();
+			if (ApolloUtils.isLandscape(getContext())) {
+				count = Math.max(count - 1, 0);
+			}
+		}
+		return count;
 	}
 
 	/**

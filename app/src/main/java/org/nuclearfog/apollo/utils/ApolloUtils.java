@@ -36,6 +36,7 @@ import android.widget.AbsListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -67,9 +68,12 @@ public final class ApolloUtils {
 	 * @param context The {@link Context} to use.
 	 * @return True if the device is in landscape mode, false otherwise.
 	 */
-	public static boolean isLandscape(Context context) {
-		int orientation = context.getResources().getConfiguration().orientation;
-		return orientation == Configuration.ORIENTATION_LANDSCAPE;
+	public static boolean isLandscape(@Nullable Context context) {
+		if (context != null) {
+			int orientation = context.getResources().getConfiguration().orientation;
+			return orientation == Configuration.ORIENTATION_LANDSCAPE;
+		}
+		return false;
 	}
 
 	/**
@@ -109,7 +113,7 @@ public final class ApolloUtils {
 
 	/**
 	 * Used to create shortcuts for an artist, album, or playlist that is then
-	 * placed on the default launcher homescreen
+	 * placed on the default launcher home screen
 	 *
 	 * @param displayName The shortcut name
 	 * @param ids         The ID of the artist, album, playlist, or genre

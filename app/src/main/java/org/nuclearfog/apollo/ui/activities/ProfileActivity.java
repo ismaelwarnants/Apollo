@@ -15,7 +15,6 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -781,7 +780,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 		}
 		// disable carousel view on landscape mode
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		if (ApolloUtils.isLandscape(this)) {
 			mTabCarousel.setVisibility(View.GONE);
 		}
 		if (actionBar != null) {
