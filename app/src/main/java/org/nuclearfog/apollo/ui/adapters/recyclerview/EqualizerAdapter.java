@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.ui.adapters.recyclerview;
 
-import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
-
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -56,7 +54,7 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerHolder> {
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
 					int position = holder.getLayoutPosition();
-					if (position != NO_POSITION) {
+					if (position != RecyclerView.NO_POSITION) {
 						// calculate new band level
 						level[position] = progress * 100 + range[0];
 						holder.level.setText(NUMBER_FORMAT.format(level[position] / 100.0));

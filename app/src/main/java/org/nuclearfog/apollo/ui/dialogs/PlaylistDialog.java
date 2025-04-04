@@ -11,9 +11,8 @@
 
 package org.nuclearfog.apollo.ui.dialogs;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
-
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -209,7 +208,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 				dismiss();
 			}
 		} else if (which == Dialog.BUTTON_NEGATIVE) {
-			InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
+			InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			if (iManager != null) {
 				iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
 			}

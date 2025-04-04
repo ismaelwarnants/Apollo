@@ -17,10 +17,6 @@
  */
 package org.nuclearfog.apollo.ui.views;
 
-import static android.view.MotionEvent.ACTION_MASK;
-import static android.view.MotionEvent.ACTION_POINTER_DOWN;
-import static android.view.MotionEvent.ACTION_POINTER_UP;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -329,7 +325,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			return false;
 		}
 
-		int action = ev.getAction() & ACTION_MASK;
+		int action = ev.getAction() & MotionEvent.ACTION_MASK;
 		switch (action) {
 			case MotionEvent.ACTION_DOWN:
 				mActivePointerId = ev.getPointerId(0);
@@ -396,14 +392,14 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 					mViewPager.endFakeDrag();
 				break;
 
-			case ACTION_POINTER_DOWN: {
+			case MotionEvent.ACTION_POINTER_DOWN: {
 				int index = ev.getActionIndex();
 				mLastMotionX = ev.getX(index);
 				mActivePointerId = ev.getPointerId(index);
 				break;
 			}
 
-			case ACTION_POINTER_UP:
+			case MotionEvent.ACTION_POINTER_UP:
 				int pointerIndex = ev.getActionIndex();
 				int pointerId = ev.getPointerId(pointerIndex);
 				if (pointerId == mActivePointerId) {

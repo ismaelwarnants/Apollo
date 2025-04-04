@@ -17,7 +17,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -69,7 +68,6 @@ import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -223,11 +221,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mRepeatButton.setColor(themeColor);
 		controls.setVisibility(View.INVISIBLE);
 		// go to home activity if there is any missing permission
-		for (String permission : Constants.PERMISSIONS) {
-			if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-				NavUtils.goHome(this);
-				return;
-			}
+		if (!ApolloUtils.permissionsGranted(this)) {
+			NavUtils.goHome(this);
+			return;
 		}
 		// set visibility of the queue layout after screen rotation
 		if (savedInstanceState != null) {
@@ -618,6 +614,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Checks whether the passed intent contains a playback request,
 	 * and starts playback if that's the case
 	 */
+	@SuppressWarnings("deprecation")
 	private void startPlayback(@Nullable Intent intent) {
 		if (intent != null) {
 			Uri uri = intent.getData();

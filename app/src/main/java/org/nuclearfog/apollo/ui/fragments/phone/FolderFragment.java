@@ -1,11 +1,5 @@
 package org.nuclearfog.apollo.ui.fragments.phone;
 
-import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
-import static org.nuclearfog.apollo.utils.Constants.FOLDER;
-import static org.nuclearfog.apollo.utils.Constants.ID;
-import static org.nuclearfog.apollo.utils.Constants.MIME_TYPE;
-import static org.nuclearfog.apollo.utils.Constants.NAME;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -38,6 +32,7 @@ import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -182,10 +177,10 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		Folder mFolder = mAdapter.getItem(position);
 		if (mFolder != null) {
 			Bundle bundle = new Bundle();
-			bundle.putLong(ID, -1L);
-			bundle.putString(NAME, mFolder.getName());
-			bundle.putString(MIME_TYPE, PAGE_FOLDERS);
-			bundle.putString(FOLDER, mFolder.getPath());
+			bundle.putLong(Constants.ID, -1L);
+			bundle.putString(Constants.NAME, mFolder.getName());
+			bundle.putString(Constants.MIME_TYPE, ProfileActivity.PAGE_FOLDERS);
+			bundle.putString(Constants.FOLDER, mFolder.getPath());
 			Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 			intent.putExtras(bundle);
 			requireActivity().startActivity(intent);

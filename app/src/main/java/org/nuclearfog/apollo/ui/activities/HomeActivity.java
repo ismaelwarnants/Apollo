@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static org.nuclearfog.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -92,7 +90,7 @@ public class HomeActivity extends ActivityBase {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.refresh(this);
 		}
 	}

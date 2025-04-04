@@ -11,14 +11,12 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -163,16 +161,14 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mAlbumArt.setOnClickListener(this);
 
 		// check permissions before initialization
-		for (String permission : Constants.PERMISSIONS) {
-			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, REQ_CHECK_PERM);
-				return;
-			}
+		if (ApolloUtils.permissionsGranted(this)) {
+			// initialize sub-class
+			init(savedInstanceState);
+			// Bind Apollo's service
+			MusicUtils.bindToService(this, this);
+		} else {
+			ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, REQ_CHECK_PERM);
 		}
-		// initialize sub-class
-		init(savedInstanceState);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -251,7 +247,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// check if permissions are granted
 		if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
 			for (int grantResult : grantResults) {
-				if (grantResult == PERMISSION_DENIED) {
+				if (grantResult == PackageManager.PERMISSION_DENIED) {
 					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
 					finish();
 					return;

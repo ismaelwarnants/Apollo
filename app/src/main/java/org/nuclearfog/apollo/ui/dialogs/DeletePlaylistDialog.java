@@ -71,6 +71,7 @@ public class DeletePlaylistDialog extends DialogFragment implements OnClickListe
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
 			if (playlist != null) {

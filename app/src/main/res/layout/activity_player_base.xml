@@ -61,8 +61,7 @@
 		app:layout_constraintTop_toBottomOf="@id/audio_player_informations"
 		app:layout_constraintBottom_toTopOf="@id/audio_player_controls"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintDimensionRatio="1.0"
-		tools:ignore="ImageContrastCheck" />
+		app:layout_constraintDimensionRatio="1.0" />
 
 	<ImageView
 		android:id="@+id/audio_player_album_border"
@@ -72,7 +71,7 @@
 		app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
 		app:layout_constraintTop_toTopOf="@id/audio_player_album_art"
 		app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
-		tools:ignore="ContentDescription,ImageContrastCheck" />
+		tools:ignore="ContentDescription" />
 
 	<ImageView
 		android:id="@+id/audio_player_album_border_bottom"
@@ -82,7 +81,7 @@
 		app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
 		app:layout_constraintBottom_toBottomOf="@id/audio_player_album_art"
 		app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
-		tools:ignore="ContentDescription,InconsistentLayout,ImageContrastCheck" />
+		tools:ignore="ContentDescription" />
 
 	<include
 		android:id="@+id/audio_player_informations"

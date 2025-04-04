@@ -80,7 +80,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 * Used to temporarily pause the disk cache while scrolling
 	 */
-	private boolean mPauseDiskAccess = false;
+	private volatile boolean mPauseDiskAccess = false;
 
 	/**
 	 * LRU cache
@@ -158,7 +158,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Adds a new image to the memory and disk caches
+	 * Adds a new image to persistent cache
 	 *
 	 * @param key    The key used to store the image
 	 * @param bitmap The {@link Bitmap} to cache
@@ -185,10 +185,21 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Tries to return a cached image from memory cache before fetching from the
-	 * disk cache
+	 * Add a new image to non-persistent cache
 	 *
-	 * @param key Unique identifier for which item to get
+	 * @param key    The key identifier of the image
+	 * @param bitmap The {@link Bitmap} to cache
+	 */
+	public void addBitmapToMemCache(@NonNull String key, @NonNull Bitmap bitmap) {
+		if (mLruCache != null && getBitmapFromMemCache(key) == null) {
+			mLruCache.put(key, bitmap);
+		}
+	}
+
+	/**
+	 * Get image from persistent cache using a cache key
+	 *
+	 * @param key Unique identifier to find the related image
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
 	@Nullable
@@ -247,8 +258,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Used to temporarily pause the disk cache while the user is scrolling to
-	 * improve scrolling.
+	 * Used to temporarily pause the disk cache while the user is scrolling to improve scrolling.
 	 *
 	 * @param pause True to temporarily pause the disk cache, false otherwise.
 	 */
@@ -264,7 +274,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Fetches a cached image from the memory cache
+	 * get an image from non-persistent cache
 	 *
 	 * @param key The key identifier of the image
 	 * @return The {@link Bitmap} if found in cache, null otherwise
@@ -277,7 +287,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * @return True if the user is scrolling, false otherwise.
+	 * check if disk cache is paused (user is scrolling a list)
+	 *
+	 * @return true if cache is paused
 	 */
 	boolean isDiskCachePaused() {
 		return mPauseDiskAccess;
@@ -303,7 +315,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Fetches a cached image from the disk cache
+	 * get an image bitmap from persistent cache
 	 *
 	 * @param data Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
@@ -371,17 +383,5 @@ public final class ImageCache implements ComponentCallbacks2 {
 		mLruCache = new LruCache<>(lruCacheSize);
 		// Release some memory as needed
 		context.registerComponentCallbacks(this);
-	}
-
-	/**
-	 * Called to add a new image to the memory cache
-	 *
-	 * @param key    The key identifier of the image
-	 * @param bitmap The {@link Bitmap} to cache
-	 */
-	private void addBitmapToMemCache(@NonNull String key, @NonNull Bitmap bitmap) {
-		if (mLruCache != null && getBitmapFromMemCache(key) == null) {
-			mLruCache.put(key, bitmap);
-		}
 	}
 }

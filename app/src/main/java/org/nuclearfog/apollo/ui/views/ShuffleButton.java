@@ -11,10 +11,9 @@
 
 package org.nuclearfog.apollo.ui.views;
 
-import static android.graphics.PorterDuff.Mode.MULTIPLY;
-
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -93,7 +92,7 @@ public class ShuffleButton extends AppCompatImageButton implements OnLongClickLi
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle_all));
 			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
 			if (drawable != null)
-				drawable.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
 			setImageDrawable(drawable);
 		} else if (shuffleMode == MusicUtils.SHUFFLE_NONE) {
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle));

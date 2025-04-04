@@ -11,10 +11,9 @@
 
 package org.nuclearfog.apollo.ui.views;
 
-import static android.graphics.PorterDuff.Mode.MULTIPLY;
-
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -98,7 +97,7 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_all));
 				Drawable button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
 				if (button != null)
-					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+					button.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
 				setImageDrawable(button);
 				break;
 
@@ -106,7 +105,7 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_one));
 				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
 				if (button != null)
-					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+					button.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
 				setImageDrawable(button);
 				break;
 

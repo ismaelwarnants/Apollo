@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.store;
 
-import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -113,7 +111,7 @@ public class FavoritesStore extends AppStore {
 		values.put(FavoriteColumns.ARTISTNAME, mSong.getArtist());
 		values.put(FavoriteColumns.PLAYCOUNT, playCount);
 		values.put(FavoriteColumns.DURATION, mSong.getDuration());
-		database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
+		database.insertWithOnConflict(FavoriteColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		commit();
 	}
 

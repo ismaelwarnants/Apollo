@@ -11,10 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments.phone;
 
-import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FAVORITES;
-import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
-import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio.Playlists;
@@ -235,6 +231,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Playlist selected = mAdapter.getItem(position);
 		if (selected != null) {
@@ -242,17 +239,17 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 			// Favorites list
 			if (selected.getId() == Playlist.FAVORITE_ID) {
 				bundle.putString(Constants.NAME, getString(R.string.playlist_favorites));
-				bundle.putString(Constants.MIME_TYPE, PAGE_FAVORITES);
+				bundle.putString(Constants.MIME_TYPE, ProfileActivity.PAGE_FAVORITES);
 			}
 			// Last added
 			else if (selected.getId() == Playlist.LAST_ADDED_ID) {
 				bundle.putString(Constants.NAME, getString(R.string.playlist_last_added));
-				bundle.putString(Constants.MIME_TYPE, PAGE_LAST_ADDED);
+				bundle.putString(Constants.MIME_TYPE, ProfileActivity.PAGE_LAST_ADDED);
 			}
 			// most played track
 			else if (selected.getId() == Playlist.POPULAR_ID) {
 				bundle.putString(Constants.NAME, getString(R.string.playlist_most_played));
-				bundle.putString(Constants.MIME_TYPE, PAGE_MOST_PLAYED);
+				bundle.putString(Constants.MIME_TYPE, ProfileActivity.PAGE_MOST_PLAYED);
 			}
 			// User created playlist
 			else {

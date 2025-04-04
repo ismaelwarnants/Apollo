@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +18,6 @@ import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -33,6 +30,7 @@ import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -91,11 +89,9 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		mVoiceQuery = mIntent.getStringExtra(SearchManager.QUERY);
 		// go to home activity if there is any missing permission
-		for (String permission : Constants.PERMISSIONS) {
-			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-				NavUtils.goHome(this);
-				return;
-			}
+		if (!ApolloUtils.permissionsGranted(this)) {
+			NavUtils.goHome(this);
+			return;
 		}
 		MusicUtils.bindToService(this, this);
 	}
@@ -133,6 +129,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SuppressWarnings("deprecation")
 	public void onServiceConnected() {
 		// Check for a voice query
 		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH) && mVoiceQuery != null) {

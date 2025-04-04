@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -215,13 +216,13 @@ public class MusicBrainz {
 				InputStream responseBody = connection.getInputStream();
 				InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
 				return new JSONObject(new BufferedReader(responseBodyReader).readLine());
-			} else if (connection.getResponseCode() == 404) {
-				Log.d(TAG, "get() url not found!");
 			} else if (connection.getResponseCode() == 503) {
 				Log.d(TAG, "get() rate limit exceeded!");
 			}
 		} catch (IOException e) {
-			Log.e(TAG, "get() connection error", e);
+			if (!(e instanceof InterruptedIOException)) {
+				Log.w(TAG, "get() connection error", e);
+			}
 		}
 		throw new JSONException("no json object");
 	}

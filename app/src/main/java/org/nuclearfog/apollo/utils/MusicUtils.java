@@ -101,6 +101,7 @@ public final class MusicUtils {
 	/**
 	 * selection to remove track from playlist
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String PLAYLIST_REMOVE_TRACK = Playlists.Members.AUDIO_ID + "=?";
 
 	/**
@@ -616,6 +617,7 @@ public final class MusicUtils {
 	 * @param name The name of the new playlist.
 	 * @return A new playlist ID.
 	 */
+	@SuppressWarnings("deprecation")
 	public static long createPlaylist(Activity activity, String name) {
 		long id = -1;
 		try {
@@ -648,6 +650,7 @@ public final class MusicUtils {
 	 * @param playlistId The id of the playlist being added to.
 	 */
 	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	public static void addToPlaylist(Activity activity, long[] ids, long playlistId) {
 		try {
 			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
@@ -686,6 +689,7 @@ public final class MusicUtils {
 	 * @param id   ID of the playlist to rename
 	 * @param name new playlist name
 	 */
+	@SuppressWarnings("deprecation")
 	public static void renamePlaylist(Activity activity, long id, String name) {
 		try {
 			// setting new name
@@ -729,6 +733,7 @@ public final class MusicUtils {
 	 * @return true if playlist item was removed successfully
 	 */
 	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	public static boolean removeFromPlaylist(Activity activity, long trackId, long playlistId) {
 		String[] args = {Long.toString(trackId)};
 		Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
@@ -988,6 +993,7 @@ public final class MusicUtils {
 	 * @param title    title of the dialog
 	 * @param ids      list of IDs to remove
 	 */
+	@SuppressWarnings("deprecation")
 	public static void openDeleteDialog(FragmentActivity activity, String title, long[] ids) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 			// Use system Dialog to delete media files

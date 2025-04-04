@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
@@ -37,6 +38,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -120,6 +122,7 @@ public final class ApolloUtils {
 	 * @param mimeType    The MIME type of the shortcut
 	 * @param activity    The {@link FragmentActivity} to use to
 	 */
+	@SuppressWarnings("deprecation")
 	public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {
 		try {
 			Bitmap bitmap = null;
@@ -277,6 +280,20 @@ public final class ApolloUtils {
 		} else {
 			activity.getWindow().clearFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		}
+	}
+
+	/**
+	 * check if permissions are granted required for playback
+	 *
+	 * @return true if all needed permissions are granted
+	 */
+	public static boolean permissionsGranted(Context context) {
+		for (String permission : Constants.PERMISSIONS) {
+			if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

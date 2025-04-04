@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.store;
 
-import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -103,7 +101,7 @@ public class PopularStore extends AppStore {
 		values.put(PopularColumns.ARTISTNAME, song.getArtist());
 		values.put(PopularColumns.PLAYCOUNT, playCount);
 		values.put(PopularColumns.DURATION, song.getDuration());
-		database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
+		database.insertWithOnConflict(PopularColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		commit();
 	}
 

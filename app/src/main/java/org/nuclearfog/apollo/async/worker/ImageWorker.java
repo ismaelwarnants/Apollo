@@ -118,7 +118,12 @@ public class ImageWorker extends AsyncExecutor<Param, Result> {
 						String mUrl = artwork.getThumbnailUrl();
 						bitmap = BitmapFactory.decodeStream(new URL(mUrl).openConnection().getInputStream());
 						if (bitmap != null) {
-							mImageCache.addBitmapToCache(param.cacheKey, bitmap);
+							if (param.type == ImageType.ARTWORK) {
+								// don't add online artwork images to persistent cache
+								mImageCache.addBitmapToMemCache(param.cacheKey, bitmap);
+							} else {
+								mImageCache.addBitmapToCache(param.cacheKey, bitmap);
+							}
 						}
 					} catch (IOException e) {
 						Log.w(TAG, "could not download image!");

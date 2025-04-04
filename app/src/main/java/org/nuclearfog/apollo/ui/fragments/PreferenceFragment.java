@@ -1,4 +1,4 @@
-package org.nuclearfog.apollo.ui.fragments.preference;
+package org.nuclearfog.apollo.ui.fragments;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;

@@ -53,7 +53,7 @@ public class ThemesActivity extends ActivityBase {
 		// Transact the theme fragment
 		FragmentManager fm = getSupportFragmentManager();
 		if (fm.findFragmentByTag(ThemeFragment.TAG) == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, ThemeFragment.class, null, ThemeFragment.TAG).commit();
+			fm.beginTransaction().replace(R.id.activity_base_content, ThemeFragment.class, null, ThemeFragment.TAG).commit();
 		}
 	}
 

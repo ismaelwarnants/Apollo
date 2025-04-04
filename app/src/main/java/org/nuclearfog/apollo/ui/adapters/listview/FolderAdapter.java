@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.ui.adapters.listview;
 
-import static android.view.View.GONE;
-
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -48,8 +46,8 @@ public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 			convertView = LayoutInflater.from(container.getContext()).inflate(LAYOUT, container, false);
 			holder = new MusicHolder(convertView);
 			// disable unnecessary views
-			holder.mLineTwo.setVisibility(GONE);
-			holder.mLineThree.setVisibility(GONE);
+			holder.mLineTwo.setVisibility(View.GONE);
+			holder.mLineThree.setVisibility(View.GONE);
 			// set text size
 			float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
 			holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);

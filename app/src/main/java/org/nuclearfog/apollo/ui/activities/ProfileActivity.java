@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -186,7 +185,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint("SourceLockedOrientationActivity")
 	@Override
 	protected void init(@Nullable Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
@@ -845,6 +843,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		LAST_ADDED,
 		POPULAR;
 
+		@SuppressWarnings("deprecation")
 		static Type fromString(String typeStr) {
 			switch (typeStr) {
 				case Audio.Artists.CONTENT_TYPE:

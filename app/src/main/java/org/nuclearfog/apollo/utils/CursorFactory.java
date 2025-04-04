@@ -1,7 +1,5 @@
 package org.nuclearfog.apollo.utils;
 
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
-
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -93,13 +92,14 @@ public final class CursorFactory {
 	/**
 	 * Projection of the columns
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String[] PLAYLIST_COLUMNS = {
 			Playlists._ID,
 			Playlists.NAME
 	};
 
 
-	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	private static final String[] PLAYLIST_TRACK_COLUMNS = {
 			Playlists.Members.AUDIO_ID,
 			Playlists.Members.TITLE,
@@ -141,6 +141,7 @@ public final class CursorFactory {
 	/**
 	 * column selection of get playlist count
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String[] PLAYLIST_COUNT = {
 			"COUNT(" + Playlists.Members.AUDIO_ID + ")"
 	};
@@ -218,6 +219,7 @@ public final class CursorFactory {
 	/**
 	 * select specific artist matching name
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String PLAYLIST_NAME_SELECT = Playlists.NAME + "=?";
 
 	/**
@@ -238,11 +240,13 @@ public final class CursorFactory {
 	/**
 	 * default order of playlist tracks
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String PLAYLIST_TRACK_ORDER = Playlists.Members.PLAY_ORDER;
 
 	/**
 	 * default order of playlists
 	 */
+	@SuppressWarnings("deprecation")
 	private static final String PLAYLIST_ORDER = Playlists.NAME;
 
 	/**
@@ -273,10 +277,11 @@ public final class CursorFactory {
 	 */
 	@Nullable
 	@SuppressLint("InlinedApi")
+	@SuppressWarnings("deprecation")
 	public static Cursor makePlaylistSongCursor(Context context, long id) {
 		ContentResolver resolver = context.getContentResolver();
 
-		Uri content = Playlists.Members.getContentUri(VOLUME_EXTERNAL, id);
+		Uri content = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, id);
 		return resolver.query(content, PLAYLIST_TRACK_COLUMNS, null, null, PLAYLIST_TRACK_ORDER);
 	}
 
@@ -287,6 +292,7 @@ public final class CursorFactory {
 	 * @return cursor with playlist information
 	 */
 	@Nullable
+	@SuppressWarnings("deprecation")
 	public static Cursor makePlaylistCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
@@ -301,6 +307,7 @@ public final class CursorFactory {
 	 * @return cursor with playlist information
 	 */
 	@Nullable
+	@SuppressWarnings("deprecation")
 	public static Cursor makePlaylistCursor(Context context, @NonNull String name) {
 		ContentResolver resolver = context.getContentResolver();
 
@@ -380,7 +387,7 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
 
-		Uri media = Genres.Members.getContentUri(VOLUME_EXTERNAL, genreId);
+		Uri media = Genres.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, genreId);
 		return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
 	}
 
@@ -482,7 +489,7 @@ public final class CursorFactory {
 	@SuppressLint("InlinedApi")
 	public static Cursor makeArtistAlbumCursor(Context context, long artistId) {
 		ContentResolver resolver = context.getContentResolver();
-		Uri uri = Artists.Albums.getContentUri(VOLUME_EXTERNAL, artistId);
+		Uri uri = Artists.Albums.getContentUri(MediaStore.VOLUME_EXTERNAL, artistId);
 
 		String order = PreferenceUtils.getInstance(context).getArtistAlbumSortOrder();
 		return resolver.query(uri, ARTIST_ALBUM_COLUMN, null, null, order);
