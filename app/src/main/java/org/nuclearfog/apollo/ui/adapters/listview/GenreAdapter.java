@@ -41,8 +41,6 @@ public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * Constructor of <code>GenreAdapter</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public GenreAdapter(Context context) {

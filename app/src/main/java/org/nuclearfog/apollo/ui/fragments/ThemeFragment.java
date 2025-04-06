@@ -51,12 +51,6 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 	private PreferenceUtils mPreferences;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public ThemeFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

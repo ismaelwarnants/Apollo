@@ -125,7 +125,6 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// initialize views
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
@@ -135,7 +134,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		albumLoader = new AlbumLoader(requireContext());
 		albumSongLoader = new AlbumSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		// init list
+		//
 		initList();
 		mList.setEmptyView(emptyInfo);
 		mList.setRecyclerListener(new RecycleHolder());
@@ -359,7 +358,6 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 				mList.setNumColumns(2);
 				break;
 		}
-		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);
 	}
 

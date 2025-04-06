@@ -137,8 +137,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		// sets the empty view
 		emptyInfo.setText(R.string.empty_recents);
 		mList.setEmptyView(emptyInfo);
-		// Set the data behind the list
-		mList.setAdapter(mAdapter);
+		mList.setFastScrollEnabled(false);
 		// Release any references to the recycled Views
 		mList.setRecyclerListener(new RecycleHolder());
 		// Listen for ContextMenus to be created
@@ -350,7 +349,6 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 				mList.setNumColumns(2);
 				break;
 		}
-		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);
 	}
 

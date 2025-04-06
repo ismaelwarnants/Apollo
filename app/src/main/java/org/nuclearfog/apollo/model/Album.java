@@ -63,8 +63,6 @@ public class Album extends Music implements Parcelable {
 
 
 	/**
-	 * Constructor of <code>Album</code>
-	 *
 	 * @param albumId    The Id of the album
 	 * @param albumName  The name of the album
 	 * @param artistName The album artist

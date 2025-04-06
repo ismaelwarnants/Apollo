@@ -81,8 +81,6 @@ public class RecentStore extends AppStore {
 	private static RecentStore sInstance;
 
 	/**
-	 * Constructor of <code>RecentStore</code>
-	 *
 	 * @param context The {@link Context} to use
 	 */
 	private RecentStore(Context context) {

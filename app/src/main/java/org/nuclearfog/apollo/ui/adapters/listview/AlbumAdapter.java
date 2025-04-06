@@ -57,8 +57,6 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 	private boolean mLoadExtraData = false;
 
 	/**
-	 * Constructor of <code>AlbumAdapter</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public AlbumAdapter(Context context, int columns, @LayoutRes int mLayoutId) {

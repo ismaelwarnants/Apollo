@@ -67,8 +67,6 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	private boolean enableHeader;
 
 	/**
-	 * Constructor of <code>ArtistAlbumAdapter</code>
-	 *
 	 * @param context The {@link Context} to use
 	 */
 	public ArtistAlbumAdapter(Context context) {

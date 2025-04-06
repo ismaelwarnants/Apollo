@@ -95,8 +95,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	private DiskLruCache mDiskCache;
 
 	/**
-	 * Constructor of <code>ImageCache</code>
-	 *
 	 * @param context The {@link Context} to use
 	 */
 	private ImageCache(Context context) {

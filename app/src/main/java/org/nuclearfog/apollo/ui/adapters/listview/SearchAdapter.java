@@ -50,8 +50,6 @@ public class SearchAdapter extends AlphabeticalAdapter<Music> {
 	private char[] mPrefix;
 
 	/**
-	 * Constructor for <code>SearchAdapter</code>
-	 *
 	 * @param activity The {@link FragmentActivity} to use.
 	 */
 	public SearchAdapter(FragmentActivity activity) {

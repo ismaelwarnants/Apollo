@@ -85,7 +85,6 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle extras) {
-		// Init views
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		ListView mList = mRootView.findViewById(R.id.list_base);
 		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
@@ -96,7 +95,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		folderLoader = new FolderLoader(requireContext());
 		folderSongLoader = new FolderSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		// set listview
+		//
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyHolder);
 		mList.setRecyclerListener(new RecycleHolder());

@@ -237,15 +237,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private NotificationHelper mNotificationHelper;
 	/**
-	 * Recently listened database
+	 * database for recently played tracks
 	 */
-	private RecentStore recenentStore;
+	private RecentStore recentStore;
 	/**
-	 * most played tracks database
+	 * database for the most played tracks
 	 */
 	private PopularStore popularStore;
 	/**
-	 *
+	 * database for favorited tracks
 	 */
 	private FavoritesStore favoriteStore;
 	/**
@@ -321,7 +321,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onCreate() {
 		super.onCreate();
 		// Initialize the database instances
-		recenentStore = RecentStore.getInstance(this);
+		recentStore = RecentStore.getInstance(this);
 		popularStore = PopularStore.getInstance(this);
 		favoriteStore = FavoritesStore.getInstance(this);
 		// initialize broadcast receiver
@@ -629,7 +629,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void play() {
 		if (mAudio != null) {
 			AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
-			attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC);
+			attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_UNKNOWN);
 			attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
 			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
 			request.setAudioAttributes(attrCompat.build());
@@ -767,7 +767,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (song != null)
 					popularStore.addSong(song);
 				if (album != null)
-					recenentStore.addAlbum(album);
+					recentStore.addAlbum(album);
 				updateMetadata();
 				// fall through
 

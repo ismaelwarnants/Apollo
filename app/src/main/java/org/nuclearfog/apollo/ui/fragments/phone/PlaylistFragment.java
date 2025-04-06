@@ -88,17 +88,10 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public PlaylistFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// init views
 		View rootView = inflater.inflate(R.layout.list_base, container, false);
 		TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
 		ListView mList = rootView.findViewById(R.id.list_base);
@@ -107,7 +100,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		mAdapter = new PlaylistAdapter(requireContext());
 		playlistLoader = new PlaylistLoader(requireContext());
 		playlistSongLoader = new PlaylistSongLoader(requireContext());
-		// setup list view
+		//
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyInfo);
 		mList.setRecyclerListener(new RecycleHolder());

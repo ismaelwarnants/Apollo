@@ -23,8 +23,6 @@ public class ThemesAdapter extends ArrayAdapter<AppTheme> {
 	private static final int ITEM_LAYOUT = R.layout.fragment_themes_base;
 
 	/**
-	 * Constructor of <code>ThemesAdapter</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public ThemesAdapter(Context context) {

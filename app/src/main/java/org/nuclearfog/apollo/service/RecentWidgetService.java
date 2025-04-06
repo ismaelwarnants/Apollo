@@ -64,8 +64,6 @@ public class RecentWidgetService extends RemoteViewsService {
 		private List<Album> albums = new ArrayList<>();
 
 		/**
-		 * Constructor of <code>WidgetRemoteViewsFactory</code>
-		 *
 		 * @param context The {@link Context} to use.
 		 */
 		WidgetRemoteViewsFactory(Context context) {

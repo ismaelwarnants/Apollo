@@ -54,8 +54,6 @@ public class ThemeUtils {
 	private PreferenceUtils mPref;
 
 	/**
-	 * Constructor for <code>ThemeUtils</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public ThemeUtils(Context context) {

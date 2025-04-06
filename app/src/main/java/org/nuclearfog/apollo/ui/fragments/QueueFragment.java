@@ -103,12 +103,6 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 	private int mSelectedPosition = -1;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public QueueFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

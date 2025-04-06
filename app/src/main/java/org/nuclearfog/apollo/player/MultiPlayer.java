@@ -43,17 +43,17 @@ public class MultiPlayer {
 	 */
 	private static final int XFADE = 12;
 	/**
-	 * sampling rate of the fade effect in 1/ms
-	 */
-	private static final long FADE_RESOLUTION = 40;
-	/**
 	 * volume steps used to fade in or out
 	 */
 	private static final float FADE_STEPS = 0.08f;
 	/**
-	 * cross-fade overlay of two tracks in milliseconds
+	 * duration of fade effect in ms
 	 */
-	private static final long XFADE_DELAY = 1000;
+	private static final long FADE_DELAY = 1000;
+	/**
+	 * duration of one volume step of the fade effect
+	 */
+	private static final long FADE_RESOLUTION = Math.round(FADE_DELAY * FADE_STEPS);
 	/**
 	 * number of player instances used for playback
 	 *
@@ -295,7 +295,7 @@ public class MultiPlayer {
 	public void setPosition(long position) {
 		try {
 			// limit max position to prevent conflict with fade out
-			long max = getDuration() - (XFADE_DELAY * 2);
+			long max = getDuration() - (FADE_DELAY * 2);
 			if (max > 0) {
 				if (position > max) {
 					position = max;
@@ -357,6 +357,8 @@ public class MultiPlayer {
 	 * called periodically while playback to detect playback changes for crossfading
 	 */
 	private void onCrossfadeTrack() {
+		if (xfadeTask == null)
+			return;
 		MediaPlayer current = mPlayers[currentPlayer];
 		try {
 			switch (xfadeMode) {
@@ -396,7 +398,7 @@ public class MultiPlayer {
 				// detect end of the track then cross fade to new track if any
 				default:
 					long diff = Math.abs(getDuration() - getPosition());
-					if (diff <= XFADE_DELAY) {
+					if (diff <= FADE_DELAY) {
 						if (continuous) {
 							xfadeMode = XFADE;
 						} else {
@@ -406,7 +408,7 @@ public class MultiPlayer {
 					break;
 			}
 		} catch (Exception exception) {
-			Log.e(TAG, "onCrossfadeTrack", exception);
+			Log.e(TAG, "onCrossfadeTrack()", exception);
 			onError(current, -1, -1);
 		}
 	}
@@ -423,7 +425,7 @@ public class MultiPlayer {
 				xfadeTask = threadPool.scheduleWithFixedDelay(() -> xfadeHandler.post(this::onCrossfadeTrack), FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
 			}
 		} else if (xfadeTask != null) {
-			xfadeTask.cancel(true);
+			xfadeTask.cancel(false);
 			xfadeTask = null;
 		}
 
@@ -449,17 +451,13 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnErrorListener
 	 */
 	private boolean onError(MediaPlayer mp, int what, int extra) {
-		Log.e(TAG, "onError:" + what + " ," + extra);
+		Log.e(TAG, "onError() " + what + " ," + extra);
 		if (initialized) {
 			setCrossfadeTask(false);
 			initialized = false;
 			isPlaying = false;
 			xfadeMode = NONE;
-			try {
-				mp.reset();
-			} catch (IllegalStateException e) {
-				// ignore
-			}
+			mp.reset();
 			playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
 			return true;
 		}

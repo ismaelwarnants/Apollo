@@ -96,17 +96,10 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	private Genre selectedGenre;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public GenreFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// Init views
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		ListView mList = mRootView.findViewById(R.id.list_base);
 		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
@@ -117,6 +110,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		genreLoader = new GenreLoader(requireContext());
 		genreSongLoader = new GenreSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
+		//
 		mList.setEmptyView(emptyHolder);
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());

@@ -64,8 +64,6 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	private boolean enableDnD;
 
 	/**
-	 * Constructor of <code>SongAdapter</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public SongAdapter(Context context, boolean enableDrag) {

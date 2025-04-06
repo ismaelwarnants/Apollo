@@ -37,8 +37,6 @@ public class Playlist extends Music {
 	public static final long POPULAR_ID = 0x502CDB3BD99EE393L;
 
 	/**
-	 * Constructor of <code>Genre</code>
-	 *
 	 * @param playlistId   The Id of the playlist
 	 * @param playlistName The playlist name
 	 */

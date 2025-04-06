@@ -32,8 +32,6 @@ public class Artist extends Music {
 	private int mSongNumber;
 
 	/**
-	 * Constructor of <code>Artist</code>
-	 *
 	 * @param artistId    The Id of the artist
 	 * @param artistName  The artist name
 	 * @param songNumber  The number of songs for the artist

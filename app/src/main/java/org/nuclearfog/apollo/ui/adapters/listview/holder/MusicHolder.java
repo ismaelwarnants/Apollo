@@ -59,7 +59,7 @@ public class MusicHolder {
 	public final TextView mLineThree;
 
 	/**
-	 * Constructor of <code>ViewHolder</code>
+	 *
 	 */
 	public MusicHolder(View view) {
 		super();

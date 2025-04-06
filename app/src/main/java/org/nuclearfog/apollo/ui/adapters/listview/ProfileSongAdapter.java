@@ -75,8 +75,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	private boolean enableHeader;
 
 	/**
-	 * Constructor of <code>ProfileSongAdapter</code>
-	 *
 	 * @param context The {@link Context} to use
 	 * @param setting defines the content of the second line
 	 */

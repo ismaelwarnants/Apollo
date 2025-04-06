@@ -112,12 +112,6 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 	private Song selectedSong = null;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public SongFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

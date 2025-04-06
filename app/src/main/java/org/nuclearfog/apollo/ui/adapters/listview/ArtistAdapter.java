@@ -51,8 +51,6 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 	private boolean mLoadExtraData = false;
 
 	/**
-	 * Constructor of <code>ArtistAdapter</code>
-	 *
 	 * @param context  The {@link Context} to use.
 	 * @param layoutId The resource Id of the view to inflate.
 	 */

@@ -108,8 +108,6 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	}
 
 	/**
-	 * Constructor of <code>Song</code>
-	 *
 	 * @param song_id     The Id of the song
 	 * @param song_name   The song_name of the song
 	 * @param artist_name The song artist

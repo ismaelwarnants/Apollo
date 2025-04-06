@@ -121,12 +121,6 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	private long selectedPlaylistId = -1;
 
 	/**
-	 * Empty constructor as per the {@link Fragment} documentation
-	 */
-	public ArtistFragment() {
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -134,15 +128,14 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
+		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		preference = PreferenceUtils.getInstance(requireContext());
 		artistLoader = new ArtistLoader(requireContext());
 		artistSongLoader = new ArtistSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
-		// init list
+		//
 		initList();
-		// setup list view
-		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyHolder);
 		mList.setRecyclerListener(new RecycleHolder());
 		mList.setOnCreateContextMenuListener(this);
@@ -361,7 +354,6 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 				mList.setNumColumns(2);
 				break;
 		}
-		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);
 	}
 

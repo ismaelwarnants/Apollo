@@ -33,8 +33,6 @@ public class Genre extends Music implements Comparable<Genre> {
 	private final long[] ids;
 
 	/**
-	 * Constructor of <code>Genre</code>
-	 *
 	 * @param ids        IDs referencing to this genre
 	 * @param genre_name The genre name
 	 * @param visibility visibility of this genre

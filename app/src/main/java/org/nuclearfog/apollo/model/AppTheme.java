@@ -21,7 +21,7 @@ public class AppTheme {
 	public final Drawable mPreview;
 
 	/**
-	 * Constructor of <code>ThemeHolder</code>
+	 *
 	 */
 	public AppTheme(String name, @Nullable Drawable prev) {
 		mName = name;

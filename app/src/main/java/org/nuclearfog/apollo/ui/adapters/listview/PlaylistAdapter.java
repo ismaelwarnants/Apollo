@@ -39,8 +39,6 @@ public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * Constructor of <code>PlaylistAdapter</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	public PlaylistAdapter(Context context) {

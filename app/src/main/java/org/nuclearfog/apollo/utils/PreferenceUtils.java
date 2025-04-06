@@ -105,8 +105,6 @@ public final class PreferenceUtils {
 	private int startPage;
 
 	/**
-	 * Constructor for <code>PreferenceUtils</code>
-	 *
 	 * @param context The {@link Context} to use.
 	 */
 	private PreferenceUtils(Context context) {
