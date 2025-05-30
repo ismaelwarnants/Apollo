@@ -36,9 +36,9 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	 * @param action type of playback control action used by {@link MusicPlaybackService}
 	 * @return PendingIntent instance
 	 */
-	protected PendingIntent createPlaybackControlIntent(Context context, String action, ComponentName serviceName) {
-		Intent intent = new Intent(action);
-		intent.setComponent(serviceName);
+	protected PendingIntent createPlaybackControlIntent(Context context, String action) {
+		ComponentName component = new ComponentName(context, MusicPlaybackService.class);
+		Intent intent = new Intent(action).setComponent(component);
 		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 	}
 

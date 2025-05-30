@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.widgets;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -113,20 +112,19 @@ public class AppWidgetSmall extends AppWidgetBase {
 	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
 	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
-		ComponentName serviceName = new ComponentName(context, MusicPlaybackService.class);
+		// open player
 		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
-		//
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
 		views.setOnClickPendingIntent(R.id.app_widget_small_info_container, pendingIntent);
 		views.setOnClickPendingIntent(R.id.app_widget_small_image, pendingIntent);
 		// Previous track
-		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_PREVIOUS);
 		views.setOnClickPendingIntent(R.id.app_widget_small_previous, pendingIntent);
 		// Play and pause
-		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE);
 		views.setOnClickPendingIntent(R.id.app_widget_small_play, pendingIntent);
 		// Next track
-		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_NEXT);
 		views.setOnClickPendingIntent(R.id.app_widget_small_next, pendingIntent);
 	}
 }

@@ -427,14 +427,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		if (intent != null) {
-			if (intent.hasExtra(EXTRA_FOREGROUND)) {
-				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-				// create player control notification if player is not stopped
-				if (!ACTION_STOP.equals(intent.getAction())) {
-					mNotificationHelper.createNotification();
-					if (isForeground && !isPlaying()) {
-						shutdownHandler.start();
-					}
+			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, true);
+			// create player control notification if player is not stopped
+			if (!ACTION_STOP.equals(intent.getAction())) {
+				mNotificationHelper.createNotification();
+				if (isForeground && !isPlaying()) {
+					shutdownHandler.start();
 				}
 			}
 			handleCommandIntent(intent);
