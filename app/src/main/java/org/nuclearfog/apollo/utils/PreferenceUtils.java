@@ -102,7 +102,6 @@ public final class PreferenceUtils {
 	private SharedPreferences defaultPref;
 	private SharedPreferences audioEffectsPref;
 	private int themeColor;
-	private int startPage;
 
 	/**
 	 * @param context The {@link Context} to use.
@@ -111,7 +110,6 @@ public final class PreferenceUtils {
 		defaultPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		audioEffectsPref = context.getSharedPreferences(FX_PREF_NAME, Context.MODE_PRIVATE);
 		themeColor = defaultPref.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
-		startPage = defaultPref.getInt(START_PAGE, DEFAULT_PAGE);
 	}
 
 	/**
@@ -131,17 +129,15 @@ public final class PreferenceUtils {
 	 * @return The page to start on when the app is opened.
 	 */
 	public int getStartPage() {
-		return startPage;
+		return defaultPref.getInt(START_PAGE, DEFAULT_PAGE);
 	}
 
 	/**
 	 * Saves the current page the user is on when they close the app.
 	 *
-	 * @param value The last page the pager was on when the onDestroy is called
-	 *              in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}.
+	 * @param value The last page the pager was on {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}.
 	 */
 	public void setStartPage(int value) {
-		startPage = value;
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(START_PAGE, value);
 		editor.apply();

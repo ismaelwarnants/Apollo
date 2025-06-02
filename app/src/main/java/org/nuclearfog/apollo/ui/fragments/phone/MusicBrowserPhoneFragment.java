@@ -123,9 +123,17 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDestroy() {
+	public void onStop() {
 		// Save the last page the use was on
 		mPreferences.setStartPage(mViewPager.getCurrentItem());
+		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroy() {
 		songLoader.cancel();
 		super.onDestroy();
 	}
