@@ -15,6 +15,7 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import android.os.Build;
 
@@ -88,8 +89,10 @@ public final class Constants {
 	static {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			PERMISSIONS = new String[]{READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
-		} else {
+		} else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
 			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
+		} else {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE};
 		}
 	}
 

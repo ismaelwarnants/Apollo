@@ -149,7 +149,7 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 			activity.getContentResolver().notifyChange(Uri.parse("content://media"), null);
 			// Notify the lists to update
 			MusicUtils.refresh(activity);
-			dismiss();
 		}
+		dismiss();
 	}
 }
