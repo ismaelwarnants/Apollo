@@ -314,6 +314,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onBackPressed() {
 		NavUtils.goHome(this);
+		super.onBackPressed();
 	}
 
 	/**
