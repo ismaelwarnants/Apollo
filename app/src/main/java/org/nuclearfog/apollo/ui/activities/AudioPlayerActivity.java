@@ -99,6 +99,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private static final String KEY_QUEUE_VISIBILITY = "queue_visibility";
 
+	/**
+	 * highest jump when scanning forward or backward in millisecond
+	 */
+	private static final long SCAN_MAX_TIME = 30000;
+
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 	/**
@@ -716,10 +721,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private void scan(boolean forward) {
 		long duration = MusicUtils.getDurationMillis(this);
 		long position = MusicUtils.getPositionMillis(this);
+		long jump = Math.min(duration / 32L, SCAN_MAX_TIME);
 		if (forward) {
-			position = Math.min(duration, position + duration / 32L);
+			position = Math.min(duration, position + jump);
 		} else {
-			position = Math.max(0, position - duration / 32L);
+			position = Math.max(0, position - jump);
 		}
 		MusicUtils.seek(this, position);
 		playerSeekbar.seek(position);
