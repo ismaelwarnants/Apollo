@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListener {
 
-	private TextView[] times = new TextView[2];
+	private TextView posText, durText;
 	private SeekBar seekbar;
 
 	@Nullable
@@ -73,36 +73,40 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 */
 	public PlayerSeekbar(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
-		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
-		int themeColor = mPrefs.getDefaultThemeColor();
-		float textSize = getResources().getDimension(R.dimen.text_size_micro);
-		float width = getResources().getDimension(R.dimen.audio_player_time_width);
-		int color = getResources().getColor(R.color.audio_player_current_time);
-		// theme views
 		seekbar = new SeekBar(context);
-		for (int i = 0; i < times.length; i++) {
-			times[i] = new TextView(context);
-			times[i].setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-			times[i].setWidth((int) width);
-			times[i].setGravity(Gravity.CENTER);
-			times[i].setTextColor(color);
-			times[i].setSingleLine();
-		}
+		posText = new TextView(context);
+		durText = new TextView(context);
+		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
+		LayoutParams seekbarParam = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 8.0f);
+		LayoutParams textParam = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
+		int color = getResources().getColor(R.color.audio_player_current_time);
+		float textSize = getResources().getDimension(R.dimen.text_size_micro);
+		int themeColor = mPrefs.getDefaultThemeColor();
+		// configure position and duration time views
+		posText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+		durText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+		posText.setGravity(Gravity.CENTER);
+		durText.setGravity(Gravity.CENTER);
+		posText.setTextColor(color);
+		durText.setTextColor(color);
+		posText.setSingleLine();
+		durText.setSingleLine();
+		posText.setLayoutParams(textParam);
+		durText.setLayoutParams(textParam);
+		// configure seekbar
 		seekbar.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		seekbar.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
-		//
-		setCurrentTimeText(0);
-		// configure seekbar
 		seekbar.setMax(1000);
-		seekbar.setLayoutParams(param);
+		seekbar.setLayoutParams(seekbarParam);
 		seekbar.setOnSeekBarChangeListener(this);
 		// configure root view
 		setOrientation(HORIZONTAL);
 		setGravity(Gravity.CENTER);
-		addView(times[0]);
+		addView(posText);
 		addView(seekbar);
-		addView(times[1]);
+		addView(durText);
+		// init current time view
+		setCurrentTimeText(0);
 	}
 
 
@@ -157,7 +161,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * @param time time in milliseconds
 	 */
 	public void setTotalTime(long time) {
-		times[1].setText(StringUtils.makeTimeString(getContext(), time));
+		durText.setText(StringUtils.makeTimeString(getContext(), time));
 		duration = time;
 		seek(0);
 	}
@@ -186,7 +190,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 */
 	public void setPlayStatus(boolean isPlaying) {
 		updateSeekbar = isPlaying;
-		AnimatorUtils.pulse(times[0], !isPlaying);
+		AnimatorUtils.pulse(posText, !isPlaying);
 		if (isPlaying) {
 			if (updateTask == null)
 				updateTask = threadPool.scheduleWithFixedDelay(timeHandler, TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
@@ -207,7 +211,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * print current time value of the position
 	 */
 	private void setCurrentTimeText(long time) {
-		times[0].setText(StringUtils.makeTimeString(getContext(), time));
+		posText.setText(StringUtils.makeTimeString(getContext(), time));
 	}
 
 	/**
