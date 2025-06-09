@@ -16,10 +16,14 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -98,6 +102,21 @@ public final class NavUtils {
 	}
 
 	/**
+	 * open battery optimization page of the Android system
+	 */
+	public static void openBatteryPage(Activity activity) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+			intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+			try {
+				activity.startActivity(intent);
+			} catch (Exception exception) {
+				Log.d(TAG, "could not open battery optimization settings");
+			}
+		}
+	}
+
+	/**
 	 * Opens to {@link SettingsActivity}.
 	 *
 	 * @param activity The {@link Activity} to use.
@@ -131,5 +150,13 @@ public final class NavUtils {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		activity.startActivity(intent);
 		activity.finish();
+	}
+
+	/**
+	 * closes app and stops playback
+	 */
+	public static void closeApp(Activity activity) {
+		MusicUtils.pause(activity);
+		activity.finishAffinity();
 	}
 }

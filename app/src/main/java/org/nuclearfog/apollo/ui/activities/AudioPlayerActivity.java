@@ -431,6 +431,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				long[] ids = {currentSong.getId()};
 				MusicUtils.openDeleteDialog(this, currentSong.getName(), ids);
 			}
+		} else if (item.getItemId() == R.id.menu_close) {
+			NavUtils.closeApp(this);
 		} else {
 			return super.onOptionsItemSelected(item);
 		}

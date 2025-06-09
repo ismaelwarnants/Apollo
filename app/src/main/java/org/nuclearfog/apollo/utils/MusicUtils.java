@@ -252,6 +252,20 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * pauses the current playback
+	 */
+	public static void pause(Activity activity) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				service.pause(true);
+			} catch (Exception exception) {
+				Log.e(TAG, "pause()", exception);
+			}
+		}
+	}
+
+	/**
 	 * Cycles through the repeat options.
 	 *
 	 * @return repeat mode {@link #REPEAT_ALL,#REPEAT_CURRENT,#REPEAT_NONE}

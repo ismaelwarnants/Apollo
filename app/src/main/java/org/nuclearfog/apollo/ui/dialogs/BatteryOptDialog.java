@@ -1,6 +1,5 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -14,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -61,7 +60,7 @@ public class BatteryOptDialog extends DialogFragment implements OnClickListener 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
-			ApolloUtils.redirectToBatteryOptimization(requireActivity());
+			NavUtils.openBatteryPage(requireActivity());
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 			PreferenceUtils.getInstance(requireContext()).setIgnoreBatteryOptimization();
 		}

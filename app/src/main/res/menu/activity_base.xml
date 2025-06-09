@@ -22,4 +22,10 @@
 		android:title="@string/menu_settings"
 		app:showAsAction="never" />
 
+	<item
+		android:id="@+id/menu_close"
+		android:orderInCategory="5"
+		android:title="@string/menu_close"
+		app:showAsAction="never" />
+
 </menu>

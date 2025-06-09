@@ -23,11 +23,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Icon;
 import android.media.audiofx.AudioEffect;
-import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -305,21 +303,6 @@ public final class ApolloUtils {
 			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
 				BatteryOptDialog.show(activity.getSupportFragmentManager());
-			}
-		}
-	}
-
-	/**
-	 * open battery optimization page of the Android system
-	 */
-	public static void redirectToBatteryOptimization(Activity activity) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-			intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-			try {
-				activity.startActivity(intent);
-			} catch (Exception exception) {
-				Log.d(TAG, "could not open battery optimization settings");
 			}
 		}
 	}

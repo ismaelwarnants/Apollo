@@ -288,8 +288,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_settings) {// Settings
+		if (item.getItemId() == R.id.menu_settings) {
 			NavUtils.openSettings(this);
+			return true;
+		} else if (item.getItemId() == R.id.menu_close) {
+			NavUtils.closeApp(this);
 			return true;
 		}
 		return false;

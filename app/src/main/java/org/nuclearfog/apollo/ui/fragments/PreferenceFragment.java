@@ -20,8 +20,8 @@ import org.nuclearfog.apollo.ui.activities.ThemesActivity;
 import org.nuclearfog.apollo.ui.dialogs.ClearCacheDialog;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
 import org.nuclearfog.apollo.ui.dialogs.LicenseDialog;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
+import org.nuclearfog.apollo.utils.NavUtils;
 
 /**
  * Preference fragment class
@@ -103,7 +103,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 				return true;
 
 			case BAT_OPT:
-				ApolloUtils.redirectToBatteryOptimization(requireActivity());
+				NavUtils.openBatteryPage(requireActivity());
 				return true;
 
 			case SOURCECODE:
