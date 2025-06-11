@@ -84,23 +84,20 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		trackDeleteWorker = new TrackDeleteWorker(requireContext());
 		String title = "";
 		if (getArguments() != null) {
-			title = getArguments().getString(KEY_TITLE, "");
+			title = "\"" + getArguments().getString(KEY_TITLE, "") + "\"";
 			long[] mItemList = getArguments().getLongArray(KEY_ITEMS);
 			if (mItemList != null) {
 				this.mItemList = mItemList;
 			}
 		}
-		String delete = getString(R.string.context_menu_delete);
-		// Get the image cache key
-		String dialogTitle = getString(R.string.delete_dialog_title, title);
-		// Initialize the image cache
-		trackDeleteWorker = new TrackDeleteWorker(requireContext());
 		// Build the dialog
-		return new AlertDialog.Builder(requireContext()).setTitle(dialogTitle)
+		return new AlertDialog.Builder(requireContext())
+				.setTitle(getString(R.string.delete_dialog_title, title))
 				.setMessage(R.string.cannot_be_undone)
-				.setPositiveButton(delete, this)
+				.setPositiveButton(R.string.context_menu_delete, this)
 				.setNegativeButton(R.string.cancel, this)
 				.create();
 	}

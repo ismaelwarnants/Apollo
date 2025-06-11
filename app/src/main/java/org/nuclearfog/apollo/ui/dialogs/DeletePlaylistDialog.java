@@ -58,7 +58,7 @@ public class DeletePlaylistDialog extends DialogFragment implements OnClickListe
 		if (getArguments() != null) {
 			playlist = (Playlist) getArguments().getSerializable(KEY_PLAYLIST);
 			if (playlist != null) {
-				name = playlist.getName();
+				name = "\"" + playlist.getName() + "\"";
 			}
 		}
 		return new AlertDialog.Builder(requireContext())

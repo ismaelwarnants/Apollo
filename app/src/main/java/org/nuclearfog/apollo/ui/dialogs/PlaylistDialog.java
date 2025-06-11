@@ -142,9 +142,9 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 		// set dialog view
 		builder.setView(playlistName);
 		// Set the save button action
-		builder.setPositiveButton(getString(R.string.save), this);
+		builder.setPositiveButton(R.string.save, this);
 		// Set the cancel button action
-		builder.setNegativeButton(getString(R.string.cancel), this);
+		builder.setNegativeButton(R.string.cancel, this);
 
 		if (savedInstanceState == null) {
 			savedInstanceState = getArguments();
