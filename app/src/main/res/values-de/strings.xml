@@ -33,7 +33,7 @@
 	<string name="menu_shuffle">Alle zufällig anordnen</string>
 	<string name="menu_play_all">Alle wiedergeben</string>
 	<string name="menu_sort_by">Sortieren</string>
-	<string name="menu_clear_queue">Qiedergabeliste löschen</string>
+	<string name="menu_clear_queue">Wiedergabeliste löschen</string>
 	<string name="menu_save_queue">Warteschlange speichern</string>
 	<string name="menu_share">Teilen</string>
 	<string name="menu_add_to_homescreen">Auf Startbildschirm platzieren</string>
