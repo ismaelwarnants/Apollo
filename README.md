@@ -22,5 +22,12 @@ Or download the latest APK from the <b>releases</b> section.
 ## Screenshots
 <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/img1.jpg" width="200"/> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/img2.jpg" width="200"/> <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/img3.jpg" width="200"/>
 
+## Translations
+Please help with translation on the [Weblate](https://toolate.othing.xyz/projects/apollo-player/)
+
+<a href="https://toolate.othing.xyz/projects/apollo-player/">
+<img alt="Translation status" src="https://toolate.othing.xyz/widget/apollo-player/metadata/multi-auto.svg" />
+</a>
+
 ## Contributing
 For more information please read the <a href="CONTRIBUTING.md">contribution guidelines</a>
