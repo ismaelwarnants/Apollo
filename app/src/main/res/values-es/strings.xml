@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Nombre de lista</string>
 	<string name="delete_dialog_title">¿Eliminar <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Esta operación no se puede deshacer</string>
-	<string name="delete_warning">Esta operación borrará todas las imágenes almacenadas en caché</string>
+	<string name="delete_imagecache_warning">Esta operación borrará todas las imágenes almacenadas en caché</string>
 	<string name="new_photo">Elegir imagen de la Galería</string>
 	<string name="use_default">Usar imagen por defecto</string>
 	<string name="old_photo">Usar imagen previa</string>

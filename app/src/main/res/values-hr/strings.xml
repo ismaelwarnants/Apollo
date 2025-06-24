@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Ime playliste</string>
 	<string name="delete_dialog_title">Izbriši <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Ovo se ne može poništiti</string>
-	<string name="delete_warning">Ovo će trajno izbrisati podatke spremljenih slika</string>
+	<string name="delete_imagecache_warning">Ovo će trajno izbrisati podatke spremljenih slika</string>
 	<string name="new_photo">Odaberi sliku iz galerije</string>
 	<string name="use_default">Koristi zadanu sliku</string>
 	<string name="old_photo">Koristi staru sliku</string>

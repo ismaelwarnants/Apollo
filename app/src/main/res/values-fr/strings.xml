@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Nom de la liste</string>
 	<string name="delete_dialog_title">Supprimer <xliff:g id="item" example="album">%s</xliff:g>\u00A0?</string>
 	<string name="cannot_be_undone">Cette action ne peut pas être annulée</string>
-	<string name="delete_warning">Cette action supprimera définitivement le cache des images</string>
+	<string name="delete_imagecache_warning">Cette action supprimera définitivement le cache des images</string>
 	<string name="new_photo">Choisir une photo de la Galerie</string>
 	<string name="use_default">Utiliser la photo par défaut</string>
 	<string name="old_photo">Utiliser l\'ancienne photo</string>

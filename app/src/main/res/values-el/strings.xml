@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Όνομα λίστας</string>
 	<string name="delete_dialog_title">Διαγραφή <xliff:g id="item" example="album">%s</xliff:g>;</string>
 	<string name="cannot_be_undone">Αυτή η ενέργεια δεν μπορεί να αναιρεθεί</string>
-	<string name="delete_warning">Θα διαγραφούνε μόνιμα οι προσωρινά αποθηκευμένες εικόνες</string>
+	<string name="delete_imagecache_warning">Θα διαγραφούνε μόνιμα οι προσωρινά αποθηκευμένες εικόνες</string>
 	<string name="new_photo">Επιλέξτε φωτογραφία από τη Συλλογή</string>
 	<string name="use_default">Χρήση προεπιλεγμένης φωτογραφίας</string>
 	<string name="old_photo">Χρήση παλιάς φωτογραφίας</string>

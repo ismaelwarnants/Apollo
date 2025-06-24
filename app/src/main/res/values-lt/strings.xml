@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Grojaraščio pavadinimas</string>
 	<string name="delete_dialog_title">Ištrinti <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tai negali būti atšaukta</string>
-	<string name="delete_warning">Visam laikui bus ištrinti talpyklos vaizdo įrašai</string>
+	<string name="delete_imagecache_warning">Visam laikui bus ištrinti talpyklos vaizdo įrašai</string>
 	<string name="new_photo">Pasirinkite nuotrauką iš galerijos</string>
 	<string name="use_default">Naudoti numatytąją nuotrauką</string>
 	<string name="old_photo">Naudoti seną nuotrauką</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Název seznamu skladeb</string>
 	<string name="delete_dialog_title">Smazat <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tuto operaci nelze vrátit</string>
-	<string name="delete_warning">Tímto trvale odstraníte stáhnuté obrázky</string>
+	<string name="delete_imagecache_warning">Tímto trvale odstraníte stáhnuté obrázky</string>
 	<string name="new_photo">Zvolte fotografii z Galerie</string>
 	<string name="use_default">Použít výchozí fotku</string>
 	<string name="old_photo">Použít starou fotku</string>

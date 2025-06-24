@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Nazwa playlisty</string>
 	<string name="delete_dialog_title">Usunąć <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Operacja nie może zostać cofnięta</string>
-	<string name="delete_warning">Grafiki z pamięci podręcznej zostaną trwale usunięte</string>
+	<string name="delete_imagecache_warning">Grafiki z pamięci podręcznej zostaną trwale usunięte</string>
 	<string name="new_photo">Użyj zdjęcia z galerii</string>
 	<string name="use_default">Użyj domyślnego zdjęcia</string>
 	<string name="old_photo">Użyj starego zdjęcia</string>

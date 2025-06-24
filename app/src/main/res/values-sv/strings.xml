@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Namn på spellista</string>
 	<string name="delete_dialog_title">Ta bort <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Detta kan inte ångras</string>
-	<string name="delete_warning">Detta kommer ta bort cacheade bilder permanent</string>
+	<string name="delete_imagecache_warning">Detta kommer ta bort cacheade bilder permanent</string>
 	<string name="new_photo">Välj foto från Galleri</string>
 	<string name="use_default">Använd standardfoto</string>
 	<string name="old_photo">Använd gammalt foto</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">播放清單名稱</string>
 	<string name="delete_dialog_title">刪除「<xliff:g id="item" example="album">%s</xliff:g>」？</string>
 	<string name="cannot_be_undone">這個動作無法復原</string>
-	<string name="delete_warning">這將永久刪除已快取的影像</string>
+	<string name="delete_imagecache_warning">這將永久刪除已快取的影像</string>
 	<string name="new_photo">選擇來自圖片庫的相片</string>
 	<string name="use_default">使用預設相片</string>
 	<string name="old_photo">使用舊相片</string>

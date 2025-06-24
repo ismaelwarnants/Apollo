@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">ชื่อรายการเพลง</string>
 	<string name="delete_dialog_title">ลบ <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">การกระทำนี้ไม่สามารถยกเลิกได้</string>
-	<string name="delete_warning">การกระทำนี้จะลบรูปภาพที่แคชอย่างถาวร</string>
+	<string name="delete_imagecache_warning">การกระทำนี้จะลบรูปภาพที่แคชอย่างถาวร</string>
 	<string name="new_photo">เลือกรูปจากแกลอรี</string>
 	<string name="use_default">เลือกรูปเริ่มต้น</string>
 	<string name="old_photo">ใช้รูปเก่า</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Erreprodukzio-zerrendaren izena</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> ezabatu?</string>
 	<string name="cannot_be_undone">Hau ezin da desegin</string>
-	<string name="delete_warning">Honek katxean gordetako irudi guztiak ezabatuko ditu</string>
+	<string name="delete_imagecache_warning">Honek katxean gordetako irudi guztiak ezabatuko ditu</string>
 	<string name="new_photo">Hautatu galeriako argazkia</string>
 	<string name="use_default">Erabili argazki lehenetsia</string>
 	<string name="old_photo">Erabili aurreko irudia</string>

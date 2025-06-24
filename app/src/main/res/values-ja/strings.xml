@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">プレイリスト名</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g>を削除しますか？</string>
 	<string name="cannot_be_undone">この操作は元に戻せません</string>
-	<string name="delete_warning">キャッシュされた画像エントリーを恒久的に削除します</string>
+	<string name="delete_imagecache_warning">キャッシュされた画像エントリーを恒久的に削除します</string>
 	<string name="new_photo">ギャラリーから写真を選択</string>
 	<string name="use_default">デフォルトの写真を使用</string>
 	<string name="old_photo">以前の写真を使用</string>

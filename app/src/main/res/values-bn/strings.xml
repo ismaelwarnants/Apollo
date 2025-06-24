@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">প্লে-তালিকার নাম</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> মুছে দিন?</string>
 	<string name="cannot_be_undone">এটি আর পূর্বাবস্থা আনা যাবে না</string>
-	<string name="delete_warning">এটি স্থায়ীভাবে সব ক্যাশ ছবি মুছে দেবে</string>
+	<string name="delete_imagecache_warning">এটি স্থায়ীভাবে সব ক্যাশ ছবি মুছে দেবে</string>
 	<string name="new_photo">গ্যালারী থেকে ফটো পছন্দ করুন</string>
 	<string name="use_default">পূর্ব-নির্ধারিত চিত্র ব্যবহার করুন</string>
 	<string name="old_photo">পুরনো ছবি ব্যবহার করুন</string>

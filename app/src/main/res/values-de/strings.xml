@@ -25,8 +25,8 @@
 	<string name="page_albums_songs">Alben / Songs</string>
 	<string name="page_songs">Titel</string>
 	<string name="page_playlists">Wiedergabelisten</string>
-	<string name="page_songs_genres">Songs / Genres</string>
-	<string name="page_genres">Genres</string>
+	<string name="page_songs_genres">Titel / Genre</string>
+	<string name="page_genres">Genre</string>
 	<string name="menu_settings">Einstellungen</string>
 	<string name="menu_close">Beenden</string>
 	<string name="menu_search">Suchen</string>
@@ -65,8 +65,8 @@
 	<string name="cancel">Abbrechen</string>
 	<string name="create_playlist_prompt">Name der Wiedergabeliste</string>
 	<string name="delete_dialog_title"><xliff:g id="item">%s</xliff:g> löschen?</string>
-	<string name="cannot_be_undone">Dies kann nicht rückgängig gemacht werden.</string>
-	<string name="delete_warning">Alle zwischengespeicherten Bilder werden dauerhaft gelöscht.</string>
+	<string name="cannot_be_undone">Dies kann nicht rückgängig gemacht werden</string>
+	<string name="delete_imagecache_warning">Alle zwischengespeicherten Bilder werden dauerhaft gelöscht</string>
 	<string name="new_photo">Foto aus Galerie auswählen</string>
 	<string name="use_default">Standardfoto verwenden</string>
 	<string name="old_photo">Altes Foto verwenden</string>
@@ -122,7 +122,7 @@
 	<string name="page_folders">Ordner</string>
 	<string name="error_permission_denied">Die App benötigt Berechtigungen zum Abspielen der Musikdateien!</string>
 	<string name="empty_recents">Es sind zur Zeit keine Tracks gehört worden.</string>
-	<string name="empty_playlist">Playlist ist leer!</string>
+	<string name="empty_playlist">Diese Wiedergabeliste ist leer</string>
 	<string name="empty_favorites">Es wurden noch keine Tracks zu den Favoriten hinzugefügt.</string>
 	<string name="empty_artist_albums">Es gibt keine Alben dieses Künstlers</string>
 	<string name="playlist_most_played">Beliebt</string>
@@ -131,7 +131,7 @@
 	<string name="explain_permission_write_settings">Diese Berechtigung wird ausschließlich verwendet um den Klingelton einzustellen</string>
 	<string name="error_audioeffects_not_supported">Audioeffekte werden nicht unterstützt!</string>
 	<string name="title_audio_effects">Audioeffekte</string>
-	<string name="label_bass_boost">Bass boost</string>
+	<string name="label_bass_boost">Bassanhebung</string>
 	<string name="label_enable_equalizer">aktiviere Audio FX</string>
 	<string name="settings_prefer_external_equalizer">externen Equalizer bevorzugen</string>
 	<string name="settings_other">Andere Einstellungen</string>
@@ -157,7 +157,6 @@
 	<string name="dialog_disable_bat_opt_message">Um eine reibungslose Wiedergabe zu gewährleisten, sollte die Akku-Optimierung deaktiviert werden</string>
 	<string name="dialog_disable_bat_opt_confirm">anwenden</string>
 	<string name="dialog_disable_bat_opt_ignore">ignorieren</string>
-	<string name="dialog_save_preset_title">Voreinstellung speichern</string>
 	<string name="preset_name_hint">Name eingeben</string>
 	<string name="empty_preset_name">Name darf nicht leer sein!</string>
 	<string name="label_preset">Voreinstellung:</string>
@@ -167,7 +166,7 @@
 	<string name="copy_playlist">Playlist kopieren</string>
 	<string name="error_create_playlist">Playlist konnte nicht erstellt werden!</string>
 	<string name="error_rename_playlist">Playlist konnte nicht umbenannt werden!</string>
-	<string name="menu_save_preset">Voreinstellung speichern</string>
+	<string name="save_preset">Voreinstellung speichern</string>
 	<string name="menu_delete_preset">Voreinstellung löschen</string>
 	<string name="settings_source_code">Quellcode</string>
 	<string name="settings_source_code_descr">Im Browser öffnen</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">ناوی لیستی لێدان</string>
 	<string name="delete_dialog_title">دڵنیای له‌ سڕینه‌وه‌ی  <xliff:g id="item" example="album">%s</xliff:g> ؟</string>
 	<string name="cannot_be_undone">ئه‌مه‌ دواتر ناتوانی بیگه‌ڕێنیته‌وه‌</string>
-	<string name="delete_warning">ئه‌مه‌ واته‌ سڕینه‌وه‌ی هه‌موو وێنه‌ خه‌زنکراوه‌کان به‌ گشتی</string>
+	<string name="delete_imagecache_warning">ئه‌مه‌ واته‌ سڕینه‌وه‌ی هه‌موو وێنه‌ خه‌زنکراوه‌کان به‌ گشتی</string>
 	<string name="new_photo">هه‌ڵبژاردنی وینه‌یه‌ک له‌ گه‌له‌ری</string>
 	<string name="use_default">به‌کارهێنانی وێنه‌ی سه‌ره‌تایی</string>
 	<string name="old_photo">به‌کارهێنانی وێنه‌ی کۆن</string>

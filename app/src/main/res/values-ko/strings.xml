@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">재생목록 이름</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> 을(를) 삭제할까요?</string>
 	<string name="cannot_be_undone">이 작업은 되돌릴 수 없습니다</string>
-	<string name="delete_warning">임시 저장된 이미지들을 영구적으로 제거합니다</string>
+	<string name="delete_imagecache_warning">임시 저장된 이미지들을 영구적으로 제거합니다</string>
 	<string name="new_photo">갤러리에서 사진 선택</string>
 	<string name="use_default">기본 사진 사용</string>
 	<string name="old_photo">이전 사진 사용</string>

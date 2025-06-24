@@ -1,1 +1,3 @@
-<p><i>Apollo</i> ist ein Fork aus dem von CyanogenMod bekannten Musikplayers <a href='https://github.com/adneal/Apollo-CM' target='_blank' rel='nofollow'>Apollo</a> mit vielen zusätzlichen Funktionen.</p>
+The Apollo ist ein moderne, intuitive und anpassbare Musik-App.
+
+<i>Apollo</i> entstand aus dem von CyanogenMod bekannten Musikplayer <a href="https://github.com/adneal/Apollo-CM">Apollo-CM</a>

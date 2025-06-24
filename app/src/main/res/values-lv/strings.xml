@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Atskaņošanas saraksta nosaukums</string>
 	<string name="delete_dialog_title">Izdzēst <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Darbību nav iespējams ataukt</string>
-	<string name="delete_warning">Tiks neatgriezeniski dzēstas visas kešatmiņas bildes</string>
+	<string name="delete_imagecache_warning">Tiks neatgriezeniski dzēstas visas kešatmiņas bildes</string>
 	<string name="new_photo">Izvēlēties foto no galerijas</string>
 	<string name="use_default">Izmantot noklusēto foto</string>
 	<string name="old_photo">Izmantot agrāko foto</string>

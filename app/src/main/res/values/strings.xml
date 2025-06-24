@@ -42,7 +42,7 @@
 	<string name="menu_sort_by">Sort by</string>
 	<string name="menu_clear_queue">Clear queue</string>
 	<string name="menu_save_queue">Save queue</string>
-	<string name="menu_save_preset">Save preset</string>
+	<string name="save_preset">Save preset</string>
 	<string name="menu_delete_preset">Delete preset</string>
 	<string name="menu_share">Share</string>
 	<string name="menu_add_to_homescreen">Pin to home screen</string>
@@ -91,11 +91,10 @@
 	<string name="delete_dialog_title">Delete <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">This cannot be undone</string>
 	<string name="dialog_disable_bat_opt_title">Disable battery optimization</string>
-	<string name="dialog_disable_bat_opt_message">It\'s recommended to disable battery optimization to prevent Android system interrupting the playback.</string>
+	<string name="dialog_disable_bat_opt_message">It\'s recommended to disable battery optimization to prevent Android system interrupting the playback</string>
 	<string name="dialog_disable_bat_opt_confirm">apply</string>
-	<string name="dialog_save_preset_title">save preset</string>
 	<string name="dialog_disable_bat_opt_ignore">ignore</string>
-	<string name="delete_warning">This will permanently delete the cached image entries</string>
+	<string name="delete_imagecache_warning">This will permanently delete the cached image entries</string>
 	<string name="new_photo">Choose photo from Gallery</string>
 	<string name="use_default">Use default photo</string>
 	<string name="old_photo">Use old photo</string>
@@ -177,7 +176,7 @@
 	<string name="settings_source_code_descr">open in Browser</string>
 
 	<!-- Share Intent -->
-	<string name="share_track_using">Share track using:</string>
+	<string name="share_track_using">Share track using</string>
 
 	<!-- ColorPicker -->
 	<string name="hex" translatable="false">#</string>
@@ -199,7 +198,7 @@
 	<string name="empty_search">No search results found</string>
 	<string name="error_permission_denied">App can\'t work with permission to read storage and phone state!</string>
 	<string name="empty_recents">There are no tracks listened yet.</string>
-	<string name="empty_playlist">This playlist is empty.</string>
+	<string name="empty_playlist">This playlist is empty</string>
 	<string name="empty_favorites">There are no tracks added to favorites!</string>
 	<string name="empty_artist_albums">There is no album of this artist</string>
 	<string name="empty_preset_name">empty name!</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Playlistenavn</string>
 	<string name="delete_dialog_title">Slet <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Dette kan ikke fortrydes</string>
-	<string name="delete_warning">Dette vil permanent slette de cachede billedindekser</string>
+	<string name="delete_imagecache_warning">Dette vil permanent slette de cachede billedindekser</string>
 	<string name="new_photo">Vælg foto fra Galleri</string>
 	<string name="use_default">Brug standardfoto</string>
 	<string name="old_photo">Brug gammelt foto</string>

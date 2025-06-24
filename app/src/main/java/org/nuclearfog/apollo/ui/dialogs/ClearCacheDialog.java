@@ -43,7 +43,7 @@ public class ClearCacheDialog extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		return new AlertDialog.Builder(requireContext())
-				.setMessage(R.string.delete_warning)
+				.setMessage(R.string.delete_imagecache_warning)
 				.setNegativeButton(R.string.cancel, null)
 				.setPositiveButton(android.R.string.ok, (dialog, which) -> {
 					ImageCache mImageCache = ImageCache.getInstance(requireContext());

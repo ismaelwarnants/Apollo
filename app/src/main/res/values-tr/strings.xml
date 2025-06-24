@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Çalma listesi adı</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> silinsin mi?</string>
 	<string name="cannot_be_undone">Bu geri alınamaz</string>
-	<string name="delete_warning">Bu işlem önbellekteki resimleri kalıcı olarak silecek</string>
+	<string name="delete_imagecache_warning">Bu işlem önbellekteki resimleri kalıcı olarak silecek</string>
 	<string name="new_photo">Galeri\'den fotoğraf seç</string>
 	<string name="use_default">Varsayılan fotoğrafı kullan</string>
 	<string name="old_photo">Eski fotoğrafı kullan</string>

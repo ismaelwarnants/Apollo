@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Naam afspeellijst</string>
 	<string name="delete_dialog_title">\'<xliff:g id="item" example="album">%s</xliff:g>\' verwijderen?</string>
 	<string name="cannot_be_undone">Dit kan niet ongedaan worden gemaakt</string>
-	<string name="delete_warning">Hiermee worden alle opgeslagen afbeeldingen permanent verwijderd</string>
+	<string name="delete_imagecache_warning">Hiermee worden alle opgeslagen afbeeldingen permanent verwijderd</string>
 	<string name="new_photo">Afbeelding selecteren uit Galerij</string>
 	<string name="use_default">Standaardafbeelding</string>
 	<string name="old_photo">Oude afbeelding</string>

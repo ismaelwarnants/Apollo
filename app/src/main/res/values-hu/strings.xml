@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Lejátszási lista neve</string>
 	<string name="delete_dialog_title">Törli az alábbi albumot? <xliff:g id="item" example="album">%s</xliff:g></string>
 	<string name="cannot_be_undone">Ezt nem lehet visszavonni</string>
-	<string name="delete_warning">Ezzel végleg törli a gyorsítótárazott képeket</string>
+	<string name="delete_imagecache_warning">Ezzel végleg törli a gyorsítótárazott képeket</string>
 	<string name="new_photo">Kép kiválasztása a Galériából</string>
 	<string name="use_default">Alapértelmezett kép használata</string>
 	<string name="old_photo">Régi kép használata</string>
@@ -99,7 +99,7 @@
 	<string name="settings_download_artist_images_title">Hiányzó előadóképek letöltése</string>
 	<string name="settings_open_source_licenses">Nyílt forráskódú licenszek</string>
 	<string name="settings_version_title">Verziószám</string>
-	<string name="share_track_using">Szám megosztása:</string>
+	<string name="share_track_using">Szám megosztása</string>
 	<string name="current_color">Jelenlegi</string>
 	<string name="new_color">Új</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (alternatív)</string>

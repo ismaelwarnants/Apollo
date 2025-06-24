@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Назва плейлисту</string>
 	<string name="delete_dialog_title">Видалити <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Це не можна скасувати</string>
-	<string name="delete_warning">Це видалить кешовані зображення</string>
+	<string name="delete_imagecache_warning">Це видалить кешовані зображення</string>
 	<string name="new_photo">Вибрати фото з галереї</string>
 	<string name="use_default">Використовувати типове</string>
 	<string name="old_photo">Використовувати старе</string>

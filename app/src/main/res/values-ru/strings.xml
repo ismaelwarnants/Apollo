@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Имя плейлиста</string>
 	<string name="delete_dialog_title">Удалить «<xliff:g id="item" example="album">%s</xliff:g>»?</string>
 	<string name="cannot_be_undone">Это действие не может быть отменено</string>
-	<string name="delete_warning">Скачанные изображения будут удалены</string>
+	<string name="delete_imagecache_warning">Скачанные изображения будут удалены</string>
 	<string name="new_photo">Выбрать из Галереи</string>
 	<string name="use_default">Изображение по умолчанию</string>
 	<string name="old_photo">Исходное изображение</string>
@@ -115,7 +115,7 @@
 	<string name="page_genres_folders">Жанры / Папки</string>
 	<string name="page_folders">Папки</string>
 	<string name="menu_close">Закрыть</string>
-	<string name="menu_save_preset">Сохранить предустановку</string>
+	<string name="save_preset">Сохранить предустановку</string>
 	<string name="menu_delete_preset">Удаление предустановку</string>
 	<string name="menu_clear_popular">Очистить песни</string>
 	<string name="menu_show_hidden">показать скрытые песни</string>
@@ -126,7 +126,6 @@
 	<string name="dialog_disable_bat_opt_title">Отключить оптимизацию батареи</string>
 	<string name="dialog_disable_bat_opt_message">Рекомендуется отключить оптимизацию батареи, чтобы предотвратить прерывание воспроизведения системой Android.</string>
 	<string name="dialog_disable_bat_opt_confirm">применить</string>
-	<string name="dialog_save_preset_title">сохранить предустановку</string>
 	<string name="dialog_disable_bat_opt_ignore">игнорировать</string>
 	<string name="item_hidden">запись успешно скрыта</string>
 	<string name="web_search">Поиск в Интернете</string>

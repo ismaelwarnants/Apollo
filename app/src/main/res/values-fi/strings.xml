@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Soittolistan nimi</string>
 	<string name="delete_dialog_title">Poistetaanko <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tätä ei voi perua</string>
-	<string name="delete_warning">Kaikki välimuistissa olevat kuvat poistetaan pysyvästi</string>
+	<string name="delete_imagecache_warning">Kaikki välimuistissa olevat kuvat poistetaan pysyvästi</string>
 	<string name="new_photo">Valitse valokuva galleriasta</string>
 	<string name="use_default">Käytä oletusvalokuvaa</string>
 	<string name="old_photo">Käytä vanhaa valokuvaa</string>

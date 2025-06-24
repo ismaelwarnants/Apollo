@@ -69,7 +69,7 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 		builder.setPositiveButton(R.string.save, this);
 		builder.setNegativeButton(R.string.cancel, this);
-		builder.setTitle(R.string.dialog_save_preset_title);
+		builder.setTitle(R.string.save_preset);
 		builder.setView(text);
 		AlertDialog dialog = builder.show();
 		mSaveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);

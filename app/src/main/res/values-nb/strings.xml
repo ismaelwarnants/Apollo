@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Navnet på spillelisten</string>
 	<string name="delete_dialog_title">Slett <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Dette kan ikke omgjøres</string>
-	<string name="delete_warning">Dette vil permanent slette alle lagrede bilder</string>
+	<string name="delete_imagecache_warning">Dette vil permanent slette alle lagrede bilder</string>
 	<string name="new_photo">Velg foto fra Galleri</string>
 	<string name="use_default">Bruk standard bilde</string>
 	<string name="old_photo">Bruk gammelt bilde</string>

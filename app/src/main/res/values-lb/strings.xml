@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Numm vun der Ofspilllëscht</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> läschen?</string>
 	<string name="cannot_be_undone">Dat kann net réckgängeg gemaach ginn</string>
-	<string name="delete_warning">Heiduerch ginn all d\'tëschegespäichert Biller definitiv geläscht</string>
+	<string name="delete_imagecache_warning">Heiduerch ginn all d\'tëschegespäichert Biller definitiv geläscht</string>
 	<string name="new_photo">Foto aus der Galerie auswielen</string>
 	<string name="use_default">Standard-Foto benotzen</string>
 	<string name="old_photo">Al Foto benotzen</string>

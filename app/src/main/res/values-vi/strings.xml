@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Tên danh sách</string>
 	<string name="delete_dialog_title">Xoá %s?</string>
 	<string name="cannot_be_undone">Không thể phục hồi điều này</string>
-	<string name="delete_warning">Điều này sẽ xoá vĩnh viên ảnh đã lưu trong bộ đệm</string>
+	<string name="delete_imagecache_warning">Điều này sẽ xoá vĩnh viên ảnh đã lưu trong bộ đệm</string>
 	<string name="new_photo">Chọn ảnh từ Thư viện</string>
 	<string name="use_default">Dùng ảnh mặc định</string>
 	<string name="old_photo">Dùng ảnh cũ</string>

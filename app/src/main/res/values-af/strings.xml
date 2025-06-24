@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Speellys naam</string>
 	<string name="delete_dialog_title">Skrap <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Hierdie kan nie ontgedaan gemaak word nie</string>
-	<string name="delete_warning">Items sal permanent verwyder word</string>
+	<string name="delete_imagecache_warning">Items sal permanent verwyder word</string>
 	<string name="new_photo">Kies foto vanaf Gallery</string>
 	<string name="use_default">Gebruik verstekfoto</string>
 	<string name="old_photo">Gebruik ou foto</string>

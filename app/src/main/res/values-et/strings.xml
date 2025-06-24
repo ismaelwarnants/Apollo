@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Esitusloendi nimi</string>
 	<string name="delete_dialog_title">Kustutada <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Seda ei saa tagasi võtta</string>
-	<string name="delete_warning">See toiming kustutab puhverdatud pildid alatiseks</string>
+	<string name="delete_imagecache_warning">See toiming kustutab puhverdatud pildid alatiseks</string>
 	<string name="new_photo">Vali foto galeriist</string>
 	<string name="use_default">Kasuta vaikimisi pilti</string>
 	<string name="old_photo">Kasuta vana pilti</string>

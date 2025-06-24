@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Nom de la llista de reproducció</string>
 	<string name="delete_dialog_title">Esborra <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Això no es podrà desfer</string>
-	<string name="delete_warning">Això esborrarà permanentment les imatges de la memòria cau</string>
+	<string name="delete_imagecache_warning">Això esborrarà permanentment les imatges de la memòria cau</string>
 	<string name="new_photo">Escull una foto de la Galeria</string>
 	<string name="use_default">Utilitza la foto predefinida</string>
 	<string name="old_photo">Utilitza la foto antiga</string>

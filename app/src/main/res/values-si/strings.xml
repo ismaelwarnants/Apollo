@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">වාදනලැයිස්තුවේ නම</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> මකන්නද?</string>
 	<string name="cannot_be_undone">මෙය ආපසු කළ නොහැක</string>
-	<string name="delete_warning">මෙමගින් හැඹිලිගත පින්තූර සටහන් ස්ථිරවම මකා දැමෙනු ඇත</string>
+	<string name="delete_imagecache_warning">මෙමගින් හැඹිලිගත පින්තූර සටහන් ස්ථිරවම මකා දැමෙනු ඇත</string>
 	<string name="new_photo">සේයාව ගැලරියෙන් තෝරන්න</string>
 	<string name="use_default">පෙරනිමි සේයාව භාවිතාකරන්න</string>
 	<string name="old_photo">පැරණි සේයාව භාවිතාකරන්න</string>

@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Nome da lista de rep.</string>
 	<string name="delete_dialog_title">Excluir <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Isso não pode ser desfeito</string>
-	<string name="delete_warning">Isso vai excluir permanentemente as entradas de imagem em cache</string>
+	<string name="delete_imagecache_warning">Isso vai excluir permanentemente as entradas de imagem em cache</string>
 	<string name="new_photo">Escolher foto da Galeria</string>
 	<string name="use_default">Usar foto padrão</string>
 	<string name="old_photo">Usar foto antiga</string>

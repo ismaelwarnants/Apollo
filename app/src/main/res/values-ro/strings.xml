@@ -60,7 +60,7 @@
 	<string name="create_playlist_prompt">Numele listei de redare</string>
 	<string name="delete_dialog_title">Șterge <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Această acțiune nu poate fi anulată</string>
-	<string name="delete_warning">Aceasta va șterge permanent imaginile păstrate în cache</string>
+	<string name="delete_imagecache_warning">Aceasta va șterge permanent imaginile păstrate în cache</string>
 	<string name="new_photo">Alege poza din Galerie</string>
 	<string name="use_default">Utilizare foto implicită</string>
 	<string name="old_photo">Utilizare foto veche</string>
