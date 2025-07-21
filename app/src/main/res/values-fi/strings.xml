@@ -122,7 +122,7 @@
     <string name="copy_playlist">kopioi soittolista</string>
     <string name="dialog_disable_bat_opt_title">Poista akun optimointi käytöstä</string>
     <string name="dialog_disable_bat_opt_message">On suositeltavaa poistaa akun optimointi käytöstä, jotta Android-järjestelmä ei keskeytä toistoa</string>
-    <string name="dialog_disable_bat_opt_confirm">Käytä</string>
+    <string name="dialog_disable_bat_opt_confirm">käytä</string>
     <string name="dialog_disable_bat_opt_ignore">ohita</string>
     <string name="item_hidden">merkintä piilotettu onnistuneesti</string>
     <string name="web_search">Verkkohaku</string>
