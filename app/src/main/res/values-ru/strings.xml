@@ -98,7 +98,7 @@
     <string name="settings_download_artist_images_title">Скачивать фото исполнителей</string>
     <string name="settings_open_source_licenses">Лицензии открытого ПО</string>
     <string name="settings_version_title">Версия приложения</string>
-    <string name="share_track_using">Опубликовать сведения в:</string>
+    <string name="share_track_using">Поделится песней в</string>
     <string name="current_color">Текущий</string>
     <string name="new_color">Новый</string>
     <string name="app_widget_large_alt">Apollo: 4×2 (альтернативный)</string>
@@ -123,7 +123,7 @@
     <string name="rename_playlist">переименовать плейлист</string>
     <string name="copy_playlist">копировать плейлист</string>
     <string name="dialog_disable_bat_opt_title">Отключить оптимизацию батареи</string>
-    <string name="dialog_disable_bat_opt_message">Рекомендуется отключить оптимизацию батареи, чтобы предотвратить прерывание воспроизведения системой Android.</string>
+    <string name="dialog_disable_bat_opt_message">Рекомендуется отключить оптимизацию батареи, чтобы предотвратить прерывание воспроизведения системой Android</string>
     <string name="dialog_disable_bat_opt_confirm">применить</string>
     <string name="dialog_disable_bat_opt_ignore">игнорировать</string>
     <string name="item_hidden">запись успешно скрыта</string>
@@ -155,7 +155,7 @@
     <string name="settings_source_code">Исходный код</string>
     <string name="settings_source_code_descr">открыть в веб-обозревателе</string>
     <string name="empty_recents">Пока нет прослушанных песен.</string>
-    <string name="empty_playlist">Этот плейлист пуст.</string>
+    <string name="empty_playlist">Этот плейлист пуст</string>
     <string name="empty_favorites">Нет песен, добавленных в избранное!</string>
     <string name="empty_artist_albums">Нет альбома этого исполнителя</string>
     <string name="empty_preset_name">пустое название!</string>
