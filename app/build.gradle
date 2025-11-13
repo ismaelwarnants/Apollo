@@ -3,16 +3,15 @@ plugins {
 }
 
 android {
-	compileSdk 36
-	useLibrary 'org.apache.http.legacy'
+	compileSdkVersion 36
 	namespace 'org.nuclearfog.apollo'
 
 	defaultConfig {
 		applicationId 'org.nuclearfog.apollo'
 		minSdkVersion 21
 		targetSdkVersion 36
-		versionCode 65
-		versionName '1.6.9'
+		versionCode 66
+		versionName '1.6.10'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
 	}
@@ -48,6 +47,13 @@ android {
 		includeInBundle = false
 	}
 
+	// disable baseline profiles
+	tasks.configureEach { task ->
+		if (task.name.contains("ArtProfile")) {
+			task.enabled = false
+		}
+	}
+
 	packagingOptions {
 		exclude '/META-INF/CHANGES'
 		exclude '/META-INF/DEPENDENCIES'
@@ -69,5 +75,5 @@ dependencies {
 	implementation 'androidx.preference:preference:1.2.1'
 	implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 	//noinspection DifferentStdlibGradleVersion
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.2.0'
 }
