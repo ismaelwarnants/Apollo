@@ -11,14 +11,12 @@
 
 package org.nuclearfog.apollo.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
@@ -35,7 +33,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-@SuppressLint("ApplySharedPref")
 public final class PreferenceUtils {
 
 	private static final String TAG = "PreferenceUtils";
@@ -94,7 +91,7 @@ public final class PreferenceUtils {
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
-	private static final String ENABLE_XFADE = "xfade_enable";
+	private static final String ENABLE_XFADE = "fade_effect_enable";
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 	private static final String AUTOSCROLL = "autoscroll_current";
 
@@ -104,11 +101,10 @@ public final class PreferenceUtils {
 	private SharedPreferences audioEffectsPref;
 	private int themeColor;
 
-	/**
-	 * @param context The {@link Context} to use.
-	 */
+
 	private PreferenceUtils(Context context) {
-		defaultPref = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+		PreferenceManager.setDefaultValues(context, R.xml.settings, false);
+		defaultPref = PreferenceManager.getDefaultSharedPreferences(context);
 		audioEffectsPref = context.getSharedPreferences(FX_PREF_NAME, Context.MODE_PRIVATE);
 		themeColor = defaultPref.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
 	}
@@ -392,7 +388,7 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(MODE_REPEAT, repeatMode);
 		editor.putInt(MODE_SHUFFLE, shuffleMode);
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -470,9 +466,7 @@ public final class PreferenceUtils {
 					long trackId = Long.parseLong(item, 16);
 					playList.add(trackId);
 				} catch (NumberFormatException exception) {
-					if (BuildConfig.DEBUG) {
-						Log.w(TAG, "bad playlist id: " + item);
-					}
+					Log.w(TAG, "bad playlist id: " + item);
 				}
 			}
 		}
@@ -512,9 +506,7 @@ public final class PreferenceUtils {
 					int idx = Integer.parseInt(item, 16);
 					history.add(idx);
 				} catch (NumberFormatException exception) {
-					if (BuildConfig.DEBUG) {
-						Log.w(TAG, "bad history index: " + item);
-					}
+					Log.w(TAG, "bad history index: " + item);
 				}
 			}
 		}
@@ -554,7 +546,7 @@ public final class PreferenceUtils {
 	public void setAudioFxEnabled(boolean enable) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putBoolean(FX_ENABLE, enable);
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -589,7 +581,7 @@ public final class PreferenceUtils {
 
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putString(FX_EQUALIZER_BANDS, result.toString());
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -609,7 +601,7 @@ public final class PreferenceUtils {
 	public void setBassLevel(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_BASSBOOST, level);
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -629,7 +621,7 @@ public final class PreferenceUtils {
 	public void setReverbLevel(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_REVERB, level);
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -649,16 +641,7 @@ public final class PreferenceUtils {
 	public void setPresetName(String name) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putString(FX_PRESET, name);
-		editor.commit();
-	}
-
-	/**
-	 * check if crossfade is enabled
-	 *
-	 * @return true if crossfade is enabled
-	 */
-	public boolean crossfadeEnabled() {
-		return defaultPref.getBoolean(ENABLE_XFADE, true);
+		editor.apply();
 	}
 
 	/**
@@ -674,7 +657,7 @@ public final class PreferenceUtils {
 	public void setExcludeTracks(boolean showHidden) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putBoolean(SHOW_HIDDEN, showHidden);
-		editor.commit();
+		editor.apply();
 	}
 
 	/**
@@ -737,5 +720,14 @@ public final class PreferenceUtils {
 	 */
 	public boolean isExternalAudioFxPreferred() {
 		return defaultPref.getBoolean(FX_PREFER_EXT, false);
+	}
+
+	/**
+	 * check if crossfade is enabled
+	 *
+	 * @return true if crossfade is enabled
+	 */
+	public boolean crossfadeEnabled() {
+		return defaultPref.getBoolean(ENABLE_XFADE, true);
 	}
 }

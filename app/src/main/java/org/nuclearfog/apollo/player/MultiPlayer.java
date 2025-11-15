@@ -265,8 +265,9 @@ public class MultiPlayer {
 				return true;
 			}
 		} else {
-			gotoNext();
 			setCrossfadeTask(false);
+			gotoNext();
+			return true;
 		}
 		return false;
 	}
