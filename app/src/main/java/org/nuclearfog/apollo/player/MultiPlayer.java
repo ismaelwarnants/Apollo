@@ -128,6 +128,7 @@ public class MultiPlayer {
 			mPlayers[i] = new MediaPlayer();
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
+			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 			if (xFadeEnabled) {
 				mPlayers[i].setVolume(0f, 0f);
@@ -491,6 +492,17 @@ public class MultiPlayer {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * called when a mediaplayer finished playback
+	 *
+	 * @see android.media.MediaPlayer.OnCompletionListener
+	 */
+	private void onCompletion(MediaPlayer mp) {
+		if (!xFadeEnabled) {
+			gotoNext();
+		}
 	}
 
 	/**
