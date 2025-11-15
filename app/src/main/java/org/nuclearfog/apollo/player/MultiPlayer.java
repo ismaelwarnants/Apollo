@@ -6,12 +6,13 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -103,26 +104,34 @@ public class MultiPlayer {
 	 */
 	private volatile int xfadeMode = NONE;
 	/**
+	 * enable/disable fade in/out effect
+	 */
+	private boolean xFadeEnabled;
+	/**
 	 * volume of the current selected media player
 	 */
 	@FloatRange(from = 0.0f, to = 1.0f)
 	private float volume = 0f;
 
 	/**
-	 * @param looper   playback service looper used for crossfade/error handler
+	 * @param context context from service
 	 * @param callback a callback used to inform about playback changes
 	 */
-	public MultiPlayer(Looper looper, OnPlaybackStatusCallback callback) {
-		playerHandler = new Handler(looper);
-		xfadeHandler = new Handler(looper);
+	public MultiPlayer(Context context, OnPlaybackStatusCallback callback) {
+		playerHandler = new Handler(context.getMainLooper());
+		xfadeHandler = new Handler(context.getMainLooper());
 		retriever = new MediaMetadataRetriever();
+		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
+		xFadeEnabled = mPrefs.crossfadeEnabled();
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = new MediaPlayer();
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
-			mPlayers[i].setVolume(0f, 0f);
 			mPlayers[i].setOnErrorListener(this::onError);
+			if (xFadeEnabled) {
+				mPlayers[i].setVolume(0f, 0f);
+			}
 		}
 	}
 
@@ -180,11 +189,26 @@ public class MultiPlayer {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean play() {
-		if (xfadeMode == NONE) {
-			isPlaying = true;
-			xfadeMode = FADE_IN;
-			setCrossfadeTask(true);
-			return true;
+		try {
+			if (!xFadeEnabled) {
+				MediaPlayer player = mPlayers[currentPlayer];
+				setCrossfadeTask(false);
+				if (!player.isPlaying()) {
+					player.start();
+					player.setVolume(1.0f, 1.0f);
+					isPlaying = true;
+				}
+				return true;
+			} else if (xfadeMode == NONE) {
+				isPlaying = true;
+				xfadeMode = FADE_IN;
+				volume = 0.0f;
+				setCrossfadeTask(true);
+				return true;
+			}
+		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to start player");
+			stop();
 		}
 		return false;
 	}
@@ -195,15 +219,14 @@ public class MultiPlayer {
 	 * @param force true to stop playback immediately
 	 */
 	public void pause(boolean force) {
-		MediaPlayer player = mPlayers[currentPlayer];
 		try {
-			if (force) {
+			if (force || !xFadeEnabled) {
+				MediaPlayer player = mPlayers[currentPlayer];
 				setCrossfadeTask(false);
-				xfadeMode = NONE;
-				isPlaying = false;
-				volume = 0.0f;
 				if (player.isPlaying()) {
 					player.pause();
+					isPlaying = false;
+					callback.onPlaybackEnd(false);
 				}
 			} else {
 				xfadeMode = FADE_OUT;
@@ -221,7 +244,6 @@ public class MultiPlayer {
 		try {
 			mPlayers[currentPlayer].stop();
 			setCrossfadeTask(false);
-			xfadeMode = NONE;
 			isPlaying = false;
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
@@ -235,17 +257,22 @@ public class MultiPlayer {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean next() {
-		if (continuous && initialized && xfadeMode == NONE) {
-			xfadeMode = XFADE;
-			isPlaying = true;
-			setCrossfadeTask(true);
-			return true;
+		if (xFadeEnabled) {
+			if (continuous && initialized && xfadeMode == NONE) {
+				xfadeMode = XFADE;
+				isPlaying = true;
+				setCrossfadeTask(true);
+				return true;
+			}
+		} else {
+			gotoNext();
+			setCrossfadeTask(false);
 		}
 		return false;
 	}
 
 	/**
-	 * Releases mediaplayer
+	 * Releases media player
 	 */
 	public void release() {
 		stop();
@@ -427,8 +454,9 @@ public class MultiPlayer {
 		} else if (xfadeTask != null) {
 			xfadeTask.cancel(false);
 			xfadeTask = null;
+			xfadeMode = NONE;
+			volume = 1.0f;
 		}
-
 	}
 
 	/**

@@ -174,4 +174,6 @@
     <string name="item_hidden">Eintrag erfolgreich versteckt</string>
     <string name="settings_data_musicbrainz">MusicBrainz Datenbank</string>
     <string name="select_albumart">Artwork auswählen</string>
+	<string name="settings_enable_crossfade">Fade-In/Out Effekt aktivieren</string>
+    <string name="settings_enable_crossfade_descr">Zum Anwenden Neustart notwendig</string>
 </resources>

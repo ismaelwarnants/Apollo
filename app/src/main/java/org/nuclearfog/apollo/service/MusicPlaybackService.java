@@ -331,7 +331,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		//
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getMainLooper(), this);
+		mPlayer = new MultiPlayer(getApplicationContext(), this);
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);

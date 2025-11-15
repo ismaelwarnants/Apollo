@@ -94,6 +94,7 @@ public final class PreferenceUtils {
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
+	private static final String ENABLE_XFADE = "xfade_enable";
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 	private static final String AUTOSCROLL = "autoscroll_current";
 
@@ -649,6 +650,15 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putString(FX_PRESET, name);
 		editor.commit();
+	}
+
+	/**
+	 * check if crossfade is enabled
+	 *
+	 * @return true if crossfade is enabled
+	 */
+	public boolean crossfadeEnabled() {
+		return defaultPref.getBoolean(ENABLE_XFADE, true);
 	}
 
 	/**

@@ -65,23 +65,30 @@
 			android:summary="@string/settings_disable_bat_opt_summary"
 			android:title="@string/settings_disable_bat_opt_title" />
 
-		<!--keep activity screen on-->
+		<!-- keep activity screen on -->
 		<CheckBoxPreference
 			android:defaultValue="false"
 			android:key="keep_screen_on"
 			android:title="@string/settings_keep_screen_on" />
 
-		<!--use external equalizer if exists-->
+		<!-- use external equalizer if exists -->
 		<CheckBoxPreference
 			android:defaultValue="false"
 			android:key="fx_prefer_external"
 			android:title="@string/settings_prefer_external_equalizer" />
 
-		<!--autoscroll to current track-->
+		<!-- autoscroll to current track -->
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="autoscroll_current"
 			android:title="@string/settings_scroll_current_track" />
+
+		<!-- enable/disable crossfade effect -->
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="xfade_enable"
+			android:title="@string/settings_enable_crossfade"
+			android:summary="@string/settings_enable_crossfade_descr" />
 
 	</PreferenceCategory>
 
