@@ -10,6 +10,7 @@ interface IApolloService {
     void open(in long[] list, int position);
     void pause(boolean force);
     void play();
+    void stop();
     void gotoNext();
     void gotoPrev();
     void enqueue(in long[] list, int action);

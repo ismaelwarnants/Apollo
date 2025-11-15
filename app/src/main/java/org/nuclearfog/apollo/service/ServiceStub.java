@@ -61,6 +61,17 @@ class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void stop() {
+		MusicPlaybackService service = mService.get();
+		if (service != null) {
+			service.stop();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void play() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
