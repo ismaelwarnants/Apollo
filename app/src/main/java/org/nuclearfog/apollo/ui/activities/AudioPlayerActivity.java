@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -254,6 +255,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mArtistName.setOnClickListener(this);
 		mQueueSwitch.setOnClickListener(this);
 		mAlbumArtSmall.setOnClickListener(this);
+		getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+			@Override
+			public void handleOnBackPressed() {
+				NavUtils.goHome(AudioPlayerActivity.this);
+			}
+		});
 	}
 
 	/**
@@ -311,15 +318,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	protected void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
 		savedInstanceState.putBoolean(KEY_QUEUE_VISIBILITY, queueContainer.getVisibility() == View.VISIBLE);
 		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onBackPressed() {
-		NavUtils.goHome(this);
-		super.onBackPressed();
 	}
 
 	/**
