@@ -10,7 +10,7 @@ import android.os.Handler;
 public class ShutdownHandler extends Handler implements Runnable {
 
 	/**
-	 * Idle time before stopping the foreground notification
+	 * Idle time in milliseconds before stopping the foreground notification
 	 */
 	private static final int IDLE_DELAY = 30000;
 
@@ -27,7 +27,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 
 	@Override
 	public void run() {
-		service.releaseServiceUiAndStop();
+		service.releaseService(false);
 	}
 
 	/**

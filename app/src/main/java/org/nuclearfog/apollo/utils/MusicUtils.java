@@ -274,11 +274,25 @@ public final class MusicUtils {
 			try {
 				service.stop();
 			} catch (Exception exception) {
-				Log.e(TAG, "pause()", exception);
+				Log.e(TAG, "stop()", exception);
 			}
 		}
 	}
 
+	/**
+	 * stops playback and releases background service
+	 */
+	public static void releaseService(Activity activity) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				service.stop();
+				service.releaseService();
+			} catch (Exception exception) {
+				Log.e(TAG, "releaseService()", exception);
+			}
+		}
+	}
 
 	/**
 	 * Cycles through the repeat options.

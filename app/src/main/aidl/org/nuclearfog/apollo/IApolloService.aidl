@@ -29,6 +29,7 @@ interface IApolloService {
     void setPlayerPosition(long pos);
     void removeTrack(int pos);
     int removeTracks(in long[] ids);
+    void releaseService();
     Song getCurrentTrack();
     Album getCurrentAlbum();
 }

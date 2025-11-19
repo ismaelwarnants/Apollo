@@ -259,7 +259,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Used to track what type of audio focus loss caused the playback to pause
 	 */
-	private boolean mPausedByTransientLossOfFocus = false;
+	private boolean mPausedByFocusLoss = false;
 	/**
 	 * used to check if service is running in the foreground
 	 */
@@ -311,7 +311,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		return isPlaying() || mPausedByTransientLossOfFocus;
+		return isPlaying() || mPausedByFocusLoss;
 	}
 
 	/**
@@ -404,18 +404,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
+			case AudioManager.AUDIOFOCUS_LOSS:
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 				if (mPlayer.isPlaying())
-					mPausedByTransientLossOfFocus = true;
-				// fall through
-
-			case AudioManager.AUDIOFOCUS_LOSS:
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+					mPausedByFocusLoss = true;
 				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
-				mPausedByTransientLossOfFocus = false;
+				mPausedByFocusLoss = false;
 				break;
 		}
 	}
@@ -498,7 +495,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (ACTION_TOGGLEPAUSE.equals(action)) {
 			if (mPlayer.isPlaying()) {
 				pause(false);
-				mPausedByTransientLossOfFocus = false;
 			} else {
 				play();
 			}
@@ -506,8 +502,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// stop track/dismiss notification
 		else if (ACTION_STOP.equals(action)) {
 			stop();
-			mPausedByTransientLossOfFocus = false;
-			releaseServiceUiAndStop();
+			releaseService(false);
 		}
 		// repeat set
 		else if (ACTION_REPEAT.equals(action)) {
@@ -615,6 +610,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Stops playback.
 	 */
 	synchronized void stop() {
+		mPausedByFocusLoss = false;
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
@@ -636,6 +632,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
 				if (mPlayer.initialized()) {
+					mPausedByFocusLoss = false;
 					long duration = mPlayer.getDuration();
 					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
 						gotoNext();
@@ -656,6 +653,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Temporarily pauses playback.
 	 */
 	public synchronized void pause(boolean force) {
+		mPausedByFocusLoss = false;
 		mPlayer.pause(force);
 		if (force) {
 			notifyChange(CHANGED_PLAYSTATE);
@@ -1066,12 +1064,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * releases playback service and removes notification/playback controls
+	 *
+	 * @param force true to force shutdown this service
 	 */
-	synchronized void releaseServiceUiAndStop() {
-		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
+	synchronized void releaseService(boolean force) {
+		if (!isPlaying() && !mPausedByFocusLoss) {
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
-			if (!mServiceInUse) {
+			if (!mServiceInUse || force) {
 				saveQueue(true);
 				stopSelf(mServiceStartId);
 			}

@@ -156,7 +156,7 @@ public final class NavUtils {
 	 * closes app and stops playback
 	 */
 	public static void closeApp(Activity activity) {
-		MusicUtils.stop(activity);
 		activity.finishAndRemoveTask();
+		MusicUtils.releaseService(activity);
 	}
 }
