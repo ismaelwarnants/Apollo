@@ -311,7 +311,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		return releaseServiceUiAndStop();
+		return isPlaying() || mPausedByTransientLossOfFocus;
 	}
 
 	/**
@@ -1066,20 +1066,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * releases playback service and removes notification/playback controls
-	 *
-	 * @return true if service remains unchanged
 	 */
-	synchronized boolean releaseServiceUiAndStop() {
+	synchronized void releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse) {
 				saveQueue(true);
 				stopSelf(mServiceStartId);
-				return false;
 			}
 		}
-		return true;
 	}
 
 	/**
@@ -1108,9 +1104,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void updatePlaybackState() {
 		PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
 		builder.setState(mPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
-		builder.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY |
-				PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP |
-				PlaybackStateCompat.ACTION_PLAY_FROM_URI | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE | PlaybackStateCompat.ACTION_SET_REPEAT_MODE);
+		builder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_STOP |
+				PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+				PlaybackStateCompat.ACTION_PLAY_FROM_URI | PlaybackStateCompat.ACTION_SEEK_TO |
+				PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE | PlaybackStateCompat.ACTION_SET_REPEAT_MODE);
 		mSession.setPlaybackState(builder.build());
 	}
 

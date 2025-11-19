@@ -116,9 +116,6 @@ class NotificationHelper {
 		// style for the notification
 		MediaStyle mediaStyle = new MediaStyle();
 		mediaStyle.setMediaSession(mSession.getSessionToken());
-		mediaStyle.setCancelButtonIntent(callbackStop);
-		mediaStyle.setShowCancelButton(true);
-		mediaStyle.setShowActionsInCompactView(0, 1, 2);
 
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID)
