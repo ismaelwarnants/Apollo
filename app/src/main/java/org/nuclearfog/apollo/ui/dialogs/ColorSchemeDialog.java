@@ -98,9 +98,9 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		if (savedInstanceState != null) {
 			color = savedInstanceState.getInt(KEY_COLOR);
 		} else {
-			color = mPreferences.getDefaultThemeColor();
+			color = mPreferences.getThemeColor();
 		}
-		mOldColor.setBackgroundColor(mPreferences.getDefaultThemeColor());
+		mOldColor.setBackgroundColor(mPreferences.getThemeColor());
 		mColorPicker.setColor(color);
 		onColorChanged(color);
 
@@ -163,12 +163,12 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		} else if (v.getId() == R.id.color_scheme_dialog_preset_8) {
 			mColorPicker.setColorResource(android.R.color.black);
 		} else if (v.getId() == R.id.color_scheme_dialog_old_color) {
-			mColorPicker.setColor(mPreferences.getDefaultThemeColor());
+			mColorPicker.setColor(mPreferences.getThemeColor());
 		} else if (v.getId() == R.id.color_scheme_dialog_cancel) {
 			dismiss();
 			return;
 		} else if (v.getId() == R.id.color_scheme_dialog_apply) {
-			mPreferences.setDefaultThemeColor(mColorPicker.getColor());
+			mPreferences.setThemeColor(mColorPicker.getColor());
 			NavUtils.goHome(getActivity());
 			dismiss();
 			return;

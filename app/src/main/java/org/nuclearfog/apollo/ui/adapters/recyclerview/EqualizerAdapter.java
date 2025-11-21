@@ -136,8 +136,8 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerHolder> {
 			frequency = itemView.findViewById(R.id.eq_freq);
 
 			PreferenceUtils mPrefs = PreferenceUtils.getInstance(parent.getContext());
-			slider.getProgressDrawable().setColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
-			slider.getThumb().setColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
+			slider.getProgressDrawable().setColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
+			slider.getThumb().setColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
 		}
 	}
 

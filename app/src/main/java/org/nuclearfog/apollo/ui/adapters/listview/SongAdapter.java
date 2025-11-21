@@ -69,7 +69,7 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	public SongAdapter(Context context, boolean enableDrag) {
 		super(context, LAYOUT);
 		PreferenceUtils prefs = PreferenceUtils.getInstance(context);
-		selectedColor = prefs.getDefaultThemeColor() & TRANSPARENCY_MASK;
+		selectedColor = prefs.getThemeColor() & TRANSPARENCY_MASK;
 		enableDnD = enableDrag;
 	}
 

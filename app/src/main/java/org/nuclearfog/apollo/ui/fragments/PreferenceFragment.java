@@ -13,6 +13,7 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -46,7 +47,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 
 	@Override
 	public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-		addPreferencesFromResource(R.xml.settings);
+		setPreferencesFromResource(R.xml.settings, rootKey);
+		PreferenceManager.setDefaultValues(requireContext(), R.xml.settings, true);
 		Preference mOpenSourceLicenses = findPreference(LICENSE);
 		Preference deleteCache = findPreference(DEL_CACHE);
 		Preference themeChooser = findPreference(THEME_SEL);

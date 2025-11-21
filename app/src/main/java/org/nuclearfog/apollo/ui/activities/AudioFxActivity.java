@@ -91,7 +91,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		audioEffects = AudioEffects.getInstance(this, sessionId);
 		ThemeUtils mResources = new ThemeUtils(this);
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(this);
-		ColorFilter colorFilter = new PorterDuffColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
+		ColorFilter colorFilter = new PorterDuffColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
 
 		bassBoost.getProgressDrawable().setColorFilter(colorFilter);
 		bassBoost.getThumb().setColorFilter(colorFilter);

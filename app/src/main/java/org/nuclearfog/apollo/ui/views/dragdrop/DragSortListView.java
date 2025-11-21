@@ -330,7 +330,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		setDragScrollStarts(mDragUpScrollStartFrac, mDragUpScrollStartFrac);
 		mController.setRemoveEnabled(true);
 		mController.setSortEnabled(true);
-		mController.setBackgroundColor(PreferenceUtils.getInstance(context).getDefaultThemeColor());
+		mController.setBackgroundColor(PreferenceUtils.getInstance(context).getThemeColor());
 
 		setOnTouchListener(mController);
 		setOnScrollListener(this);

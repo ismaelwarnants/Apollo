@@ -99,14 +99,13 @@ public final class PreferenceUtils {
 
 	private SharedPreferences defaultPref;
 	private SharedPreferences audioEffectsPref;
-	private int themeColor;
+	private int defaultColor;
 
 
 	private PreferenceUtils(Context context) {
-		PreferenceManager.setDefaultValues(context, R.xml.settings, false);
 		defaultPref = PreferenceManager.getDefaultSharedPreferences(context);
 		audioEffectsPref = context.getSharedPreferences(FX_PREF_NAME, Context.MODE_PRIVATE);
-		themeColor = defaultPref.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
+		defaultColor = context.getResources().getColor(R.color.holo_green);
 	}
 
 	/**
@@ -143,10 +142,10 @@ public final class PreferenceUtils {
 	/**
 	 * Returns the current theme color.
 	 *
-	 * @return The default theme color.
+	 * @return The current theme color.
 	 */
-	public int getDefaultThemeColor() {
-		return themeColor;
+	public int getThemeColor() {
+		return defaultPref.getInt(DEFAULT_THEME_COLOR, defaultColor);
 	}
 
 	/**
@@ -154,8 +153,7 @@ public final class PreferenceUtils {
 	 *
 	 * @param value The new theme color to use.
 	 */
-	public void setDefaultThemeColor(int value) {
-		themeColor = value;
+	public void setThemeColor(int value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(DEFAULT_THEME_COLOR, value);
 		editor.apply();

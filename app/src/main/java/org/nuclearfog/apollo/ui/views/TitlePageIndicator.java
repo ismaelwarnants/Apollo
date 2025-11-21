@@ -144,9 +144,9 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		mPaintText.setAntiAlias(true);
 		mPaintFooterLine.setStyle(Paint.Style.FILL_AND_STROKE);
 		mPaintFooterLine.setStrokeWidth(mFooterLine);
-		mPaintFooterLine.setColor(mPref.getDefaultThemeColor());
+		mPaintFooterLine.setColor(mPref.getThemeColor());
 		mPaintFooterIndicator.setStyle(Paint.Style.FILL_AND_STROKE);
-		mPaintFooterIndicator.setColor(mPref.getDefaultThemeColor());
+		mPaintFooterIndicator.setColor(mPref.getThemeColor());
 	}
 
 	/**

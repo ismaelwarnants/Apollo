@@ -31,7 +31,7 @@ public class PrefixHighlighter {
 	 *
 	 */
 	public PrefixHighlighter(Context context) {
-		mPrefixHighlightColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
+		mPrefixHighlightColor = PreferenceUtils.getInstance(context).getThemeColor();
 	}
 
 	/**

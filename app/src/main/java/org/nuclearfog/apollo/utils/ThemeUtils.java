@@ -154,7 +154,7 @@ public class ThemeUtils {
 	 * @param view view to set the default background
 	 */
 	public void setBackgroundColor(View view) {
-		Drawable background = new HoloSelector(mPref.getDefaultThemeColor());
+		Drawable background = new HoloSelector(mPref.getThemeColor());
 		view.setBackground(background);
 	}
 
@@ -165,6 +165,6 @@ public class ThemeUtils {
 	 */
 	public void themeProgressbar(ProgressBar progressBar) {
 		Drawable icon = progressBar.getIndeterminateDrawable();
-		icon.setColorFilter(new PorterDuffColorFilter(mPref.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN));
+		icon.setColorFilter(new PorterDuffColorFilter(mPref.getThemeColor(), PorterDuff.Mode.SRC_IN));
 	}
 }

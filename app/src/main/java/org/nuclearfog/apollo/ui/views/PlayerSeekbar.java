@@ -81,7 +81,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		LayoutParams textParam = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
 		int color = getResources().getColor(R.color.audio_player_current_time);
 		float textSize = getResources().getDimension(R.dimen.text_size_micro);
-		int themeColor = mPrefs.getDefaultThemeColor();
+		int themeColor = mPrefs.getThemeColor();
 		// configure position and duration time views
 		posText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 		durText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
