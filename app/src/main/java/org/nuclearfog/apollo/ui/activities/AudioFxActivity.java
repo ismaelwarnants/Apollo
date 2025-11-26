@@ -1,6 +1,5 @@
 package org.nuclearfog.apollo.ui.activities;
 
-import android.annotation.SuppressLint;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -15,12 +14,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,8 +58,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	 */
 	private static final int BASS_STEPS = 20;
 
-	@SuppressLint("UseSwitchCompatOrMaterialCode")
-	private Switch enableFx;
+	private SwitchCompat enableFx;
 	private SeekBar bassBoost, reverb;
 	private Spinner presetSelector;
 	private View presetLabel;

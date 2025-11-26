@@ -23,13 +23,14 @@
 		app:layout_constraintTop_toBottomOf="@id/audiofx_toolbar"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/audiofx_enable"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginStart="10dp"
 		android:layout_marginBottom="5dp"
 		android:layout_marginEnd="5dp"
+		app:trackTint="@color/transparent_black"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/audiofx_colorstrip"
 		app:layout_constraintBottom_toTopOf="@id/audiofx_preset"

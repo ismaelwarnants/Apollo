@@ -14,34 +14,28 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:padding="@dimen/color_scheme_view_margin">
+	android:orientation="vertical">
 
 	<org.nuclearfog.apollo.ui.views.ColorPickerView
 		android:id="@+id/color_picker_view"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintEnd_toEndOf="parent" />
+		android:layout_height="wrap_content" />
 
-	<GridLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:orientation="horizontal"
 		android:layout_marginStart="@dimen/color_scheme_view_margin"
-		android:layout_marginTop="@dimen/color_scheme_view_margin"
-		android:layout_marginEnd="@dimen/color_scheme_view_margin"
-		android:columnCount="5">
+		android:layout_marginEnd="@dimen/color_scheme_view_margin">
 
 		<Button
 			android:id="@+id/color_scheme_dialog_preset_1"
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_green"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -50,7 +44,7 @@
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_green_light"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -59,7 +53,7 @@
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_orange_dark"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -68,7 +62,7 @@
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_orange_light"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -77,16 +71,25 @@
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_purple"
 			style="?android:attr/buttonBarButtonStyle" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginStart="@dimen/color_scheme_view_margin"
+		android:layout_marginEnd="@dimen/color_scheme_view_margin">
 
 		<Button
 			android:id="@+id/color_scheme_dialog_preset_6"
 			android:layout_width="0dp"
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginTop="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_red_light"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -96,7 +99,7 @@
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
 			android:layout_marginTop="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@android:color/white"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -106,7 +109,7 @@
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
 			android:layout_marginTop="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@android:color/black"
 			style="?android:attr/buttonBarButtonStyle" />
 
@@ -116,7 +119,7 @@
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
 			android:layout_marginTop="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@color/holo_green"
 			android:lines="1"
 			android:text="@string/current_color"
@@ -130,14 +133,14 @@
 			android:layout_height="@dimen/color_scheme_dialog_button_height"
 			android:layout_marginStart="@dimen/color_scheme_view_margin"
 			android:layout_marginTop="@dimen/color_scheme_view_margin"
-			android:layout_columnWeight="1"
+			android:layout_weight="1"
 			android:background="@android:color/transparent"
 			android:text="@string/new_color"
 			android:textSize="@dimen/text_size_micro"
 			android:textStyle="bold"
 			style="?android:attr/buttonBarButtonStyle" />
 
-	</GridLayout>
+	</LinearLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -189,8 +192,6 @@
 			android:background="@color/dialog_button"
 			android:layout_marginEnd="@dimen/color_scheme_view_margin"
 			android:text="@android:string/cancel"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/color_scheme_dialog_apply"
 			style="?android:attr/buttonBarButtonStyle" />
 
 		<Button
@@ -199,8 +200,6 @@
 			android:layout_height="@dimen/color_scheme_dialog_button_confirm_height"
 			android:background="@color/dialog_button"
 			android:text="@android:string/ok"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
 			style="?android:attr/buttonBarButtonStyle" />
 
 	</LinearLayout>

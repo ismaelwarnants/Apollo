@@ -11,6 +11,7 @@
 
 package org.nuclearfog.apollo.ui.dialogs;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -70,6 +72,18 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 			colorDialog = new ColorSchemeDialog();
 		}
 		colorDialog.show(fm, TAG);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		if (dialog.getWindow() != null)
+			dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+		return dialog;
 	}
 
 	/**
