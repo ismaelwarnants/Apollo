@@ -589,6 +589,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onSeek(long position) {
 		MusicUtils.seek(this, position);
+		playerSeekbar.seek(MusicUtils.getPositionMillis(this));
 	}
 
 	/**
@@ -727,8 +728,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		} else {
 			position = Math.max(0, position - jump);
 		}
-		MusicUtils.seek(this, position);
-		playerSeekbar.seek(position);
+		onSeek(position);
 	}
 
 	/**

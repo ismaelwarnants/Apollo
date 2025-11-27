@@ -93,10 +93,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String CHANGED_PLAYSTATE = APOLLO_PACKAGE_NAME + ".playstatechanged";
 	/**
-	 * Indicates that music playback position within a title was changed
-	 */
-	private static final String CHANGED_POSITION = APOLLO_PACKAGE_NAME + ".positionchanged";
-	/**
 	 * Indicates the meta data has changed in some way, like a track change
 	 */
 	public static final String CHANGED_META = APOLLO_PACKAGE_NAME + ".metachanged";
@@ -698,7 +694,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void seekTo(long position) {
 		if (!mPlayer.busy()) {
 			mPlayer.setPosition(position);
-			notifyChange(CHANGED_POSITION);
 		}
 	}
 
@@ -776,14 +771,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mNotificationHelper.dismissNotification();
 					shutdownHandler.stop();
 				}
-				// fall through
-
-			case CHANGED_POSITION:
 				updatePlaybackState();
 				break;
 
 			case CHANGED_QUEUE:
 				saveQueue(true);
+				updatePlaybackState();
 				if (mPlayer.isPlaying()) {
 					setNextTrack(false);
 				}
@@ -882,7 +875,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			// check if current play position is higher than the removed track
 			if (mPlayPos > pos) {
 				mPlayPos--;
-				notifyChange(CHANGED_POSITION);
 			}
 			// check if current track was removed then stop playback
 			else if (mPlayPos == pos) {
@@ -942,7 +934,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// notify if any tracks were removed
 		if (numRemoved > 0) {
 			notifyChange(CHANGED_QUEUE);
-			notifyChange(CHANGED_POSITION);
 		}
 		return numRemoved;
 	}

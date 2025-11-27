@@ -262,6 +262,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("GestureBackNavigation,deprecation")
 	@Override
 	public void onBackPressed() {
 		if (mTabCarousel.getCurrentTab() == 0) {

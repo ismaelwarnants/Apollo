@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,30 +37,29 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 
 	@Nullable
 	private OnPlayerSeekListener listener;
+	private Future<?> updateTask;
 
 	/**
 	 * current position of the seekbar in milliseconds
 	 */
-	private long position;
+	private long position = 0;
 
 	/**
 	 * duration of the seekbar in milliseconds
 	 */
-	private long duration;
+	private long duration = 0;
 
 	/**
 	 * set to true to enable automatic seekbar updates
 	 */
-	private boolean updateSeekbar;
-
-	private Future<?> updateTask;
+	private boolean updateSeekbar = false;
 
 	/**
 	 * thread pool used to run a task to periodically update seekbar and time
 	 */
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 
-	private Runnable timeHandler = new TimeHandler(this);
+	private Runnable mUpdater = new Updater(this);
 
 	/**
 	 *
@@ -106,7 +106,8 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		addView(seekbar);
 		addView(durText);
 		// init current time view
-		setCurrentTimeText(0);
+		updatePositionText();
+		updateDurationText();
 	}
 
 
@@ -114,7 +115,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (listener != null && fromUser) {
 			position = (duration * progress) / 1000L;
-			setCurrentTimeText(position);
+			updatePositionText();
 			listener.onSeek(position);
 		}
 	}
@@ -143,16 +144,10 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 *
 	 * @param time time in milliseconds
 	 */
-	public void setCurrentTime(long time) {
-		if (time >= 0 && time <= duration && duration > 0) {
-			position = time;
-			setCurrentTimeText(time);
-			seekbar.setProgress((int) (1000 * time / duration));
-		} else {
-			position = 0;
-			setCurrentTimeText(0);
-			seekbar.setProgress(0);
-		}
+	public void setCurrentTime(@IntRange(from = 0) long time) {
+		position = Math.min(time, duration);
+		updatePositionText();
+		updateSeekbarPosition();
 	}
 
 	/**
@@ -160,27 +155,26 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 *
 	 * @param time time in milliseconds
 	 */
-	public void setTotalTime(long time) {
-		durText.setText(StringUtils.makeTimeString(getContext(), time));
+	public void setTotalTime(@IntRange(from = 0) long time) {
 		duration = time;
+		updateDurationText();
 		seek(0);
 	}
 
 	/**
 	 * seek to a new position
 	 *
-	 * @param to time in milliseconds
+	 * @param time time in milliseconds
 	 */
-	public void seek(long to) {
+	public void seek(@IntRange(from = 0) long time) {
 		if (duration > 0) {
-			position = to;
-			int pos = (int) (to * 1000L / duration);
-			seekbar.setProgress(pos);
+			position = Math.min(time, duration);
+			updateSeekbarPosition();
 		} else {
 			position = 0;
-			seekbar.setProgress(0);
+			updateSeekbarPosition();
 		}
-		setCurrentTimeText(position);
+		updatePositionText();
 	}
 
 	/**
@@ -193,7 +187,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		AnimatorUtils.pulse(posText, !isPlaying);
 		if (isPlaying) {
 			if (updateTask == null)
-				updateTask = threadPool.scheduleWithFixedDelay(timeHandler, TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
+				updateTask = threadPool.scheduleWithFixedDelay(mUpdater, Updater.CYCLE_MS, Updater.CYCLE_MS, TimeUnit.MILLISECONDS);
 		} else if (updateTask != null) {
 			updateTask.cancel(true);
 			updateTask = null;
@@ -208,19 +202,32 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	}
 
 	/**
-	 * print current time value of the position
+	 * update current position time
 	 */
-	private void setCurrentTimeText(long time) {
-		posText.setText(StringUtils.makeTimeString(getContext(), time));
+	private void updatePositionText() {
+		posText.setText(StringUtils.makeTimeString(getContext(), position));
 	}
 
 	/**
-	 * called periodically by {@link TimeHandler} to update the seekbar position
+	 * update duration time
+	 */
+	private void updateDurationText() {
+		durText.setText(StringUtils.makeTimeString(getContext(), duration));
+	}
+
+	/**
+	 * update seekbar position
+	 */
+	private void updateSeekbarPosition() {
+		seekbar.setProgress((int) (1000L * position / duration));
+	}
+
+	/**
+	 * called periodically by {@link Updater} to update the seekbar position
 	 */
 	private void update() {
 		if (updateSeekbar) {
-			position += TimeHandler.CYCLE_MS;
-			setCurrentTimeText(position);
+			position = Math.min(position + Updater.CYCLE_MS, duration);
 			seek(position);
 		}
 	}
@@ -241,19 +248,19 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	/**
 	 * Runnable used to update the seekbar position periodically
 	 */
-	private static final class TimeHandler implements Runnable {
+	private static final class Updater implements Runnable {
 
 		/**
 		 * time to refresh seekbar/position
 		 */
-		static final int CYCLE_MS = 250;
+		static final int CYCLE_MS = 500;
 
 		private WeakReference<PlayerSeekbar> callback;
 
 		/**
 		 * @param player callback to this view
 		 */
-		TimeHandler(PlayerSeekbar player) {
+		Updater(PlayerSeekbar player) {
 			callback = new WeakReference<>(player);
 		}
 
@@ -262,11 +269,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		public void run() {
 			PlayerSeekbar seekbar = callback.get();
 			if (seekbar != null) {
-				try {
-					seekbar.update();
-				} catch (Exception exception) {
-					// ignore
-				}
+				seekbar.update();
 			}
 		}
 	}
