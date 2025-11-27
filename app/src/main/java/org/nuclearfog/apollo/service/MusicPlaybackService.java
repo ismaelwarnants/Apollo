@@ -300,18 +300,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onRebind(Intent intent) {
-		mServiceInUse = true;
-		shutdownHandler.stop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		return isPlaying() || mPausedByFocusLoss;
+		return false;
 	}
 
 	/**
@@ -404,15 +395,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
-			case AudioManager.AUDIOFOCUS_LOSS:
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-				if (mPlayer.isPlaying())
+				if (mPlayer.isPlaying()) {
 					mPausedByFocusLoss = true;
+				}
+				// fall through
+
+			case AudioManager.AUDIOFOCUS_LOSS:
 				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
 				mPausedByFocusLoss = false;
+				mPlayer.setVolume(1f);
+				break;
+
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+				mPlayer.setVolume(.5f);
 				break;
 		}
 	}
@@ -610,7 +609,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Stops playback.
 	 */
 	synchronized void stop() {
-		mPausedByFocusLoss = false;
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
@@ -630,7 +628,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			request.setOnAudioFocusChangeListener(this);
 
 			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
-			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
+			if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 				if (mPlayer.initialized()) {
 					mPausedByFocusLoss = false;
 					long duration = mPlayer.getDuration();
@@ -644,7 +642,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					setShuffleMode(SHUFFLE_AUTO);
 				}
 			} else {
-				Log.v(TAG, "could not gain audio focus!");
+				Log.v(TAG, "play(): could not gain audio focus!");
 			}
 		}
 	}
@@ -653,7 +651,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Temporarily pauses playback.
 	 */
 	public synchronized void pause(boolean force) {
-		mPausedByFocusLoss = false;
 		mPlayer.pause(force);
 		if (force) {
 			notifyChange(CHANGED_PLAYSTATE);

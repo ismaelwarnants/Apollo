@@ -66,19 +66,17 @@ public class MultiPlayer {
 	 */
 	private static final int ERROR_RETRY = 500;
 
+	@Nullable
+	private Future<?> xfadeTask;
+	private MediaMetadataRetriever mmr;
+	private OnPlaybackStatusCallback callback;
+	private Handler playerHandler, xfadeHandler;
+
 	/**
 	 * thread pool used to periodically poll the current play position for crossfading
 	 */
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 
-	private MediaMetadataRetriever retriever;
-
-	private Handler playerHandler, xfadeHandler;
-
-	private OnPlaybackStatusCallback callback;
-
-	@Nullable
-	private Future<?> xfadeTask;
 	/**
 	 * mediaplayer used to switch between tracks
 	 */
@@ -110,8 +108,13 @@ public class MultiPlayer {
 	/**
 	 * volume of the current selected media player
 	 */
-	@FloatRange(from = 0.0f, to = 1.0f)
+	@FloatRange(from = 0f, to = 1f)
 	private float volume = 0f;
+	/**
+	 * volume limit
+	 */
+	@FloatRange(from = 0f, to = 1f)
+	private float maxVolume = 1f;
 
 	/**
 	 * @param context context from service
@@ -120,7 +123,7 @@ public class MultiPlayer {
 	public MultiPlayer(Context context, OnPlaybackStatusCallback callback) {
 		playerHandler = new Handler(context.getMainLooper());
 		xfadeHandler = new Handler(context.getMainLooper());
-		retriever = new MediaMetadataRetriever();
+		mmr = new MediaMetadataRetriever();
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
 		xFadeEnabled = mPrefs.crossfadeEnabled();
 		this.callback = callback;
@@ -196,14 +199,14 @@ public class MultiPlayer {
 				setCrossfadeTask(false);
 				if (!player.isPlaying()) {
 					player.start();
-					player.setVolume(1.0f, 1.0f);
+					player.setVolume(1f, 1f);
 					isPlaying = true;
 				}
 				return true;
 			} else if (xfadeMode == NONE) {
 				isPlaying = true;
 				xfadeMode = FADE_IN;
-				volume = 0.0f;
+				volume = 0f;
 				setCrossfadeTask(true);
 				return true;
 			}
@@ -249,6 +252,7 @@ public class MultiPlayer {
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
 			initialized = false;
+			mPlayers[currentPlayer].reset();
 		}
 	}
 
@@ -357,6 +361,16 @@ public class MultiPlayer {
 	}
 
 	/**
+	 * set volume limit of the player
+	 *
+	 * @param volume volume limit
+	 */
+	public void setVolume(@FloatRange(from = 0f, to = 1f) float volume) {
+		maxVolume = volume;
+		mPlayers[currentPlayer].setVolume(volume, volume);
+	}
+
+	/**
 	 * @param player The {@link MediaPlayer} to use
 	 * @param uri    The path of the file, or the http/rtsp URL of the stream you want to play
 	 * @return true if initialized
@@ -364,8 +378,8 @@ public class MultiPlayer {
 	private boolean setDataSourceImpl(MediaPlayer player, Context context, @NonNull Uri uri) {
 		try {
 			// check file if valid
-			retriever.setDataSource(context, uri);
-			String hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
+			mmr.setDataSource(context, uri);
+			String hasAudio = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
 			if (hasAudio == null || !hasAudio.equals("yes")) {
 				Log.w(TAG, "invalid media file!");
 				return false;
@@ -416,9 +430,9 @@ public class MultiPlayer {
 						current.setVolume(0f, 0f);
 						current.start();
 					} else {
-						volume = Math.min(volume + FADE_STEPS, 1f);
+						volume = Math.min(volume + FADE_STEPS, maxVolume);
 						current.setVolume(volume, volume);
-						if (volume == 1f) {
+						if (volume == maxVolume) {
 							xfadeMode = NONE;
 						}
 					}
@@ -457,7 +471,7 @@ public class MultiPlayer {
 			xfadeTask.cancel(false);
 			xfadeTask = null;
 			xfadeMode = NONE;
-			volume = 1.0f;
+			volume = maxVolume;
 		}
 	}
 
