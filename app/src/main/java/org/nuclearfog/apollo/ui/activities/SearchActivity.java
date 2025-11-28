@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.activities;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -106,7 +105,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(@Nullable Bundle savedInstanceState) {
+	protected void initialize() {
 		// init view
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);

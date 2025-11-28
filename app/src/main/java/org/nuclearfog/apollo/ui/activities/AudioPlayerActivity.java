@@ -239,8 +239,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				setQueueTrack();
 			}
 		}
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 		ApolloUtils.setWakelock(this);
 
 		mPreviousButton.setRepeatListener(this);
@@ -278,6 +276,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	protected void onStart() {
 		super.onStart();
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
+		//
 		IntentFilter filter = new IntentFilter();
 		// Play and pause changes
 		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
@@ -307,6 +308,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
+		MusicUtils.unbindFromService(this);
 		mImageFetcher.clear();
 		super.onStop();
 	}
@@ -330,7 +332,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		albumSongLoader.cancel();
 		artistSongLoader.cancel();
 		playlistSongLoader.cancel();
-		MusicUtils.unbindFromService(this);
 		super.onDestroy();
 	}
 

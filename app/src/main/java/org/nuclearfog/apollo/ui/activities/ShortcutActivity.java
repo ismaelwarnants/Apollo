@@ -91,9 +91,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		// go to home activity if there is any missing permission
 		if (!ApolloUtils.permissionsGranted(this)) {
 			NavUtils.goHome(this);
-			return;
 		}
-		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -103,6 +101,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	protected void onStart() {
 		super.onStart();
 		// bind activity to service
+		MusicUtils.bindToService(this, this);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
@@ -111,18 +110,10 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 */
 	@Override
 	protected void onStop() {
-		MusicUtils.notifyForegroundStateChanged(this, false);
-		super.onStop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
 		// Unbind from the service
 		MusicUtils.unbindFromService(this);
-		super.onDestroy();
+		MusicUtils.notifyForegroundStateChanged(this, false);
+		super.onStop();
 	}
 
 	/**

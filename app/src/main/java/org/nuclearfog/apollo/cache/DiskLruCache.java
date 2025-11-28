@@ -171,7 +171,8 @@ public final class DiskLruCache implements Closeable {
 		// prefer to pick up where we left off
 		if (cache == null)
 			cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
-		if (cache.journalFile.exists() || cache.journalFile.createNewFile()) {
+		// check if journal file exists, then read file
+		if (cache.journalFile.exists()) {
 			try {
 				cache.readJournal();
 				cache.processJournal();
@@ -182,6 +183,10 @@ public final class DiskLruCache implements Closeable {
 				cache.delete();
 				cache.rebuildJournal();
 			}
+		}
+		// create new file
+		else if (cache.journalFile.createNewFile()) {
+			cache.rebuildJournal();
 		}
 		return cache;
 	}

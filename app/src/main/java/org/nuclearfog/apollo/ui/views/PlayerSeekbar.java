@@ -219,7 +219,9 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * update seekbar position
 	 */
 	private void updateSeekbarPosition() {
-		seekbar.setProgress((int) (1000L * position / duration));
+		if (duration > 0) {
+			seekbar.setProgress((int) (1000L * position / duration));
+		}
 	}
 
 	/**

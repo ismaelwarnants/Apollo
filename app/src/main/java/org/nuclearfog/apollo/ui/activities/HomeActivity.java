@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -52,7 +51,7 @@ public class HomeActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(@Nullable Bundle savedInstanceState) {
+	protected void initialize() {
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);

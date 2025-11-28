@@ -16,7 +16,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore.Audio;
 import android.util.Log;
 import android.view.Menu;
@@ -186,11 +185,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init(@Nullable Bundle savedInstanceState) {
+	protected void initialize() {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mViewPager = findViewById(R.id.activity_profile_base_pager);
-		Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
@@ -208,29 +206,28 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// set toolbar
 		setSupportActionBar(toolbar);
 		// Get the MIME type
-		if (mArguments != null) {
+		if (getIntent().getExtras() != null) {
 			// Get the ID
-			if (mArguments.containsKey(Constants.IDS)) {
-				ids = ApolloUtils.readSerializedIDs(mArguments.getString(Constants.IDS, ""));
+			if (getIntent().getExtras().containsKey(Constants.IDS)) {
+				ids = ApolloUtils.readSerializedIDs(getIntent().getExtras().getString(Constants.IDS, ""));
 			} else {
-				ids = new long[]{mArguments.getLong(Constants.ID)};
+				ids = new long[]{getIntent().getExtras().getLong(Constants.ID)};
 			}
 			// get mime type
-			mType = mArguments.getString(Constants.MIME_TYPE, "");
+			mType = getIntent().getExtras().getString(Constants.MIME_TYPE, "");
 			// Get the profile title
-			mProfileName = mArguments.getString(Constants.NAME, "");
+			mProfileName = getIntent().getExtras().getString(Constants.NAME, "");
 			// Get the artist name
-			mArtistName = mArguments.getString(Constants.ARTIST_NAME, "");
+			mArtistName = getIntent().getExtras().getString(Constants.ARTIST_NAME, "");
 			// get album yeas
-			year = mArguments.getString(Constants.ALBUM_YEAR, "");
+			year = getIntent().getExtras().getString(Constants.ALBUM_YEAR, "");
 			// get folder name if defined
-			folderPath = mArguments.getString(Constants.FOLDER, "");
+			folderPath = getIntent().getExtras().getString(Constants.FOLDER, "");
 		}
 		type = Type.fromString(mType);
 		initViews();
-
 		// Initialize the pager adapter
-		ProfileAdapter mPagerAdapter = new ProfileAdapter(this, mArguments, type);
+		ProfileAdapter mPagerAdapter = new ProfileAdapter(this, getIntent().getExtras(), type);
 		// Attach the adapter
 		mViewPager.setAdapter(mPagerAdapter);
 		// Offscreen limit
@@ -248,15 +245,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	protected void onPause() {
 		super.onPause();
 		mImageFetcher.clear();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		outState.putAll(getIntent().getExtras());
-		super.onSaveInstanceState(outState);
 	}
 
 	/**

@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.ui.adapters.viewpager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -56,7 +57,7 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 	/**
 	 *
 	 */
-	public ProfileAdapter(FragmentActivity activity, Bundle args, Type type) {
+	public ProfileAdapter(FragmentActivity activity, @Nullable Bundle args, Type type) {
 		super(activity.getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		landscape = ApolloUtils.isLandscape(activity);
 		this.type = type;

@@ -208,6 +208,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private AudioManager mAudio;
 	/**
+	 * used to request/abandon audio focus
+	 */
+	private AudioFocusRequestCompat audioRequest;
+	/**
 	 * Broadcast receiver for widget actions
 	 */
 	private WidgetBroadcastReceiver mIntentReceiver;
@@ -296,9 +300,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onRebind(Intent intent) {
+		mServiceInUse = true;
+		shutdownHandler.stop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		return false;
+		return isPlaying() || mPausedByFocusLoss;
 	}
 
 	/**
@@ -315,8 +328,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
 		headsetReceiver = new HeadsetStatusReceiver(this);
-		//
-		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		// Initialize the media player
 		mPlayer = new MultiPlayer(getApplicationContext(), this);
 		// init media session
@@ -330,7 +341,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// init shutdown handler
 		shutdownHandler = new ShutdownHandler(this);
 		getCardId();
-
+		// initialize audio request
+		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
+		attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_UNKNOWN);
+		attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
+		audioRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+				.setAudioAttributes(attrCompat.build()).setOnAudioFocusChangeListener(this).build();
 		// init external storage listener
 		IntentFilter storageIntent = new IntentFilter();
 		storageIntent.addAction(Intent.ACTION_MEDIA_EJECT);
@@ -608,6 +625,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
+		AudioManagerCompat.abandonAudioFocusRequest(mAudio, audioRequest);
 		notifyChange(CHANGED_PLAYSTATE);
 	}
 
@@ -615,31 +633,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Resumes or starts playback.
 	 */
 	synchronized void play() {
-		if (mAudio != null) {
-			AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
-			attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_UNKNOWN);
-			attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
-			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
-			request.setAudioAttributes(attrCompat.build());
-			request.setOnAudioFocusChangeListener(this);
-
-			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
-			if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				if (mPlayer.initialized()) {
-					mPausedByFocusLoss = false;
-					long duration = mPlayer.getDuration();
-					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
-						gotoNext();
-					}
-					if (mPlayer.play()) {
-						notifyChange(CHANGED_PLAYSTATE);
-					}
-				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
-					setShuffleMode(SHUFFLE_AUTO);
+		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, audioRequest);
+		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+			if (mPlayer.initialized()) {
+				mPausedByFocusLoss = false;
+				long duration = mPlayer.getDuration();
+				if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
+					gotoNext();
 				}
-			} else {
-				Log.v(TAG, "play(): could not gain audio focus!");
+				if (mPlayer.play()) {
+					notifyChange(CHANGED_PLAYSTATE);
+				}
+			} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
+				setShuffleMode(SHUFFLE_AUTO);
 			}
+		} else {
+			Log.v(TAG, "play(): could not gain audio focus!");
 		}
 	}
 
@@ -1057,6 +1066,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void releaseService(boolean force) {
 		if (!isPlaying() && !mPausedByFocusLoss) {
+			AudioManagerCompat.abandonAudioFocusRequest(mAudio, audioRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {

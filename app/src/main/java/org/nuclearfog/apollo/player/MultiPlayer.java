@@ -227,7 +227,7 @@ public class MultiPlayer {
 			if (force || !xFadeEnabled) {
 				MediaPlayer player = mPlayers[currentPlayer];
 				setCrossfadeTask(false);
-				if (player.isPlaying()) {
+				if (isPlaying) {
 					player.pause();
 					isPlaying = false;
 					callback.onPlaybackEnd(false);
@@ -245,14 +245,15 @@ public class MultiPlayer {
 	 * stops playback
 	 */
 	public void stop() {
+		MediaPlayer player = mPlayers[currentPlayer];
 		try {
-			mPlayers[currentPlayer].stop();
+			player.stop();
 			setCrossfadeTask(false);
 			isPlaying = false;
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
 			initialized = false;
-			mPlayers[currentPlayer].reset();
+			player.reset();
 		}
 	}
 

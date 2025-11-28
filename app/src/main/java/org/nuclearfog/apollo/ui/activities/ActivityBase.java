@@ -163,9 +163,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// check permissions before initialization
 		if (ApolloUtils.permissionsGranted(this)) {
 			// initialize sub-class
-			init(savedInstanceState);
-			// Bind Apollo's service
-			MusicUtils.bindToService(this, this);
+			initialize();
 		} else {
 			ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, REQ_CHECK_PERM);
 		}
@@ -190,11 +188,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		// register play state callback
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
-		MusicUtils.notifyForegroundStateChanged(this, true);
-		if (MusicUtils.isConnected(this)) {
-			// update playback control after resuming
-			updatePlaybackControls();
-			updateBottomActionBarInfo();
+		// check permissions before initialization
+		if (ApolloUtils.permissionsGranted(this)) {
+			// Bind Apollo's service
+			MusicUtils.bindToService(this, this);
+			MusicUtils.notifyForegroundStateChanged(this, true);
+			if (MusicUtils.isConnected(this)) {
+				// update playback control after resuming
+				updatePlaybackControls();
+				updateBottomActionBarInfo();
+			}
 		}
 	}
 
@@ -206,6 +209,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
+		// Unbind from the service
+		MusicUtils.unbindFromService(this);
 		super.onStop();
 	}
 
@@ -214,8 +219,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	protected void onDestroy() {
-		// Unbind from the service
-		MusicUtils.unbindFromService(this);
 		songLoader.cancel();
 		super.onDestroy();
 	}
@@ -256,7 +259,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			// show battery optimization dialog
 			ApolloUtils.openBatteryOptimizationDialog(this);
 			// initialize subclass
-			init(getIntent().getExtras());
+			initialize();
 			// Bind Apollo's service
 			MusicUtils.bindToService(this, this);
 		}
@@ -449,7 +452,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * initialize activity
 	 */
-	protected abstract void init(@Nullable Bundle savedInstanceState);
+	protected abstract void initialize();
 
 	/**
 	 * notify sub classes to reload information
