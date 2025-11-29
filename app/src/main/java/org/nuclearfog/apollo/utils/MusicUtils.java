@@ -252,34 +252,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * pauses the current playback
-	 */
-	public static void pause(Activity activity) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				service.pause(true);
-			} catch (Exception exception) {
-				Log.e(TAG, "pause()", exception);
-			}
-		}
-	}
-
-	/**
-	 * pauses the current playback
-	 */
-	public static void stop(Activity activity) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				service.stop();
-			} catch (Exception exception) {
-				Log.e(TAG, "stop()", exception);
-			}
-		}
-	}
-
-	/**
 	 * stops playback and releases background service
 	 */
 	public static void releaseService(Activity activity) {

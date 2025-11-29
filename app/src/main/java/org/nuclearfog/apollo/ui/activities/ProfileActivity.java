@@ -22,9 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,7 +76,7 @@ import java.util.List;
  * @author nuclearfog
  * @see ProfileFragment
  */
-public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, AsyncCallback<Bitmap>,
+public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitmap>,
 		OnPageChangeListener, OnItemSelectedListener, OnTabChangeListener, OnOptionSelectedListener {
 
 	private static final String TAG = "ProfileActivity";
@@ -99,10 +98,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	public static final String PAGE_MOST_PLAYED = "page_most";
 
-	/**
-	 *
-	 */
-	private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
+	private ActivityResultLauncher<PickVisualMediaRequest> imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), this::onImageSelected);
+
 
 	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 
@@ -125,11 +122,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * ID used for albums, artist genres etc
 	 */
 	private long[] ids = {0};
-
-	/**
-	 * MIME type for album/artist images
-	 */
-	private static final String MIME_IMAGE = "image/*";
 
 	/**
 	 * MIME type of the profile
@@ -498,23 +490,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onActivityResult(ActivityResult result) {
-		if (result.getResultCode() == RESULT_OK) {
-			Intent intent = result.getData();
-			if (intent != null && intent.getData() != null) {
-				Uri imageUri = intent.getData();
-				mTabCarousel.setAlbumArt(imageUri);
-				setProfileImage(imageUri);
-			} else {
-				selectOldPhoto();
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
@@ -650,10 +625,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	public void selectNewPhoto() {
 		// First remove the old image
 		removeFromCache();
-		// Now open the gallery
-		Intent intent = new Intent(Intent.ACTION_PICK, null);
-		intent.setType(MIME_IMAGE);
-		activityResultLauncher.launch(intent);
+		// open system image selector
+		imagePickerLauncher.launch(new PickVisualMediaRequest.Builder()
+				.setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
 	}
 
 	/**
@@ -702,6 +676,18 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			startActivity(webSearch);
 		} catch (ActivityNotFoundException e) {
 			Log.w(TAG, "couldn't open browser!");
+		}
+	}
+
+	/**
+	 * callback used to set selected image
+	 *
+	 * @param imageUri local image path or null if no image is selected
+	 */
+	private void onImageSelected(@Nullable Uri imageUri) {
+		if (imageUri != null) {
+			mTabCarousel.setAlbumArt(imageUri);
+			setProfileImage(imageUri);
 		}
 	}
 

@@ -23,7 +23,6 @@
 	<!-- Used to download images -->
 	<uses-permission android:name="android.permission.INTERNET" />
 	<!-- Allows Apollo to read from External Storage -->
-	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:ignore="PhotoAndVideoPolicy,SelectedPhotoAccess" />
 	<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 	<!-- Allows Apollo to stay in the foreground -->
