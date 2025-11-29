@@ -152,6 +152,15 @@ class ServiceStub extends IApolloService.Stub {
 
 
 	@Override
+	public long getPlayerDuration() {
+		MusicPlaybackService service = mService.get();
+		if (service != null)
+			return service.getDuration();
+		return 0L;
+	}
+
+
+	@Override
 	public void setPlayerPosition(long position) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {

@@ -210,7 +210,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * used to request/abandon audio focus
 	 */
-	private AudioFocusRequestCompat audioRequest;
+	private AudioFocusRequestCompat focusRequest;
 	/**
 	 * Broadcast receiver for widget actions
 	 */
@@ -281,10 +281,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private int mShufflePos = -1;
 	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
-	/**
-	 * used to distinguish between different cards when saving/restoring playlists
-	 */
-	private int mCardId = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -340,13 +336,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		settings = PreferenceUtils.getInstance(this);
 		// init shutdown handler
 		shutdownHandler = new ShutdownHandler(this);
-		getCardId();
 		// initialize audio request
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
-		attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_UNKNOWN);
 		attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
-		audioRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+		focusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
 				.setAudioAttributes(attrCompat.build()).setOnAudioFocusChangeListener(this).build();
 		// init external storage listener
 		IntentFilter storageIntent = new IntentFilter();
@@ -562,7 +556,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * called if multimediacard is rejected by user
+	 * called if multimedia card is rejected by user
 	 */
 	public synchronized void onEject() {
 		saveQueue(true);
@@ -575,7 +569,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * called if multimedia card was mounted
 	 */
 	public synchronized void onMediaMount() {
-		getCardId();
 		reloadQueue();
 		mQueueIsSaveable = true;
 	}
@@ -625,7 +618,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
-		AudioManagerCompat.abandonAudioFocusRequest(mAudio, audioRequest);
+		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 		notifyChange(CHANGED_PLAYSTATE);
 	}
 
@@ -633,7 +626,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Resumes or starts playback.
 	 */
 	synchronized void play() {
-		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, audioRequest);
+		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, focusRequest);
 		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 			if (mPlayer.initialized()) {
 				mPausedByFocusLoss = false;
@@ -962,10 +955,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return The current playback position in milliseconds
 	 */
 	synchronized long getPosition() {
-		if (mPlayer.initialized()) {
-			return mPlayer.getPosition();
-		}
-		return 0;
+		return mPlayer.getPosition();
+	}
+
+	/**
+	 * Returns the duration of the current track
+	 *
+	 * @return duration in milliseconds
+	 */
+	synchronized long getDuration() {
+		return mPlayer.getDuration();
 	}
 
 	/**
@@ -1065,13 +1064,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param force true to force shutdown this service
 	 */
 	synchronized void releaseService(boolean force) {
-		if (!isPlaying() && !mPausedByFocusLoss) {
-			AudioManagerCompat.abandonAudioFocusRequest(mAudio, audioRequest);
+		if ((!isPlaying() && !mPausedByFocusLoss) || force) {
+			stop(); // stop playback if running and release audio focus
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {
-				saveQueue(true);
-				stopSelf(mServiceStartId);
+				if (stopSelfResult(mServiceStartId)) {
+					saveQueue(true);
+					Log.d(TAG, "service stopped");
+				}
 			}
 		}
 	}
@@ -1101,7 +1102,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void updatePlaybackState() {
 		PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
-		builder.setState(mPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
+		builder.setState(mPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, mPlayer.getPosition(), 1.0f);
 		builder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_STOP |
 				PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
 				PlaybackStateCompat.ACTION_PLAY_FROM_URI | PlaybackStateCompat.ACTION_SEEK_TO |
@@ -1112,18 +1113,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 *
 	 */
-	private void getCardId() {
-		try {
-			Cursor mCursor = CursorFactory.makeCardCursor(this);
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					mCardId = mCursor.getInt(0);
-				}
-				mCursor.close();
+	private int getCurrentCardId() {
+		int mCardId = -1;
+		Cursor mCursor = CursorFactory.makeCardCursor(this);
+		if (mCursor != null) {
+			if (mCursor.moveToFirst()) {
+				mCardId = mCursor.getInt(0);
+				Log.d(TAG, "CardId=" + mCardId);
 			}
-		} catch (Exception e) {
-			Log.e(TAG, "getCardId()", e);
+			mCursor.close();
 		}
+		return mCardId;
 	}
 
 	/**
@@ -1513,7 +1513,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void saveQueue(boolean full) {
 		if (mQueueIsSaveable) {
 			if (full) {
-				settings.setPlayList(mPlayList, mCardId);
+				settings.setPlayList(mPlayList, getCurrentCardId());
 				if (mShuffleMode != SHUFFLE_NONE) {
 					settings.setTrackHistory(mHistory);
 				}
@@ -1527,12 +1527,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Reloads the queue as the user left it the last time they stopped using
-	 * Apollo
+	 * Reloads the queue as the user left it the last time they stopped using Apollo
 	 */
 	private void reloadQueue() {
-		int id = settings.getCardId();
-		if (id == mCardId) {
+		if (getCurrentCardId() == settings.getCardId()) {
 			mPlayList.clear();
 			mPlayList.addAll(settings.getPlaylist());
 		}

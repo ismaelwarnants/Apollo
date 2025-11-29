@@ -111,6 +111,8 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 	@Nullable
 	private Song selectedSong = null;
 
+	private int oldPos = 0;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -271,15 +273,16 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				// current unique track ID
 				Song song = MusicUtils.getCurrentTrack(requireActivity());
-				int shuffleMode = MusicUtils.getShuffleMode(requireActivity());
-				if (song != null && shuffleMode == MusicUtils.SHUFFLE_NONE && preference.autoScrollEnabled()) {
+				if (song != null && preference.autoScrollEnabled()) {
 					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 						if (mAdapter.getItemId(pos) == song.getId()) {
-							if (pos > 0 && pos < mAdapter.getCount() - 1)
-								mList.smoothScrollToPosition(pos);
-							else
+							int diff = Math.abs(pos - oldPos);
+							if (diff > Constants.SCROLL_ANIM_JUMP_LIMIT) {
 								mList.setSelection(pos);
-							break;
+							} else if (diff != 0) {
+								mList.smoothScrollToPosition(pos);
+							}
+							oldPos = pos;
 						}
 					}
 				}

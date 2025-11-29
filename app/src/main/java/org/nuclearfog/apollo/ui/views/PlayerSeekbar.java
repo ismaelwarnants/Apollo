@@ -271,7 +271,11 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		public void run() {
 			PlayerSeekbar seekbar = callback.get();
 			if (seekbar != null) {
-				seekbar.update();
+				try {
+					seekbar.post(seekbar::update);
+				} catch (Exception e) {
+					// ignore
+				}
 			}
 		}
 	}

@@ -80,6 +80,10 @@ public final class Constants {
 	 * animation duration in milliseconds
 	 */
 	public static final long ANIMATION_SPEED = 500;
+	/**
+	 * item limit to use a smooth scrolling animation
+	 */
+	public static final int SCROLL_ANIM_JUMP_LIMIT = 50;
 
 	/**
 	 * permissions used for Android 6+

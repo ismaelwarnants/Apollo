@@ -300,11 +300,12 @@ public class MultiPlayer {
 	 */
 	public long getDuration() {
 		try {
-			return mPlayers[currentPlayer].getDuration();
+			if (initialized)
+				return mPlayers[currentPlayer].getDuration();
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "invalid player duration");
-			return 0;
 		}
+		return 0;
 	}
 
 	/**
@@ -314,11 +315,12 @@ public class MultiPlayer {
 	 */
 	public long getPosition() {
 		try {
-			return mPlayers[currentPlayer].getCurrentPosition();
+			if (initialized)
+				return mPlayers[currentPlayer].getCurrentPosition();
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "invalid player position");
-			return 0;
 		}
+		return 0;
 	}
 
 	/**

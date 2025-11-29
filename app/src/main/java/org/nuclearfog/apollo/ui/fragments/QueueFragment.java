@@ -48,6 +48,7 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,12 +96,16 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 	 */
 	private FragmentViewModel viewModel;
 
+	private PreferenceUtils mPref;
+
 	private QueueLoader mLoader;
 
 	/**
 	 * Position of a context menu item
 	 */
 	private int mSelectedPosition = -1;
+
+	private int oldPos = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -115,6 +120,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mAdapter = new SongAdapter(requireContext(), true);
 		mLoader = new QueueLoader(requireContext());
+		mPref = PreferenceUtils.getInstance(requireContext());
 		// setup listview
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());
@@ -341,11 +347,15 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 		int pos = MusicUtils.getQueuePosition(requireActivity());
 		if (pos >= 0 && pos < mList.getCount()) {
 			mAdapter.setCurrentTrackPos(pos);
-			if (pos > 0 && pos < mAdapter.getCount() - 1) {
-				mList.smoothScrollToPosition(pos);
-			} else {
-				mList.setSelection(pos);
+			if (mPref.autoScrollEnabled()) {
+				int diff = Math.abs(pos - oldPos);
+				if (diff > Constants.SCROLL_ANIM_JUMP_LIMIT) {
+					mList.setSelection(pos);
+				} else if (diff != 0 ){
+					mList.smoothScrollToPosition(pos);
+				}
 			}
+			oldPos = pos;
 		}
 	}
 }

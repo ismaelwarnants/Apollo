@@ -25,6 +25,7 @@ interface IApolloService {
     int getRepeatMode();
     void refresh();
     boolean isPlaying();
+    long getPlayerDuration();
     long getPlayerPosition();
     void setPlayerPosition(long pos);
     void removeTrack(int pos);

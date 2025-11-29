@@ -995,9 +995,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				Song song = service.getCurrentTrack();
-				if (song != null)
-					return song.getDuration();
+				return service.getPlayerDuration();
 			} catch (RemoteException exception) {
 				Log.e(TAG, "getDurationMillis()", exception);
 			}
