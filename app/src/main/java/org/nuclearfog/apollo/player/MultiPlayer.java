@@ -189,10 +189,8 @@ public class MultiPlayer {
 
 	/**
 	 * Starts or resumes playback.
-	 *
-	 * @return true if successful, false if another operation is already pending
 	 */
-	public boolean play() {
+	public void play() {
 		try {
 			if (!xFadeEnabled) {
 				MediaPlayer player = mPlayers[currentPlayer];
@@ -202,19 +200,18 @@ public class MultiPlayer {
 					player.setVolume(1f, 1f);
 					isPlaying = true;
 				}
-				return true;
+				callback.onPlaybackChanged();
 			} else if (xfadeMode == NONE) {
 				isPlaying = true;
 				xfadeMode = FADE_IN;
 				volume = 0f;
 				setCrossfadeTask(true);
-				return true;
+				callback.onPlaybackChanged();
 			}
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to start player");
 			stop();
 		}
-		return false;
 	}
 
 	/**
@@ -223,15 +220,15 @@ public class MultiPlayer {
 	 * @param force true to stop playback immediately
 	 */
 	public void pause(boolean force) {
+		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			if (force || !xFadeEnabled) {
-				MediaPlayer player = mPlayers[currentPlayer];
 				setCrossfadeTask(false);
-				if (isPlaying) {
+				if (player.isPlaying()) {
 					player.pause();
-					isPlaying = false;
-					callback.onPlaybackEnd(false);
 				}
+				isPlaying = false;
+				callback.onPlaybackChanged();
 			} else {
 				xfadeMode = FADE_OUT;
 			}
@@ -247,10 +244,12 @@ public class MultiPlayer {
 	public void stop() {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
-			if (player.isPlaying())
-				player.stop();
 			setCrossfadeTask(false);
-			isPlaying = false;
+			if (player.isPlaying()) {
+				player.stop();
+				isPlaying = false;
+				callback.onPlaybackChanged();
+			}
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
 			initialized = false;
@@ -260,23 +259,18 @@ public class MultiPlayer {
 
 	/**
 	 * go to next player
-	 *
-	 * @return true if successful, false if another operation is already pending
 	 */
-	public boolean next() {
+	public void next() {
 		if (xFadeEnabled) {
-			if (continuous && initialized && xfadeMode == NONE) {
+			if (initialized && continuous) {
 				xfadeMode = XFADE;
 				isPlaying = true;
 				setCrossfadeTask(true);
-				return true;
 			}
 		} else {
 			setCrossfadeTask(false);
 			gotoNext();
-			return true;
 		}
-		return false;
 	}
 
 	/**
@@ -416,6 +410,7 @@ public class MultiPlayer {
 					current.setVolume(volume, volume);
 					if (volume == 0f) {
 						gotoNext();
+						callback.onComplete();
 					}
 					break;
 
@@ -425,7 +420,6 @@ public class MultiPlayer {
 					current.setVolume(volume, volume);
 					if (volume == 0f) {
 						pause(true);
-						callback.onPlaybackEnd(false);
 					}
 					break;
 
@@ -484,13 +478,28 @@ public class MultiPlayer {
 	 * close current media player and select next one. Inform playback service that track changed
 	 */
 	private void gotoNext() {
-		stop();
-		isPlaying = true;
-		currentPlayer = (currentPlayer + 1) % mPlayers.length;
-		if (callback.onPlaybackEnd(true)) {
+		if (isPlaying) {
+			stop();
+		}
+		if (continuous) {
+			currentPlayer = (currentPlayer + 1) % mPlayers.length;
 			play();
-		} else {
-			isPlaying = false;
+		}
+	}
+
+	/**
+	 * called when a mediaplayer finished playback
+	 *
+	 * @see android.media.MediaPlayer.OnCompletionListener
+	 */
+	private void onCompletion(MediaPlayer mp) {
+		if (!xFadeEnabled) {
+			if (continuous) {
+				gotoNext();
+			} else {
+				pause(true);
+			}
+			callback.onComplete();
 		}
 	}
 
@@ -514,28 +523,19 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * called when a mediaplayer finished playback
-	 *
-	 * @see android.media.MediaPlayer.OnCompletionListener
-	 */
-	private void onCompletion(MediaPlayer mp) {
-		if (!xFadeEnabled) {
-			gotoNext();
-		}
-	}
-
-	/**
 	 * callback used for playback service
 	 */
 	public interface OnPlaybackStatusCallback {
 
 		/**
-		 * called if the current playback ends
-		 *
-		 * @param gotoNext true if player is prepared to play next track
-		 * @return true to start next track
+		 * called if the playback status changed
 		 */
-		boolean onPlaybackEnd(boolean gotoNext);
+		void onPlaybackChanged();
+
+		/**
+		 * called if the player reached the end of the playback
+		 */
+		void onComplete();
 
 		/**
 		 * called if a playback error occurs

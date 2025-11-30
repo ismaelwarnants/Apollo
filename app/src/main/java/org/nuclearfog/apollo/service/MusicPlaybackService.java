@@ -269,7 +269,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private int mRepeatMode = REPEAT_ALL;
 	private int mShufflePos = -1;
 	private int mPlayPos = -1;
-	private int mNextPlayPos = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -439,31 +438,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 
 	@Override
-	public boolean onPlaybackEnd(boolean gotoNext) {
-		if (gotoNext) {
-			// repeat current track by seeking to 0
-			if (mRepeatMode == REPEAT_CURRENT) {
-				seekTo(0);
-				return true;
-			}
-			// no repeat mode set, check if reached end of the queue, then pause the playback
-			else if (mRepeatMode == REPEAT_NONE && mPlayPos < 0) {
-				notifyChange(CHANGED_PLAYSTATE);
-			}
-			// go to next track if any
-			else if (mNextPlayPos >= 0) {
-				// go to next track
-				mPlayPos = mNextPlayPos;
-				setNextTrack(mRepeatMode != REPEAT_NONE);
-				updateTrackInformation();
-				return true;
-			}
-		} else {
-			notifyChange(CHANGED_PLAYSTATE);
-		}
-		// playback is paused
-		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
-		return false;
+	public void onPlaybackChanged() {
+		notifyChange(CHANGED_PLAYSTATE);
+	}
+
+
+	@Override
+	public void onComplete() {
+		mPlayPos = incrementPosition(mPlayPos, false);
+		updateTrackInformation();
+		setNextTrack(false);
+		notifyChange(CHANGED_META);
 	}
 
 
@@ -622,12 +607,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 			if (mPlayer.initialized()) {
 				mPausedByFocusLoss = false;
+				// jump to next track directly if reached the end
 				long duration = mPlayer.getDuration();
 				if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
 					gotoNext();
-				}
-				if (mPlayer.play()) {
-					notifyChange(CHANGED_PLAYSTATE);
+				} else {
+					mPlayer.play();
 				}
 			} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
 				setShuffleMode(SHUFFLE_AUTO);
@@ -652,12 +637,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void gotoNext() {
 		if (!mPlayList.isEmpty()) {
-			if (!mPlayer.isPlaying() || !mPlayer.next()) {
-				// reload next tracks if an error occurred
-				mPlayPos = incrementPosition(mPlayPos, true);
-				openCurrentAndNext();
-				play();
-			}
+			mPlayPos = incrementPosition(mPlayPos, true);
+			mPlayer.pause(true);
+			openCurrentAndNext();
+			play();
 		} else if (makeShuffleList(true)) {
 			mPlayPos = 0;
 			openCurrentAndNext();
@@ -1016,7 +999,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else if (mPlayPos <= from && mPlayPos >= to) {
 			mPlayPos++;
 		}
-		mNextPlayPos = incrementPosition(mPlayPos, false);
 		notifyChange(CHANGED_QUEUE);
 	}
 
@@ -1332,21 +1314,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void setNextTrack(boolean force) {
 		int nextPos = mPlayPos;
+		// search for the next playable track
 		for (int i = 0; i < 10; i++) {
 			nextPos = incrementPosition(nextPos, force);
 			if (nextPos >= 0 && nextPos < mPlayList.size()) {
 				long id = mPlayList.get(nextPos);
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
-					mNextPlayPos = nextPos;
-					break;
+					// stop searching if the next track was set successfully
+					return;
 				}
 			} else {
-				mPlayer.setNextDataSource(getApplicationContext(), null);
-				mNextPlayPos = -1;
+				// no track was found
 				break;
 			}
 		}
+		// if no track was found, stop player after playback end
+		mPlayer.setNextDataSource(getApplicationContext(), null);
 	}
 
 	/**
