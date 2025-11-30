@@ -247,7 +247,8 @@ public class MultiPlayer {
 	public void stop() {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
-			player.stop();
+			if (player.isPlaying())
+				player.stop();
 			setCrossfadeTask(false);
 			isPlaying = false;
 		} catch (IllegalStateException exception) {
@@ -484,9 +485,12 @@ public class MultiPlayer {
 	 */
 	private void gotoNext() {
 		stop();
+		isPlaying = true;
 		currentPlayer = (currentPlayer + 1) % mPlayers.length;
 		if (callback.onPlaybackEnd(true)) {
 			play();
+		} else {
+			isPlaying = false;
 		}
 	}
 
