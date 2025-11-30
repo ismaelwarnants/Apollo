@@ -32,7 +32,7 @@ public class ColorPickerView extends View {
 	 * The width in pixels of the border surrounding all color panels.
 	 */
 	private static final float BORDER_WIDTH_PX = 1;
-	private static final  int PANEL_SAT_VAL = 0;
+	private static final int PANEL_SAT_VAL = 0;
 	private static final int PANEL_HUE = 1;
 	private static final int SLIDER_COLOR = 0xff1c1c1c;
 

@@ -117,7 +117,7 @@ public class MultiPlayer {
 	private float maxVolume = 1f;
 
 	/**
-	 * @param context context from service
+	 * @param context  context from service
 	 * @param callback a callback used to inform about playback changes
 	 */
 	public MultiPlayer(Context context, OnPlaybackStatusCallback callback) {

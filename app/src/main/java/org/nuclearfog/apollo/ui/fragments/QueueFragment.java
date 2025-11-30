@@ -340,7 +340,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 				int diff = Math.abs(pos - oldPos);
 				if (diff > Constants.SCROLL_ANIM_JUMP_LIMIT) {
 					mList.setSelection(pos);
-				} else if (diff != 0 ){
+				} else if (diff != 0) {
 					mList.smoothScrollToPosition(pos);
 				}
 			}
