@@ -395,10 +395,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (mPlayer.isPlaying()) {
 					mPausedByFocusLoss = true;
 				}
-				// fall through
+				pause(true);
+				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS:
-				pause(true);
+				stop();
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
@@ -445,7 +446,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				seekTo(0);
 				return true;
 			}
-			// no repeat mode set, check if reached end of the queue, then stop playback
+			// no repeat mode set, check if reached end of the queue, then pause the playback
 			else if (mRepeatMode == REPEAT_NONE && mPlayPos < 0) {
 				notifyChange(CHANGED_PLAYSTATE);
 			}
@@ -460,6 +461,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else {
 			notifyChange(CHANGED_PLAYSTATE);
 		}
+		// playback is paused
+		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 		return false;
 	}
 

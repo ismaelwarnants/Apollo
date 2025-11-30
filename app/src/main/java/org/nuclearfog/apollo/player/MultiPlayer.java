@@ -366,11 +366,12 @@ public class MultiPlayer {
 	/**
 	 * set volume limit of the player
 	 *
-	 * @param volume volume limit
+	 * @param newVolume volume limit
 	 */
-	public void setVolume(@FloatRange(from = 0f, to = 1f) float volume) {
-		maxVolume = volume;
-		mPlayers[currentPlayer].setVolume(volume, volume);
+	public void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+		maxVolume = newVolume;
+		volume = Math.min(volume, newVolume);
+		mPlayers[currentPlayer].setVolume(newVolume, newVolume);
 	}
 
 	/**
@@ -483,12 +484,9 @@ public class MultiPlayer {
 	 */
 	private void gotoNext() {
 		stop();
-		isPlaying = true;
 		currentPlayer = (currentPlayer + 1) % mPlayers.length;
 		if (callback.onPlaybackEnd(true)) {
 			play();
-		} else {
-			isPlaying = false;
 		}
 	}
 
