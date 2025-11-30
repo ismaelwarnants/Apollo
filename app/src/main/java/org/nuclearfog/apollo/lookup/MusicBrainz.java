@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 
 /**
  * MusicBrainz API
@@ -219,10 +220,12 @@ public class MusicBrainz {
 			} else if (connection.getResponseCode() == 503) {
 				Log.d(TAG, "get() rate limit exceeded!");
 			}
+		} catch (SSLHandshakeException e) {
+			Log.e(TAG, "get() SSL error!");
+		} catch (InterruptedIOException e) {
+			// thrown when a thread was stopped, ignore
 		} catch (IOException e) {
-			if (!(e instanceof InterruptedIOException)) {
-				Log.w(TAG, "get() connection error", e);
-			}
+			Log.e(TAG, "get() connection error", e);
 		}
 		throw new JSONException("no json object");
 	}

@@ -104,6 +104,7 @@
     <string name="settings_delete_cache_summary">Alle zwischengespeicherten Bilder löschen</string>
     <string name="settings_download_missing_artwork_title">Fehlende Albencover laden</string>
     <string name="settings_download_artist_images_title">Fehlende Interpretenbilder laden</string>
+    <string name="settings_disable_certi_validation_summary">Unsicher! Nur aktivieren falls es zu Downloadproblemen kommt</string>
     <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="settings_disable_bat_opt_title">Akku-Optimierungen deaktivieren</string>
     <string name="settings_disable_bat_opt_summary">Akku-Optimierungen deaktivieren falls es zu Unterbrechungen beim Abspielen kommt</string>
@@ -176,4 +177,5 @@
     <string name="select_albumart">Artwork auswählen</string>
 	<string name="settings_enable_crossfade">Fade-In/Out Effekt aktivieren</string>
     <string name="settings_enable_crossfade_descr">Zum Anwenden Neustart notwendig</string>
+	<string name="settings_disable_certi_validation">Zertifikatsprüfung deaktivieren</string>
 </resources>

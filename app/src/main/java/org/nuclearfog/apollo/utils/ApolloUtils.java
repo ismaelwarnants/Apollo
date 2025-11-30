@@ -1,5 +1,6 @@
 package org.nuclearfog.apollo.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,14 @@ import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
 
 import java.io.File;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Mostly general and UI helpers.
@@ -293,6 +301,35 @@ public final class ApolloUtils {
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
 				BatteryOptDialog.show(activity.getSupportFragmentManager());
 			}
+		}
+	}
+
+	/**
+	 * disable SSL certificate validation on Android < 6.0
+	 */
+	@SuppressLint("CustomX509TrustManager,TrustAllX509TrustManager")
+	public static void disableSSLCertificateValidation() {
+		try {
+			TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+				public X509Certificate[] getAcceptedIssuers() {
+					return new X509Certificate[0];
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] certs, String authType) {
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] certs, String authType) {
+				}
+			}};
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier((arg0, arg1) -> true);
+			Log.w(TAG, "certificate validation disabled!");
+		} catch (Exception e) {
+			// ignore
 		}
 	}
 

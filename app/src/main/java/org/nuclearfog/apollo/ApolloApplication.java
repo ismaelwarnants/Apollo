@@ -1,10 +1,13 @@
 package org.nuclearfog.apollo;
 
 import android.app.Application;
+import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
 
 import org.nuclearfog.apollo.cache.ImageCache;
+import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +30,9 @@ public class ApolloApplication extends Application {
 		super.onCreate();
 		// Turn off logging for jaudiotagger.
 		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && PreferenceUtils.getInstance(getApplicationContext()).certificationValidationDisabled()) {
+			ApolloUtils.disableSSLCertificateValidation();
+		}
 	}
 
 	/**

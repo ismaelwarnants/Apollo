@@ -47,6 +47,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 
 	private EditText search;
 	private ProgressBar loading;
+	private TextView emptyView;
 
 	private AlbumArtLoader loader;
 	private AlbumArtAdapter adapter;
@@ -80,7 +81,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.dialog_image_selector, container, false);
 		GridView gridView = view.findViewById(R.id.dialog_image_selector_list);
-		TextView emptyView = view.findViewById(R.id.dialog_image_Selector_empty);
+		emptyView = view.findViewById(R.id.dialog_image_Selector_empty);
 		loading = view.findViewById(R.id.dialog_image_selector_loading);
 		search = view.findViewById(R.id.dialog_image_selector_search);
 		adapter = new AlbumArtAdapter(requireContext());
@@ -110,7 +111,6 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 			loader.execute(new String[]{"", artist}, this);
 		}
 		theme.themeProgressbar(loading);
-		gridView.setEmptyView(emptyView);
 		gridView.setAdapter(adapter);
 		search.addTextChangedListener(this);
 		gridView.setOnItemClickListener(this);
@@ -162,8 +162,13 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	public void onResult(@NonNull List<AlbumMB> albums) {
 		loading.setVisibility(View.INVISIBLE);
 		adapter.clear();
-		for (AlbumMB album : albums) {
-			adapter.add(album);
+		if (albums.isEmpty()) {
+			emptyView.setVisibility(View.VISIBLE);
+		} else {
+			emptyView.setVisibility(View.INVISIBLE);
+			for (AlbumMB album : albums) {
+				adapter.add(album);
+			}
 		}
 	}
 
@@ -182,6 +187,7 @@ public class ImageSelectorDialog extends DialogFragment implements AsyncCallback
 	public void afterTextChanged(Editable s) {
 		// delay any list updates while typing
 		loading.setVisibility(View.VISIBLE);
+		emptyView.setVisibility(View.INVISIBLE);
 		timer.cancel();
 		timer = new Timer();
 		timer.schedule(new TimerTask() {

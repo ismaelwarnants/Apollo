@@ -83,6 +83,7 @@ public final class PreferenceUtils {
 	private static final String ENABLE_XFADE = "fade_effect_enable";
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 	private static final String AUTOSCROLL = "autoscroll_current";
+	private static final String DISABLE_CERT_VALID = "disable_ssl_verification";
 
 	private static PreferenceUtils sInstance;
 
@@ -661,6 +662,13 @@ public final class PreferenceUtils {
 	 */
 	public boolean autoScrollEnabled() {
 		return defaultPref.getBoolean(AUTOSCROLL, true);
+	}
+
+	/**
+	 * check if ssl certificate is disabled
+	 */
+	public boolean certificationValidationDisabled() {
+		return defaultPref.getBoolean(DISABLE_CERT_VALID, false);
 	}
 
 	/**

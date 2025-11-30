@@ -43,6 +43,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 	private static final String DOWNLOAD_ARTWORK = "download_missing_artwork";
 	private static final String SOURCECODE = "source_code";
 	private static final String LICENSE = "licenses";
+	private static final String CERT_DISABLE = "disable_ssl_verification";
 
 
 	@Override
@@ -55,9 +56,10 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 		Preference colorScheme = findPreference(COLOR_SEL);
 		Preference batteryOpt = findPreference(BAT_OPT);
 		Preference sourceCode = findPreference(SOURCECODE);
+		Preference disableCert = findPreference(CERT_DISABLE);
+		Preference version = findPreference(VERSION);
 		CheckBoxPreference downloadImages = findPreference(DOWNLOAD_IMAGES);
 		CheckBoxPreference downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
-		Preference version = findPreference(VERSION);
 
 		if (version != null)
 			version.setSummary(BuildConfig.VERSION_NAME);
@@ -74,6 +76,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 		if (downloadImages != null && downloadArtwork != null) {
 			downloadImages.setOnPreferenceClickListener(this);
 			downloadArtwork.setOnPreferenceClickListener(this);
+		}
+		if (disableCert != null) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+				disableCert.setVisible(true);
+			}
 		}
 		if (batteryOpt != null) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
