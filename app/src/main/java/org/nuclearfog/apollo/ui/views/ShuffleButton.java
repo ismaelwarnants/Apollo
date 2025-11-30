@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -79,13 +80,15 @@ public class ShuffleButton extends AppCompatImageButton implements OnLongClickLi
 	public void updateShuffleState(int shuffleMode) {
 		if (shuffleMode == MusicUtils.SHUFFLE_AUTO || shuffleMode == MusicUtils.SHUFFLE_NORMAL) {
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle_all));
-			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
+			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
 			if (drawable != null)
 				drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
 			setImageDrawable(drawable);
 		} else if (shuffleMode == MusicUtils.SHUFFLE_NONE) {
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle));
 			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
+			if (drawable != null)
+				drawable.setColorFilter(new PorterDuffColorFilter(color & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
 			setImageDrawable(drawable);
 		}
 	}

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -84,25 +85,27 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 		switch (repeatMode) {
 			case MusicUtils.REPEAT_ALL:
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_all));
-				Drawable button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
-				if (button != null)
-					button.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
-				setImageDrawable(button);
+				Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
+				if (drawable != null)
+					drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+				setImageDrawable(drawable);
 				break;
 
 			case MusicUtils.REPEAT_CURRENT:
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_one));
-				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
-				if (button != null)
-					button.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
-				setImageDrawable(button);
+				drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
+				if (drawable != null)
+					drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+				setImageDrawable(drawable);
 				break;
 
 			default:
 			case MusicUtils.REPEAT_NONE:
 				setContentDescription(getContext().getString(R.string.accessibility_repeat));
-				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
-				setImageDrawable(button);
+				drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
+				if (drawable != null)
+					drawable.setColorFilter(new PorterDuffColorFilter(color & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
+				setImageDrawable(drawable);
 				break;
 		}
 	}

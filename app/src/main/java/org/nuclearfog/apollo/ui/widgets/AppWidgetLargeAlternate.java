@@ -4,10 +4,8 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.widget.RemoteViews;
-
-import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -22,11 +20,11 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
  * 4x2 App-Widget
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class AppWidgetLargeAlternate extends AppWidgetBase {
 
 	public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";
-
 
 	/**
 	 * {@inheritDoc}
@@ -61,63 +59,51 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 	 */
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-		RemoteViews appWidgetView = getRemoteViews(service);
-
+		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
+		ImageFetcher imageFetcher = new ImageFetcher(service);
+		Album album = service.getCurrentAlbum();
+		Song song = service.getCurrentSong();
+		// Set the titles and artwork
+		if (album != null && song != null) {
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, song.getName());
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, album.getArtist());
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, album.getName());
+			appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, imageFetcher.getAlbumArtwork(album));
+		}
 		// Set correct drawable for pause state
-		boolean isPlaying = service.isPlaying();
-		if (isPlaying) {
+		if (service.isPlaying()) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play, R.drawable.btn_playback_pause);
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play, service.getString(R.string.accessibility_pause));
 		} else {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play, R.drawable.btn_playback_play);
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play, service.getString(R.string.accessibility_play));
 		}
-		// Set the correct drawable for the repeat state
-		switch (service.getRepeatMode()) {
-			case MusicPlaybackService.REPEAT_ALL:
-				appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat_all);
-				break;
-
-			case MusicPlaybackService.REPEAT_CURRENT:
-				appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat_one);
-				break;
-
-			default:
-				appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat);
-				break;
+		// Set the correct drawable and color for the repeat state
+		if (service.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
+			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat_one);
+			appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setColorFilter", Color.WHITE);
+			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_repeat, service.getString(R.string.accessibility_repeat_one));
+		} else if (service.getRepeatMode() == MusicPlaybackService.REPEAT_ALL) {
+			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat);
+			appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setColorFilter", Color.WHITE);
+			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_repeat, service.getString(R.string.accessibility_repeat_all));
+		} else {
+			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat);
+			appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setColorFilter", Color.GRAY);
+			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_repeat, service.getString(R.string.accessibility_repeat));
 		}
-		// Set the correct drawable for the shuffle state
-		switch (service.getShuffleMode()) {
-			case MusicPlaybackService.SHUFFLE_NONE:
-				appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle);
-				break;
-			case MusicPlaybackService.SHUFFLE_AUTO:
-			default:
-				appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle_all);
-				break;
+		// Set the correct drawable color for the shuffle state
+		appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle);
+		appWidgetView.setContentDescription(R.id.app_widget_large_alternate_shuffle, service.getString(R.string.accessibility_shuffle));
+		if (service.getShuffleMode() == MusicPlaybackService.SHUFFLE_NONE) {
+			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.GRAY);
+		} else {
+			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.WHITE);
 		}
 		// Link actions buttons to intents
-		linkButtons(service, appWidgetView, isPlaying);
+		linkButtons(service, appWidgetView, service.isPlaying());
 		// Update the app-widget
 		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
-	}
-
-
-	@NonNull
-	private static RemoteViews getRemoteViews(MusicPlaybackService service) {
-		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
-		Album album = service.getCurrentAlbum();
-		Song song = service.getCurrentSong();
-		if (album != null && song != null) {
-			ImageFetcher imageFetcher = new ImageFetcher(service);
-			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
-			// Set the titles and artwork
-			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, song.getName());
-			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, album.getArtist());
-			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, album.getName());
-			appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, bitmap);
-		}
-		return appWidgetView;
 	}
 
 	/**
