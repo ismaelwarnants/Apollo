@@ -136,6 +136,7 @@
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> set as the theme</string>
 	<string name="explain_permission_write_settings">This permission is only required to set ringtone</string>
 	<string name="error_audioeffects_not_supported">Audio effects not supported!</string>
+	<string name="error_playback">Playback error!</string>
 
 	<!-- Settings -->
 	<string name="settings_ui_category">Interface</string>

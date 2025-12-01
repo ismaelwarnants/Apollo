@@ -19,6 +19,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import androidx.media.AudioManagerCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
@@ -269,6 +271,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private int mRepeatMode = REPEAT_ALL;
 	private int mShufflePos = -1;
 	private int mPlayPos = -1;
+	private int mNextPlayPos = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -445,7 +448,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	@Override
 	public void onComplete() {
-		mPlayPos = incrementPosition(mPlayPos, false);
+		mPlayPos = mNextPlayPos;
 		updateTrackInformation();
 		setNextTrack(false);
 		notifyChange(CHANGED_META);
@@ -454,11 +457,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	@Override
 	public void onPlaybackError() {
-		if (isPlaying()) {
-			gotoNext();
-		} else {
-			openCurrentAndNext();
-		}
+		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
+		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -652,15 +652,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * restart current track or go to preview track
 	 */
 	synchronized void gotoPrev() {
-		if (!mPlayer.busy()) {
-			// go to previous track if playback position is at beginning
-			if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-				mPlayPos = decrementPosition(mPlayPos);
-			}
-			stop();
-			openCurrentAndNext();
-			play();
+		// go to previous track if playback position is at beginning
+		if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+			mPlayPos = decrementPosition(mPlayPos);
 		}
+		stop();
+		openCurrentAndNext();
+		play();
 	}
 
 	/**
@@ -1322,6 +1320,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
 					// stop searching if the next track was set successfully
+					mNextPlayPos = nextPos;
 					return;
 				}
 			} else {
@@ -1331,6 +1330,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// if no track was found, stop player after playback end
 		mPlayer.setNextDataSource(getApplicationContext(), null);
+		mNextPlayPos = -1;
 	}
 
 	/**

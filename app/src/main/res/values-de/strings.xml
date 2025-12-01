@@ -79,6 +79,7 @@
 	<string name="info_removed_playlist">Playlist entfernt!</string>
 	<string name="set_as_ringtone">\"<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\" wurde als Klingelton gesetzt</string>
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> wurde als Design eingestellt</string>
+	<string name="error_playback">Fehler bei der Wiedergabe!</string>
 	<string name="settings_ui_category">Oberfläche</string>
 	<string name="settings_storage_category">Speicher</string>
 	<string name="settings_about_apollo">Über Apollo</string>

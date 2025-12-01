@@ -64,7 +64,7 @@ public class MultiPlayer {
 	/**
 	 * milliseconds to wait until to retry loading track
 	 */
-	private static final int ERROR_RETRY = 500;
+	private static final int ERROR_RETRY = 1000;
 
 	@Nullable
 	private Future<?> xfadeTask;
@@ -509,13 +509,14 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnErrorListener
 	 */
 	private boolean onError(MediaPlayer mp, int what, int extra) {
-		Log.e(TAG, "onError() " + what + " ," + extra);
+		Log.e(TAG, "onError(): (" + what + ", " + extra + ")");
 		if (initialized) {
 			setCrossfadeTask(false);
 			initialized = false;
 			isPlaying = false;
 			xfadeMode = NONE;
 			mp.reset();
+			// delay callback
 			playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
 			return true;
 		}
