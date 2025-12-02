@@ -251,9 +251,8 @@ public class MultiPlayer {
 				callback.onPlaybackChanged();
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to stop player");
+			Log.e(TAG, "failed to stop player", exception);
 			initialized = false;
-			player.reset();
 		}
 	}
 
@@ -277,7 +276,6 @@ public class MultiPlayer {
 	 * Releases media player
 	 */
 	public void release() {
-		stop();
 		threadPool.shutdown();
 		for (MediaPlayer player : mPlayers) {
 			try {

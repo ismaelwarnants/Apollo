@@ -329,10 +329,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		shutdownHandler = new ShutdownHandler(this);
 		// initialize audio request
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
-		attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
+		AudioAttributesCompat mAttributes = new AudioAttributesCompat.Builder()
+				.setUsage(AudioAttributesCompat.USAGE_MEDIA)
+				// prevent system fade in/out effects to be applied by setting content type to "speech"
+				.setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH).build();
 		focusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
-				.setAudioAttributes(attrCompat.build()).setOnAudioFocusChangeListener(this).build();
+				.setAudioAttributes(mAttributes).setOnAudioFocusChangeListener(this).build();
 		// init external storage listener
 		IntentFilter storageIntent = new IntentFilter();
 		storageIntent.addAction(Intent.ACTION_MEDIA_EJECT);
@@ -458,6 +460,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onPlaybackError() {
 		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
+		openCurrentAndNext();
 		notifyChange(CHANGED_PLAYSTATE);
 	}
 
@@ -618,12 +621,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setShuffleMode(SHUFFLE_AUTO);
 			}
 		} else {
-			Log.v(TAG, "play(): could not gain audio focus!");
+			Log.i(TAG, "play(): could not gain audio focus!");
 		}
 	}
 
 	/**
 	 * Temporarily pauses playback.
+	 *
+	 * @param force true to stop playback immediately (fade-out disabled)
 	 */
 	public synchronized void pause(boolean force) {
 		mPlayer.pause(force);
@@ -1037,7 +1042,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void releaseService(boolean force) {
 		if ((!isPlaying() && !mPausedByFocusLoss) || force) {
-			stop(); // stop playback if running and release audio focus
+			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {
@@ -1268,8 +1273,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			clearCurrentTrackInformation();
 			return false;
 		}
-		if (mPlayer.isPlaying())
-			stop();
+		stop();
 		updateTrackInformation();
 		boolean fileOpened = false;
 		Song song = currentSong;
@@ -1281,11 +1285,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!fileOpened) {
 			if (mPlayList.size() > 1) {
 				// trying to play one of the next 10 tracks, give up if no success
-				for (int i = 0; i < 10 && !fileOpened && mPlayPos >= 0; i++) {
+				for (int i = 0; i < 10 && mPlayPos >= 0; i++) {
 					mPlayPos = incrementPosition(mPlayPos, false);
 					// check if the end of the queue is reached
 					if (mPlayPos < 0) {
-						stop();
+						break;
 					}
 					// skip faulty track and try open next track
 					else {
@@ -1294,14 +1298,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						id = song != null ? song.getId() : 0;
 						if (id != -1L && openTrack(id)) {
 							fileOpened = true;
+							break;
 						}
 					}
 				}
 			}
 			if (!fileOpened) {
 				Log.w(TAG, "Failed to open file for playback");
-				// give up and prepare shutdown
-				stop();
 			}
 		}
 		return fileOpened;
