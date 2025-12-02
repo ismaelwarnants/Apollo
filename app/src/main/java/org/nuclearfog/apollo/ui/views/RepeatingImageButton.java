@@ -1,12 +1,13 @@
 package org.nuclearfog.apollo.ui.views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -15,20 +16,30 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
-import java.lang.ref.WeakReference;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link RepeatingImageButton} that will repeatedly call a 'listener' method as long
  * as the button is pressed, otherwise functions like a typical ImageView
+ *
+ * @author nuclearfog
  */
-public class RepeatingImageButton extends AppCompatImageButton {
+public class RepeatingImageButton extends AppCompatImageButton implements OnTouchListener {
 
 	private static final long S_INTERVAL = 400;
 
-	private RepeatListener mListener;
-	private Repeater repeater;
+	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+	private Handler mHandler;
+	private Future<?> task;
 
-	private int mRepeatCount;
+	@Nullable
+	private RepeatListener mListener;
+
+	@IntRange(from = 0)
+	private int mRepeatCount = 0;
 
 	/**
 	 * @param context The {@link Context} to use
@@ -45,71 +56,45 @@ public class RepeatingImageButton extends AppCompatImageButton {
 		super(context, attrs);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
+		mHandler = new Handler(context.getMainLooper());
 		mTheme.setBackgroundColor(this);
 		setFocusable(true);
-		setLongClickable(true);
-		repeater = new Repeater(this);
-		updateState();
+		if (getId() == R.id.action_button_next) {
+			setImageResource(R.drawable.btn_playback_next);
+		} else if (getId() == R.id.action_button_previous) {
+			setImageResource(R.drawable.btn_playback_previous);
+		}
+		setOnTouchListener(this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean performLongClick() {
-		if (mListener == null) {
-			ApolloUtils.showCheatSheet(this);
-		}
-		mRepeatCount = 0;
-		post(repeater);
-		return true;
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressLint("ClickableViewAccessibility")
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			/* Remove the repeater, but call the hook one more time */
-			removeCallbacks(repeater);
-			doRepeat(true);
-		}
-		return super.onTouchEvent(event);
-	}
+	public boolean onTouch(View v, MotionEvent event) {
+		switch (event.getActionMasked()) {
+			case MotionEvent.ACTION_DOWN:
+				if (mListener == null) {
+					ApolloUtils.showCheatSheet(this);
+				} else {
+					// start periodic method call
+					task = threadPool.scheduleWithFixedDelay(() -> mHandler.post(this::refresh), S_INTERVAL, S_INTERVAL, TimeUnit.MILLISECONDS);
+				}
+				break;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-			case KeyEvent.KEYCODE_DPAD_CENTER:
-			case KeyEvent.KEYCODE_ENTER:
-				/*
-				 * Need to call super to make long press work, but return true
-				 * so that the application doesn't get the down event
-				 */
-				super.onKeyDown(keyCode, event);
-				return true;
+			case MotionEvent.ACTION_UP:
+				// stop periodic method call
+				if (task != null)
+					task.cancel(true);
+				// check if button was long pressed
+				if (mRepeatCount > 0) {
+					refresh();
+					mRepeatCount = 0;
+					// reset pressed state manually (not done automatically after returning true)
+					setPressed(false);
+					return true;
+				}
+				break;
 		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-			case KeyEvent.KEYCODE_DPAD_CENTER:
-			case KeyEvent.KEYCODE_ENTER:
-				/* Remove the repeater, but call the hook one more time */
-				removeCallbacks(repeater);
-				doRepeat(true);
-		}
-		return super.onKeyUp(keyCode, event);
+		return false;
 	}
 
 	/**
@@ -118,28 +103,16 @@ public class RepeatingImageButton extends AppCompatImageButton {
 	 *
 	 * @param l The listener that will be called
 	 */
-	public void setRepeatListener(RepeatListener l) {
+	public void setRepeatListener(@Nullable RepeatListener l) {
 		mListener = l;
 	}
 
 	/**
-	 * @param shouldRepeat If True the repeat count stops at -1, false if to add
-	 *                     incrementally add the repeat count
+	 *
 	 */
-	private void doRepeat(boolean shouldRepeat) {
+	private void refresh() {
 		if (mListener != null) {
-			mListener.onRepeat(this, shouldRepeat ? -1 : mRepeatCount++);
-		}
-	}
-
-	/**
-	 * Sets the correct drawable for playback.
-	 */
-	private void updateState() {
-		if (getId() == R.id.action_button_next) {
-			setImageResource(R.drawable.btn_playback_next);
-		} else if (getId() == R.id.action_button_previous) {
-			setImageResource(R.drawable.btn_playback_previous);
+			mListener.onRepeat(this, mRepeatCount++);
 		}
 	}
 
@@ -153,28 +126,5 @@ public class RepeatingImageButton extends AppCompatImageButton {
 		 * @param repeatCount The number of repeat counts
 		 */
 		void onRepeat(View v, int repeatCount);
-	}
-
-	/**
-	 *
-	 */
-	private static class Repeater implements Runnable {
-
-		private WeakReference<RepeatingImageButton> button;
-
-		Repeater(RepeatingImageButton button) {
-			this.button = new WeakReference<>(button);
-		}
-
-		@Override
-		public void run() {
-			RepeatingImageButton button = this.button.get();
-			if (button != null) {
-				button.doRepeat(false);
-				if (button.isPressed()) {
-					button.postDelayed(this, S_INTERVAL);
-				}
-			}
-		}
 	}
 }
