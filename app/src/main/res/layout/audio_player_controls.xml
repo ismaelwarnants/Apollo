@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:padding="@dimen/audio_player_controls_padding"
 	android:baselineAligned="false"
-	android:layoutDirection="ltr"
-	tools:ignore="UnusedAttribute">
+	android:layoutDirection="ltr">
 
 	<org.nuclearfog.apollo.ui.views.PlayerSeekbar
 		android:id="@+id/player_progress"
@@ -23,7 +21,6 @@
 		android:layout_height="@dimen/audio_player_controls_end_button_height"
 		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
 		android:contentDescription="@string/accessibility_shuffle"
-		android:scaleType="centerInside"
 		android:src="@drawable/btn_playback_shuffle"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
@@ -36,7 +33,6 @@
 		android:layout_height="@dimen/audio_player_controls_main_button_height"
 		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
 		android:layout_gravity="center"
-		android:scaleType="centerInside"
 		android:src="@drawable/btn_playback_previous"
 		app:layout_constraintStart_toEndOf="@id/action_button_shuffle"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
@@ -51,7 +47,6 @@
 		android:layout_gravity="center"
 		android:contentDescription="@string/accessibility_play"
 		android:focusable="true"
-		android:scaleType="centerInside"
 		android:src="@drawable/btn_playback_play"
 		app:layout_constraintStart_toEndOf="@id/action_button_previous"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
@@ -64,7 +59,6 @@
 		android:layout_height="@dimen/audio_player_controls_main_button_height"
 		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
 		android:layout_gravity="center"
-		android:scaleType="centerInside"
 		android:src="@drawable/btn_playback_next"
 		app:layout_constraintStart_toEndOf="@id/action_button_play"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
@@ -79,7 +73,6 @@
 		android:layout_gravity="center"
 		android:contentDescription="@string/accessibility_repeat"
 		android:focusable="true"
-		android:scaleType="centerInside"
 		android:src="@drawable/btn_playback_repeat"
 		app:layout_constraintStart_toEndOf="@id/action_button_next"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
