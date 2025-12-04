@@ -30,11 +30,6 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 public class RepeatButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
-	 * Highlight color
-	 */
-	private int color = Color.WHITE;
-
-	/**
 	 * @param context The {@link Context} to use
 	 */
 	public RepeatButton(@NonNull Context context) {
@@ -59,21 +54,10 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 	 */
 	@Override
 	public boolean onLongClick(@NonNull View view) {
-		if (TextUtils.isEmpty(view.getContentDescription())) {
+		if (TextUtils.isEmpty(view.getContentDescription()))
 			return false;
-		} else {
-			ApolloUtils.showCheatSheet(view);
-			return true;
-		}
-	}
-
-	/**
-	 * sets the highlight color
-	 *
-	 * @param color ARGB color value
-	 */
-	public void setColor(int color) {
-		this.color = color;
+		ApolloUtils.showCheatSheet(view);
+		return true;
 	}
 
 	/**
@@ -87,7 +71,7 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_all));
 				Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
 				if (drawable != null)
-					drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+					drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
 				setImageDrawable(drawable);
 				break;
 
@@ -95,7 +79,7 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 				setContentDescription(getContext().getString(R.string.accessibility_repeat_one));
 				drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
 				if (drawable != null)
-					drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+					drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
 				setImageDrawable(drawable);
 				break;
 
@@ -104,7 +88,7 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 				setContentDescription(getContext().getString(R.string.accessibility_repeat));
 				drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
 				if (drawable != null)
-					drawable.setColorFilter(new PorterDuffColorFilter(color & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
+					drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
 				setImageDrawable(drawable);
 				break;
 		}

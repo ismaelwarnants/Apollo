@@ -4,8 +4,6 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/item_normal_height"
-	android:paddingLeft="@dimen/list_preferred_item_padding"
-	android:paddingRight="@dimen/list_preferred_item_padding"
 	android:gravity="center_vertical"
 	android:minHeight="@dimen/item_normal_height"
 	android:paddingEnd="@dimen/list_preferred_item_padding"

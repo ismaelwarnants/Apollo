@@ -38,7 +38,6 @@ public class PlayPauseButton extends AppCompatImageButton implements OnLongClick
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mTheme.setBackgroundColor(this);
-		// Show the cheat sheet
 		setOnLongClickListener(this);
 		updateState(false);
 	}

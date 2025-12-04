@@ -28,11 +28,6 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 public class ShuffleButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
-	 * highlight color
-	 */
-	private int color = Color.WHITE;
-
-	/**
 	 * @param context The {@link Context} to use
 	 */
 	public ShuffleButton(@NonNull Context context) {
@@ -57,21 +52,10 @@ public class ShuffleButton extends AppCompatImageButton implements OnLongClickLi
 	 */
 	@Override
 	public boolean onLongClick(View view) {
-		if (TextUtils.isEmpty(view.getContentDescription())) {
+		if (TextUtils.isEmpty(view.getContentDescription()))
 			return false;
-		} else {
-			ApolloUtils.showCheatSheet(view);
-			return true;
-		}
-	}
-
-	/**
-	 * sets the highlight color
-	 *
-	 * @param color ARGB color value
-	 */
-	public void setColor(int color) {
-		this.color = color;
+		ApolloUtils.showCheatSheet(view);
+		return true;
 	}
 
 	/**
@@ -82,13 +66,13 @@ public class ShuffleButton extends AppCompatImageButton implements OnLongClickLi
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle_all));
 			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
 			if (drawable != null)
-				drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+				drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
 			setImageDrawable(drawable);
 		} else if (shuffleMode == MusicUtils.SHUFFLE_NONE) {
 			setContentDescription(getResources().getString(R.string.accessibility_shuffle));
 			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
 			if (drawable != null)
-				drawable.setColorFilter(new PorterDuffColorFilter(color & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
+				drawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE & Constants.TRANSPARENCY_MASK_INACTIVE, PorterDuff.Mode.MULTIPLY));
 			setImageDrawable(drawable);
 		}
 	}

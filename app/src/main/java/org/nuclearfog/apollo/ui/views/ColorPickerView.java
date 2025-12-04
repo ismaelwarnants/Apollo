@@ -244,8 +244,8 @@ public class ColorPickerView extends View {
 	protected void onSizeChanged(int w, int h, int oldW, int oldH) {
 		super.onSizeChanged(w, h, oldW, oldH);
 		mDrawingRect = new RectF();
-		mDrawingRect.left = mDrawingOffset + getPaddingLeft();
-		mDrawingRect.right = w - mDrawingOffset - getPaddingRight();
+		mDrawingRect.left = mDrawingOffset + getPaddingStart();
+		mDrawingRect.right = w - mDrawingOffset - getPaddingEnd();
 		mDrawingRect.top = mDrawingOffset + getPaddingTop();
 		mDrawingRect.bottom = h - mDrawingOffset - getPaddingBottom();
 		// setup val rect

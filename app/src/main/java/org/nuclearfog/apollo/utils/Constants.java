@@ -73,7 +73,7 @@ public final class Constants {
 	 */
 	public static final int SCROLL_ANIM_JUMP_LIMIT = 50;
 
-	public static final int TRANSPARENCY_MASK_INACTIVE = 0x7fffffff;
+	public static final int TRANSPARENCY_MASK_INACTIVE = 0x5fffffff;
 
 	/**
 	 * permissions used for Android 6+

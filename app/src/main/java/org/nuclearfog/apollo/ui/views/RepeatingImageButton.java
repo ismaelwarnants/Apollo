@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 
 import androidx.annotation.IntRange;
@@ -27,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author nuclearfog
  */
-public class RepeatingImageButton extends AppCompatImageButton implements OnTouchListener {
+public class RepeatingImageButton extends AppCompatImageButton implements OnTouchListener, OnLongClickListener {
 
 	private static final long S_INTERVAL = 400;
 
@@ -65,6 +66,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnTouc
 			setImageResource(R.drawable.btn_playback_previous);
 		}
 		setOnTouchListener(this);
+		setOnLongClickListener(this);
 	}
 
 
@@ -72,18 +74,18 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnTouc
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (event.getActionMasked()) {
 			case MotionEvent.ACTION_DOWN:
-				if (mListener == null) {
-					ApolloUtils.showCheatSheet(this);
-				} else {
-					// start periodic method call
+				// start periodic method call
+				if (mListener != null) {
 					task = threadPool.scheduleWithFixedDelay(() -> mHandler.post(this::refresh), S_INTERVAL, S_INTERVAL, TimeUnit.MILLISECONDS);
 				}
 				break;
 
 			case MotionEvent.ACTION_UP:
 				// stop periodic method call
-				if (task != null)
+				if (task != null) {
 					task.cancel(true);
+					task = null;
+				}
 				// check if button was long pressed
 				if (mRepeatCount > 0) {
 					refresh();
@@ -93,6 +95,16 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnTouc
 					return true;
 				}
 				break;
+		}
+		return false;
+	}
+
+
+	@Override
+	public boolean onLongClick(View v) {
+		if (mListener == null) {
+			ApolloUtils.showCheatSheet(this);
+			return true;
 		}
 		return false;
 	}

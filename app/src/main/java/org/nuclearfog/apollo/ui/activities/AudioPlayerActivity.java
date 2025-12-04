@@ -210,10 +210,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// set activity background
 		mResources.setBackground(root);
-		// set colors
-		int themeColor = mPrefs.getThemeColor();
-		mShuffleButton.setColor(themeColor);
-		mRepeatButton.setColor(themeColor);
 		controls.setVisibility(View.INVISIBLE);
 		// go to home activity if there is any missing permission
 		if (!ApolloUtils.permissionsGranted(this)) {

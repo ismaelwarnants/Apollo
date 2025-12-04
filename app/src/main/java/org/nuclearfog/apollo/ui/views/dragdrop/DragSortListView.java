@@ -635,8 +635,8 @@ public class DragSortListView extends ListView implements OnScrollListener {
 			ViewGroup expItem = (ViewGroup) getChildAt(expPosition - getFirstVisiblePosition());
 			if (expItem != null && expItem.getChildAt(0) != null) {
 				int t, b;
-				int l = getPaddingLeft();
-				int r = getWidth() - getPaddingRight();
+				int l = getPaddingStart();
+				int r = getWidth() - getPaddingEnd();
 				int childHeight = expItem.getChildAt(0).getHeight();
 				if (expPosition > mSrcPos) {
 					t = expItem.getTop() + childHeight;
@@ -1276,7 +1276,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 */
 	private void updateFloatView(int floatX, int floatY) {
 		// restrict x motion
-		int padLeft = getPaddingLeft();
+		int padLeft = getPaddingStart();
 		if ((mDragFlags & DRAG_POS_X) == 0 && floatX > padLeft) {
 			mFloatViewLeft = padLeft;
 		} else if ((mDragFlags & DRAG_NEG_X) == 0 && floatX < padLeft) {
