@@ -75,7 +75,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout implements OnClick
 	 */
 	public void setAlphaLayerValue(float alpha) {
 		mAlpha = Math.max(0f, Math.min(1f, alpha));
-		mAlphaLayer.setBackgroundColor((int) (alpha * 255) << 24);
+		mAlphaLayer.setBackgroundColor(Math.round(alpha * 255) << 24);
 	}
 
 	/**

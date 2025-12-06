@@ -348,7 +348,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 			}
 			int w = mFloatView.getWidth();
 			int h = mFloatView.getHeight();
-			int alpha = (int) (255f * mCurrFloatAlpha);
+			int alpha = Math.round(255f * mCurrFloatAlpha);
 			canvas.save();
 			canvas.translate(mFloatViewLeft, mFloatViewTop);
 			canvas.clipRect(0, 0, w, h);

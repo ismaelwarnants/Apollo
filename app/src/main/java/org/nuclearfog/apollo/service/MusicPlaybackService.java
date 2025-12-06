@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -408,11 +409,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case AudioManager.AUDIOFOCUS_GAIN:
 				mPausedByFocusLoss = false;
-				mPlayer.setVolume(1f);
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+					mPlayer.setVolume(1f);
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				mPlayer.setVolume(.5f);
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+					mPlayer.setVolume(.5f);
 				break;
 		}
 	}

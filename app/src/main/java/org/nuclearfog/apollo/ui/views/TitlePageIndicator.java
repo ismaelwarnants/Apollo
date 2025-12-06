@@ -242,7 +242,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 				mPaintText.setColor(mColorText);
 				if (currentPage && currentSelected) {
 					//Fade out/in unselected text as the selected text fades in/out
-					mPaintText.setAlpha(colorTextAlpha - (int) (colorTextAlpha * selectedPercent));
+					mPaintText.setAlpha(colorTextAlpha - Math.round(colorTextAlpha * selectedPercent));
 				}
 
 				//Except if there's an intersection with the right view
@@ -260,7 +260,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 				//If we are within the selected bounds draw the selected text
 				if (currentPage && currentSelected) {
 					mPaintText.setColor(mColorSelected);
-					mPaintText.setAlpha((int) ((mColorSelected >>> 24) * selectedPercent));
+					mPaintText.setAlpha(Math.round((mColorSelected >>> 24) * selectedPercent));
 					canvas.drawText(pageTitle, 0, pageTitle.length(), bound.left, bound.bottom + mTopPadding, mPaintText);
 				}
 			}
@@ -289,7 +289,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 			mPath.lineTo(leftMinusPadding, heightMinusLineMinusIndicator);
 			mPath.close();
 
-			mPaintFooterIndicator.setAlpha((int) (0xFF * selectedPercent));
+			mPaintFooterIndicator.setAlpha(Math.round(0xFF * selectedPercent));
 			canvas.drawPath(mPath, mPaintFooterIndicator);
 			mPaintFooterIndicator.setAlpha(0xFF);
 		}
