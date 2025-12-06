@@ -55,6 +55,7 @@ public class ForwardRewindButton extends AppCompatImageButton implements OnTouch
 	 */
 	public ForwardRewindButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
+		setScaleType(ScaleType.CENTER_CROP);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mHandler = new Handler(context.getMainLooper());
@@ -71,7 +72,6 @@ public class ForwardRewindButton extends AppCompatImageButton implements OnTouch
 			setImageResource(R.drawable.btn_playback_previous);
 			setContentDescription(getContext().getString(R.string.accessibility_prev));
 		}
-		setScaleType(ScaleType.CENTER_INSIDE);
 
 		setOnTouchListener(this);
 		setOnLongClickListener(this);

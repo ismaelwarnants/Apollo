@@ -34,11 +34,11 @@ public class PlayPauseButton extends AppCompatImageButton implements OnLongClick
 	 */
 	public PlayPauseButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
+		setScaleType(ScaleType.CENTER_CROP);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mTheme.setBackgroundColor(this);
 		setContentDescription(getContext().getString(R.string.accessibility_play));
-		setScaleType(ScaleType.CENTER_INSIDE);
 		setFocusable(true);
 		updateState(false);
 

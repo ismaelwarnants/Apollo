@@ -40,10 +40,10 @@ public class ShuffleRepeatButton extends AppCompatImageButton implements OnLongC
 	 */
 	public ShuffleRepeatButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
+		setScaleType(ScaleType.CENTER_CROP);
 		// Set the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mTheme.setBackgroundColor(this);
-		setScaleType(ScaleType.CENTER_INSIDE);
 		TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.ShuffleRepeatButton);
 		int mode = ta.getInt(R.styleable.ForwardRewindButton_button, 0);
 		ta.recycle();

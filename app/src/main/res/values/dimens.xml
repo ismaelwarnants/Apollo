@@ -62,10 +62,8 @@
 	<!-- Audio player -->
 	<dimen name="audio_player_header_margin">8.0dp</dimen>
 	<dimen name="audio_player_seek_bar_margin_bottom">2.0dp</dimen>
-	<dimen name="audio_player_controls_end_button_width">40.0dp</dimen>
-	<dimen name="audio_player_controls_end_button_height">40.0dp</dimen>
-	<dimen name="audio_player_controls_main_button_width">50.0dp</dimen>
-	<dimen name="audio_player_controls_main_button_height">50.0dp</dimen>
+	<dimen name="audio_player_controls_end_button_size">40.0dp</dimen>
+	<dimen name="audio_player_controls_main_button_size">50.0dp</dimen>
 	<dimen name="audio_player_controls_padding">8.0dp</dimen>
 	<dimen name="audio_player_informations_padding">8.0dp</dimen>
 
