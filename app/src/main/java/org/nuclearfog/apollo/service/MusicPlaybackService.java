@@ -316,16 +316,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
 		headsetReceiver = new HeadsetStatusReceiver(this);
+		// Initialize the preferences
+		settings = PreferenceUtils.getInstance(this);
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getApplicationContext(), this);
+		mPlayer = new MultiPlayer(getApplicationContext(), this, settings.crossfadeEnabled());
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
 		mSession.setActive(true);
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
-		// Initialize the preferences
-		settings = PreferenceUtils.getInstance(this);
 		// init shutdown handler
 		shutdownHandler = new ShutdownHandler(this);
 		// initialize audio request
@@ -1055,6 +1055,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 		}
+	}
+
+	/**
+	 * enable/disable player fade effects
+	 */
+	public void setCrossfade(boolean enable) {
+		mPlayer.setCrossfade(enable);
 	}
 
 	/**

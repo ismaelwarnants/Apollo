@@ -41,6 +41,7 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -178,11 +179,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			// Bind Apollo's service
 			MusicUtils.bindToService(this, this);
 			MusicUtils.notifyForegroundStateChanged(this, true);
-			if (MusicUtils.isConnected(this)) {
-				// update playback control after resuming
-				updatePlaybackControls();
-				updateBottomActionBarInfo();
-			}
 		}
 	}
 
@@ -224,6 +220,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		updateBottomActionBarInfo();
 		// Update the favorites icon
 		invalidateOptionsMenu();
+		// enable/disable fade effect
+		MusicUtils.setCrossfade(this, PreferenceUtils.getInstance(this).crossfadeEnabled());
 	}
 
 	/**

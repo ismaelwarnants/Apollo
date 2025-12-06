@@ -170,17 +170,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * check if current activity is connected with the playback service
-	 *
-	 * @param activity Activity to check
-	 * @return true if service is connected to activity
-	 */
-	public static boolean isConnected(Activity activity) {
-		return getService(activity) != null;
-	}
-
-
-	/**
 	 * switch to next track
 	 */
 	public static void next(Activity activity) {
@@ -1032,6 +1021,23 @@ public final class MusicUtils {
 			}
 		}
 		return null;
+	}
+
+
+	/**
+	 * enable/disable player crossfade
+	 *
+	 * @param enable true to enable crossfade
+	 */
+	public static void setCrossfade(Activity activity, boolean enable) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				service.setCrossfade(enable);
+			} catch (RemoteException exception) {
+				Log.e(TAG, "setCrossfade()", exception);
+			}
+		}
 	}
 
 	/**

@@ -278,6 +278,15 @@ class ServiceStub extends IApolloService.Stub {
 
 
 	@Override
+	public void setCrossfade(boolean enable) {
+		MusicPlaybackService service = mService.get();
+		if (service != null) {
+			service.setCrossfade(enable);
+		}
+	}
+
+
+	@Override
 	public void releaseService() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {

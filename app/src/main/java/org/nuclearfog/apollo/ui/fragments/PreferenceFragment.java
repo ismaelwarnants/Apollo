@@ -22,6 +22,7 @@ import org.nuclearfog.apollo.ui.dialogs.ClearCacheDialog;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
 import org.nuclearfog.apollo.ui.dialogs.LicenseDialog;
 import org.nuclearfog.apollo.utils.Constants;
+import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
 /**
@@ -41,6 +42,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 	private static final String BAT_OPT = "disable_battery_opt";
 	private static final String DOWNLOAD_IMAGES = "download_missing_artist_images";
 	private static final String DOWNLOAD_ARTWORK = "download_missing_artwork";
+	private static final String FADE_IN_OUT = "fade_effect_enable";
 	private static final String SOURCECODE = "source_code";
 	private static final String LICENSE = "licenses";
 	private static final String CERT_DISABLE = "disable_ssl_verification";
@@ -58,6 +60,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 		Preference sourceCode = findPreference(SOURCECODE);
 		Preference disableCert = findPreference(CERT_DISABLE);
 		Preference version = findPreference(VERSION);
+		Preference fadeEffect = findPreference(FADE_IN_OUT);
 		CheckBoxPreference downloadImages = findPreference(DOWNLOAD_IMAGES);
 		CheckBoxPreference downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
 
@@ -73,6 +76,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 			colorScheme.setOnPreferenceClickListener(this);
 		if (sourceCode != null)
 			sourceCode.setOnPreferenceClickListener(this);
+		if (fadeEffect != null)
+			fadeEffect.setOnPreferenceClickListener(this);
 		if (downloadImages != null && downloadArtwork != null) {
 			downloadImages.setOnPreferenceClickListener(this);
 			downloadArtwork.setOnPreferenceClickListener(this);
@@ -114,6 +119,10 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 			case BAT_OPT:
 				NavUtils.openBatteryPage(requireActivity());
 				return true;
+
+			case FADE_IN_OUT:
+				MusicUtils.setCrossfade(requireActivity(), ((CheckBoxPreference) preference).isChecked());
+				break;
 
 			case SOURCECODE:
 				// open source code repository

@@ -12,8 +12,6 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.utils.PreferenceUtils;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -104,7 +102,7 @@ public class MultiPlayer {
 	/**
 	 * enable/disable fade in/out effect
 	 */
-	private boolean xFadeEnabled;
+	private boolean crossfade;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -117,15 +115,15 @@ public class MultiPlayer {
 	private float maxVolume = 1f;
 
 	/**
-	 * @param context  context from service
-	 * @param callback a callback used to inform about playback changes
+	 * @param context   context from service
+	 * @param callback  a callback used to inform about playback changes
+	 * @param crossfade true to enable crossfade
 	 */
-	public MultiPlayer(Context context, OnPlaybackStatusCallback callback) {
+	public MultiPlayer(Context context, OnPlaybackStatusCallback callback, boolean crossfade) {
 		playerHandler = new Handler(context.getMainLooper());
 		xfadeHandler = new Handler(context.getMainLooper());
 		mmr = new MediaMetadataRetriever();
-		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
-		xFadeEnabled = mPrefs.crossfadeEnabled();
+		this.crossfade = crossfade;
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = new MediaPlayer();
@@ -133,7 +131,7 @@ public class MultiPlayer {
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
-			if (xFadeEnabled) {
+			if (crossfade) {
 				mPlayers[i].setVolume(0f, 0f);
 			}
 		}
@@ -192,7 +190,7 @@ public class MultiPlayer {
 	 */
 	public void play() {
 		try {
-			if (!xFadeEnabled) {
+			if (!crossfade) {
 				MediaPlayer player = mPlayers[currentPlayer];
 				setCrossfadeTask(false);
 				if (!player.isPlaying()) {
@@ -222,7 +220,7 @@ public class MultiPlayer {
 	public void pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
-			if (force || !xFadeEnabled) {
+			if (force || !crossfade) {
 				setCrossfadeTask(false);
 				if (player.isPlaying()) {
 					player.pause();
@@ -253,22 +251,6 @@ public class MultiPlayer {
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player", exception);
 			initialized = false;
-		}
-	}
-
-	/**
-	 * go to next player
-	 */
-	public void next() {
-		if (xFadeEnabled) {
-			if (initialized && continuous) {
-				xfadeMode = XFADE;
-				isPlaying = true;
-				setCrossfadeTask(true);
-			}
-		} else {
-			setCrossfadeTask(false);
-			gotoNext();
 		}
 	}
 
@@ -365,6 +347,20 @@ public class MultiPlayer {
 		maxVolume = newVolume;
 		volume = Math.min(volume, newVolume);
 		mPlayers[currentPlayer].setVolume(newVolume, newVolume);
+	}
+
+	/**
+	 * enable/disable crossfade
+	 */
+	public void setCrossfade(boolean enable) {
+		if (crossfade != enable) {
+			crossfade = enable;
+			xfadeMode = NONE;
+			setCrossfadeTask(enable);
+			if (!crossfade) {
+				setVolume(1f);
+			}
+		}
 	}
 
 	/**
@@ -489,9 +485,10 @@ public class MultiPlayer {
 	 * called when a mediaplayer finished playback
 	 *
 	 * @see android.media.MediaPlayer.OnCompletionListener
+	 * @noinspection unused
 	 */
 	private void onCompletion(MediaPlayer mp) {
-		if (!xFadeEnabled) {
+		if (!crossfade) {
 			if (continuous) {
 				gotoNext();
 			} else {

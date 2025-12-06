@@ -82,8 +82,7 @@
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="fade_effect_enable"
-			android:title="@string/settings_enable_crossfade"
-			android:summary="@string/settings_enable_crossfade_descr" />
+			android:title="@string/settings_enable_crossfade" />
 
 	</PreferenceCategory>
 

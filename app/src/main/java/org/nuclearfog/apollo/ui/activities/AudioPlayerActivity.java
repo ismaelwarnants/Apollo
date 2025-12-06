@@ -273,11 +273,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		// bind activity to service
 		MusicUtils.notifyForegroundStateChanged(this, true);
-		// update playback control after resume
-		if (MusicUtils.isConnected(this)) {
-			updatePlaybackControls();
-			refreshQueue();
-		}
 	}
 
 	/**
