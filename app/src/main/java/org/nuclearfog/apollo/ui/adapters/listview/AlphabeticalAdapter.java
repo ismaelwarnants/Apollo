@@ -22,7 +22,9 @@ public abstract class AlphabeticalAdapter<T> extends ArrayAdapter<T> implements 
 
 	private int columns = 1;
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	protected AlphabeticalAdapter(Context context, @LayoutRes int layoutId) {
 		super(context, layoutId);
 	}

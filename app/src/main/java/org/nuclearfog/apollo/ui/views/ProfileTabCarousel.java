@@ -98,15 +98,14 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private OnTabChangeListener mListener;
 
 	/**
-	 *
+	 * {@inheritDoc}
 	 */
 	public ProfileTabCarousel(@NonNull Context context) {
 		this(context, null);
 	}
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 * {@inheritDoc}
 	 */
 	public ProfileTabCarousel(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);

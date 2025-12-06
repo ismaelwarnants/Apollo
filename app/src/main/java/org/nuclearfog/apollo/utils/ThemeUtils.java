@@ -43,7 +43,6 @@ public class ThemeUtils {
 	private PreferenceUtils mPref;
 
 	/**
-	 * @param context The {@link Context} to use.
 	 */
 	public ThemeUtils(Context context) {
 		resources = context.getResources();

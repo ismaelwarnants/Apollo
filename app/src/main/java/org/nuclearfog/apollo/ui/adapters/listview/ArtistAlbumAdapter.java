@@ -56,7 +56,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	private boolean enableHeader;
 
 	/**
-	 * @param context The {@link Context} to use
+	 * {@inheritDoc}
 	 */
 	public ArtistAlbumAdapter(Context context) {
 		super(context, LAYOUT);

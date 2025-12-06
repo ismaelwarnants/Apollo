@@ -306,8 +306,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	};
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 * {@inheritDoc}
 	 */
 	public DragSortListView(Context context, AttributeSet attrs) {
 		super(context, attrs);

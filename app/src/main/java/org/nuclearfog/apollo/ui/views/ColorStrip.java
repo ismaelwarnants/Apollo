@@ -15,8 +15,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 public class ColorStrip extends View {
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 * {@inheritDoc}
 	 */
 	public ColorStrip(Context context, AttributeSet attrs) {
 		super(context, attrs);

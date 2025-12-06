@@ -22,7 +22,7 @@ public abstract class AppStore {
 	private SQLiteDatabase db;
 
 	/**
-	 *
+	 * @param name database name
 	 */
 	protected AppStore(Context context, String name) {
 		File databasePath = context.getDatabasePath(name);

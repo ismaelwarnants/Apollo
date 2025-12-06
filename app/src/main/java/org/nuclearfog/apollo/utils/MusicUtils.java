@@ -117,12 +117,10 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param activity The {@link Activity} to use
+	 * @param activity the activity to bind to the playback service
 	 * @param callback The {@link ServiceBinderCallback} to use
 	 */
 	public static void bindToService(Activity activity, @Nullable ServiceBinderCallback callback) {
-		if (activity.getParent() != null)
-			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
 		Intent intent = new Intent(activity, MusicPlaybackService.class);
 		activity.startService(intent);
@@ -554,9 +552,8 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Returns the Id for an artist.
+	 * Returns the ID for an artist.
 	 *
-	 * @param context The {@link Context} to use.
 	 * @param name    The name of the artist.
 	 * @return The ID for an artist.
 	 */
@@ -649,7 +646,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param activity   The {@link Context} to use.
+	 * add song IDs to an an existing IDs
 	 * @param ids        The id of the song(s) to add.
 	 * @param playlistId The id of the playlist being added to.
 	 */
@@ -834,7 +831,8 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param context    The {@link Context} to sue
+	 * returns a list of song IDs from a playlist
+	 *
 	 * @param playlistId The playlist Id
 	 * @return The track list for a playlist
 	 */
@@ -869,14 +867,11 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Creates a sub menu used to add items to a new playlist or an existing
-	 * one.
+	 * Creates a sub menu used to add items to a new playlist or an existing one.
 	 *
-	 * @param context       The {@link Context} to use.
 	 * @param groupId       The group Id of the menu.
 	 * @param subMenu       The {@link SubMenu} to add to.
-	 * @param showFavorites True if we should show the option to add to the
-	 *                      Favorites cache.
+	 * @param showFavorites True if we should show the option to add to the Favorites cache.
 	 */
 	public static void makePlaylistMenu(Context context, int groupId, SubMenu subMenu, boolean showFavorites) {
 		subMenu.clear();
@@ -1042,7 +1037,6 @@ public final class MusicUtils {
 	/**
 	 * Returns The ID for a playlist.
 	 *
-	 * @param context The {@link Context} to use.
 	 * @param name    The name of the playlist.
 	 * @return The ID for a playlist.
 	 */

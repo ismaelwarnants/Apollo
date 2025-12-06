@@ -30,7 +30,7 @@ public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * @param context The {@link Context} to use.
+	 * {@inheritDoc}
 	 */
 	public GenreAdapter(Context context) {
 		super(context, LAYOUT);

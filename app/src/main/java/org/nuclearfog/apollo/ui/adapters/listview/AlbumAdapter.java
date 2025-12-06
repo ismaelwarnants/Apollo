@@ -22,8 +22,7 @@ import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This adapter is used to display all of the albums on a user's
- * device for {@link RecentFragment}
- * and {@link AlbumFragment}.
+ * device for {@link RecentFragment} and {@link AlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
@@ -46,7 +45,7 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 	private boolean mLoadExtraData = false;
 
 	/**
-	 * @param context The {@link Context} to use.
+	 * {@inheritDoc}
 	 */
 	public AlbumAdapter(Context context, int columns, @LayoutRes int mLayoutId) {
 		super(context, columns, mLayoutId);

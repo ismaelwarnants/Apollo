@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  * the correct data, we keep a cache of the album ID, name, and time it was
  * played to be retrieved later.
  * <p>
- * In {@link ProfileActivity}, when viewing the profile for an artist, the first
+ * In {@link org.nuclearfog.apollo.ui.activities.ProfileActivity}, when viewing the profile for an artist, the first
  * image the carousel header is the last album the user listened to for that
  * particular artist.
  *
@@ -70,14 +69,15 @@ public class RecentStore extends AppStore {
 	private static RecentStore sInstance;
 
 	/**
-	 * @param context The {@link Context} to use
+	 * {@inheritDoc}
 	 */
 	private RecentStore(Context context) {
 		super(context, DB_NAME);
 	}
 
 	/**
-	 * @param context The {@link Context} to use
+	 * initialize and returns singleton instance of this class
+	 *
 	 * @return A new instance of this class.
 	 */
 	public static RecentStore getInstance(Context context) {

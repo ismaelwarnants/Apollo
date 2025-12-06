@@ -53,7 +53,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		private List<Album> albums = new ArrayList<>();
 
 		/**
-		 * @param context The {@link Context} to use.
+		 * {@inheritDoc}
 		 */
 		WidgetRemoteViewsFactory(Context context) {
 			// Initialize the image cache

@@ -40,8 +40,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 	private boolean mLoadExtraData = false;
 
 	/**
-	 * @param context  The {@link Context} to use.
-	 * @param layoutId The resource Id of the view to inflate.
+	 * {@inheritDoc}
 	 */
 	public ArtistAdapter(Context context, int columns, int layoutId) {
 		super(context, columns, 0);

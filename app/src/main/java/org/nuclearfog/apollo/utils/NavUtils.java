@@ -33,7 +33,6 @@ public final class NavUtils {
 	/**
 	 * Opens the profile of an artist.
 	 *
-	 * @param activity   The {@link Activity} to use.
 	 * @param artistName The name of the artist
 	 */
 	public static void openArtistProfile(Activity activity, String artistName) {
@@ -51,8 +50,7 @@ public final class NavUtils {
 	/**
 	 * Opens the profile of an album.
 	 *
-	 * @param activity The {@link Activity} to use.
-	 * @param album    Album to open
+	 * @param album Album to open
 	 */
 	public static void openAlbumProfile(Activity activity, Album album) {
 		// Create a new bundle to transfer the album info
@@ -70,8 +68,6 @@ public final class NavUtils {
 
 	/**
 	 * Opens the sound effects panel or DSP manager in CM
-	 *
-	 * @param activity The {@link Activity} to use.
 	 */
 	public static void openEffectsPanel(Activity activity) {
 		int sessionId = MusicUtils.getAudioSessionId(activity);
@@ -107,8 +103,6 @@ public final class NavUtils {
 
 	/**
 	 * Opens to {@link SettingsActivity}.
-	 *
-	 * @param activity The {@link Activity} to use.
 	 */
 	public static void openSettings(Activity activity) {
 		Intent intent = new Intent(activity, SettingsActivity.class);
@@ -118,7 +112,6 @@ public final class NavUtils {
 	/**
 	 * Opens to {@link SearchActivity}.
 	 *
-	 * @param activity The {@link Activity} to start a new Activity.
 	 * @param query    The search query.
 	 */
 	public static void openSearch(Activity activity, String query) {

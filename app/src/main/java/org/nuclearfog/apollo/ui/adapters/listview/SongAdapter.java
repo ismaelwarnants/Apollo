@@ -53,7 +53,7 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	private boolean enableDnD;
 
 	/**
-	 * @param context The {@link Context} to use.
+	 * @param enableDrag true to enable drag & drop feature
 	 */
 	public SongAdapter(Context context, boolean enableDrag) {
 		super(context, LAYOUT);

@@ -62,7 +62,6 @@ public final class ApolloUtils {
 	/**
 	 * Used to determine if the device is currently in landscape mode
 	 *
-	 * @param context The {@link Context} to use.
 	 * @return True if the device is in landscape mode, false otherwise.
 	 */
 	public static boolean isLandscape(@Nullable Context context) {
@@ -81,8 +80,7 @@ public final class ApolloUtils {
 	 */
 	public static void showCheatSheet(View view) {
 		int[] screenPos = new int[2]; // origin is device display
-		Rect displayFrame = new Rect(); // includes decorations (e.g.
-		// status bar)
+		Rect displayFrame = new Rect(); // includes decorations (e.g. status bar)
 		view.getLocationOnScreen(screenPos);
 		view.getWindowVisibleDisplayFrame(displayFrame);
 
@@ -115,7 +113,6 @@ public final class ApolloUtils {
 	 * @param displayName The shortcut name
 	 * @param ids         The ID of the artist, album, playlist, or genre
 	 * @param mimeType    The MIME type of the shortcut
-	 * @param activity    The {@link FragmentActivity} to use to
 	 */
 	@SuppressWarnings("deprecation")
 	public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {

@@ -42,7 +42,6 @@ import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog.OnItemSelectedListener;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.OnOptionSelectedListener;
-import org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.OnTabChangeListener;
@@ -79,11 +78,11 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 	 */
 	public static final String PAGE_FAVORITES = "page_fav";
 	/**
-	 * mime type of the {@link LastAddedSongFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment}
 	 */
 	public static final String PAGE_LAST_ADDED = "last_added";
 	/**
-	 * mime type of the {@link LastAddedSongFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedSongFragment}
 	 */
 	public static final String PAGE_MOST_PLAYED = "page_most";
 

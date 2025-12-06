@@ -99,7 +99,8 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @param context The {@link Context} to use.
+	 * creates and returns a singleton instance of this class
+	 *
 	 * @return A singleton of this class
 	 */
 	public static PreferenceUtils getInstance(Context context) {

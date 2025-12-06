@@ -28,7 +28,7 @@ public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 	private static final int LAYOUT = R.layout.list_item_simple;
 
 	/**
-	 * @param context The {@link Context} to use.
+	 * {@inheritDoc}
 	 */
 	public PlaylistAdapter(Context context) {
 		super(context, LAYOUT);

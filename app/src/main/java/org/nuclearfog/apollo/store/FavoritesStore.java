@@ -67,7 +67,6 @@ public class FavoritesStore extends AppStore {
 	}
 
 	/**
-	 * @param context The {@link Context} to use
 	 * @return A singleton instance of this class
 	 */
 	public static FavoritesStore getInstance(Context context) {

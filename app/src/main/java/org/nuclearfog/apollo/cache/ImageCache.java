@@ -84,7 +84,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	private DiskLruCache mDiskCache;
 
 	/**
-	 * @param context The {@link Context} to use
+	 *
 	 */
 	private ImageCache(Context context) {
 		init(context);
@@ -93,7 +93,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 * Used to create a singleton of {@link ImageCache}
 	 *
-	 * @param context The {@link Context} to use
 	 * @return A new instance of this class.
 	 */
 	public static ImageCache getInstance(Context context) {
@@ -335,8 +334,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 
 	/**
 	 * Initialize the cache, providing all parameters.
-	 *
-	 * @param context The {@link Context} to use
 	 */
 	private void init(Context context) {
 		// create cache folder
