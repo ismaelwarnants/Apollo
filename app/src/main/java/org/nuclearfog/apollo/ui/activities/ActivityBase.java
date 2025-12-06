@@ -35,8 +35,7 @@ import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
-import org.nuclearfog.apollo.ui.views.RepeatButton;
-import org.nuclearfog.apollo.ui.views.ShuffleButton;
+import org.nuclearfog.apollo.ui.views.ShuffleRepeatButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
@@ -70,13 +69,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	private PlayPauseButton mPlayPauseButton;
 	/**
-	 * Repeat button (BAB)
+	 * Shuffle & Repeat button (BAB)
 	 */
-	private RepeatButton mRepeatButton;
-	/**
-	 * Shuffle button (BAB)
-	 */
-	private ShuffleButton mShuffleButton;
+	private ShuffleRepeatButton mShuffleButton, mRepeatButton;
+
 	/**
 	 * Track name (BAB)
 	 */
@@ -318,11 +314,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// repeat button clicked
 		else if (v.getId() == R.id.action_button_repeat) {
-			mRepeatButton.updateRepeatState(MusicUtils.cycleRepeat(this));
+			mRepeatButton.updateButtonState(MusicUtils.cycleRepeat(this));
 		}
 		// shuffle button clicked
 		else if (v.getId() == R.id.action_button_shuffle) {
-			mShuffleButton.updateShuffleState(MusicUtils.cycleShuffle(this));
+			mShuffleButton.updateButtonState(MusicUtils.cycleShuffle(this));
 		}
 		// play button clicked
 		else if (v.getId() == R.id.action_button_play) {
@@ -377,9 +373,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	@Override
 	public final void onModeChange() {
 		// Set the repeat image
-		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+		mRepeatButton.updateButtonState(MusicUtils.getRepeatMode(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
+		mShuffleButton.updateButtonState(MusicUtils.getShuffleMode(this));
 	}
 
 
@@ -417,9 +413,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Set the play and pause image
 		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
+		mShuffleButton.updateButtonState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
-		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+		mRepeatButton.updateButtonState(MusicUtils.getRepeatMode(this));
 	}
 
 	/**

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<attr name="button" format="enum">
+		<enum name="forward" value="1" />
+		<enum name="rewind" value="2" />
+		<enum name="shuffle" value="3" />
+		<enum name="repeat" value="4" />
+	</attr>
+
+	<declare-styleable name="ForwardRewindButton">
+		<attr name="button" />
+	</declare-styleable>
+
+	<declare-styleable name="ShuffleRepeatButton">
+		<attr name="button" />
+	</declare-styleable>
+
+</resources>

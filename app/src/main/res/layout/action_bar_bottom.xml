@@ -80,25 +80,29 @@
 			android:layout_height="match_parent"
 			android:layoutDirection="ltr">
 
-			<org.nuclearfog.apollo.ui.views.RepeatingImageButton
+			<org.nuclearfog.apollo.ui.views.ForwardRewindButton
 				android:id="@+id/action_button_previous"
-				style="@style/BottomActionBarItem.Previous" />
+				app:button="rewind"
+				style="@style/BottomActionBarItem" />
 
 			<org.nuclearfog.apollo.ui.views.PlayPauseButton
 				android:id="@+id/action_button_play"
-				style="@style/BottomActionBarItem.Play" />
+				style="@style/BottomActionBarItem" />
 
-			<org.nuclearfog.apollo.ui.views.RepeatingImageButton
+			<org.nuclearfog.apollo.ui.views.ForwardRewindButton
 				android:id="@+id/action_button_next"
-				style="@style/BottomActionBarItem.Next" />
+				app:button="forward"
+				style="@style/BottomActionBarItem" />
 
-			<org.nuclearfog.apollo.ui.views.ShuffleButton
+			<org.nuclearfog.apollo.ui.views.ShuffleRepeatButton
 				android:id="@+id/action_button_shuffle"
-				style="@style/BottomActionBarItem.Shuffle" />
+				app:button="shuffle"
+				style="@style/BottomActionBarItem" />
 
-			<org.nuclearfog.apollo.ui.views.RepeatButton
+			<org.nuclearfog.apollo.ui.views.ShuffleRepeatButton
 				android:id="@+id/action_button_repeat"
-				style="@style/BottomActionBarItem.Repeat" />
+				app:button="repeat"
+				style="@style/BottomActionBarItem" />
 
 		</LinearLayout>
 

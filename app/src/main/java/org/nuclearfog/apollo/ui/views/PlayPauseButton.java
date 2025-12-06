@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnLongClickListener;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,30 +15,34 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
- * A custom {@link ImageButton} that represents the "play and pause" button.
+ * A custom {@link AppCompatImageButton} that represents the "play and pause" button.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class PlayPauseButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
-	 * @param context The {@link Context} to use
+	 * {@inheritDoc}
 	 */
 	public PlayPauseButton(@NonNull Context context) {
 		this(context, null);
 	}
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 * {@inheritDoc}
 	 */
 	public PlayPauseButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mTheme.setBackgroundColor(this);
-		setOnLongClickListener(this);
+		setContentDescription(getContext().getString(R.string.accessibility_play));
+		setScaleType(ScaleType.CENTER_INSIDE);
+		setFocusable(true);
 		updateState(false);
+
+		setOnLongClickListener(this);
 	}
 
 	/**
@@ -64,6 +67,5 @@ public class PlayPauseButton extends AppCompatImageButton implements OnLongClick
 			setContentDescription(getResources().getString(R.string.accessibility_play));
 			setImageResource(R.drawable.btn_playback_play);
 		}
-		requestLayout();
 	}
 }

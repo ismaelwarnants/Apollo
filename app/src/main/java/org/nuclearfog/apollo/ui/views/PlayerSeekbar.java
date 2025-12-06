@@ -97,8 +97,8 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		seekbar.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		seekbar.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		seekbar.setMax(1000);
+		seekbar.setProgress(0);
 		seekbar.setLayoutParams(seekbarParam);
-		seekbar.setOnSeekBarChangeListener(this);
 		// configure root view
 		setOrientation(HORIZONTAL);
 		setGravity(Gravity.CENTER);
@@ -106,8 +106,10 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		addView(seekbar);
 		addView(durText);
 		// init current time view
-		updatePositionText();
-		updateDurationText();
+		posText.setText("00:00");
+		durText.setText("00:00");
+
+		seekbar.setOnSeekBarChangeListener(this);
 	}
 
 

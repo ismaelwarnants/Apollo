@@ -49,13 +49,12 @@ import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
+import org.nuclearfog.apollo.ui.views.ForwardRewindButton;
+import org.nuclearfog.apollo.ui.views.ForwardRewindButton.RepeatListener;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.PlayerSeekbar;
 import org.nuclearfog.apollo.ui.views.PlayerSeekbar.OnPlayerSeekListener;
-import org.nuclearfog.apollo.ui.views.RepeatButton;
-import org.nuclearfog.apollo.ui.views.RepeatingImageButton;
-import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
-import org.nuclearfog.apollo.ui.views.ShuffleButton;
+import org.nuclearfog.apollo.ui.views.ShuffleRepeatButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -97,17 +96,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 	/**
-	 * Play and pause button
+	 * Play & pause button
 	 */
 	private PlayPauseButton mPlayPauseButton;
 	/**
-	 * Repeat button
+	 * Repeat & Shuffle button
 	 */
-	private RepeatButton mRepeatButton;
-	/**
-	 * Shuffle button
-	 */
-	private ShuffleButton mShuffleButton;
+	private ShuffleRepeatButton mRepeatButton, mShuffleButton;
 	/**
 	 * Track name
 	 */
@@ -177,8 +172,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mRepeatButton = findViewById(R.id.action_button_repeat);
 		View root = findViewById(R.id.player_root);
 		Toolbar toolbar = findViewById(R.id.player_toolbar);
-		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
-		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
+		ForwardRewindButton mPreviousButton = findViewById(R.id.action_button_previous);
+		ForwardRewindButton mNextButton = findViewById(R.id.action_button_next);
 		queueContainer = findViewById(R.id.audio_player_queue_fragment);
 		controls = findViewById(R.id.audio_player_controls);
 		mTrackName = findViewById(R.id.audio_player_track_name);
@@ -491,12 +486,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// repeat button clicked
 		else if (v.getId() == R.id.action_button_repeat) {
 			int mode = MusicUtils.cycleRepeat(this);
-			mRepeatButton.updateRepeatState(mode);
+			mRepeatButton.updateButtonState(mode);
 		}
 		// shuffle button clicked
 		else if (v.getId() == R.id.action_button_shuffle) {
 			int mode = MusicUtils.cycleShuffle(this);
-			mShuffleButton.updateShuffleState(mode);
+			mShuffleButton.updateButtonState(mode);
 		}
 		// play/pause button clicked
 		else if (v.getId() == R.id.action_button_play) {
@@ -564,9 +559,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onModeChange() {
 		// Set the repeat image
-		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+		mRepeatButton.updateButtonState(MusicUtils.getRepeatMode(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
+		mShuffleButton.updateButtonState(MusicUtils.getShuffleMode(this));
 	}
 
 	/**
@@ -681,9 +676,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Set the play and pause image
 		mPlayPauseButton.updateState(isPlaying);
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
+		mShuffleButton.updateButtonState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
-		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+		mRepeatButton.updateButtonState(MusicUtils.getRepeatMode(this));
 		playerSeekbar.setTotalTime(MusicUtils.getDurationMillis(this));
 		playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
 		playerSeekbar.setPlayStatus(isPlaying);

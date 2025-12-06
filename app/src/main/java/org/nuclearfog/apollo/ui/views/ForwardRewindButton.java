@@ -1,6 +1,7 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -23,12 +24,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A {@link RepeatingImageButton} that will repeatedly call a 'listener' method as long
- * as the button is pressed, otherwise functions like a typical ImageView
+ * A custom {@link AppCompatImageButton} that represents the "previous" & "next" button
+ * also supporting "forward" & "rewind" by long pressing
  *
  * @author nuclearfog
  */
-public class RepeatingImageButton extends AppCompatImageButton implements OnTouchListener, OnLongClickListener {
+public class ForwardRewindButton extends AppCompatImageButton implements OnTouchListener, OnLongClickListener {
 
 	private static final long S_INTERVAL = 400;
 
@@ -43,35 +44,42 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnTouc
 	private int mRepeatCount = 0;
 
 	/**
-	 * @param context The {@link Context} to use
+	 * {@inheritDoc}
 	 */
-	public RepeatingImageButton(@NonNull Context context) {
+	public ForwardRewindButton(@NonNull Context context) {
 		this(context, null);
 	}
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 * {@inheritDoc}
 	 */
-	public RepeatingImageButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+	public ForwardRewindButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);
 		mHandler = new Handler(context.getMainLooper());
+		TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.ForwardRewindButton);
+		int mode = ta.getInt(R.styleable.ForwardRewindButton_button, 0);
+		ta.recycle();
 		mTheme.setBackgroundColor(this);
 		setFocusable(true);
-		if (getId() == R.id.action_button_next) {
+		// set button icon
+		if (mode == 1) {
 			setImageResource(R.drawable.btn_playback_next);
-		} else if (getId() == R.id.action_button_previous) {
+			setContentDescription(getContext().getString(R.string.accessibility_next));
+		} else if (mode == 2) {
 			setImageResource(R.drawable.btn_playback_previous);
+			setContentDescription(getContext().getString(R.string.accessibility_prev));
 		}
+		setScaleType(ScaleType.CENTER_INSIDE);
+
 		setOnTouchListener(this);
 		setOnLongClickListener(this);
 	}
 
 
 	@Override
-	public boolean onTouch(View v, MotionEvent event) {
+	public final boolean onTouch(View v, MotionEvent event) {
 		switch (event.getActionMasked()) {
 			case MotionEvent.ACTION_DOWN:
 				// start periodic method call
@@ -101,7 +109,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnTouc
 
 
 	@Override
-	public boolean onLongClick(View v) {
+	public final boolean onLongClick(View v) {
 		if (mListener == null) {
 			ApolloUtils.showCheatSheet(this);
 			return true;

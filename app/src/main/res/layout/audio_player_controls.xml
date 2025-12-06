@@ -15,28 +15,24 @@
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<org.nuclearfog.apollo.ui.views.ShuffleButton
+	<org.nuclearfog.apollo.ui.views.ShuffleRepeatButton
 		android:id="@+id/action_button_shuffle"
 		android:layout_width="@dimen/audio_player_controls_end_button_width"
 		android:layout_height="@dimen/audio_player_controls_end_button_height"
-		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
-		android:contentDescription="@string/accessibility_shuffle"
-		android:src="@drawable/btn_playback_shuffle"
+		app:button="shuffle"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/player_progress"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="@id/action_button_previous"
+		app:layout_constraintBottom_toBottomOf="@id/action_button_previous"
 		app:layout_constraintEnd_toStartOf="@id/action_button_previous" />
 
-	<org.nuclearfog.apollo.ui.views.RepeatingImageButton
+	<org.nuclearfog.apollo.ui.views.ForwardRewindButton
 		android:id="@+id/action_button_previous"
 		android:layout_width="@dimen/audio_player_controls_main_button_width"
 		android:layout_height="@dimen/audio_player_controls_main_button_height"
-		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
-		android:layout_gravity="center"
-		android:src="@drawable/btn_playback_previous"
+		app:button="rewind"
 		app:layout_constraintStart_toEndOf="@id/action_button_shuffle"
-		app:layout_constraintTop_toBottomOf="@id/player_progress"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="@id/action_button_play"
+		app:layout_constraintBottom_toBottomOf="@id/action_button_play"
 		app:layout_constraintEnd_toStartOf="@id/action_button_play" />
 
 	<org.nuclearfog.apollo.ui.views.PlayPauseButton
@@ -44,39 +40,29 @@
 		android:layout_width="@dimen/audio_player_controls_main_button_width"
 		android:layout_height="@dimen/audio_player_controls_main_button_height"
 		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
-		android:layout_gravity="center"
-		android:contentDescription="@string/accessibility_play"
-		android:focusable="true"
-		android:src="@drawable/btn_playback_play"
 		app:layout_constraintStart_toEndOf="@id/action_button_previous"
 		app:layout_constraintTop_toBottomOf="@id/player_progress"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toStartOf="@id/action_button_next" />
 
-	<org.nuclearfog.apollo.ui.views.RepeatingImageButton
+	<org.nuclearfog.apollo.ui.views.ForwardRewindButton
 		android:id="@+id/action_button_next"
 		android:layout_width="@dimen/audio_player_controls_main_button_width"
 		android:layout_height="@dimen/audio_player_controls_main_button_height"
-		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
-		android:layout_gravity="center"
-		android:src="@drawable/btn_playback_next"
+		app:button="forward"
 		app:layout_constraintStart_toEndOf="@id/action_button_play"
-		app:layout_constraintTop_toBottomOf="@id/player_progress"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="@id/action_button_play"
+		app:layout_constraintBottom_toBottomOf="@id/action_button_play"
 		app:layout_constraintEnd_toStartOf="@id/action_button_repeat" />
 
-	<org.nuclearfog.apollo.ui.views.RepeatButton
+	<org.nuclearfog.apollo.ui.views.ShuffleRepeatButton
 		android:id="@+id/action_button_repeat"
 		android:layout_width="@dimen/audio_player_controls_end_button_width"
 		android:layout_height="@dimen/audio_player_controls_end_button_height"
-		android:layout_marginTop="@dimen/audio_player_seek_bar_margin_bottom"
-		android:layout_gravity="center"
-		android:contentDescription="@string/accessibility_repeat"
-		android:focusable="true"
-		android:src="@drawable/btn_playback_repeat"
+		app:button="repeat"
 		app:layout_constraintStart_toEndOf="@id/action_button_next"
-		app:layout_constraintTop_toBottomOf="@id/player_progress"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="@id/action_button_next"
+		app:layout_constraintBottom_toBottomOf="@id/action_button_next"
 		app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
