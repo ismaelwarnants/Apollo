@@ -96,6 +96,10 @@
 	<!-- Drag and drop -->
 	<dimen name="drag_and_drop_handle_margin">10dp</dimen>
 
+	<!-- Toast layout-->
+	<dimen name="toast_margin_vertical">5dp</dimen>
+	<dimen name="toast_margin_horizontal">10dp</dimen>
+
 	<!-- Color scheme dialog -->
 	<dimen name="color_scheme_view_margin">8.0dp</dimen>
 	<dimen name="color_scheme_dialog_button_height">45dp</dimen>

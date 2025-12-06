@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -79,29 +80,36 @@ public final class ApolloUtils {
 	 * @param view The {@link View} to copy the content description from.
 	 */
 	public static void showCheatSheet(View view) {
-		int[] screenPos = new int[2]; // origin is device display
+		// calculate position and dimensions
+		int[] screenPos = new int[2];
 		Rect displayFrame = new Rect(); // includes decorations (e.g. status bar)
 		view.getLocationOnScreen(screenPos);
 		view.getWindowVisibleDisplayFrame(displayFrame);
-
-		Context context = view.getContext();
 		int viewWidth = view.getWidth();
 		int viewHeight = view.getHeight();
 		int viewCenterX = screenPos[0] + viewWidth / 2;
-		int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-		int estimatedToastHeight = (int) (48 * context.getResources().getDisplayMetrics().density);
-		Toast cheatSheet = Toast.makeText(context, view.getContentDescription(), Toast.LENGTH_SHORT);
+		int screenWidth = view.getResources().getDisplayMetrics().widthPixels;
+		int estimatedToastHeight = (int) (48 * view.getResources().getDisplayMetrics().density);
 		boolean showBelow = screenPos[1] < estimatedToastHeight;
+		// init toast view
+		Toast cheatSheet = new Toast(view.getContext());
+		View toastView = View.inflate(view.getContext(), R.layout.toast_cheatsheet, null);
+		TextView tv = toastView.findViewById(R.id.toast_text);
+		// setup toast view
+		cheatSheet.setView(toastView);
+		cheatSheet.setDuration(Toast.LENGTH_SHORT);
+		tv.setText(view.getContentDescription());
+		// set position of the toast
 		if (showBelow) {
 			// Show below
 			// Offsets are after decorations (e.g. status bar) are factored in
-			cheatSheet.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, viewCenterX
-					- screenWidth / 2, screenPos[1] - displayFrame.top + viewHeight);
+			cheatSheet.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL,
+					viewCenterX - screenWidth / 2, screenPos[1] - displayFrame.top + viewHeight);
 		} else {
 			// Show above
 			// Offsets are after decorations (e.g. status bar) are factored in
-			cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, viewCenterX
-					- screenWidth / 2, displayFrame.bottom - screenPos[1]);
+			cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL,
+					viewCenterX - screenWidth / 2, displayFrame.bottom - screenPos[1]);
 		}
 		cheatSheet.show();
 	}
