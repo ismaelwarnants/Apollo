@@ -45,6 +45,7 @@ import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.WeakHashMap;
 
 /**
@@ -505,7 +506,7 @@ public final class MusicUtils {
 			try {
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_AUTO);
-					service.open(list, -1);
+					service.open(list, new Random().nextInt(list.length - 1));
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 					service.open(list, position);

@@ -1,5 +1,7 @@
 package org.nuclearfog.apollo.service.lists;
 
+import androidx.annotation.NonNull;
+
 import org.nuclearfog.apollo.utils.ApolloUtils;
 
 import java.util.LinkedList;
@@ -217,5 +219,14 @@ public class PlaybackList {
 				return mPlaylist.get(index);
 			return -1L;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public String toString() {
+		return "size=" + size() + " position=" + playPos;
 	}
 }

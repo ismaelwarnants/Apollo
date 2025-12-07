@@ -42,6 +42,7 @@ import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.lists.PlaybackList;
+import org.nuclearfog.apollo.service.lists.ShuffleList;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
@@ -49,9 +50,7 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Random;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -186,11 +185,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * shuffle list containing track indexes of the current playlist
 	 */
-	private LinkedList<Integer> mShuffleList = new LinkedList<>();
-	/**
-	 * random generator used for shuffle
-	 */
-	private Random mRandom = new Random();
+	private ShuffleList mShuffleList = new ShuffleList();
 	/**
 	 * audio manager to gain audio focus
 	 */
@@ -269,7 +264,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
 	private int mRepeatMode = REPEAT_ALL;
-	private int mShufflePos = -1;
 	private int mNextPlayPos = -1;
 
 	/**
@@ -665,7 +659,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayList.setPosition(decrementPosition(pos));
 			openCurrentAndNext();
 		} else {
-			stop();
+			pause(true);
+			seekTo(0);
 		}
 		play();
 	}
@@ -794,7 +789,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (makeShuffleList(true)) {
 					mShuffleMode = SHUFFLE_AUTO;
 					mPlayList.setPosition(0);
-					mShufflePos = 0;
+					mShuffleList.setIndex(0);
 					openCurrentAndNext();
 				}
 			}
@@ -802,7 +797,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			else if (shuffleMode == SHUFFLE_NORMAL) {
 				if (makeShuffleList(false)) {
 					mShuffleMode = SHUFFLE_NORMAL;
-					mShufflePos = 0;
+					mShuffleList.setIndex(0);
 					setNextTrack(false);
 				}
 			}
@@ -915,7 +910,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mShuffleMode = SHUFFLE_NORMAL;
 		}
 		mPlayList.setItems(list);
-		mPlayList.setPosition(position >= 0 ? position : mRandom.nextInt(mPlayList.size() - 1));
+		mPlayList.setPosition(position);
 		mHistory.clear();
 		notifyChange(CHANGED_QUEUE);
 		openCurrentAndNext();
@@ -1191,7 +1186,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			clearCurrentTrackInformation();
 			return false;
 		}
-		stop();
+		pause(true);
 		updateTrackInformation();
 		boolean fileOpened = false;
 		Song song = currentSong;
@@ -1277,15 +1272,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mHistory.removeFirst();
 				}
 				// reset shuffle list after reaching the end or refreshing
-				if (mShuffleList.size() != mPlayList.size() || mShufflePos < 0 || mShufflePos >= mShuffleList.size()) {
+				if (mShuffleList.size() != mPlayList.size()) {
 					// create a new shuffle list. if fail, prevent playing
-					mShufflePos = 0;
+					mShuffleList.setIndex(0);
 					if (!makeShuffleList(false)) {
 						return -1;
 					}
 				}
 				// get index of the new track
-				return mShuffleList.get(mShufflePos++);
+				return mShuffleList.next();
 
 			// Party shuffle
 			case SHUFFLE_AUTO:
@@ -1352,21 +1347,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 			if (!mPlayList.isEmpty()) {
-				mShuffleList.clear();
-				int size = mPlayList.size();
-				for (int index = 0; index < size; index++) {
-					mShuffleList.add(index);
-				}
-				Collections.shuffle(mShuffleList, mRandom);
-				// move played tracks at the end
-				if (!mHistory.isEmpty()) {
-					for (int i = 0; i < mShuffleList.size(); i++) {
-						if (mHistory.contains(mShuffleList.get(i))) {
-							int index = mShuffleList.remove(i);
-							mShuffleList.add(index);
-						}
-					}
-				}
+				mShuffleList.shuffle(mHistory, mPlayList.size());
 				return true;
 			} else {
 				clearShuffleList();
@@ -1382,7 +1363,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void clearShuffleList() {
 		mShuffleList.clear();
-		mShufflePos = -1;
 		mShuffleMode = SHUFFLE_NONE;
 	}
 
