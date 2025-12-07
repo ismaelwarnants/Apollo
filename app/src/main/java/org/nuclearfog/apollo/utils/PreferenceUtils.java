@@ -12,7 +12,6 @@ import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.ArtistFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -445,30 +444,32 @@ public final class PreferenceUtils {
 	 *
 	 * @return playlist
 	 */
-	public List<Long> getPlaylist() {
-		List<Long> playList = new LinkedList<>();
+	public long[] getPlaylist() {
 		String trackQueue = defaultPref.getString(QUEUE, "");
 		if (!trackQueue.isEmpty()) {
 			String[] items = trackQueue.split(";");
-			for (String item : items) {
+			long[] ids = new long[items.length];
+			for (int i = 0; i < items.length; i++) {
+				String item = items[i];
 				try {
-					long trackId = Long.parseLong(item, 16);
-					playList.add(trackId);
+					ids[i] = Long.parseLong(item, 16);
 				} catch (NumberFormatException exception) {
 					Log.w(TAG, "bad playlist id: " + item);
+					ids[i] = -1;
 				}
 			}
+			return ids;
 		}
-		return playList;
+		return new long[0];
 	}
 
 	/**
 	 * save current playlist
 	 *
-	 * @param playlist list of tracks
-	 * @param cardId   list id
+	 * @param playlist array of track IDs
+	 * @param cardId   ID of the external storage
 	 */
-	public void setPlayList(List<Long> playlist, int cardId) {
+	public void setPlayList(long[] playlist, int cardId) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		StringBuilder buffer = new StringBuilder();
 		for (long n : playlist) {
@@ -483,10 +484,9 @@ public final class PreferenceUtils {
 	/**
 	 * get track history
 	 *
-	 * @return list of track numbers
+	 * @param history list to add history indexes
 	 */
-	public List<Integer> getTrackHistory() {
-		List<Integer> history = new LinkedList<>();
+	public void getTrackHistory(List<Integer> history) {
 		String trackHistory = defaultPref.getString(HISTORY, "");
 		if (!trackHistory.isEmpty()) {
 			String[] items = trackHistory.split(";");
@@ -499,7 +499,6 @@ public final class PreferenceUtils {
 				}
 			}
 		}
-		return history;
 	}
 
 	/**
@@ -510,8 +509,8 @@ public final class PreferenceUtils {
 	public void setTrackHistory(List<Integer> history) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		StringBuilder buffer = new StringBuilder();
-		for (long n : history) {
-			buffer.append(Long.toHexString(n));
+		for (int n : history) {
+			buffer.append(Integer.toHexString(n));
 			buffer.append(";");
 		}
 		editor.putString(HISTORY, buffer.toString());

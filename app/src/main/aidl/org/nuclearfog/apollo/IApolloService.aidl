@@ -29,7 +29,6 @@ interface IApolloService {
     long getPlayerPosition();
     void setPlayerPosition(long pos);
     void removeTrack(int pos);
-    int removeTracks(in long[] ids);
     void setCrossfade(boolean enable);
     void releaseService();
     Song getCurrentTrack();

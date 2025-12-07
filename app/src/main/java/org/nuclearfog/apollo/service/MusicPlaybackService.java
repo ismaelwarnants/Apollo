@@ -41,6 +41,7 @@ import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
 import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
+import org.nuclearfog.apollo.service.lists.PlaybackList;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
@@ -48,7 +49,6 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
@@ -182,19 +182,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * current playlist containing track ID's
 	 */
-	private LinkedList<Long> mPlayList = new LinkedList<>();
+	private PlaybackList mPlayList = new PlaybackList();
 	/**
 	 * shuffle list containing track indexes of the current playlist
 	 */
-	private ArrayList<Integer> mShuffleList = new ArrayList<>();
+	private LinkedList<Integer> mShuffleList = new LinkedList<>();
 	/**
 	 * random generator used for shuffle
 	 */
 	private Random mRandom = new Random();
-	/**
-	 * app wide settings
-	 */
-	private PreferenceUtils settings;
 	/**
 	 * audio manager to gain audio focus
 	 */
@@ -210,8 +206,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * broadcast listener for unmounting external storage
 	 */
-	private BroadcastReceiver mUnmountReceiver;
-	private BroadcastReceiver headsetReceiver;
+	private BroadcastReceiver mUnmountReceiver, headsetReceiver;
 	/**
 	 * handler used to shutdown service after idle
 	 */
@@ -228,6 +223,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Used to build the notification
 	 */
 	private NotificationHelper mNotificationHelper;
+	/**
+	 * app wide settings
+	 */
+	private PreferenceUtils settings;
 	/**
 	 * database for recently played tracks
 	 */
@@ -271,7 +270,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private int mShuffleMode = SHUFFLE_NONE;
 	private int mRepeatMode = REPEAT_ALL;
 	private int mShufflePos = -1;
-	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
 
 	/**
@@ -453,7 +451,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	@Override
 	public void onComplete() {
-		mPlayPos = mNextPlayPos;
+		mPlayList.setPosition(mNextPlayPos);
 		updateTrackInformation();
 		setNextTrack(false);
 		notifyChange(CHANGED_META);
@@ -470,13 +468,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * used by widgets or other intents to change playback state
 	 */
-	public synchronized void handleCommandIntent(Intent intent) {
+	public void handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
-		// next track
+		// go to next track
 		if (ACTION_NEXT.equals(action)) {
 			gotoNext();
 		}
-		// previous track
+		// go to previous track
 		else if (ACTION_PREVIOUS.equals(action)) {
 			gotoPrev();
 		}
@@ -493,7 +491,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			stop();
 			releaseService(false);
 		}
-		// repeat set
+		// set 'repeat' mode
 		else if (ACTION_REPEAT.equals(action)) {
 			if (mRepeatMode == REPEAT_NONE) {
 				setRepeatMode(REPEAT_ALL);
@@ -506,7 +504,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setRepeatMode(REPEAT_NONE);
 			}
 		}
-		// shuffle set
+		// set 'shuffle' mode
 		else if (ACTION_SHUFFLE.equals(action)) {
 			if (mShuffleMode == SHUFFLE_NONE) {
 				setShuffleMode(SHUFFLE_NORMAL);
@@ -517,7 +515,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setShuffleMode(SHUFFLE_NONE);
 			}
 		}
-		// handle play/pause button
+		// handle media button
 		else if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
 			KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 			if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
@@ -541,7 +539,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * called if multimedia card is rejected by user
 	 */
-	public synchronized void onEject() {
+	public void onEject() {
 		saveQueue(true);
 		mQueueIsSaveable = false;
 		stop();
@@ -551,7 +549,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * called if multimedia card was mounted
 	 */
-	public synchronized void onMediaMount() {
+	public void onMediaMount() {
 		reloadQueue();
 		mQueueIsSaveable = true;
 	}
@@ -597,7 +595,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Stops playback.
 	 */
-	synchronized void stop() {
+	void stop() {
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
@@ -608,7 +606,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Resumes or starts playback.
 	 */
-	synchronized void play() {
+	void play() {
 		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, focusRequest);
 		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 			if (mPlayer.initialized()) {
@@ -633,7 +631,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param force true to stop playback immediately (fade-out disabled)
 	 */
-	public synchronized void pause(boolean force) {
+	public void pause(boolean force) {
 		mPlayer.pause(force);
 		if (force) {
 			notifyChange(CHANGED_PLAYSTATE);
@@ -643,14 +641,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Changes from the current track to the next track
 	 */
-	synchronized void gotoNext() {
+	void gotoNext() {
 		if (!mPlayList.isEmpty()) {
-			mPlayPos = incrementPosition(mPlayPos, true);
+			int pos = mPlayList.getPosition();
+			mPlayList.setPosition(incrementPosition(pos, true));
 			mPlayer.pause(true);
 			openCurrentAndNext();
 			play();
 		} else if (makeShuffleList(true)) {
-			mPlayPos = 0;
+			mPlayList.setPosition(0);
 			openCurrentAndNext();
 			play();
 		}
@@ -659,13 +658,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * restart current track or go to preview track
 	 */
-	synchronized void gotoPrev() {
+	void gotoPrev() {
 		// go to previous track if playback position is at beginning
 		if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-			mPlayPos = decrementPosition(mPlayPos);
+			int pos = mPlayList.getPosition();
+			mPlayList.setPosition(decrementPosition(pos));
+			openCurrentAndNext();
+		} else {
+			stop();
 		}
-		stop();
-		openCurrentAndNext();
 		play();
 	}
 
@@ -674,7 +675,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param position The time to seek to
 	 */
-	synchronized void seekTo(long position) {
+	void seekTo(long position) {
 		if (!mPlayer.busy()) {
 			mPlayer.setPosition(position);
 		}
@@ -685,7 +686,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param uri URI of the local file
 	 */
-	synchronized void openFile(@NonNull Uri uri) {
+	void openFile(@NonNull Uri uri) {
 		stop();
 		updateTrackInformation(uri);
 		Song song = currentSong;
@@ -693,7 +694,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (song != null) {
 			// add at the beginning of the playlist
 			mPlayList.addFirst(song.getId());
-			mPlayPos = 0;
+			mPlayList.setPosition(0);
 			// update metadata
 			notifyChange(CHANGED_QUEUE);
 			if (mPlayer.setDataSource(getApplicationContext(), uri)) {
@@ -714,7 +715,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param what what changed e.g. {@link #CHANGED_PLAYSTATE,#CHANGED_META}
 	 */
-	synchronized void notifyChange(String what) {
+	void notifyChange(String what) {
 		Song song = currentSong;
 		Album album = currentAlbum;
 		// send broadcast
@@ -777,7 +778,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current media player audio session ID
 	 */
-	synchronized int getAudioSessionId() {
+	int getAudioSessionId() {
 		return mPlayer.getAudioSessionId();
 	}
 
@@ -786,13 +787,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param shuffleMode The shuffle mode to use
 	 */
-	synchronized void setShuffleMode(int shuffleMode) {
+	void setShuffleMode(int shuffleMode) {
 		if (mShuffleMode != shuffleMode || mPlayList.isEmpty()) {
 			// setup party shuffle
 			if (shuffleMode == SHUFFLE_AUTO) {
 				if (makeShuffleList(true)) {
 					mShuffleMode = SHUFFLE_AUTO;
-					mPlayPos = 0;
+					mPlayList.setPosition(0);
 					mShufflePos = 0;
 					openCurrentAndNext();
 				}
@@ -820,8 +821,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param index The position to place the track
 	 */
-	synchronized void setQueuePosition(int index) {
-		mPlayPos = index;
+	void setQueuePosition(int index) {
+		mPlayList.setPosition(index);
 		openCurrentAndNext();
 		play();
 	}
@@ -832,15 +833,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return the current position in the queue
 	 */
 	int getQueuePosition() {
-		return mPlayPos;
+		return mPlayList.getPosition();
 	}
 
 	/**
 	 * clear the current queue and stop playback
 	 */
-	synchronized void clearQueue() {
+	void clearQueue() {
 		stop();
-		mPlayPos = -1;
 		mPlayList.clear();
 		clearCurrentTrackInformation();
 		notifyChange(CHANGED_QUEUE);
@@ -851,74 +851,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param pos position of the track in the queue
 	 */
-	synchronized void removeQueueTrack(int pos) {
+	void removeQueueTrack(int pos) {
 		if (pos >= 0 && pos < mPlayList.size()) {
+			// stop playback if current track is removed or the last track is going to be removed
+			if (mPlayList.getPosition() == pos || mPlayList.size() == 1) {
+				stop();
+			}
 			// remove track at position
 			mPlayList.remove(pos);
-			// check if current play position is higher than the removed track
-			if (mPlayPos > pos) {
-				mPlayPos--;
-			}
-			// check if current track was removed then stop playback
-			else if (mPlayPos == pos) {
-				if (mPlayPos > 0)
-					mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
-				stop();
-			}
-			// stop playback if queue is empty
-			if (mPlayList.isEmpty()) {
-				mPlayPos = -1;
-				stop();
-			}
 			// notify that queue changed
-			else {
-				notifyChange(CHANGED_QUEUE);
-			}
-		}
-	}
-
-	/**
-	 * Removes all instances of the track with the given ID from the playlist.
-	 *
-	 * @param ids track IDs to remove
-	 * @return how many instances of the track were removed
-	 */
-	synchronized int removeQueueTracks(long[] ids) {
-		int numRemoved = 0;
-		for (long id : ids) {
-			int pos;
-			do {
-				// get index of the track ID
-				pos = mPlayList.indexOf(id);
-				if (pos >= 0) {
-					mPlayList.remove(pos);
-					// check if current play position is higher than the removed track
-					if (mPlayPos > pos) {
-						mPlayPos--;
-					}
-					// check if current track was removed then stop playback
-					else if (mPlayPos == pos) {
-						if (mPlayPos > 0)
-							mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
-						stop();
-					}
-					numRemoved++;
-				}
-			} while (pos >= 0);
-			if (mPlayList.isEmpty()) {
-				break;
-			}
-		}
-		// stop playback if queue is empty
-		if (mPlayList.isEmpty()) {
-			mPlayPos = -1;
-			stop();
-		}
-		// notify if any tracks were removed
-		if (numRemoved > 0) {
 			notifyChange(CHANGED_QUEUE);
 		}
-		return numRemoved;
 	}
 
 	/**
@@ -926,8 +869,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The queue containing song IDs
 	 */
-	synchronized long[] getQueue() {
-		return ApolloUtils.toLongArray(mPlayList);
+	long[] getQueue() {
+		return mPlayList.getItems();
 	}
 
 	/**
@@ -935,7 +878,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current playback position in milliseconds
 	 */
-	synchronized long getPosition() {
+	long getPosition() {
 		return mPlayer.getPosition();
 	}
 
@@ -944,7 +887,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return duration in milliseconds
 	 */
-	synchronized long getDuration() {
+	long getDuration() {
 		return mPlayer.getDuration();
 	}
 
@@ -953,7 +896,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param repeatMode The repeat mode to use
 	 */
-	synchronized void setRepeatMode(int repeatMode) {
+	void setRepeatMode(int repeatMode) {
 		mRepeatMode = repeatMode;
 		setNextTrack(false);
 		saveQueue(false);
@@ -966,17 +909,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param list     The list of tracks to open
 	 * @param position The position to start playback at
 	 */
-	synchronized void open(long[] list, int position) {
+	void open(long[] list, int position) {
 		stop();
 		if (mShuffleMode == SHUFFLE_AUTO) {
 			mShuffleMode = SHUFFLE_NORMAL;
 		}
-		mPlayList.clear();
-		for (long trackId : list)
-			mPlayList.add(trackId);
-		mPlayPos = position >= 0 ? position : mRandom.nextInt(mPlayList.size() - 1);
-		notifyChange(CHANGED_QUEUE);
+		mPlayList.setItems(list);
+		mPlayList.setPosition(position >= 0 ? position : mRandom.nextInt(mPlayList.size() - 1));
 		mHistory.clear();
+		notifyChange(CHANGED_QUEUE);
 		openCurrentAndNext();
 		play();
 	}
@@ -987,31 +928,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param from The position the item is currently at
 	 * @param to   The position the item is being moved to
 	 */
-	synchronized void moveQueueItem(int from, int to) {
-		if (from >= mPlayList.size()) {
-			from = mPlayList.size() - 1;
-		}
-		if (to >= mPlayList.size()) {
-			to = mPlayList.size() - 1;
-		}
-		// move track
-		long trackId = mPlayList.remove(from);
-		mPlayList.add(to, trackId);
-		// set current play pos
-		if (mPlayPos == from) {
-			mPlayPos = to;
-		} else if (mPlayPos >= from && mPlayPos <= to) {
-			mPlayPos--;
-		} else if (mPlayPos <= from && mPlayPos >= to) {
-			mPlayPos++;
-		}
+	void moveQueueItem(int from, int to) {
+		mPlayList.move(from, to);
 		notifyChange(CHANGED_QUEUE);
 	}
 
 	/**
 	 *
 	 */
-	synchronized void stopForeground() {
+	void stopForeground() {
 		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 		mNotificationHelper.dismissNotification();
 		shutdownHandler.stop();
@@ -1024,17 +949,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param list   The list to queue
 	 * @param action The action to take
 	 */
-	synchronized void enqueue(long[] list, int action) {
+	void enqueue(long[] list, int action) {
 		if (action == MOVE_NEXT) {
-			addToPlayList(list, mPlayPos + 1);
-			if (mPlayPos < 0) {
-				mPlayPos = 0;
-				stop();
-				openCurrentAndNext();
-				play();
-			}
+			mPlayList.addItemsToNext(list);
 		} else if (action == MOVE_LAST) {
-			addToPlayList(list, Integer.MAX_VALUE);
+			mPlayList.addItems(list);
 		}
 	}
 
@@ -1043,7 +962,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param force true to force shutdown this service
 	 */
-	synchronized void releaseService(boolean force) {
+	void releaseService(boolean force) {
 		if ((!isPlaying() && !mPausedByFocusLoss) || force) {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
@@ -1114,36 +1033,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Adds a music ID list to the current playlist
-	 *
-	 * @param list     The list to add
-	 * @param position The position to place the tracks
-	 */
-	private void addToPlayList(long[] list, int position) {
-		if (position < 0) {
-			position = 0;
-		} else if (position > mPlayList.size()) {
-			position = mPlayList.size();
-		}
-		for (long trackId : list) {
-			mPlayList.add(position++, trackId);
-		}
-		if (mPlayPos == -1) {
-			mPlayPos = 0;
-			openCurrentAndNext();
-		}
-		notifyChange(CHANGED_QUEUE);
-	}
-
-	/**
 	 * update current track information
 	 */
 	private void updateTrackInformation() {
-		if (mPlayPos >= 0 && mPlayPos < mPlayList.size()) {
-			long trackId = mPlayList.get(mPlayPos);
-			Cursor cursor = CursorFactory.makeTrackCursor(this, trackId);
-			updateTrackInformation(cursor);
-		}
+		updateTrackInformation(mPlayList.getCurrent());
+
 	}
 
 	/**
@@ -1151,7 +1045,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param uri uri of the audio track
 	 */
-	private void updateTrackInformation(Uri uri) {
+	private void updateTrackInformation(@NonNull Uri uri) {
 		Cursor cursor = null;
 		// get information from MediaStore directly
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
@@ -1210,6 +1104,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
+	 * update track information using song ID
+	 *
+	 * @param id ID of the track to update
+	 */
+	private void updateTrackInformation(long id) {
+		if (id != -1L) {
+			Cursor cursor = CursorFactory.makeTrackCursor(this, id);
+			updateTrackInformation(cursor);
+		} else {
+			clearCurrentTrackInformation();
+		}
+	}
+
+	/**
 	 * read track information from cursor then close
 	 *
 	 * @param cursor cursor with track information
@@ -1263,8 +1171,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Called to open a new file as the current track and prepare the next for
-	 * playback
+	 * Stops the current playback and initialize the current and the next track
 	 */
 	private void openCurrentAndNext() {
 		if (openCurrentTrack()) {
@@ -1275,11 +1182,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * prepare current track of the queue for playback and update track information
 	 * if an error occurs try the next tracks
+	 *	todo rewrite
 	 *
 	 * @return true if track was opened successfully
 	 */
 	private boolean openCurrentTrack() {
-		if (mPlayList.isEmpty() || mPlayPos < 0) {
+		if (mPlayList.isEmpty() || mPlayList.getPosition() < 0) {
 			clearCurrentTrackInformation();
 			return false;
 		}
@@ -1287,49 +1195,50 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		updateTrackInformation();
 		boolean fileOpened = false;
 		Song song = currentSong;
-		long id = song != null ? song.getId() : 0;
-		if (id != -1L) {
-			fileOpened = openTrack(id);
+		if (song != null && song.getId() != -1L) {
+			fileOpened = openTrack(song.getId());
 		}
 		// check if file was opened successfully
 		if (!fileOpened) {
 			if (mPlayList.size() > 1) {
+				int mPlayPos = mPlayList.getPosition();
 				// trying to play one of the next 10 tracks, give up if no success
-				for (int i = 0; i < 10 && mPlayPos >= 0; i++) {
+				for (int i = 0; i < 10; i++) {
 					mPlayPos = incrementPosition(mPlayPos, false);
 					// check if the end of the queue is reached
-					if (mPlayPos < 0) {
-						break;
-					}
-					// skip faulty track and try open next track
-					else {
-						updateTrackInformation();
+					if (mPlayPos >= 0) {
+						updateTrackInformation(mPlayList.get(mPlayPos));
 						song = currentSong;
-						id = song != null ? song.getId() : 0;
-						if (id != -1L && openTrack(id)) {
+						if (song != null && song.getId() != -1L) {
 							fileOpened = true;
 							break;
 						}
+					} else {
+						break;
 					}
 				}
+				mPlayList.setPosition(mPlayPos);
 			}
 			if (!fileOpened) {
 				Log.w(TAG, "Failed to open file for playback");
 			}
 		}
+		notifyChange(CHANGED_META);
 		return fileOpened;
 	}
 
 	/**
-	 * Sets the track track to be played
+	 * Initializes the next track to be played and sets the next track position
+	 *
+	 * @param force true to force playing the next track (ignoring repeat state)
 	 */
 	private void setNextTrack(boolean force) {
-		int nextPos = mPlayPos;
+		int nextPos = mPlayList.getPosition();
 		// search for the next playable track
 		for (int i = 0; i < 10; i++) {
 			nextPos = incrementPosition(nextPos, force);
-			if (nextPos >= 0 && nextPos < mPlayList.size()) {
-				long id = mPlayList.get(nextPos);
+			long id = mPlayList.get(nextPos);
+			if (id >= 0) {
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
 					// stop searching if the next track was set successfully
@@ -1337,7 +1246,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					return;
 				}
 			} else {
-				// no track was found
 				break;
 			}
 		}
@@ -1434,19 +1342,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				Cursor cursor = CursorFactory.makeTrackCursor(this);
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
-						mPlayList.clear();
-						do {
-							long id = cursor.getLong(0);
-							mPlayList.add(id);
-						} while (cursor.moveToNext());
+						long[] ids = new long[cursor.getColumnCount()];
+						for (int i = 0; i < ids.length; i++) {
+							ids[i] = cursor.getLong(0);
+						}
+						mPlayList.setItems(ids);
 					}
 					cursor.close();
 				}
 			}
 			if (!mPlayList.isEmpty()) {
 				mShuffleList.clear();
-				mShuffleList.ensureCapacity(mPlayList.size());
-				for (int index = 0; index < mPlayList.size(); index++) {
+				int size = mPlayList.size();
+				for (int index = 0; index < size; index++) {
 					mShuffleList.add(index);
 				}
 				Collections.shuffle(mShuffleList, mRandom);
@@ -1502,12 +1410,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void saveQueue(boolean full) {
 		if (mQueueIsSaveable) {
 			if (full) {
-				settings.setPlayList(mPlayList, getCurrentCardId());
+				settings.setPlayList(mPlayList.getItems(), getCurrentCardId());
 				if (mShuffleMode != SHUFFLE_NONE) {
 					settings.setTrackHistory(mHistory);
 				}
 			}
-			settings.setCursorPosition(mPlayPos);
+			settings.setCursorPosition(mPlayList.getPosition());
 			if (mPlayer.initialized()) {
 				settings.setSeekPosition(mPlayer.getPosition());
 			}
@@ -1520,14 +1428,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void reloadQueue() {
 		if (getCurrentCardId() == settings.getCardId()) {
-			mPlayList.clear();
-			mPlayList.addAll(settings.getPlaylist());
+			mPlayList.setItems(settings.getPlaylist());
 		}
 		if (!mPlayList.isEmpty()) {
-			int pos = settings.getCursorPosition();
-			if (pos >= 0 && pos < mPlayList.size()) {
-				mPlayPos = pos;
-			}
+			mPlayList.setPosition(settings.getCursorPosition());
 			openCurrentAndNext();
 			if (mPlayer.initialized()) {
 				long seekPos = settings.getSeekPosition();
@@ -1537,7 +1441,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mShuffleMode = settings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
 				mHistory.clear();
-				mHistory.addAll(settings.getTrackHistory());
+				settings.getTrackHistory(mHistory);
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				if (!makeShuffleList(true)) {
