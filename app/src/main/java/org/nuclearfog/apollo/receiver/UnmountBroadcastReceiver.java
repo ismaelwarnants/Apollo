@@ -29,9 +29,9 @@ public class UnmountBroadcastReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
 		if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
-			service.onEject();
+			service.onExternalStorageChanged(false);
 		} else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-			service.onMediaMount();
+			service.onExternalStorageChanged(true);
 		}
 	}
 }

@@ -239,10 +239,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private boolean mServiceInUse = false;
 	/**
-	 * Used to indicate if the queue can be saved
-	 */
-	private boolean mQueueIsSaveable = true;
-	/**
 	 * Used to track what type of audio focus loss caused the playback to pause
 	 */
 	private boolean mPausedByFocusLoss = false;
@@ -354,8 +350,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (settings.isExternalAudioFxPreferred() && !settings.isAudioFxEnabled()) {
 			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
 		}
-		// Bring the queue back
-		reloadQueue();
+		// initialize the playback/history list and state
+		initPlaybackList();
 	}
 
 	/**
@@ -369,6 +365,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, APOLLO_PACKAGE_NAME);
 		sendBroadcast(audioEffectsIntent);
 		AudioEffects.release();
+		//save playlist, history and shuffle/repeat state
+		savePlaybackList(true);
 		// Release the player
 		mPlayer.release();
 		// release player callbacks
@@ -531,21 +529,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * called if multimedia card is rejected by user
-	 */
-	public void onEject() {
-		saveQueue(true);
-		mQueueIsSaveable = false;
-		stop();
-		notifyChange(CHANGED_QUEUE);
-	}
-
-	/**
 	 * called if multimedia card was mounted
 	 */
-	public void onMediaMount() {
-		reloadQueue();
-		mQueueIsSaveable = true;
+	public void onExternalStorageChanged(boolean mounted) {
+		if (mounted) {
+			initPlaybackList();
+		} else {
+			stop();
+			savePlaybackList(true);
+		}
+		notifyChange(CHANGED_QUEUE);
 	}
 
 	/**
@@ -659,8 +652,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayList.setPosition(decrementPosition(pos));
 			openCurrentAndNext();
 		} else {
-			pause(true);
-			seekTo(0);
+			mPlayer.stop();
 		}
 		play();
 	}
@@ -750,11 +742,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mNotificationHelper.dismissNotification();
 					shutdownHandler.stop();
 				}
+				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
+					settings.setSeekPosition(mPlayer.getPosition());
+				}
 				updatePlaybackState();
 				break;
 
 			case CHANGED_QUEUE:
-				saveQueue(true);
+				savePlaybackList(true);
 				updatePlaybackState();
 				if (mPlayer.isPlaying()) {
 					setNextTrack(false);
@@ -762,7 +757,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				break;
 
 			default:
-				saveQueue(false);
+				savePlaybackList(false);
 				break;
 		}
 		mIntentReceiver.updateWidgets(this, what);
@@ -806,7 +801,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				clearShuffleList();
 				setNextTrack(false);
 			}
-			saveQueue(false);
+			savePlaybackList(false);
 			notifyChange(CHANGED_SHUFFLEMODE);
 		}
 	}
@@ -894,7 +889,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void setRepeatMode(int repeatMode) {
 		mRepeatMode = repeatMode;
 		setNextTrack(false);
-		saveQueue(false);
+		savePlaybackList(false);
 		notifyChange(CHANGED_REPEATMODE);
 	}
 
@@ -964,7 +959,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {
 				if (stopSelfResult(mServiceStartId)) {
-					saveQueue(true);
+					savePlaybackList(true);
 					Log.d(TAG, "service stopped");
 				}
 			}
@@ -1218,7 +1213,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				Log.w(TAG, "Failed to open file for playback");
 			}
 		}
-		notifyChange(CHANGED_META);
 		return fileOpened;
 	}
 
@@ -1385,28 +1379,26 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Saves the queue
 	 *
-	 * @param full True if the queue is full
+	 * @param full true to save also the playback list and history
 	 */
-	private void saveQueue(boolean full) {
-		if (mQueueIsSaveable) {
-			if (full) {
-				settings.setPlayList(mPlayList.getItems(), getCurrentCardId());
-				if (mShuffleMode != SHUFFLE_NONE) {
-					settings.setTrackHistory(mHistory);
-				}
+	private void savePlaybackList(boolean full) {
+		if (full) {
+			settings.setPlayList(mPlayList.getItems(), getCurrentCardId());
+			if (mShuffleMode != SHUFFLE_NONE) {
+				settings.setTrackHistory(mHistory);
 			}
-			settings.setCursorPosition(mPlayList.getPosition());
-			if (mPlayer.initialized()) {
-				settings.setSeekPosition(mPlayer.getPosition());
-			}
-			settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 		}
+		settings.setCursorPosition(mPlayList.getPosition());
+		if (mPlayer.initialized()) {
+			settings.setSeekPosition(mPlayer.getPosition());
+		}
+		settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 	}
 
 	/**
-	 * Reloads the queue as the user left it the last time they stopped using Apollo
+	 * initialize the playback list
 	 */
-	private void reloadQueue() {
+	private void initPlaybackList() {
 		if (getCurrentCardId() == settings.getCardId()) {
 			mPlayList.setItems(settings.getPlaylist());
 		}
@@ -1429,6 +1421,5 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 		}
-		notifyChange(CHANGED_QUEUE);
 	}
 }

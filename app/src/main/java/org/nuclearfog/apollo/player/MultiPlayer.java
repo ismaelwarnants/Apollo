@@ -12,6 +12,7 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -243,12 +244,12 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			setCrossfadeTask(false);
-			if (player.isPlaying()) {
-				player.stop();
-				isPlaying = false;
-				callback.onPlaybackChanged();
-			}
-		} catch (IllegalStateException exception) {
+			player.stop();
+			player.prepare();
+			player.seekTo(0);
+			isPlaying = false;
+			callback.onPlaybackChanged();
+		} catch (IllegalStateException | IOException exception) {
 			Log.e(TAG, "failed to stop player", exception);
 			initialized = false;
 		}
