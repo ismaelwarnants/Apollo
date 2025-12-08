@@ -203,7 +203,9 @@ public class PlaybackList {
 	 */
 	public long getCurrent() {
 		synchronized (mPlaylist) {
-			return get(playPos);
+			if (playPos >= 0)
+				return get(playPos);
+			return -1L;
 		}
 	}
 
