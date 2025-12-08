@@ -544,7 +544,7 @@ public final class MusicUtils {
 	/**
 	 * Returns the ID for an artist.
 	 *
-	 * @param name    The name of the artist.
+	 * @param name The name of the artist.
 	 * @return The ID for an artist.
 	 */
 	public static long getIdForArtist(Context context, String name) {
@@ -637,6 +637,7 @@ public final class MusicUtils {
 
 	/**
 	 * add song IDs to an an existing IDs
+	 *
 	 * @param ids        The id of the song(s) to add.
 	 * @param playlistId The id of the playlist being added to.
 	 */
@@ -1044,7 +1045,7 @@ public final class MusicUtils {
 	/**
 	 * Returns The ID for a playlist.
 	 *
-	 * @param name    The name of the playlist.
+	 * @param name The name of the playlist.
 	 * @return The ID for a playlist.
 	 */
 	private static long getIdForPlaylist(Context context, String name) {

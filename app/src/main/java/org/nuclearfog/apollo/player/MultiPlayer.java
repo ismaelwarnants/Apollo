@@ -485,8 +485,8 @@ public class MultiPlayer {
 	/**
 	 * called when a mediaplayer finished playback
 	 *
-	 * @see android.media.MediaPlayer.OnCompletionListener
 	 * @noinspection unused
+	 * @see android.media.MediaPlayer.OnCompletionListener
 	 */
 	private void onCompletion(MediaPlayer mp) {
 		if (!crossfade) {

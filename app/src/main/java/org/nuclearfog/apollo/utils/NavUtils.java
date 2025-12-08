@@ -112,7 +112,7 @@ public final class NavUtils {
 	/**
 	 * Opens to {@link SearchActivity}.
 	 *
-	 * @param query    The search query.
+	 * @param query The search query.
 	 */
 	public static void openSearch(Activity activity, String query) {
 		Intent intent = new Intent(activity, SearchActivity.class);

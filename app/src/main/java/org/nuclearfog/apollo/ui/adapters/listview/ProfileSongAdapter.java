@@ -64,7 +64,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	private boolean enableHeader;
 
 	/**
-	 * @param setting defines the content of the second line
+	 * @param setting    defines the content of the second line
 	 * @param enableDrag true to enable drag & drop feature
 	 */
 	public ProfileSongAdapter(Context context, DisplaySetting setting, boolean enableDrag) {
