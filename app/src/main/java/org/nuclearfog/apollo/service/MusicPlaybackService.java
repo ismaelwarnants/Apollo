@@ -654,7 +654,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			int pos = mPlayList.getPosition();
 			mPlayList.setPosition(decrementPosition(pos));
 			openCurrentAndNext();
-		} else {
+		}
+		// go back to start
+		else {
 			mPlayer.stop();
 		}
 		play();
@@ -1164,49 +1166,36 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Stops the current playback and initialize the current and the next track
-	 */
-	private void openCurrentAndNext() {
-		if (openCurrentTrack()) {
-			setNextTrack();
-		}
-	}
-
-	/**
 	 * prepare current track of the queue for playback and update track information
 	 * if an error occurs try the next tracks
-	 *
-	 * @return true if track was opened successfully
 	 */
-	private boolean openCurrentTrack() {
+	private void openCurrentAndNext() {
+		// reset current playback
 		pause(true);
-		if (mPlayList.isEmpty() || mPlayList.getPosition() < 0) {
-			clearCurrentTrackInformation();
-			return false;
-		}
-		int failCount = 0;
-		boolean fileOpened = false;
-		do {
-			// retrieve current track information
-			updateTrackInformation(mPlayList.getCurrent());
-			Song song = currentSong;
-			// try to open track
-			if (song != null && song.getId() != -1L && song.getDuration() > 0) {
-				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + song.getId());
-				fileOpened = mPlayer.setDataSource(getApplicationContext(), uri);
-			}
-			// skip track if failed and try again
-			if (!fileOpened) {
+		clearCurrentTrackInformation();
+		if (!mPlayList.isEmpty() && mPlayList.getPosition() >= 0) {
+			for (int retry = 0; retry < RETRY_COUNT; retry++) {
+				// try to open current track
+				long trackId = mPlayList.getCurrent();
+				if (trackId != -1L) {
+					Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
+					if (mPlayer.setDataSource(getApplicationContext(), uri)) {
+						updateTrackInformation(trackId);
+						setNextTrack();
+						return;
+					}
+				} else {
+					Log.w(TAG, "openCurrentTrack(): Invalid track ID!");
+					return;
+				}
+				// go to next track if an error occurred
 				int newPos = incrementPosition(mPlayList.getPosition(), false);
 				mPlayList.setPosition(newPos);
 			}
-		} while (!fileOpened && ++failCount < RETRY_COUNT && mPlayList.getPosition() >= 0);
-		// if no track was found, clear up
-		if (!fileOpened) {
-			Log.w(TAG, "openCurrentTrack(): Failed to open file for playback");
-			clearCurrentTrackInformation();
+			Log.w(TAG, "openCurrentTrack(): Failed to open track!");
+		} else {
+			Log.w(TAG, "openCurrentTrack(): Playlist invalid: " + mPlayList);
 		}
-		return fileOpened;
 	}
 
 	/**
@@ -1217,9 +1206,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// search for the next playable track
 		for (int i = 0; i < RETRY_COUNT; i++) {
 			nextPos = incrementPosition(nextPos, false);
-			long id = mPlayList.get(nextPos);
-			if (id >= 0) {
-				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
+			long trackId = mPlayList.get(nextPos);
+			if (trackId != -1L) {
+				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
 					// stop searching if the next track was set successfully
 					mNextPlayPos = nextPos;

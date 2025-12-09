@@ -189,7 +189,7 @@ public class MultiPlayer {
 	/**
 	 * Starts or resumes playback.
 	 */
-	public void play() {
+	public synchronized void play() {
 		try {
 			if (!crossfade) {
 				MediaPlayer player = mPlayers[currentPlayer];
@@ -218,7 +218,7 @@ public class MultiPlayer {
 	 *
 	 * @param force true to stop playback immediately
 	 */
-	public void pause(boolean force) {
+	public synchronized void pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			if (force || !crossfade) {
@@ -240,7 +240,7 @@ public class MultiPlayer {
 	/**
 	 * stops playback
 	 */
-	public void stop() {
+	public synchronized void stop() {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			setCrossfadeTask(false);
@@ -258,7 +258,7 @@ public class MultiPlayer {
 	/**
 	 * Releases media player
 	 */
-	public void release() {
+	public synchronized void release() {
 		threadPool.shutdown();
 		for (MediaPlayer player : mPlayers) {
 			try {
@@ -274,7 +274,7 @@ public class MultiPlayer {
 	 *
 	 * @return The duration in milliseconds
 	 */
-	public long getDuration() {
+	public synchronized long getDuration() {
 		try {
 			if (initialized)
 				return mPlayers[currentPlayer].getDuration();
@@ -289,7 +289,7 @@ public class MultiPlayer {
 	 *
 	 * @return The current position in milliseconds
 	 */
-	public long getPosition() {
+	public synchronized long getPosition() {
 		try {
 			if (initialized)
 				return mPlayers[currentPlayer].getCurrentPosition();
@@ -304,7 +304,7 @@ public class MultiPlayer {
 	 *
 	 * @param position The offset in milliseconds from the start to seek to
 	 */
-	public void setPosition(long position) {
+	public synchronized void setPosition(long position) {
 		try {
 			// limit max position to prevent conflict with fade out
 			long max = getDuration() - (FADE_DELAY * 2);
@@ -326,7 +326,7 @@ public class MultiPlayer {
 	 *
 	 * @return The current audio session ID.
 	 */
-	public int getAudioSessionId() {
+	public synchronized int getAudioSessionId() {
 		return mPlayers[currentPlayer].getAudioSessionId();
 	}
 
@@ -335,7 +335,7 @@ public class MultiPlayer {
 	 *
 	 * @return true if a playback is in progress
 	 */
-	public boolean isPlaying() {
+	public synchronized boolean isPlaying() {
 		return isPlaying;
 	}
 
@@ -344,7 +344,7 @@ public class MultiPlayer {
 	 *
 	 * @param newVolume volume limit
 	 */
-	public void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+	public synchronized void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		maxVolume = newVolume;
 		volume = Math.min(volume, newVolume);
 		mPlayers[currentPlayer].setVolume(newVolume, newVolume);
@@ -353,7 +353,7 @@ public class MultiPlayer {
 	/**
 	 * enable/disable crossfade
 	 */
-	public void setCrossfade(boolean enable) {
+	public synchronized void setCrossfade(boolean enable) {
 		if (crossfade != enable) {
 			crossfade = enable;
 			xfadeMode = NONE;
