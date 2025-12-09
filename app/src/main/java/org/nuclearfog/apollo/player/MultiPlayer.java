@@ -59,7 +59,7 @@ public class MultiPlayer {
 	 *
 	 * @see #mPlayers
 	 */
-	private static final int PLAYER_INST = 2;
+	private static final int PLAYER_INST = 3;
 	/**
 	 * milliseconds to wait until to retry loading track
 	 */
@@ -144,10 +144,10 @@ public class MultiPlayer {
 	 */
 	public boolean setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
-		if (initialized)
-			stop();
+		MediaPlayer player = mPlayers[currentPlayer];
+		player.stop();
 		// set source of the current selected player
-		initialized = setDataSourceImpl(mPlayers[currentPlayer], context, uri);
+		initialized = setDataSourceImpl(player, context, uri);
 		return initialized;
 	}
 
@@ -251,6 +251,7 @@ public class MultiPlayer {
 			callback.onPlaybackChanged();
 		} catch (IllegalStateException | IOException exception) {
 			Log.e(TAG, "failed to stop player", exception);
+			player.reset();
 			initialized = false;
 		}
 	}
@@ -384,8 +385,7 @@ public class MultiPlayer {
 			player.prepare();
 			return true;
 		} catch (Exception err) {
-			player.reset();
-			Log.e(TAG, "could not open media file!");
+			Log.e(TAG, "setDataSourceImpl(): could not open media file!");
 			return false;
 		}
 	}

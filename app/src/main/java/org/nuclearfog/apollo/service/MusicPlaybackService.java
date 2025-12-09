@@ -591,7 +591,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayer.stop();
 		}
 		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
-		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -624,9 +623,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public void pause(boolean force) {
 		mPlayer.pause(force);
-		if (force) {
-			notifyChange(CHANGED_PLAYSTATE);
-		}
 	}
 
 	/**
@@ -744,7 +740,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						shutdownHandler.start();
 					}
 				} else {
-					mNotificationHelper.dismissNotification();
 					shutdownHandler.stop();
 				}
 				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
@@ -1171,7 +1166,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void openCurrentAndNext() {
 		// reset current playback
-		pause(true);
+		if (mPlayer.isPlaying())
+			mPlayer.pause(true);
 		clearCurrentTrackInformation();
 		if (!mPlayList.isEmpty() && mPlayList.getPosition() >= 0) {
 			for (int retry = 0; retry < RETRY_COUNT; retry++) {
