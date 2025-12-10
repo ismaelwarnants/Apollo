@@ -50,8 +50,6 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.util.LinkedList;
-
 /**
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
@@ -171,17 +169,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000L;
 	/**
-	 * The max size allowed for the track history
-	 */
-	private static final int MAX_HISTORY_SIZE = 100;
-	/**
 	 * amount of faulty tracks to be skipped before giving up
 	 */
 	private static final int RETRY_COUNT = 10;
-	/**
-	 * Keeps a mapping of the track history
-	 */
-	private LinkedList<Integer> mHistory = new LinkedList<>();
 	/**
 	 * current playlist containing track ID's
 	 */
@@ -798,7 +788,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			// reset shuffle mode
 			else if (shuffleMode == SHUFFLE_NONE) {
-				clearShuffleList();
+				mShuffleMode = SHUFFLE_NONE;
+				mShuffleList.clear();
 				setNextTrack();
 			}
 			savePlaybackList(false);
@@ -906,7 +897,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		mPlayList.setItems(list);
 		mPlayList.setPosition(position);
-		mHistory.clear();
+		mShuffleList.clearHistory();
 		notifyChange(CHANGED_QUEUE);
 		openCurrentAndNext();
 		play();
@@ -1235,16 +1226,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case SHUFFLE_NORMAL:
 				// only add current track to history when moving to another track
 				if (force && pos >= 0) {
-					mHistory.add(pos);
-				}
-				// clear old history entries when exceeding maximum capacity
-				if (mHistory.size() > MAX_HISTORY_SIZE) {
-					mHistory.removeFirst();
+					mShuffleList.addHistory(pos);
 				}
 				// reset shuffle list after reaching the end or refreshing
 				if (mShuffleList.size() != mPlayList.size()) {
 					// create a new shuffle list. if fail, prevent playing
-					mShuffleList.setIndex(0);
 					if (!makeShuffleList(false)) {
 						return -1;
 					}
@@ -1279,20 +1265,21 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return play position
 	 */
 	private int decrementPosition(int pos) {
-		if (mShuffleMode == SHUFFLE_NORMAL) {
+		// use last played track position
+		if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
 			// Go to previously-played track and remove it from the history
-			if (mHistory.isEmpty()) {
-				return -1;
-			} else {
-				return mHistory.removeLast();
-			}
-		} else {
-			if (pos > 0) {
-				return pos - 1;
-			} else {
-				return mPlayList.size() - 1;
+			int lastIndex = mShuffleList.undoHistory();
+			if (lastIndex >= 0) {
+				return lastIndex;
 			}
 		}
+		// decrement position
+		if (pos > 0) {
+			return pos - 1;
+		} else if (pos == 0) {
+			return mPlayList.size() - 1;
+		}
+		return -1;
 	}
 
 	/**
@@ -1316,24 +1303,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					cursor.close();
 				}
 			}
-			if (!mPlayList.isEmpty()) {
-				mShuffleList.shuffle(mHistory, mPlayList.size());
-				return true;
+			if (mPlayList.isEmpty()) {
+				mShuffleMode = SHUFFLE_NONE;
 			} else {
-				clearShuffleList();
+				mShuffleList.shuffle(mPlayList.size());
+				return true;
 			}
 		} catch (RuntimeException e) {
 			Log.e(TAG, "makeShuffleList()", e);
 		}
 		return false;
-	}
-
-	/**
-	 * reset shuffle list
-	 */
-	private void clearShuffleList() {
-		mShuffleList.clear();
-		mShuffleMode = SHUFFLE_NONE;
 	}
 
 	/**
@@ -1345,7 +1324,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (full) {
 			settings.setPlayList(mPlayList.getItems(), getCurrentCardId());
 			if (mShuffleMode != SHUFFLE_NONE) {
-				settings.setTrackHistory(mHistory);
+				settings.setTrackHistory(mShuffleList.getHistory());
 			}
 		}
 		settings.setCursorPosition(mPlayList.getPosition());
@@ -1372,8 +1351,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mRepeatMode = settings.getRepeatMode();
 			mShuffleMode = settings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
-				mHistory.clear();
-				settings.getTrackHistory(mHistory);
+				mShuffleList.setHistory(settings.getTrackHistory());
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				if (!makeShuffleList(true)) {

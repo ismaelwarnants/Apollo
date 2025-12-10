@@ -12,8 +12,6 @@ import org.nuclearfog.apollo.ui.fragments.phone.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.ArtistFragment;
 import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 
-import java.util.List;
-
 /**
  * A collection of helpers designed to get and set various preferences across
  * Apollo.
@@ -484,34 +482,35 @@ public final class PreferenceUtils {
 	/**
 	 * get track history
 	 *
-	 * @param history list to add history indexes
+	 * @return array of track IDs
 	 */
-	public void getTrackHistory(List<Integer> history) {
+	public int[] getTrackHistory() {
 		String trackHistory = defaultPref.getString(HISTORY, "");
 		if (!trackHistory.isEmpty()) {
 			String[] items = trackHistory.split(";");
-			for (String item : items) {
+			int[] ids = new int[items.length];
+			for (int i = 0; i < ids.length; i++) {
 				try {
-					int idx = Integer.parseInt(item, 16);
-					history.add(idx);
+					ids[i] = Integer.parseInt(items[i], 16);
 				} catch (NumberFormatException exception) {
-					Log.w(TAG, "bad history index: " + item);
+					Log.w(TAG, "bad history index: " + items[i]);
 				}
 			}
+			return ids;
 		}
+		return new int[0];
 	}
 
 	/**
 	 * set track history
 	 *
-	 * @param history list of track history
+	 * @param ids array of track IDs
 	 */
-	public void setTrackHistory(List<Integer> history) {
+	public void setTrackHistory(int[] ids) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		StringBuilder buffer = new StringBuilder();
-		for (int n : history) {
-			buffer.append(Integer.toHexString(n));
-			buffer.append(";");
+		for (long n : ids) {
+			buffer.append(Long.toHexString(n)).append(";");
 		}
 		editor.putString(HISTORY, buffer.toString());
 		editor.apply();
