@@ -60,14 +60,16 @@ public class ShuffleList {
 	/**
 	 * get the next shuffle position and increase index
 	 *
-	 * @return shuffle position
+	 * @return shuffle position or -1 if invalid
 	 */
 	public int next() {
 		synchronized (mShuffle) {
 			if (!mShuffle.isEmpty() && index >= 0) {
-				if (index < mShuffle.size()) {
-					return mShuffle.get(index++);
+				if (++index >= mShuffle.size()) {
+					shuffle(mShuffle.size());
+					index = 0;
 				}
+				return mShuffle.get(index);
 			}
 		}
 		return -1;
@@ -100,7 +102,10 @@ public class ShuffleList {
 				Collections.shuffle(mShuffle, mRandom);
 				synchronized (mHistory) {
 					if (!mHistory.isEmpty()) {
-						for (int i = 0; i < mShuffle.size(); i++) {
+						// only use the first part of the shuffle list
+						int sortSize = Math.min(mShuffle.size() / 3, mHistory.size());
+						// put the played track indexes to the end of the shuffle list
+						for (int i = 0; i < sortSize; i++) {
 							if (mHistory.contains(mShuffle.get(i))) {
 								int item = mShuffle.remove(i);
 								mShuffle.add(item);

@@ -620,10 +620,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void gotoNext() {
 		if (!mPlayList.isEmpty()) {
-			int pos = mPlayList.getPosition();
-			mPlayList.setPosition(incrementPosition(pos, true));
-			openCurrentAndNext();
-			play();
+			mPlayer.next();
 		} else if (makeShuffleList(true)) {
 			mPlayList.setPosition(0);
 			openCurrentAndNext();

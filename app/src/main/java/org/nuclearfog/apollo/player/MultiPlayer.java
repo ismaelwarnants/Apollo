@@ -257,6 +257,18 @@ public class MultiPlayer {
 	}
 
 	/**
+	 * paused current player and go to next player
+	 */
+	public synchronized void next() {
+		if (crossfade) {
+			xfadeMode = XFADE;
+		} else {
+			gotoNext();
+			callback.onComplete();
+		}
+	}
+
+	/**
 	 * Releases media player
 	 */
 	public synchronized void release() {
