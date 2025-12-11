@@ -200,7 +200,7 @@ public class MultiPlayer {
 					isPlaying = true;
 				}
 				callback.onPlaybackChanged();
-			} else if (xfadeMode == NONE) {
+			} else {
 				isPlaying = true;
 				xfadeMode = FADE_IN;
 				volume = 0f;

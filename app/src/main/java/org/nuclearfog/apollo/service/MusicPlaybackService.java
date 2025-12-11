@@ -439,8 +439,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onComplete() {
 		mPlayList.setPosition(mNextPlayPos);
 		updateTrackInformation();
-		setNextTrack();
-		notifyChange(CHANGED_META);
+		setNextTrack(false);
 	}
 
 
@@ -620,6 +619,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void gotoNext() {
 		if (!mPlayList.isEmpty()) {
+			setNextTrack(true);
 			mPlayer.next();
 		} else if (makeShuffleList(true)) {
 			mPlayList.setPosition(0);
@@ -674,7 +674,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			notifyChange(CHANGED_QUEUE);
 			if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 				play();
-				setNextTrack();
+				setNextTrack(false);
 			} else {
 				stop();
 			}
@@ -739,7 +739,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				savePlaybackList(true);
 				updatePlaybackState();
 				if (mPlayer.isPlaying()) {
-					setNextTrack();
+					setNextTrack(false);
 				}
 				break;
 
@@ -770,27 +770,33 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (shuffleMode == SHUFFLE_AUTO) {
 				if (makeShuffleList(true)) {
 					mShuffleMode = SHUFFLE_AUTO;
+					mRepeatMode = REPEAT_ALL;
 					mPlayList.setPosition(0);
 					mShuffleList.setIndex(0);
 					openCurrentAndNext();
+					notifyChange(CHANGED_SHUFFLEMODE);
+					notifyChange(CHANGED_REPEATMODE);
 				}
 			}
 			// setup queue shuffle
 			else if (shuffleMode == SHUFFLE_NORMAL) {
 				if (makeShuffleList(false)) {
 					mShuffleMode = SHUFFLE_NORMAL;
+					mRepeatMode = REPEAT_ALL;
 					mShuffleList.setIndex(0);
-					setNextTrack();
+					setNextTrack(false);
+					notifyChange(CHANGED_SHUFFLEMODE);
+					notifyChange(CHANGED_REPEATMODE);
 				}
 			}
 			// reset shuffle mode
 			else if (shuffleMode == SHUFFLE_NONE) {
 				mShuffleMode = SHUFFLE_NONE;
 				mShuffleList.clear();
-				setNextTrack();
+				setNextTrack(false);
+				notifyChange(CHANGED_SHUFFLEMODE);
 			}
 			savePlaybackList(false);
-			notifyChange(CHANGED_SHUFFLEMODE);
 		}
 	}
 
@@ -876,7 +882,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void setRepeatMode(int repeatMode) {
 		mRepeatMode = repeatMode;
-		setNextTrack();
+		setNextTrack(false);
 		savePlaybackList(false);
 		notifyChange(CHANGED_REPEATMODE);
 	}
@@ -1165,7 +1171,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
 					if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 						updateTrackInformation(trackId);
-						setNextTrack();
+						setNextTrack(false);
 						return;
 					}
 				} else {
@@ -1184,12 +1190,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * Initializes the next track to be played and sets the next track position
+	 *
+	 * @param force true to force to next track (ignore repeat state or end of playlist)
 	 */
-	private void setNextTrack() {
+	private void setNextTrack(boolean force) {
 		int nextPos = mPlayList.getPosition();
 		// search for the next playable track
 		for (int i = 0; i < RETRY_COUNT; i++) {
-			nextPos = incrementPosition(nextPos, false);
+			nextPos = incrementPosition(nextPos, force);
 			long trackId = mPlayList.get(nextPos);
 			if (trackId != -1L) {
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
