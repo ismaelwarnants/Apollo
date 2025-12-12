@@ -261,7 +261,9 @@ public class MultiPlayer {
 	 */
 	public synchronized void next() {
 		if (crossfade) {
-			xfadeMode = XFADE;
+			setCrossfadeTask(true);
+			if (xfadeMode == NONE)
+				xfadeMode = XFADE;
 		} else {
 			gotoNext();
 			callback.onComplete();
