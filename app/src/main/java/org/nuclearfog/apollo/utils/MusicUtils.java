@@ -36,7 +36,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;

@@ -28,12 +28,12 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.PresetLoader;
 import org.nuclearfog.apollo.model.AudioPreset;
-import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.ui.adapters.listview.PresetAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.BandLevelChangeListener;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog.OnPresetSaveCallback;
+import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 

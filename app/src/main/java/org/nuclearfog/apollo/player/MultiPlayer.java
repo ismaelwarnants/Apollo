@@ -53,7 +53,7 @@ public class MultiPlayer {
 	/**
 	 * duration of one volume step of the fade effect
 	 */
-	private static final long FADE_RESOLUTION = Math.round(FADE_DELAY * FADE_STEPS);
+	private static final long FADE_RESOLUTION = Math.round(FADE_DELAY * FADE_STEPS * 0.9f);
 	/**
 	 * number of player instances used for playback
 	 *
@@ -97,7 +97,7 @@ public class MultiPlayer {
 	 */
 	private volatile boolean continuous = true;
 	/**
-	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
+	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT}
 	 */
 	private volatile int xfadeMode = NONE;
 	/**
@@ -145,7 +145,8 @@ public class MultiPlayer {
 	public boolean setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
 		MediaPlayer player = mPlayers[currentPlayer];
-		player.stop();
+		if (initialized)
+			player.stop();
 		// set source of the current selected player
 		initialized = setDataSourceImpl(player, context, uri);
 		return initialized;
@@ -161,6 +162,13 @@ public class MultiPlayer {
 		if (uri != null) {
 			int nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
 			continuous = setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
+			if (initialized) {
+				if (continuous) {
+					mPlayers[currentPlayer].setNextMediaPlayer(mPlayers[nextPlayerIndex]);
+				} else {
+					mPlayers[currentPlayer].setNextMediaPlayer(null);
+				}
+			}
 			return continuous;
 		} else {
 			continuous = false;
@@ -191,20 +199,18 @@ public class MultiPlayer {
 	 */
 	public synchronized void play() {
 		try {
-			if (!crossfade) {
-				MediaPlayer player = mPlayers[currentPlayer];
-				setCrossfadeTask(false);
-				if (!player.isPlaying()) {
-					player.start();
-					player.setVolume(1f, 1f);
-					isPlaying = true;
-				}
-				callback.onPlaybackChanged();
-			} else {
+			MediaPlayer player = mPlayers[currentPlayer];
+			if (!player.isPlaying()) {
 				isPlaying = true;
-				xfadeMode = FADE_IN;
-				volume = 0f;
-				setCrossfadeTask(true);
+				if (!crossfade) {
+					setCrossfadeTask(false);
+					setVolume(1f);
+				} else {
+					xfadeMode = FADE_IN;
+					setVolume(0f);
+					setCrossfadeTask(true);
+				}
+				player.start();
 				callback.onPlaybackChanged();
 			}
 		} catch (IllegalStateException exception) {
@@ -223,9 +229,7 @@ public class MultiPlayer {
 		try {
 			if (force || !crossfade) {
 				setCrossfadeTask(false);
-				if (player.isPlaying()) {
-					player.pause();
-				}
+				player.pause();
 				isPlaying = false;
 				callback.onPlaybackChanged();
 			} else {
@@ -250,23 +254,9 @@ public class MultiPlayer {
 			isPlaying = false;
 			callback.onPlaybackChanged();
 		} catch (IllegalStateException | IOException exception) {
-			Log.e(TAG, "failed to stop player", exception);
+			Log.e(TAG, "stop():", exception);
 			player.reset();
 			initialized = false;
-		}
-	}
-
-	/**
-	 * paused current player and go to next player
-	 */
-	public synchronized void next() {
-		if (crossfade) {
-			setCrossfadeTask(true);
-			if (xfadeMode == NONE)
-				xfadeMode = XFADE;
-		} else {
-			gotoNext();
-			callback.onComplete();
 		}
 	}
 
@@ -359,10 +349,9 @@ public class MultiPlayer {
 	 *
 	 * @param newVolume volume limit
 	 */
-	public synchronized void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+	public synchronized void setMaxVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		maxVolume = newVolume;
-		volume = Math.min(volume, newVolume);
-		mPlayers[currentPlayer].setVolume(newVolume, newVolume);
+		setVolume(Math.min(volume, newVolume));
 	}
 
 	/**
@@ -398,10 +387,20 @@ public class MultiPlayer {
 			player.setDataSource(context, uri);
 			player.prepare();
 			return true;
-		} catch (Exception err) {
+		} catch (RuntimeException | IOException err) {
 			Log.e(TAG, "setDataSourceImpl(): could not open media file!");
 			return false;
 		}
+	}
+
+	/**
+	 * set volume of the current player
+	 *
+	 * @param newVolume new volume for the current player
+	 */
+	private void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+		mPlayers[currentPlayer].setVolume(newVolume, newVolume);
+		volume = newVolume;
 	}
 
 	/**
@@ -410,39 +409,30 @@ public class MultiPlayer {
 	private void onCrossfadeTrack() {
 		if (xfadeTask == null)
 			return;
-		MediaPlayer current = mPlayers[currentPlayer];
 		try {
 			switch (xfadeMode) {
 				// force crossfade between two tracks
 				case XFADE:
-					volume = Math.max(volume - FADE_STEPS, 0f);
-					current.setVolume(volume, volume);
+					setVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
-						gotoNext();
-						callback.onComplete();
+						xfadeMode = FADE_IN;
 					}
 					break;
 
 				// fade out current track, then pause
 				case FADE_OUT:
-					volume = Math.max(volume - FADE_STEPS, 0f);
-					current.setVolume(volume, volume);
+					setVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
+						xfadeMode = NONE;
 						pause(true);
 					}
 					break;
 
 				// play and fade in current track
 				case FADE_IN:
-					if (!current.isPlaying()) {
-						current.setVolume(0f, 0f);
-						current.start();
-					} else {
-						volume = Math.min(volume + FADE_STEPS, maxVolume);
-						current.setVolume(volume, volume);
-						if (volume == maxVolume) {
-							xfadeMode = NONE;
-						}
+					setVolume(Math.min(volume + FADE_STEPS, maxVolume));
+					if (volume == maxVolume) {
+						xfadeMode = NONE;
 					}
 					break;
 
@@ -450,16 +440,13 @@ public class MultiPlayer {
 				default:
 					long diff = Math.abs(getDuration() - getPosition());
 					if (diff <= FADE_DELAY) {
-						if (continuous) {
-							xfadeMode = XFADE;
-						} else {
-							xfadeMode = FADE_OUT;
-						}
+						xfadeMode = XFADE;
 					}
 					break;
 			}
 		} catch (Exception exception) {
 			Log.e(TAG, "onCrossfadeTrack()", exception);
+			MediaPlayer current = mPlayers[currentPlayer];
 			onError(current, -1, -1);
 		}
 	}
@@ -484,16 +471,10 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * close current media player and select next one. Inform playback service that track changed
+	 * increase player index
 	 */
-	private void gotoNext() {
-		if (isPlaying) {
-			stop();
-		}
-		if (continuous) {
-			currentPlayer = (currentPlayer + 1) % mPlayers.length;
-			play();
-		}
+	private void setNextPlayer() {
+		currentPlayer = (currentPlayer + 1) % PLAYER_INST;
 	}
 
 	/**
@@ -503,13 +484,12 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnCompletionListener
 	 */
 	private void onCompletion(MediaPlayer mp) {
-		if (!crossfade) {
-			if (continuous) {
-				gotoNext();
-			} else {
-				pause(true);
-			}
-			callback.onComplete();
+		if (continuous) {
+			setNextPlayer();
+			callback.onWentToNext();
+		} else {
+			pause(true);
+			callback.onPlaybackChanged();
 		}
 	}
 
@@ -533,6 +513,22 @@ public class MultiPlayer {
 		return false;
 	}
 
+
+	@NonNull
+	@Override
+	public String toString() {
+		String fadeMode;
+		if (xfadeMode == FADE_IN)
+			fadeMode = "fade_in";
+		else if (xfadeMode == FADE_OUT)
+			fadeMode = "fade_out";
+		else if (xfadeMode == XFADE)
+			fadeMode = "xfade";
+		else
+			fadeMode = "none";
+		return "current=" + currentPlayer + " initialized=" + initialized + " isPlaying=" + isPlaying + " fade=" + fadeMode;
+	}
+
 	/**
 	 * callback used for playback service
 	 */
@@ -544,9 +540,9 @@ public class MultiPlayer {
 		void onPlaybackChanged();
 
 		/**
-		 * called if the player reached the end of the playback
+		 * called if the player has switched to another track
 		 */
-		void onComplete();
+		void onWentToNext();
 
 		/**
 		 * called if a playback error occurs

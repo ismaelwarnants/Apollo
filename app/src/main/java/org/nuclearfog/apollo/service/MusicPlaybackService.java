@@ -35,7 +35,6 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
 import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
@@ -47,6 +46,7 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -394,12 +394,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case AudioManager.AUDIOFOCUS_GAIN:
 				mPausedByFocusLoss = false;
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-					mPlayer.setVolume(1f);
+					mPlayer.setMaxVolume(1f);
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-					mPlayer.setVolume(.5f);
+					mPlayer.setMaxVolume(.5f);
 				break;
 		}
 	}
@@ -436,7 +436,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 
 	@Override
-	public void onComplete() {
+	public void onWentToNext() {
 		mPlayList.setPosition(mNextPlayPos);
 		updateTrackInformation();
 		setNextTrack(false);
@@ -619,8 +619,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void gotoNext() {
 		if (!mPlayList.isEmpty()) {
-			setNextTrack(true);
-			mPlayer.next();
+			mPlayList.setPosition(incrementPosition(mPlayList.getPosition(), true));
+			openCurrentAndNext();
+			play();
 		} else if (makeShuffleList(true)) {
 			mPlayList.setPosition(0);
 			openCurrentAndNext();

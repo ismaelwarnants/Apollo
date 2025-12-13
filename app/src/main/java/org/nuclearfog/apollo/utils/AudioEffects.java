@@ -1,4 +1,4 @@
-package org.nuclearfog.apollo.player;
+package org.nuclearfog.apollo.utils;
 
 import android.content.Context;
 import android.media.audiofx.BassBoost;
@@ -9,7 +9,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.model.AudioPreset;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Audio effect class providing methods to manage effects at realtime
