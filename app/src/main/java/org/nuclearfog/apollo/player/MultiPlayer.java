@@ -117,10 +117,11 @@ public class MultiPlayer {
 
 	/**
 	 * @param context   context from service
+	 * @param sessionId current media session ID
 	 * @param callback  a callback used to inform about playback changes
 	 * @param crossfade true to enable crossfade
 	 */
-	public MultiPlayer(Context context, OnPlaybackStatusCallback callback, boolean crossfade) {
+	public MultiPlayer(Context context, int sessionId, OnPlaybackStatusCallback callback, boolean crossfade) {
 		playerHandler = new Handler(context.getMainLooper());
 		xfadeHandler = new Handler(context.getMainLooper());
 		mmr = new MediaMetadataRetriever();
@@ -129,7 +130,7 @@ public class MultiPlayer {
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = new MediaPlayer();
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
+			mPlayers[i].setAudioSessionId(sessionId);
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}
@@ -319,15 +320,6 @@ public class MultiPlayer {
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "setPosition() failed! pos=" + position + " duration=" + getDuration());
 		}
-	}
-
-	/**
-	 * Returns the audio session ID.
-	 *
-	 * @return The current audio session ID.
-	 */
-	public synchronized int getAudioSessionId() {
-		return mPlayers[currentPlayer].getAudioSessionId();
 	}
 
 	/**

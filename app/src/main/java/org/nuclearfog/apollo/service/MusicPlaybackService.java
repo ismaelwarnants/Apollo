@@ -229,6 +229,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private FavoritesStore favoriteStore;
 	/**
+	 * current audio session ID
+	 */
+	private int audioSessionId;
+	/**
 	 * Used to know when the service is active
 	 */
 	private boolean mServiceInUse = false;
@@ -300,8 +304,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		headsetReceiver = new HeadsetStatusReceiver(this);
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
+		// initialize audio manager and audio session ID
+		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		audioSessionId = mAudio.generateAudioSessionId();
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getApplicationContext(), this, settings.crossfadeEnabled());
+		mPlayer = new MultiPlayer(getApplicationContext(), audioSessionId, this, settings.crossfadeEnabled());
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
@@ -310,8 +317,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mNotificationHelper = new NotificationHelper(this, mSession);
 		// init shutdown handler
 		shutdownHandler = new ShutdownHandler(this);
-		// initialize audio request
-		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		AudioAttributesCompat mAttributes = new AudioAttributesCompat.Builder()
 				.setUsage(AudioAttributesCompat.USAGE_MEDIA)
 				// prevent system fade in/out effects to be applied by setting content type to "speech"
@@ -752,10 +757,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Returns the audio session ID
 	 *
-	 * @return The current media player audio session ID
+	 * @return The current audio session ID
 	 */
 	int getAudioSessionId() {
-		return mPlayer.getAudioSessionId();
+		return audioSessionId;
 	}
 
 	/**
