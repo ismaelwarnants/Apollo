@@ -133,6 +133,9 @@ public class MultiPlayer {
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}
+		if (crossfade) {
+			setAllVolume(0f);
+		}
 	}
 
 	/**
@@ -194,10 +197,10 @@ public class MultiPlayer {
 				isPlaying = true;
 				if (!crossfade) {
 					setCrossfadeTask(false);
-					setVolume(1f);
+					setCurrentVolume(1f);
 				} else {
 					xfadeMode = FADE_IN;
-					setVolume(0f);
+					setCurrentVolume(0f);
 					setCrossfadeTask(true);
 				}
 				player.start();
@@ -343,7 +346,11 @@ public class MultiPlayer {
 	 */
 	public synchronized void setMaxVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		maxVolume = newVolume;
-		setVolume(Math.min(volume, newVolume));
+		if (crossfade) {
+			setCurrentVolume(Math.min(volume, newVolume));
+		} else {
+			setAllVolume(newVolume);
+		}
 	}
 
 	/**
@@ -355,7 +362,7 @@ public class MultiPlayer {
 			xfadeMode = NONE;
 			setCrossfadeTask(enable);
 			if (!crossfade) {
-				setVolume(1f);
+				setAllVolume(maxVolume);
 			}
 		}
 	}
@@ -390,12 +397,25 @@ public class MultiPlayer {
 	 *
 	 * @param newVolume new volume for the current player
 	 */
-	private void setVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+	private void setCurrentVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		try {
-			mPlayers[currentPlayer].setVolume(newVolume, newVolume);
 			volume = newVolume;
+			// use cubic volume scale
+			newVolume = newVolume * newVolume;
+			mPlayers[currentPlayer].setVolume(newVolume, newVolume);
 		} catch (RuntimeException exception) {
 			Log.e(TAG, "setVolume(): failed to set volume!");
+		}
+	}
+
+	/**
+	 * set volume of all players
+	 *
+	 * @param newVolume new volume applied to all players
+	 */
+	private void setAllVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+		for (MediaPlayer mp : mPlayers) {
+			mp.setVolume(newVolume, newVolume);
 		}
 	}
 
@@ -407,15 +427,17 @@ public class MultiPlayer {
 			switch (xfadeMode) {
 				// force crossfade between two tracks
 				case XFADE:
-					setVolume(Math.max(volume - FADE_STEPS, 0f));
+					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
 						xfadeMode = FADE_IN;
+						setNextPlayer();
+						callback.onWentToNext();
 					}
 					break;
 
 				// fade out current track, then pause
 				case FADE_OUT:
-					setVolume(Math.max(volume - FADE_STEPS, 0f));
+					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
 						xfadeMode = NONE;
 						pause(true);
@@ -424,7 +446,7 @@ public class MultiPlayer {
 
 				// play and fade in current track
 				case FADE_IN:
-					setVolume(Math.min(volume + FADE_STEPS, maxVolume));
+					setCurrentVolume(Math.min(volume + FADE_STEPS, maxVolume));
 					if (volume == maxVolume) {
 						xfadeMode = NONE;
 					}
@@ -434,7 +456,7 @@ public class MultiPlayer {
 				default:
 					long diff = Math.abs(getDuration() - getPosition());
 					if (diff <= FADE_DELAY) {
-						xfadeMode = XFADE;
+						xfadeMode = continuous ? XFADE : FADE_OUT;
 					}
 					break;
 			}
@@ -456,7 +478,7 @@ public class MultiPlayer {
 			xfadeTask.cancel(false);
 			xfadeTask = null;
 			xfadeMode = NONE;
-			setVolume(maxVolume);
+			setCurrentVolume(maxVolume);
 		}
 	}
 
@@ -474,12 +496,13 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnCompletionListener
 	 */
 	private void onCompletion(MediaPlayer mp) {
-		if (continuous) {
-			setNextPlayer();
-			callback.onWentToNext();
-		} else {
-			pause(true);
-			callback.onPlaybackChanged();
+		if (!crossfade) {
+			if (continuous) {
+				setNextPlayer();
+				callback.onWentToNext();
+			} else {
+				pause(true);
+			}
 		}
 	}
 

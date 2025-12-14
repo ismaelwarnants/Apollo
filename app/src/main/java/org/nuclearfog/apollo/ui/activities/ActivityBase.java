@@ -48,10 +48,7 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 import java.util.List;
 
 /**
- * A base {@link AppCompatActivity} used to update the bottom bar and
- * bind to Apollo's service.
- * <p>
- * {@link HomeActivity} extends from this skeleton.
+ * A base {@link AppCompatActivity} used to update the bottom bar and bind to Apollo's service.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
