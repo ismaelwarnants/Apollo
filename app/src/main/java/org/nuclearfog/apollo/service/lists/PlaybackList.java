@@ -144,7 +144,7 @@ public class PlaybackList {
 			if (playPos >= 0 && playPos < mPlaylist.size()) {
 				int pos = playPos;
 				for (long item : items) {
-					mPlaylist.add(pos++, item);
+					mPlaylist.add(++pos, item);
 				}
 			} else {
 				addItems(items);

@@ -597,7 +597,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				} else {
 					mPlayer.play();
 				}
-			} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
+			} else if (mPlayList.isEmpty()) {
 				setShuffleMode(SHUFFLE_AUTO);
 			}
 		} else {
@@ -652,9 +652,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param position The time to seek to
 	 */
 	void seekTo(long position) {
-		if (!mPlayer.busy()) {
-			mPlayer.setPosition(position);
-		}
+		mPlayer.setPosition(position);
 	}
 
 	/**
@@ -932,13 +930,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Queues a new list for playback
 	 *
 	 * @param list   The list to queue
-	 * @param action The action to take
+	 * @param action The action to take {@link #MOVE_NEXT,#MOVE_LAST}
 	 */
 	void enqueue(long[] list, int action) {
 		if (action == MOVE_NEXT) {
 			mPlayList.addItemsToNext(list);
 		} else if (action == MOVE_LAST) {
 			mPlayList.addItems(list);
+		}
+		if (!mPlayList.isEmpty() && mPlayList.getPosition() < 0) {
+			mPlayList.setPosition(0);
+			openCurrentAndNext();
 		}
 	}
 
