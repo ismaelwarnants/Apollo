@@ -170,7 +170,7 @@ public final class CursorFactory {
 	 * Selection to filter songs with empty name
 	 */
 	@SuppressLint("InlinedApi")
-	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
+	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.DURATION + ">0 AND " + Media.TITLE + "!=''";
 
 	/**
 	 *

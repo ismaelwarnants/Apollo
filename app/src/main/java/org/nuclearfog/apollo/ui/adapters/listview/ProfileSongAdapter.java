@@ -92,7 +92,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 			convertView = inflater.inflate(LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
-			// Hide the third line of text
 			holder.mLineThree.setVisibility(View.GONE);
 			convertView.setTag(holder);
 			if (enableDnD) {
@@ -102,28 +101,25 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 		} else {
 			holder = (MusicHolder) convertView.getTag();
 		}
-		// Retrieve the album
+		// set item information
 		Song song = getItem(position);
 		if (song != null) {
-			// Set each track name (line one)
 			holder.mLineOne.setText(song.getName());
-			// Set the line two
 			if (mDisplaySetting == DisplaySetting.DISPLAY_ALBUM_SETTING) {
 				holder.mLineOneRight.setVisibility(View.GONE);
 				holder.mLineTwo.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
 			} else if (mDisplaySetting == DisplaySetting.DISPLAY_PLAYLIST_SETTING) {
-				if (song.getDuration() < 0L) {
-					holder.mLineOneRight.setVisibility(View.GONE);
-				} else {
-					holder.mLineOneRight.setVisibility(View.VISIBLE);
-					holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
-				}
-				String sb = song.getArtist() + " - " + song.getAlbum();
-				holder.mLineTwo.setText(sb);
-			} else {
+				holder.mLineOneRight.setVisibility(View.VISIBLE);
+				holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
+				holder.mLineTwo.setText(song.getArtist() + " - " + song.getAlbum());
+			} else if (mDisplaySetting == DisplaySetting.DISPLAY_PLAYLIST_ARTIST) {
 				holder.mLineOneRight.setVisibility(View.VISIBLE);
 				holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
 				holder.mLineTwo.setText(song.getAlbum());
+			} else {
+				holder.mLineOneRight.setVisibility(View.VISIBLE);
+				holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.getDuration()));
+				holder.mLineTwo.setText(song.getArtist());
 			}
 		}
 		return convertView;
@@ -152,7 +148,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public int getItemViewType(int position) {
-		if (position == 0)
+		if (enableHeader && position == 0)
 			return ITEM_VIEW_TYPE_HEADER;
 		return ITEM_VIEW_TYPE_MUSIC;
 	}
@@ -212,7 +208,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	public enum DisplaySetting {
 
 		/**
-		 * Default display setting: title/album
+		 * Default display setting: title/artist
 		 */
 		DISPLAY_DEFAULT_SETTING,
 
@@ -220,6 +216,11 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 		 * Playlist display setting: title/artist-album
 		 */
 		DISPLAY_PLAYLIST_SETTING,
+
+		/**
+		 * Artist display setting: title/album
+		 */
+		DISPLAY_PLAYLIST_ARTIST,
 
 		/**
 		 * Album display setting: title/duration

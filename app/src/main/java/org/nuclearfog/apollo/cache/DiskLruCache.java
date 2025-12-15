@@ -395,7 +395,7 @@ public final class DiskLruCache implements Closeable {
 			String valueCountString = readAsciiLine(in);
 			String blank = readAsciiLine(in);
 			if (!MAGIC.equals(magic) || !VERSION_1.equals(version) || !Integer.toString(appVersion).equals(appVersionString) ||
-					!Integer.toString(valueCount).equals(valueCountString) || !blank.trim().isEmpty()) {
+					!Integer.toString(valueCount).equals(valueCountString) || !blank.isEmpty()) {
 				throw new IOException("unexpected journal header: [" + magic + ", " + version + ", " + valueCountString + ", " + blank + "]");
 			}
 			String readLn = readAsciiLine(in);

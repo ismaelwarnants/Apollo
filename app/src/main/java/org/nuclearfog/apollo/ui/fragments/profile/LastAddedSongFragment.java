@@ -60,7 +60,7 @@ public class LastAddedSongFragment extends ProfileFragment implements AsyncCallb
 		// init loader
 		mLoader = new LastAddedLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_SETTING, false);
 		setAdapter(mAdapter);
 		// Start the loader
 		mLoader.execute(null, this);

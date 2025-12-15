@@ -220,7 +220,7 @@ public final class MusicUtils {
 					return false;
 				}
 				return true;
-			} catch (Exception exception) {
+			} catch (RemoteException exception) {
 				Log.e(TAG, "togglePlayPause()", exception);
 			}
 		}
@@ -236,7 +236,7 @@ public final class MusicUtils {
 			try {
 				service.stop();
 				service.releaseService();
-			} catch (Exception exception) {
+			} catch (RemoteException exception) {
 				Log.e(TAG, "releaseService()", exception);
 			}
 		}
@@ -403,6 +403,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * get the current audio session ID
+	 *
 	 * @return The audio session ID or 0 if not initialized or if an error occurred
 	 */
 	public static int getAudioSessionId(Activity activity) {
@@ -418,6 +420,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * get all song IDs from the current playback list
+	 *
 	 * @return The queue.
 	 */
 	@NonNull
@@ -450,6 +454,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * get current selected song from playback list
+	 *
 	 * @return The position of the current track in the queue.
 	 */
 	public static int getQueuePosition(Activity activity) {
@@ -465,6 +471,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * select new song from the current playback list
+	 *
 	 * @param position The position to move the queue to
 	 */
 	public static void setQueuePosition(Activity activity, int position) {
@@ -479,6 +487,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * play a local song file
+	 *
 	 * @param uri The source of the file
 	 */
 	public static void playFile(Activity activity, Uri uri) {
@@ -495,6 +505,8 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * play all listed songs
+	 *
 	 * @param list         The list of songs to play.
 	 * @param position     Specify where to start.
 	 * @param forceShuffle True to force a shuffle, false otherwise.
@@ -519,7 +531,10 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * load all songs from list and play the selected position
 	 *
+	 * @param adapter  list adapter containing songs
+	 * @param position selected item position
 	 */
 	public static void playAllFromUserItemClick(Activity activity, ArrayAdapter<Song> adapter, int position) {
 		if (position >= adapter.getViewTypeCount() - 1) {
@@ -611,24 +626,25 @@ public final class MusicUtils {
 	public static long createPlaylist(Activity activity, String name) {
 		long id = -1;
 		try {
-			if (name != null && !name.trim().isEmpty() && getIdForPlaylist(activity, name) == -1) {
+			if (name != null && !name.isEmpty()) {
+				boolean playlistExists = false;
 				Cursor cursor = CursorFactory.makePlaylistCursor(activity, name);
 				// check if playlist exists
 				if (cursor != null) {
-					// create only playlist if there isn't any conflict
-					if (!cursor.moveToFirst()) {
-						ContentResolver resolver = activity.getContentResolver();
-						ContentValues values = new ContentValues(1);
-						values.put(Playlists.NAME, name);
-						Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
-						if (uri != null && uri.getLastPathSegment() != null) {
-							id = Long.parseLong(uri.getLastPathSegment());
-						}
-					}
+					playlistExists = cursor.moveToFirst();
 					cursor.close();
 				}
+				if (!playlistExists) {
+					ContentResolver resolver = activity.getContentResolver();
+					ContentValues values = new ContentValues(1);
+					values.put(Playlists.NAME, name);
+					Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
+					if (uri != null && uri.getLastPathSegment() != null) {
+						id = Long.parseLong(uri.getLastPathSegment());
+					}
+				}
 			}
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			AppMsg.makeText(activity, R.string.error_create_playlist, AppMsg.STYLE_CONFIRM).show();
 		}
 		return id;
@@ -668,7 +684,7 @@ public final class MusicUtils {
 				}
 				cursor.close();
 			}
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
 			AppMsg.makeText(activity, R.string.error_add_playlist, AppMsg.STYLE_CONFIRM).show();
 		}
@@ -709,7 +725,7 @@ public final class MusicUtils {
 		ContentResolver resolver = context.getContentResolver();
 		try {
 			return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
 			Log.w(TAG, "could not move playlist item!");
 			return false;
@@ -726,19 +742,21 @@ public final class MusicUtils {
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
 	public static boolean removeFromPlaylist(Activity activity, long trackId, long playlistId) {
-		String[] args = {Long.toString(trackId)};
-		Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
-		ContentResolver resolver = activity.getContentResolver();
-		int count = resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
-		if (count > 0) {
-			String message = activity.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
-			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
-			return true;
-		} else {
+		try {
+			String[] args = {Long.toString(trackId)};
+			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
+			ContentResolver resolver = activity.getContentResolver();
+			int count = resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
+			if (count > 0) {
+				String message = activity.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
+				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+				return true;
+			}
+		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
 			Log.w(TAG, "could not remove playlist item!");
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -785,7 +803,7 @@ public final class MusicUtils {
 				resolver.update(uri, values, null, null);
 				Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
 			}
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			Log.e(TAG, "setRingtone()", exception);
 			return;
 		}
@@ -797,7 +815,7 @@ public final class MusicUtils {
 				String title = cursor.getString(1);
 				// truncate title
 				if (title.length() > 20)
-					title = title.substring(0, 20) + "...";
+					title = title.substring(0, 17) + "...";
 				String message = activity.getString(R.string.set_as_ringtone, title);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			}
@@ -884,7 +902,7 @@ public final class MusicUtils {
 				}
 				cursor.close();
 			}
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			Log.e(TAG, "makePlaylistMenu()", exception);
 		}
 	}
@@ -974,6 +992,22 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * enable/disable player crossfade
+	 *
+	 * @param enable true to enable crossfade
+	 */
+	public static void setCrossfade(Activity activity, boolean enable) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				service.setCrossfade(enable);
+			} catch (RemoteException exception) {
+				Log.e(TAG, "setCrossfade()", exception);
+			}
+		}
+	}
+
+	/**
 	 * open delete dialog for tracks
 	 *
 	 * @param activity activity
@@ -1022,40 +1056,5 @@ public final class MusicUtils {
 			}
 		}
 		return null;
-	}
-
-
-	/**
-	 * enable/disable player crossfade
-	 *
-	 * @param enable true to enable crossfade
-	 */
-	public static void setCrossfade(Activity activity, boolean enable) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				service.setCrossfade(enable);
-			} catch (RemoteException exception) {
-				Log.e(TAG, "setCrossfade()", exception);
-			}
-		}
-	}
-
-	/**
-	 * Returns The ID for a playlist.
-	 *
-	 * @param name The name of the playlist.
-	 * @return The ID for a playlist.
-	 */
-	private static long getIdForPlaylist(Context context, String name) {
-		Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
-		long playlistId = -1L;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				playlistId = cursor.getLong(0);
-			}
-			cursor.close();
-		}
-		return playlistId;
 	}
 }

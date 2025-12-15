@@ -60,7 +60,7 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 		// init adapter
 		mLoader = new ArtistSongLoader(requireContext());
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_DEFAULT_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), DisplaySetting.DISPLAY_PLAYLIST_ARTIST, false);
 		setAdapter(mAdapter);
 		// Start the loader
 		if (param != null) {

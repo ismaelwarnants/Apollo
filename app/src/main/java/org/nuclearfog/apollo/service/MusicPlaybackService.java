@@ -581,9 +581,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Stops playback.
 	 */
 	void stop() {
-		if (mPlayer.initialized()) {
-			mPlayer.stop();
-		}
+		mPlayer.stop();
 		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 	}
 
@@ -955,7 +953,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param force true to force shutdown this service
 	 */
 	void releaseService(boolean force) {
-		if ((!isPlaying() && !mPausedByFocusLoss) || force) {
+		if (!isPlaying() || force) {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();

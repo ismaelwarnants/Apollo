@@ -85,7 +85,7 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		text.setPadding(30, 0, 0, 30);
 		text.append(preset.getName());
 		text.setHint(R.string.preset_name_hint);
-		mSaveButton.setEnabled(!preset.getName().trim().isEmpty());
+		mSaveButton.setEnabled(!preset.getName().isEmpty());
 
 		text.addTextChangedListener(this);
 		return dialog;
@@ -139,7 +139,7 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 	 */
 	@Override
 	public void afterTextChanged(Editable s) {
-		mSaveButton.setEnabled(!s.toString().trim().isEmpty());
+		mSaveButton.setEnabled(!s.toString().isEmpty());
 		preset.setName(s.toString());
 	}
 

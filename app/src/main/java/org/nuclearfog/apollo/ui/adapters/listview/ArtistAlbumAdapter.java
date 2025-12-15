@@ -168,7 +168,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	@Override
 	public int getItemViewType(int position) {
-		if (position == 0)
+		if (enableHeader && position == 0)
 			return ITEM_VIEW_TYPE_HEADER;
 		return ITEM_VIEW_TYPE_MUSIC;
 	}

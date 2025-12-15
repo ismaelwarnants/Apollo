@@ -604,7 +604,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			String mimeType = intent.getType();
 			setIntent(new Intent());
 			// open file
-			if (uri != null && !uri.toString().trim().isEmpty()) {
+			if (uri != null && !uri.toString().isEmpty()) {
 				MusicUtils.playFile(this, uri);
 				refreshQueue();
 			}

@@ -173,7 +173,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	public final void onClick(DialogInterface dialog, int which) {
 		if (which == Dialog.BUTTON_POSITIVE) {
 			String name = playlistName.getText().toString();
-			if (!name.trim().isEmpty()) {
+			if (!name.isEmpty()) {
 				switch (mode) {
 					case MOVE:
 						MusicUtils.renamePlaylist(requireActivity(), playlistId, name);
@@ -210,7 +210,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 */
 	@Override
 	public final void onTextChanged(CharSequence s, int start, int before, int count) {
-		mSaveButton.setEnabled(!s.toString().trim().isEmpty());
+		mSaveButton.setEnabled(!s.toString().isEmpty());
 	}
 
 	/**
