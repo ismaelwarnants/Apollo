@@ -45,19 +45,6 @@ public class ShuffleList {
 	}
 
 	/**
-	 * set index of the selected item
-	 *
-	 * @param index new index
-	 */
-	public void setIndex(int index) {
-		if (index >= 0 && index < mShuffle.size()) {
-			this.index = index;
-		} else {
-			this.index = -1;
-		}
-	}
-
-	/**
 	 * get the next shuffle position and increase index
 	 *
 	 * @return shuffle position or -1 if invalid

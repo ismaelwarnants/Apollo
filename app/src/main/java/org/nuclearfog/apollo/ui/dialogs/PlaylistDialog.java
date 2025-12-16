@@ -19,8 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.MusicUtils;
+
+import java.util.List;
 
 /**
  * Playlist dialog used to create, copy of rename a playlist
@@ -85,6 +88,30 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	private int mode;
 
 	private long[] songIds = {};
+
+	/**
+	 * shows a dialog window
+	 *
+	 * @param mode   what action should be performed {@link #COPY,#MOVE,#CREATE}
+	 * @param id     ID of an existing playlist to modify used to copy or move
+	 * @param songId ID of a single song
+	 * @param name   new name of the playlist
+	 */
+	public static void show(FragmentManager fm, int mode, long id, long songId, String name) {
+		show(fm, mode, id, new long[]{songId}, name);
+	}
+
+	/**
+	 * shows a dialog window
+	 *
+	 * @param mode  what action should be performed {@link #COPY,#MOVE,#CREATE}
+	 * @param id    ID of an existing playlist to modify used to copy or move
+	 * @param songs list of song IDs to add to the playlist
+	 * @param name  new name of the playlist
+	 */
+	public static void show(FragmentManager fm, int mode, long id, List<Song> songs, String name) {
+		show(fm, mode, id, MusicUtils.getIDsFromSongList(songs), name);
+	}
 
 	/**
 	 * shows a dialog window
@@ -187,7 +214,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 						// create new playlist
 						playlistId = MusicUtils.createPlaylist(requireActivity(), name);
 						if (playlistId != -1) {
-							MusicUtils.addToPlaylist(requireActivity(), songIds, playlistId);
+							MusicUtils.addToPlaylist(requireActivity(), playlistId, songIds);
 						} else {
 							AppMsg.makeText(requireActivity(), R.string.error_duplicate_playlistname, AppMsg.STYLE_ALERT).show();
 						}

@@ -194,11 +194,11 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					return true;
 
 				case ContextMenuItems.RENAME_PLAYLIST:
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.MOVE, selectedPlaylist.getId(), null, selectedPlaylist.getName());
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.MOVE, selectedPlaylist.getId(), -1, selectedPlaylist.getName());
 					return true;
 
 				case ContextMenuItems.COPY_PLAYLIST:
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.COPY, selectedPlaylist.getId(), null, selectedPlaylist.getName());
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.COPY, selectedPlaylist.getId(), -1, selectedPlaylist.getName());
 					break;
 
 				case ContextMenuItems.DELETE:
@@ -276,15 +276,13 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(requireActivity(), ids, 0, false);
+		MusicUtils.playAll(requireActivity(), songs, false);
 	}
 
 	/**
 	 * add loaded songs to queue
 	 */
 	private void onAddToQueue(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.addToQueue(requireActivity(), ids);
+		MusicUtils.addToQueue(requireActivity(), songs);
 	}
 }

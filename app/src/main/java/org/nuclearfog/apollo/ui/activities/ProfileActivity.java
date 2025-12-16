@@ -789,8 +789,7 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 	 * called to play asynchronously loaded songs
 	 */
 	private void onShuffleSongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(this, ids, 0, true);
+		MusicUtils.playAll(this, songs, true);
 	}
 
 	/**

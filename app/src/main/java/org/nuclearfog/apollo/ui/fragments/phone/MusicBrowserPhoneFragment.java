@@ -358,7 +358,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * play loaded songs
 	 */
 	private void onShuffleSongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(requireActivity(), ids, 0, true);
+		MusicUtils.playAll(requireActivity(), songs, true);
 	}
 }

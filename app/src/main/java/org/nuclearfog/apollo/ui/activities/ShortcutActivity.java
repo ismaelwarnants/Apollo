@@ -178,22 +178,20 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	/**
 	 * set song ID list after loading asynchronously
 	 *
-	 * @param items list of songs
+	 * @param songs list of songs
 	 */
-	private void onPlaySongs(List<Song> items) {
-		long[] mList = MusicUtils.getIDsFromSongList(items);
-		MusicUtils.playAll(this, mList, 0, false);
+	private void onPlaySongs(List<Song> songs) {
+		MusicUtils.playAll(this, songs, false);
 		redirectToPlayerActivity();
 	}
 
 	/**
 	 * set song ID list after loading asynchronously
 	 *
-	 * @param items list of songs
+	 * @param songs list of songs
 	 */
-	private void onShuffleSongs(List<Song> items) {
-		long[] mList = MusicUtils.getIDsFromSongList(items);
-		MusicUtils.playAll(this, mList, -1, true);
+	private void onShuffleSongs(List<Song> songs) {
+		MusicUtils.playAll(this, songs, true);
 		redirectToPlayerActivity();
 	}
 

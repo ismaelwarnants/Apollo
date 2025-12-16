@@ -148,7 +148,8 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 	@Override
 	public boolean onMenuItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_queue) {
-			MusicUtils.saveQueue(requireActivity());
+			long[] ids = MusicUtils.getQueue(requireActivity());
+			PlaylistDialog.show(requireActivity().getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
 		} else if (item.getItemId() == R.id.menu_clear_queue) {
 			MusicUtils.clearQueue(requireActivity());
 			requireActivity().finish();
@@ -195,11 +196,9 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 		if (item.getGroupId() == GROUP_ID && mSelectedPosition >= 0) {
 			Song selectedSong = mAdapter.getItem(mSelectedPosition);
 			if (selectedSong != null) {
-				long[] trackId = {selectedSong.getId()};
-
 				switch (item.getItemId()) {
 					case ContextMenuItems.PLAY_NEXT:
-						MusicUtils.playNext(requireActivity(), trackId);
+						MusicUtils.playNext(requireActivity(), selectedSong.getId());
 						return true;
 
 					case ContextMenuItems.REMOVE_FROM_QUEUE:
@@ -211,14 +210,14 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 						return true;
 
 					case ContextMenuItems.NEW_PLAYLIST:
-						PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
+						PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, selectedSong.getId(), null);
 						return true;
 
 					case ContextMenuItems.PLAYLIST_SELECTED:
 						if (item.getIntent() != null) {
 							long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
 							if (mPlaylistId != -1) {
-								MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+								MusicUtils.addToPlaylist(requireActivity(), mPlaylistId, selectedSong.getId());
 							}
 						}
 						return true;
@@ -232,7 +231,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 						return true;
 
 					case ContextMenuItems.DELETE:
-						MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackId);
+						MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), selectedSong.getId());
 						return true;
 				}
 			}

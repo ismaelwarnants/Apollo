@@ -487,9 +487,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setRepeatMode(REPEAT_ALL);
 			} else if (mRepeatMode == REPEAT_ALL) {
 				setRepeatMode(REPEAT_CURRENT);
-				if (mShuffleMode != SHUFFLE_NONE) {
-					setShuffleMode(SHUFFLE_NONE);
-				}
 			} else {
 				setRepeatMode(REPEAT_NONE);
 			}
@@ -498,9 +495,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (ACTION_SHUFFLE.equals(action)) {
 			if (mShuffleMode == SHUFFLE_NONE) {
 				setShuffleMode(SHUFFLE_NORMAL);
-				if (mRepeatMode == REPEAT_CURRENT) {
-					setRepeatMode(REPEAT_ALL);
-				}
 			} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
 				setShuffleMode(SHUFFLE_NONE);
 			}
@@ -762,50 +756,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Sets the shuffle mode
+	 * select & play a track in the current playback list
 	 *
-	 * @param shuffleMode The shuffle mode to use
-	 */
-	void setShuffleMode(int shuffleMode) {
-		if (mShuffleMode != shuffleMode || mPlayList.isEmpty()) {
-			// setup party shuffle
-			if (shuffleMode == SHUFFLE_AUTO) {
-				if (makeShuffleList(true)) {
-					mShuffleMode = SHUFFLE_AUTO;
-					mRepeatMode = REPEAT_ALL;
-					mPlayList.setPosition(0);
-					mShuffleList.setIndex(0);
-					openCurrentAndNext();
-					notifyChange(CHANGED_SHUFFLEMODE);
-					notifyChange(CHANGED_REPEATMODE);
-				}
-			}
-			// setup queue shuffle
-			else if (shuffleMode == SHUFFLE_NORMAL) {
-				if (makeShuffleList(false)) {
-					mShuffleMode = SHUFFLE_NORMAL;
-					mRepeatMode = REPEAT_ALL;
-					mShuffleList.setIndex(0);
-					setNextTrack(false);
-					notifyChange(CHANGED_SHUFFLEMODE);
-					notifyChange(CHANGED_REPEATMODE);
-				}
-			}
-			// reset shuffle mode
-			else if (shuffleMode == SHUFFLE_NONE) {
-				mShuffleMode = SHUFFLE_NONE;
-				mShuffleList.clear();
-				setNextTrack(false);
-				notifyChange(CHANGED_SHUFFLEMODE);
-			}
-			savePlaybackList(false);
-		}
-	}
-
-	/**
-	 * Sets the position of a track in the queue
-	 *
-	 * @param index The position to place the track
+	 * @param index The playback position of the track
 	 */
 	void setQueuePosition(int index) {
 		mPlayList.setPosition(index);
@@ -814,9 +767,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Returns the position in the queue
+	 * Returns the current position in the playback list
 	 *
-	 * @return the current position in the queue
+	 * @return The playback position of the track
 	 */
 	int getQueuePosition() {
 		return mPlayList.getPosition();
@@ -839,12 +792,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void removeQueueTrack(int pos) {
 		if (pos >= 0 && pos < mPlayList.size()) {
-			// stop playback if current track is removed or the last track is going to be removed
-			if (mPlayList.getPosition() == pos || mPlayList.size() == 1) {
-				stop();
-			}
-			// remove track at position
+			// remove selected item
 			mPlayList.remove(pos);
+			// stop playback if there is no track selected
+			if (mPlayList.getPosition() < 0) {
+				stop();
+				// select next track if any
+				if (!mPlayList.isEmpty()) {
+					mPlayList.setPosition(Math.min(pos, mPlayList.size() - 1));
+					openCurrentAndNext();
+				} else {
+					clearCurrentTrackInformation();
+				}
+			}
 			// notify that queue changed
 			notifyChange(CHANGED_QUEUE);
 		}
@@ -878,15 +838,65 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
+	 * Sets the shuffle mode
+	 *
+	 * @param shuffleMode The shuffle mode to use
+	 */
+	void setShuffleMode(int shuffleMode) {
+		if (mShuffleMode != shuffleMode || mPlayList.isEmpty()) {
+			// shuffle all available songs
+			if (shuffleMode == SHUFFLE_AUTO) {
+				mSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+				if (makeShuffleList(true)) {
+					mShuffleMode = SHUFFLE_AUTO;
+					setRepeatMode(REPEAT_ALL);
+					// open first track
+					mPlayList.setPosition(0);
+					openCurrentAndNext();
+				}
+			}
+			// shuffle current playlist
+			else if (shuffleMode == SHUFFLE_NORMAL) {
+				mSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+				if (makeShuffleList(false)) {
+					mShuffleMode = SHUFFLE_NORMAL;
+					setRepeatMode(REPEAT_ALL);
+				}
+			}
+			// disable shuffle
+			else if (shuffleMode == SHUFFLE_NONE) {
+				mSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+				mShuffleMode = SHUFFLE_NONE;
+				mShuffleList.clear();
+				setNextTrack(false);
+			}
+			notifyChange(CHANGED_SHUFFLEMODE);
+			savePlaybackList(false);
+		}
+	}
+
+	/**
 	 * Sets the repeat mode
 	 *
 	 * @param repeatMode The repeat mode to use
 	 */
 	void setRepeatMode(int repeatMode) {
-		mRepeatMode = repeatMode;
-		setNextTrack(false);
-		savePlaybackList(false);
-		notifyChange(CHANGED_REPEATMODE);
+		if (mRepeatMode != repeatMode) {
+			if (repeatMode == REPEAT_ALL) {
+				mRepeatMode = REPEAT_ALL;
+				mSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+			} else if (repeatMode == REPEAT_CURRENT) {
+				mRepeatMode = REPEAT_CURRENT;
+				mSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+				setShuffleMode(SHUFFLE_NONE);
+			} else if (repeatMode == REPEAT_NONE) {
+				mRepeatMode = REPEAT_NONE;
+				mSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+			}
+			setNextTrack(false);
+			savePlaybackList(false);
+			notifyChange(CHANGED_REPEATMODE);
+		}
 	}
 
 	/**
@@ -920,16 +930,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 *
-	 */
-	void stopForeground() {
-		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-		mNotificationHelper.dismissNotification();
-		shutdownHandler.stop();
-		isForeground = false;
-	}
-
-	/**
 	 * Queues a new list for playback
 	 *
 	 * @param list   The list to queue
@@ -941,10 +941,24 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else if (action == MOVE_LAST) {
 			mPlayList.addItems(list);
 		}
-		if (!mPlayList.isEmpty() && mPlayList.getPosition() < 0) {
-			mPlayList.setPosition(0);
-			openCurrentAndNext();
+		if (!mPlayList.isEmpty() && list.length > 0) {
+			if (mPlayList.getPosition() < 0) {
+				mPlayList.setPosition(0);
+				openCurrentAndNext();
+			} else {
+				setNextTrack(false);
+			}
 		}
+	}
+
+	/**
+	 *
+	 */
+	void stopForeground() {
+		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+		mNotificationHelper.dismissNotification();
+		shutdownHandler.stop();
+		isForeground = false;
 	}
 
 	/**
@@ -1026,7 +1040,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * update current track information
 	 */
 	private void updateTrackInformation() {
-		updateTrackInformation(mPlayList.getCurrent());
+		updateTrackInformation(mPlayList.getSelected());
 
 	}
 
@@ -1172,7 +1186,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!mPlayList.isEmpty() && mPlayList.getPosition() >= 0) {
 			for (int retry = 0; retry < RETRY_COUNT; retry++) {
 				// try to open current track
-				long trackId = mPlayList.getCurrent();
+				long trackId = mPlayList.getSelected();
 				if (trackId != -1L) {
 					Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
 					if (mPlayer.setDataSource(getApplicationContext(), uri)) {

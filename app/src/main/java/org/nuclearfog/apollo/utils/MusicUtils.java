@@ -39,7 +39,6 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.util.ArrayList;
@@ -505,6 +504,25 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * play a song
+	 *
+	 * @param id ID of the track to play
+	 */
+	public static void play(Activity activity, long id) {
+		playAll(activity, new long[]{id}, 0, false);
+	}
+
+	/**
+	 * play all listed songs
+	 *
+	 * @param songs   songs to play
+	 * @param shuffle true to shuffle tracks
+	 */
+	public static void playAll(Activity activity, List<Song> songs, boolean shuffle) {
+		playAll(activity, MusicUtils.getIDsFromSongList(songs), 0, shuffle);
+	}
+
+	/**
 	 * play all listed songs
 	 *
 	 * @param list         The list of songs to play.
@@ -516,7 +534,7 @@ public final class MusicUtils {
 		if (list.length > 0 && service != null) {
 			try {
 				if (forceShuffle) {
-					service.setShuffleMode(MusicPlaybackService.SHUFFLE_AUTO);
+					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
 					service.open(list, new Random().nextInt(list.length - 1));
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
@@ -651,14 +669,24 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * add song IDs to an an existing IDs
+	 * add songs to an existing playlist
+	 *
+	 * @param songs      The song(s) to add.
+	 * @param playlistId The id of the playlist being added to.
+	 */
+	public static void addToPlaylist(Activity activity, long playlistId, List<Song> songs) {
+		addToPlaylist(activity, playlistId, MusicUtils.getIDsFromSongList(songs));
+	}
+
+	/**
+	 * add song IDs to an existing playlist
 	 *
 	 * @param ids        The id of the song(s) to add.
 	 * @param playlistId The id of the playlist being added to.
 	 */
 	@SuppressLint("InlinedApi")
 	@SuppressWarnings("deprecation")
-	public static void addToPlaylist(Activity activity, long[] ids, long playlistId) {
+	public static void addToPlaylist(Activity activity, long playlistId, long... ids) {
 		try {
 			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
 			Cursor cursor = CursorFactory.makePlaylistCursor(activity.getContentResolver(), uri);
@@ -757,6 +785,24 @@ public final class MusicUtils {
 			Log.w(TAG, "could not remove playlist item!");
 		}
 		return false;
+	}
+
+	/**
+	 * add a song to the current playback queue
+	 *
+	 * @param id ID of the song to add
+	 */
+	public static void addToQueue(Activity activity, long id) {
+		addToQueue(activity, new long[]{id});
+	}
+
+	/**
+	 * add songs to the current playback queue
+	 *
+	 * @param items songs to add
+	 */
+	public static void addToQueue(Activity activity, List<Song> items) {
+		addToQueue(activity, getIDsFromSongList(items));
 	}
 
 	/**
@@ -861,13 +907,15 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param list The list to enqueue.
+	 * add track to the current playback queue after current playback position
+	 *
+	 * @param id The list to enqueue.
 	 */
-	public static void playNext(Activity activity, long[] list) {
+	public static void playNext(Activity activity, long id) {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
+				service.enqueue(new long[]{id}, MusicPlaybackService.MOVE_NEXT);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "playNext()", exception);
 			}
@@ -968,16 +1016,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * create dialog to save current queue to playlist
-	 *
-	 * @param activity activity of the fragment
-	 */
-	public static void saveQueue(FragmentActivity activity) {
-		long[] ids = MusicUtils.getQueue(activity);
-		PlaylistDialog.show(activity.getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
-	}
-
-	/**
 	 * Clears the queue
 	 */
 	public static void clearQueue(Activity activity) {
@@ -1005,6 +1043,28 @@ public final class MusicUtils {
 				Log.e(TAG, "setCrossfade()", exception);
 			}
 		}
+	}
+
+	/**
+	 * open delete dialog for tracks
+	 *
+	 * @param activity activity
+	 * @param title    title of the dialog
+	 * @param songs    list of songs to remove
+	 */
+	public static void openDeleteDialog(FragmentActivity activity, String title, List<Song> songs) {
+		openDeleteDialog(activity, title, getIDsFromSongList(songs));
+	}
+
+	/**
+	 * open delete dialog for a single track
+	 *
+	 * @param activity activity
+	 * @param title    title of the dialog
+	 * @param id       list of a song ID to remove
+	 */
+	public static void openDeleteDialog(FragmentActivity activity, String title, long id) {
+		openDeleteDialog(activity, title, new long[]{id});
 	}
 
 	/**

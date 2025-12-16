@@ -183,14 +183,10 @@ public class PlaybackList {
 		synchronized (mPlaylist) {
 			if (pos >= 0 && pos < mPlaylist.size()) {
 				mPlaylist.remove(pos);
-				if (mPlaylist.isEmpty())
+				if (mPlaylist.isEmpty() || playPos == pos) {
 					playPos = -1;
-				else if (playPos > pos)
+				} else if (playPos > pos) {
 					playPos--;
-				else if (playPos == pos) {
-					if (playPos > 0) {
-						playPos = Math.min(playPos, size() - 1);
-					}
 				}
 			}
 		}
@@ -201,7 +197,7 @@ public class PlaybackList {
 	 *
 	 * @return song ID
 	 */
-	public long getCurrent() {
+	public long getSelected() {
 		synchronized (mPlaylist) {
 			if (playPos >= 0 && playPos < size())
 				return get(playPos);

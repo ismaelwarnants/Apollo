@@ -402,8 +402,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			// Delete current song
 			Song currentSong = MusicUtils.getCurrentTrack(this);
 			if (currentSong != null) {
-				long[] ids = {currentSong.getId()};
-				MusicUtils.openDeleteDialog(this, currentSong.getName(), ids);
+				MusicUtils.openDeleteDialog(this, currentSong.getName(), currentSong.getId());
 			}
 		} else if (item.getItemId() == R.id.menu_close) {
 			NavUtils.closeApp(this);
@@ -758,8 +757,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * called after songs loaded asynchronously to play
 	 */
 	private void onShuffleSongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(this, ids, -1, true);
+		MusicUtils.playAll(this, songs, true);
 		playPos = MusicUtils.getQueuePosition(this);
 		refreshQueue();
 	}

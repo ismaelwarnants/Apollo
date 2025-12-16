@@ -16,7 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -97,7 +96,6 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 	/**
 	 * context menu selection
 	 */
-	@Nullable
 	private Song selectedSong = null;
 
 	private int oldPos = 0;
@@ -187,18 +185,15 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					long[] trackIds = {selectedSong.getId()};
-					MusicUtils.playAll(requireActivity(), trackIds, 0, false);
+					MusicUtils.play(requireActivity(), selectedSong.getId());
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					trackIds = new long[]{selectedSong.getId()};
-					MusicUtils.playNext(requireActivity(), trackIds);
+					MusicUtils.playNext(requireActivity(), selectedSong.getId());
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					trackIds = new long[]{selectedSong.getId()};
-					MusicUtils.addToQueue(requireActivity(), trackIds);
+					MusicUtils.addToQueue(requireActivity(), selectedSong.getId());
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
@@ -206,15 +201,14 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					trackIds = new long[]{selectedSong.getId()};
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackIds, null);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, selectedSong.getId(), null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					if (item.getIntent() != null) {
 						long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
 						if (mPlaylistId != -1) {
-							MusicUtils.addToPlaylist(requireActivity(), new long[]{selectedSong.getId()}, mPlaylistId);
+							MusicUtils.addToPlaylist(requireActivity(), mPlaylistId, selectedSong.getId());
 						}
 					}
 					return true;
@@ -232,8 +226,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 					return true;
 
 				case ContextMenuItems.DELETE:
-					trackIds = new long[]{selectedSong.getId()};
-					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackIds);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), selectedSong.getId());
 					return true;
 			}
 		}

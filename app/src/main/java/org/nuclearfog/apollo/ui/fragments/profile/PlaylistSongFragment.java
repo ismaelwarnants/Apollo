@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
@@ -51,7 +50,6 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	/**
 	 * context menu selection
 	 */
-	@Nullable
 	private Song mSong;
 
 	/**
@@ -132,19 +130,17 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && mSong != null) {
-			long[] trackId = {mSong.getId()};
-
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireActivity(), trackId, 0, false);
+					MusicUtils.play(requireActivity(), mSong.getId());
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(requireActivity(), trackId);
+					MusicUtils.playNext(requireActivity(), mSong.getId());
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					MusicUtils.addToQueue(requireActivity(), trackId);
+					MusicUtils.addToQueue(requireActivity(), mSong.getId());
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
@@ -152,14 +148,14 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, mSong.getId(), null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					if (item.getIntent() != null) {
 						long playlistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
 						if (playlistId != -1) {
-							MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
+							MusicUtils.addToPlaylist(requireActivity(), playlistId, mSong.getId());
 							// reload if track was added to this playlist
 							if (mPlaylistId == playlistId) {
 								mLoader.execute(mPlaylistId, this);
@@ -177,7 +173,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
+					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), mSong.getId());
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_PLAYLIST:

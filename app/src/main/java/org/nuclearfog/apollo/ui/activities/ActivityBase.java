@@ -417,8 +417,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * called after songs loaded asynchronously to shuffle all tracks
 	 */
 	private void onShuffleSongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(this, ids, -1, true);
+		MusicUtils.playAll(this, songs, true);
 		updatePlaybackControls();
 	}
 

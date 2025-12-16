@@ -345,40 +345,35 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.playAll(requireActivity(), ids, 0, false);
+		MusicUtils.playAll(requireActivity(), songs, false);
 	}
 
 	/**
 	 * add loaded songs to queue
 	 */
 	private void onAddToQueue(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.addToQueue(requireActivity(), ids);
+		MusicUtils.addToQueue(requireActivity(), songs);
 	}
 
 	/**
 	 * create a new playlist with the loaded songs
 	 */
 	private void onAddToNewPlaylist(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
+		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, songs, null);
 	}
 
 	/**
 	 * save the loaded songs into an existing playlist
 	 */
 	private void onAddToExistingPlaylist(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
-		MusicUtils.addToPlaylist(requireActivity(), ids, selectedPlaylistId);
+		MusicUtils.addToPlaylist(requireActivity(), selectedPlaylistId, songs);
 	}
 
 	/**
 	 * delete the loaded songs
 	 */
 	private void onSongsDelete(List<Song> songs) {
-		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
-		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
+		MusicUtils.openDeleteDialog(requireActivity(), name, songs);
 	}
 }
