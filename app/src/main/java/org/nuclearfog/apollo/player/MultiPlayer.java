@@ -431,8 +431,8 @@ public class MultiPlayer {
 				case FADE_OUT:
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
-						xfadeMode = NONE;
 						pause(true);
+						xfadeMode = NONE;
 					}
 					break;
 
@@ -470,7 +470,6 @@ public class MultiPlayer {
 			xfadeTask.cancel(false);
 			xfadeTask = null;
 			xfadeMode = NONE;
-			setCurrentVolume(maxVolume);
 		}
 	}
 

@@ -99,11 +99,6 @@ public final class MusicUtils {
 	public static final int REQUEST_DELETE_FILES = 0x8DA3;
 
 	/**
-	 * empty ID list
-	 */
-	private static final long[] EMPTY_LIST = {};
-
-	/**
 	 * information about activities accessing this service interface
 	 */
 	private static WeakHashMap<Activity, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
@@ -176,8 +171,6 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.gotoNext();
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "next()", exception);
 			}
@@ -192,8 +185,6 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.gotoPrev();
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "previous()", exception);
 			}
@@ -213,8 +204,6 @@ public final class MusicUtils {
 					service.pause(false);
 				} else if (service.getQueue().length > 0) {
 					service.play();
-					int sessionId = service.getAudioSessionId();
-					AudioEffects.getInstance(activity, sessionId);
 				} else {
 					return false;
 				}
@@ -265,8 +254,6 @@ public final class MusicUtils {
 						service.setRepeatMode(MusicPlaybackService.REPEAT_NONE);
 						return REPEAT_NONE;
 				}
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "cycleRepeat()", exception);
 			}
@@ -276,6 +263,8 @@ public final class MusicUtils {
 
 	/**
 	 * Cycles through the shuffle options.
+	 *
+	 * @return shuffle mode {@link #SHUFFLE_NORMAL,#SHUFFLE_NONE}
 	 */
 	public static int cycleShuffle(Activity activity) {
 		IApolloService service = getService(activity);
@@ -287,8 +276,6 @@ public final class MusicUtils {
 						if (service.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
 							service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
 						}
-						int sessionId = service.getAudioSessionId();
-						AudioEffects.getInstance(activity, sessionId);
 						return SHUFFLE_NORMAL;
 
 					case MusicPlaybackService.SHUFFLE_NORMAL:
@@ -433,7 +420,7 @@ public final class MusicUtils {
 				Log.e(TAG, "getQueue()", exception);
 			}
 		}
-		return EMPTY_LIST;
+		return new long[0];
 	}
 
 	/**
@@ -494,8 +481,6 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (uri != null && service != null) {
 			try {
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 				service.openFile(uri);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "playFile()", exception);
@@ -540,8 +525,6 @@ public final class MusicUtils {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 					service.open(list, position);
 				}
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "playAll()", exception);
 			}
@@ -893,17 +876,17 @@ public final class MusicUtils {
 	@NonNull
 	public static long[] getSongListForPlaylist(Context context, long playlistId) {
 		Cursor cursor = CursorFactory.makePlaylistSongCursor(context, playlistId);
-		long[] ids = EMPTY_LIST;
 		if (cursor != null) {
 			cursor.moveToFirst();
-			ids = new long[cursor.getCount()];
+			long[] ids = new long[cursor.getCount()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = cursor.getLong(0);
 				cursor.moveToNext();
 			}
 			cursor.close();
+			return ids;
 		}
-		return ids;
+		return new long[0];
 	}
 
 	/**

@@ -86,9 +86,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String CHANGED_META = APOLLO_PACKAGE_NAME + ".metachanged";
 	/**
-	 * Indicates the queue has been updated
+	 * Indicates the playback queue has been updated
 	 */
 	public static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
+	/**
+	 * Indicates that the seek position of the current track has changed
+	 */
+	public static final String CHANGED_SEEK = APOLLO_PACKAGE_NAME + ".seekposchanged";
 	/**
 	 * Indicates the repeat mode changed
 	 */
@@ -344,10 +348,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		ContextCompat.registerReceiver(this, mIntentReceiver, playerIntent, ContextCompat.RECEIVER_EXPORTED);
 		ContextCompat.registerReceiver(this, mUnmountReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
 		ContextCompat.registerReceiver(this, headsetReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
-
-		// send session ID to external equalizer if set
-		if (settings.isExternalAudioFxPreferred() && !settings.isAudioFxEnabled()) {
+		// initialize audio effects
+		if (settings.isExternalAudioFxPreferred()) {
+			// send session ID to external equalizer if set
 			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
+		} else {
+			AudioEffects.getInstance(getApplicationContext(), audioSessionId);
 		}
 		// initialize the playback/history list and state
 		initPlaybackList();
@@ -650,6 +656,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void seekTo(long position) {
 		mPlayer.setPosition(position);
+		notifyChange(CHANGED_SEEK);
 	}
 
 	/**
@@ -712,7 +719,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (album != null)
 					recentStore.addAlbum(album);
 				updateMetadata();
-				// fall through
+				break;
 
 			case CHANGED_PLAYSTATE:
 				if (isForeground) {
@@ -737,6 +744,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (mPlayer.isPlaying()) {
 					setNextTrack(false);
 				}
+				break;
+
+			case CHANGED_SEEK:
+				updatePlaybackState();
 				break;
 
 			default:

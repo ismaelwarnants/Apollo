@@ -389,6 +389,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		} else if (vId == R.id.menu_audio_player_equalizer) {
 			if (mPrefs.isExternalAudioFxPreferred() && ApolloUtils.isEqualizerInstalled(this)) {
 				// Sound effects
+				ApolloUtils.notifyExternalEqualizer(this, MusicUtils.getAudioSessionId(this));
 				NavUtils.openEffectsPanel(this);
 			} else {
 				Intent intent = new Intent(this, AudioFxActivity.class);
