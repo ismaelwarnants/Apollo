@@ -2,7 +2,6 @@ package org.nuclearfog.apollo.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build.VERSION;
@@ -18,9 +17,6 @@ import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.model.Song;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -70,42 +66,23 @@ class NotificationHelper {
 	private NotificationCompat.Builder notificationBuilder;
 
 	/**
-	 * callbacks to the service
-	 */
-	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious, callbackStop;
-
-	private ImageFetcher imageFetcher;
-
-
-	/**
 	 * @param service  callback to the service
 	 * @param mSession media session of the current playback
 	 */
 	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
-		imageFetcher = new ImageFetcher(mService);
-
+		// initialize player activity callback
+		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 		// init notification manager & channel
 		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
 		channelBuilder.setName(NOTIFICATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(channelBuilder.build());
-
-		// initialize player activity callback
-		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-		// initialize callbacks
-		callbackPlayPause = createIntent(MusicPlaybackService.ACTION_TOGGLEPAUSE);
-		callbackNext = createIntent(MusicPlaybackService.ACTION_NEXT);
-		callbackPrevious = createIntent(MusicPlaybackService.ACTION_PREVIOUS);
-		callbackStop = createIntent(MusicPlaybackService.ACTION_STOP);
-		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-		// style for the notification
+		// create style for the notification
 		MediaStyle mediaStyle = new MediaStyle();
 		mediaStyle.setMediaSession(mSession.getSessionToken());
-
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
@@ -123,11 +100,10 @@ class NotificationHelper {
 	 * create a new notification and attach it to the foreground service
 	 */
 	void createNotification() {
-		Notification notification = buildNotification();
 		if (VERSION.SDK_INT >= VERSION_CODES.Q) {
-			mService.startForeground(APOLLO_MUSIC_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+			mService.startForeground(APOLLO_MUSIC_SERVICE, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 		} else {
-			mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
+			mService.startForeground(APOLLO_MUSIC_SERVICE, notificationBuilder.build());
 		}
 	}
 
@@ -135,7 +111,7 @@ class NotificationHelper {
 	 * update existing notification
 	 */
 	void updateNotification() {
-		postNotification(buildNotification());
+		postNotification(notificationBuilder.build());
 	}
 
 	/**
@@ -143,31 +119,6 @@ class NotificationHelper {
 	 */
 	void dismissNotification() {
 		postNotification(null);
-	}
-
-	/**
-	 * Changes the playback controls in and out of a paused state
-	 */
-	private Notification buildNotification() {
-		Album album = mService.getCurrentAlbum();
-		Song song = mService.getCurrentSong();
-		// build integrated media control
-		if (song != null && album != null) {
-			notificationBuilder.setContentTitle(song.getName());
-			notificationBuilder.setContentText(song.getArtist());
-			notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
-		}
-		// init media control (fallback if not supported by MediaStyle)
-		notificationBuilder.clearActions();
-		notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
-		if (mService.isPlaying()) {
-			notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
-		} else {
-			notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
-		}
-		notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
-		notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
-		return notificationBuilder.build();
 	}
 
 	/**
@@ -185,16 +136,5 @@ class NotificationHelper {
 		} catch (SecurityException exception) {
 			Log.e(TAG, "error while updating notification");
 		}
-	}
-
-	/**
-	 * create playback service intent
-	 *
-	 * @param action action send to playback service
-	 */
-	private PendingIntent createIntent(String action) {
-		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
-		Intent intent = new Intent(action).setComponent(serviceName);
-		return PendingIntent.getService(mService, 0, intent, PendingIntent.FLAG_MUTABLE);
 	}
 }

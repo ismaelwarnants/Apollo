@@ -33,6 +33,7 @@ import androidx.media.session.MediaButtonReceiver;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.MultiPlayer;
@@ -248,6 +249,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * used to check if service is running in the foreground
 	 */
 	private boolean isForeground = false;
+
+	private ImageFetcher imageFetcher;
 	/**
 	 * current song to play
 	 */
@@ -306,6 +309,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
 		headsetReceiver = new HeadsetStatusReceiver(this);
+		imageFetcher = new ImageFetcher(this);
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
 		// initialize audio manager and audio session ID
@@ -449,8 +453,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onWentToNext() {
 		mPlayList.setPosition(mNextPlayPos);
-		updateTrackInformation();
+		updateTrackInformation(mPlayList.getSelected());
 		setNextTrack(false);
+		notifyChange(CHANGED_SEEK);
 	}
 
 
@@ -684,7 +689,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// restore track information after error
 		else {
-			updateTrackInformation();
+			updateTrackInformation(mPlayList.getSelected());
 		}
 	}
 
@@ -713,15 +718,21 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 		switch (what) {
 			case CHANGED_META:
-				// Increase the play count for favorite songs.
-				if (song != null)
-					popularStore.addSong(song);
-				if (album != null)
-					recentStore.addAlbum(album);
 				updateMetadata();
+				// Increase the play count for favorite songs.
+				if (song != null) {
+					popularStore.addSong(song);
+				}
+				if (album != null) {
+					recentStore.addAlbum(album);
+				}
+				if (isForeground) {
+					mNotificationHelper.updateNotification();
+				}
 				break;
 
 			case CHANGED_PLAYSTATE:
+				updatePlaybackState();
 				if (isForeground) {
 					mNotificationHelper.updateNotification();
 					if (mPlayer.isPlaying()) {
@@ -735,7 +746,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
 					settings.setSeekPosition(mPlayer.getPosition());
 				}
-				updatePlaybackState();
 				break;
 
 			case CHANGED_QUEUE:
@@ -748,6 +758,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_SEEK:
 				updatePlaybackState();
+				settings.setSeekPosition(mPlayer.getPosition());
 				break;
 
 			default:
@@ -1014,6 +1025,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (album != null) {
 			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, album.getRelease());
 			builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, album.getTrackCount());
+			builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, imageFetcher.getAlbumArtwork(album));
 		}
 		mSession.setMetadata(builder.build());
 	}
@@ -1045,14 +1057,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mCursor.close();
 		}
 		return mCardId;
-	}
-
-	/**
-	 * update current track information
-	 */
-	private void updateTrackInformation() {
-		updateTrackInformation(mPlayList.getSelected());
-
 	}
 
 	/**
