@@ -1,5 +1,6 @@
 package org.nuclearfog.apollo.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -19,6 +20,7 @@ import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
+@SuppressLint("ApplySharedPref")
 public final class PreferenceUtils {
 
 	private static final String TAG = "PreferenceUtils";
@@ -73,7 +75,6 @@ public final class PreferenceUtils {
 	private static final String POS_CURSOR = "curpos";
 	private static final String HISTORY = "history";
 	private static final String QUEUE = "queue";
-	private static final String ID_CARD = "cardid";
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
@@ -124,7 +125,7 @@ public final class PreferenceUtils {
 	public void setStartPage(int value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(START_PAGE, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -144,7 +145,7 @@ public final class PreferenceUtils {
 	public void setThemeColor(int value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(DEFAULT_THEME_COLOR, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -172,7 +173,7 @@ public final class PreferenceUtils {
 	private void setSortOrder(String key, String value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putString(key, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -282,15 +283,6 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * get current card ID
-	 *
-	 * @return card ID
-	 */
-	public int getCardId() {
-		return defaultPref.getInt(ID_CARD, -1);
-	}
-
-	/**
 	 * get current cursor position
 	 *
 	 * @return cursor position
@@ -307,7 +299,7 @@ public final class PreferenceUtils {
 	public void setCursorPosition(int position) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(POS_CURSOR, position);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -343,7 +335,7 @@ public final class PreferenceUtils {
 	public void setSeekPosition(long seekPos) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putLong(POS_SEEK, seekPos);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -374,7 +366,7 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(MODE_REPEAT, repeatMode);
 		editor.putInt(MODE_SHUFFLE, shuffleMode);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -394,7 +386,7 @@ public final class PreferenceUtils {
 	public void setArtistLayout(String value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putString(ARTIST_LAYOUT, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -414,7 +406,7 @@ public final class PreferenceUtils {
 	public void setAlbumLayout(String value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putString(ALBUM_LAYOUT, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -434,7 +426,7 @@ public final class PreferenceUtils {
 	public void setRecentLayout(String value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putString(RECENT_LAYOUT, value);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -442,6 +434,7 @@ public final class PreferenceUtils {
 	 *
 	 * @return playlist
 	 */
+	@Deprecated
 	public long[] getPlaylist() {
 		String trackQueue = defaultPref.getString(QUEUE, "");
 		if (!trackQueue.isEmpty()) {
@@ -462,28 +455,11 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * save current playlist
-	 *
-	 * @param playlist array of track IDs
-	 * @param cardId   ID of the external storage
-	 */
-	public void setPlayList(long[] playlist, int cardId) {
-		SharedPreferences.Editor editor = defaultPref.edit();
-		StringBuilder buffer = new StringBuilder();
-		for (long n : playlist) {
-			buffer.append(Long.toHexString(n));
-			buffer.append(";");
-		}
-		editor.putString(QUEUE, buffer.toString());
-		editor.putInt(ID_CARD, cardId);
-		editor.apply();
-	}
-
-	/**
 	 * get track history
 	 *
 	 * @return array of track IDs
 	 */
+	@Deprecated
 	public int[] getTrackHistory() {
 		String trackHistory = defaultPref.getString(HISTORY, "");
 		if (!trackHistory.isEmpty()) {
@@ -499,21 +475,6 @@ public final class PreferenceUtils {
 			return ids;
 		}
 		return new int[0];
-	}
-
-	/**
-	 * set track history
-	 *
-	 * @param ids array of track IDs
-	 */
-	public void setTrackHistory(int[] ids) {
-		SharedPreferences.Editor editor = defaultPref.edit();
-		StringBuilder buffer = new StringBuilder();
-		for (long n : ids) {
-			buffer.append(Long.toHexString(n)).append(";");
-		}
-		editor.putString(HISTORY, buffer.toString());
-		editor.apply();
 	}
 
 	/**
@@ -533,7 +494,7 @@ public final class PreferenceUtils {
 	public void setAudioFxEnabled(boolean enable) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putBoolean(FX_ENABLE, enable);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -568,7 +529,7 @@ public final class PreferenceUtils {
 
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putString(FX_EQUALIZER_BANDS, result.toString());
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -588,7 +549,7 @@ public final class PreferenceUtils {
 	public void setBassLevel(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_BASSBOOST, level);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -608,7 +569,7 @@ public final class PreferenceUtils {
 	public void setReverbLevel(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_REVERB, level);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -628,7 +589,7 @@ public final class PreferenceUtils {
 	public void setPresetName(String name) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putString(FX_PRESET, name);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -644,7 +605,7 @@ public final class PreferenceUtils {
 	public void setExcludeTracks(boolean showHidden) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putBoolean(SHOW_HIDDEN, showHidden);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -688,7 +649,7 @@ public final class PreferenceUtils {
 	public void setThemeSelectionIndex(int position) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putInt(PACKAGE_INDEX, position);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -704,7 +665,7 @@ public final class PreferenceUtils {
 	public void setIgnoreBatteryOptimization() {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putBoolean(BAT_OPTIMIZATION, true);
-		editor.apply();
+		editor.commit();
 	}
 
 	/**

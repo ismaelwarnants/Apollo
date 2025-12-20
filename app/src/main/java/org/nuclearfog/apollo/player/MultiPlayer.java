@@ -242,12 +242,11 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			setCrossfadeTask(false);
-			player.stop();
-			player.prepare();
+			player.pause();
 			player.seekTo(0);
 			isPlaying = false;
 			callback.onPlaybackChanged();
-		} catch (IllegalStateException | IOException exception) {
+		} catch (IllegalStateException exception) {
 			Log.e(TAG, "stop():", exception);
 			player.reset();
 			initialized = false;

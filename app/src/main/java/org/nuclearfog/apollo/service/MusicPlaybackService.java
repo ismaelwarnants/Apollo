@@ -44,6 +44,7 @@ import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.lists.PlaybackList;
 import org.nuclearfog.apollo.service.lists.ShuffleList;
 import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.PlaylistStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -234,6 +235,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private FavoritesStore favoriteStore;
 	/**
+	 * database for current playback list
+	 */
+	private PlaylistStore playlistStore;
+	/**
 	 * current audio session ID
 	 */
 	private int audioSessionId;
@@ -302,9 +307,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onCreate() {
 		super.onCreate();
 		// Initialize the database instances
-		recentStore = RecentStore.getInstance(this);
-		popularStore = PopularStore.getInstance(this);
-		favoriteStore = FavoritesStore.getInstance(this);
+		recentStore = RecentStore.getInstance(getApplicationContext());
+		popularStore = PopularStore.getInstance(getApplicationContext());
+		favoriteStore = FavoritesStore.getInstance(getApplicationContext());
+		playlistStore = PlaylistStore.getInstance(getApplicationContext());
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
@@ -432,6 +438,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mNotificationHelper.createNotification();
 				if (isForeground && !isPlaying()) {
 					shutdownHandler.start();
+					return START_NOT_STICKY;
 				}
 			}
 			handleCommandIntent(intent);
@@ -1363,9 +1370,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void savePlaybackList(boolean full) {
 		if (full) {
-			settings.setPlayList(mPlayList.getItems(), getCurrentCardId());
+			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId(), mPlayList.getItems());
 			if (mShuffleMode != SHUFFLE_NONE) {
-				settings.setTrackHistory(mShuffleList.getHistory());
+				playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), mShuffleList.getHistory());
 			}
 		}
 		settings.setCursorPosition(mPlayList.getPosition());
@@ -1379,20 +1386,25 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * initialize the playback list
 	 */
 	private void initPlaybackList() {
-		if (getCurrentCardId() == settings.getCardId()) {
-			mPlayList.setItems(settings.getPlaylist());
-		}
+		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
+		if (ids.length == 0)
+			ids = settings.getPlaylist();
+		mPlayList.setItems(ids);
 		if (!mPlayList.isEmpty()) {
 			mPlayList.setPosition(settings.getCursorPosition());
 			openCurrentAndNext();
 			if (mPlayer.initialized()) {
 				long seekPos = settings.getSeekPosition();
-				seekTo(seekPos >= 0 && seekPos <= mPlayer.getDuration() ? seekPos : 0);
+				mPlayer.setPosition(seekPos >= 0 && seekPos <= mPlayer.getDuration() ? seekPos : 0);
 			}
 			mRepeatMode = settings.getRepeatMode();
 			mShuffleMode = settings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
-				mShuffleList.setHistory(settings.getTrackHistory());
+				long[] pos = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
+				if (pos.length == 0)
+					mShuffleList.setHistory(settings.getTrackHistory());
+				else
+					mShuffleList.setHistory(pos);
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				if (!makeShuffleList(true)) {

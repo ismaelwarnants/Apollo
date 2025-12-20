@@ -133,11 +133,11 @@ public final class MusicUtils {
 	 * @param activity activity to unbind the playback service
 	 */
 	public static void unbindFromService(Activity activity) {
+		notifyForegroundStateChanged(activity, false);
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
 			activity.unbindService(mBinder);
 		}
-		notifyForegroundStateChanged(activity, false);
 	}
 
 	/**
