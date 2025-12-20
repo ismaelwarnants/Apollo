@@ -596,7 +596,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void play() {
 		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, focusRequest);
 		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-			if (mPlayer.initialized()) {
+			if (mPlayer.initialized() && !mPlayList.isEmpty()) {
 				mPausedByFocusLoss = false;
 				// jump to next track directly if reached the end
 				long duration = mPlayer.getDuration();
@@ -605,11 +605,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				} else {
 					mPlayer.play();
 				}
-			} else if (mPlayList.isEmpty()) {
+			} else {
 				setShuffleMode(SHUFFLE_AUTO);
+				mPlayer.play();
 			}
 		} else {
-			Log.i(TAG, "play(): could not gain audio focus!");
+			Log.i(TAG, "play(): could not request audio focus!");
 		}
 	}
 
@@ -629,12 +630,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!mPlayList.isEmpty()) {
 			mPlayList.setPosition(incrementPosition(mPlayList.getPosition(), true));
 			openCurrentAndNext();
-			play();
-		} else if (makeShuffleList(true)) {
-			mPlayList.setPosition(0);
-			openCurrentAndNext();
-			play();
 		}
+		play();
 	}
 
 	/**
@@ -870,10 +867,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (shuffleMode == SHUFFLE_AUTO) {
 				mSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
 				if (makeShuffleList(true)) {
-					mShuffleMode = SHUFFLE_AUTO;
+					// reset to default shuffle
 					setRepeatMode(REPEAT_ALL);
 					// open first track
-					mPlayList.setPosition(0);
+					mPlayList.setPosition(mShuffleList.next());
 					openCurrentAndNext();
 				}
 			}
@@ -1323,7 +1320,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Creates a shuffled playlist used for party mode
+	 * Creates a shuffled playlist
 	 *
 	 * @param partyShuffle true to create a party shuffle list with all available tracks
 	 *                     false to shuffle current queue
@@ -1337,6 +1334,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						long[] ids = new long[cursor.getColumnCount()];
 						for (int i = 0; i < ids.length; i++) {
 							ids[i] = cursor.getLong(0);
+							if (!cursor.moveToNext()) {
+								break;
+							}
 						}
 						mPlayList.setItems(ids);
 					}
@@ -1347,6 +1347,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mShuffleMode = SHUFFLE_NONE;
 			} else {
 				mShuffleList.shuffle(mPlayList.size());
+				mShuffleMode = SHUFFLE_NORMAL;
 				return true;
 			}
 		} catch (RuntimeException e) {

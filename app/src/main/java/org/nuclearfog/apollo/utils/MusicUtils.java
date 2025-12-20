@@ -111,8 +111,10 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * Bind {@link MusicPlaybackService} to the Activity
+	 *
 	 * @param activity the activity to bind to the playback service
-	 * @param callback The {@link ServiceBinderCallback} to use
+	 * @param callback Callback called when the service is connected
 	 */
 	public static void bindToService(Activity activity, @Nullable ServiceBinderCallback callback) {
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
@@ -122,45 +124,20 @@ public final class MusicUtils {
 		if (contextWrapper.bindService(intent, binder, 0)) {
 			mConnectionMap.put(activity, binder);
 		}
+		notifyForegroundStateChanged(activity, true);
 	}
 
 	/**
-	 * unregister connection to service
+	 * Unbind {@link MusicPlaybackService} from Activity
 	 *
-	 * @param activity activity to unregister
+	 * @param activity activity to unbind the playback service
 	 */
 	public static void unbindFromService(Activity activity) {
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
 			activity.unbindService(mBinder);
 		}
-	}
-
-	/**
-	 * Used to build and show a notification when Apollo is sent into the
-	 * background
-	 */
-	public static void notifyForegroundStateChanged(Activity activity, boolean inForeground) {
-		if (inForeground) {
-			foregroundActivities++;
-		} else {
-			foregroundActivities--;
-		}
-		// start foreground service if application is in background
-		if (foregroundActivities == 0) {
-			if (isPlaying(activity)) {
-				Intent intent = new Intent(activity, MusicPlaybackService.class);
-				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
-				ContextCompat.startForegroundService(activity, intent);
-			}
-		}
-		// stop foreground activity of the playback service
-		else {
-			ServiceBinder binder = mConnectionMap.get(activity);
-			if (binder != null) {
-				binder.stopForeground();
-			}
-		}
+		notifyForegroundStateChanged(activity, false);
 	}
 
 	/**
@@ -192,27 +169,21 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * toggle play state
-	 *
-	 * @return true if succeed, false if queue is empty or if an error occurred
+	 * toggle play/pause of the playback service
 	 */
-	public static boolean togglePlayPause(Activity activity) {
+	public static void togglePlayPause(Activity activity) {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				if (service.isPlaying()) {
 					service.pause(false);
-				} else if (service.getQueue().length > 0) {
-					service.play();
 				} else {
-					return false;
+					service.play();
 				}
-				return true;
 			} catch (RemoteException exception) {
 				Log.e(TAG, "togglePlayPause()", exception);
 			}
 		}
-		return false;
 	}
 
 	/**
@@ -1085,6 +1056,36 @@ public final class MusicUtils {
 			ids[i] = songs.get(i).getId();
 		}
 		return ids;
+	}
+
+	/**
+	 * count active Activity connections to the playback service.
+	 * Start foreground service if there is no Activity in the foreground.
+	 *
+	 * @param activity     Activity connected/disconnected to the playback service
+	 * @param inForeground true if the Activity is in foreground
+	 */
+	private static void notifyForegroundStateChanged(Activity activity, boolean inForeground) {
+		if (inForeground) {
+			foregroundActivities++;
+		} else {
+			foregroundActivities--;
+		}
+		// start foreground service if application is in background
+		if (foregroundActivities == 0) {
+			if (isPlaying(activity)) {
+				Intent intent = new Intent(activity, MusicPlaybackService.class);
+				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
+				ContextCompat.startForegroundService(activity, intent);
+			}
+		}
+		// stop foreground activity of the playback service
+		else {
+			ServiceBinder binder = mConnectionMap.get(activity);
+			if (binder != null) {
+				binder.stopForeground();
+			}
+		}
 	}
 
 	/**

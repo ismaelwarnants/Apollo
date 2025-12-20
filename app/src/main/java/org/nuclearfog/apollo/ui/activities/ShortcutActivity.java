@@ -91,7 +91,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		super.onStart();
 		// bind activity to service
 		MusicUtils.bindToService(this, this);
-		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
 	/**
@@ -101,7 +100,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	protected void onStop() {
 		// Unbind from the service
 		MusicUtils.unbindFromService(this);
-		MusicUtils.notifyForegroundStateChanged(this, false);
 		super.onStop();
 	}
 

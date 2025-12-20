@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 /**
- * a Shuffle list used to randomize track positions of a playlist without modifying it.
- * Previously played tracks are stored into history
+ * A Shuffle list containing randomized playlist positions. Every unique position is
+ * stored into the history, so already played positions will be moved at the end of the list.
  *
  * @author nuclearfog
  */
@@ -20,13 +20,21 @@ public class ShuffleList {
 	private static final int MAX_HISTORY_SIZE = 100;
 
 	/**
+	 * size of the first section of the shuffle list used to move already
+	 * played tracks in the back (e.g. 2 = first half, 3 = first third)
+	 */
+	private static final int HISTORY_SECTION = 3;
+
+	/**
 	 * shuffle list containing random indexes
 	 */
 	private final LinkedList<Integer> mShuffle = new LinkedList<>();
+
 	/**
 	 * track position history used to play previously played tracks
 	 */
 	private final LinkedList<Integer> mHistory = new LinkedList<>();
+
 	/**
 	 * random generator used for shuffle
 	 */
@@ -90,7 +98,7 @@ public class ShuffleList {
 				synchronized (mHistory) {
 					if (!mHistory.isEmpty()) {
 						// only use the first part of the shuffle list
-						int sortSize = Math.min(mShuffle.size() / 3, mHistory.size());
+						int sortSize = Math.min(mShuffle.size() / HISTORY_SECTION, mHistory.size());
 						// put the played track indexes to the end of the shuffle list
 						for (int i = 0; i < sortSize; i++) {
 							if (mHistory.contains(mShuffle.get(i))) {

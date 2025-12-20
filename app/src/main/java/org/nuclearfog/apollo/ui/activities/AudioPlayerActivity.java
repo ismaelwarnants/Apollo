@@ -256,23 +256,16 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
-		//
+		// register playback status receiver
 		IntentFilter filter = new IntentFilter();
-		// Play and pause changes
 		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
-		// Shuffle and repeat changes
 		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
 		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
-		// Track changes
 		filter.addAction(MusicPlaybackService.CHANGED_META);
-		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		//
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		// bind activity to service
-		MusicUtils.notifyForegroundStateChanged(this, true);
+		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -282,7 +275,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	protected void onStop() {
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
-		MusicUtils.notifyForegroundStateChanged(this, false);
 		MusicUtils.unbindFromService(this);
 		mImageFetcher.clear();
 		super.onStop();
@@ -490,13 +482,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// play/pause button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			boolean isPlaying = MusicUtils.isPlaying(this);
-			if (MusicUtils.togglePlayPause(this)) {
-				playerSeekbar.setPlayStatus(!isPlaying);
-				playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
-			} else {
-				songLoader.execute(null, onPlaySongs);
-			}
+			MusicUtils.togglePlayPause(this);
 		}
 		// go to previous track
 		else if (v.getId() == R.id.action_button_previous) {
