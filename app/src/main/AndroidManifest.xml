@@ -21,6 +21,10 @@
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" tools:ignore="FullScreenIntentPolicy" />
 	<uses-permission android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" tools:node="remove" />
 
+	<attribution
+		android:tag="audio_playback"
+		android:label="@string/description" />
+
 	<application
 		android:name="org.nuclearfog.apollo.ApolloApplication"
 		android:allowBackup="false"

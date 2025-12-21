@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -26,6 +27,10 @@ import java.util.concurrent.TimeUnit;
 public class MultiPlayer {
 
 	private static final String TAG = "MultiPlayer";
+	/**
+	 * attribution tag declared in AndroidManifest
+	 */
+	private static final String ATTR_TAG = "audio_playback";
 	/**
 	 * indicates that there is no fade in/out in progress
 	 */
@@ -135,7 +140,11 @@ public class MultiPlayer {
 		this.fadeEffectEnabled = fadeEnable;
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
-			mPlayers[i] = new MediaPlayer();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+				mPlayers[i] = new MediaPlayer(context.createAttributionContext(ATTR_TAG));
+			} else {
+				mPlayers[i] = new MediaPlayer();
+			}
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mPlayers[i].setAudioSessionId(sessionId);
 			mPlayers[i].setOnCompletionListener(this::onCompletion);

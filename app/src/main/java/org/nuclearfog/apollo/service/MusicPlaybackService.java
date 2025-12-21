@@ -1338,7 +1338,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				Cursor cursor = CursorFactory.makeTrackCursor(this);
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
-						long[] ids = new long[cursor.getColumnCount()];
+						long[] ids = new long[cursor.getCount()];
 						for (int i = 0; i < ids.length; i++) {
 							ids[i] = cursor.getLong(0);
 							if (!cursor.moveToNext()) {
@@ -1387,8 +1387,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void initPlaybackList() {
 		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
-		if (ids.length == 0)
+		// todo remove this for future releases
+		if (ids.length == 0) {
 			ids = settings.getPlaylist();
+			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId(), ids);
+		}
 		mPlayList.setItems(ids);
 		if (!mPlayList.isEmpty()) {
 			mPlayList.setPosition(settings.getCursorPosition());
@@ -1401,10 +1404,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mShuffleMode = settings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
 				long[] pos = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
-				if (pos.length == 0)
-					mShuffleList.setHistory(settings.getTrackHistory());
-				else
-					mShuffleList.setHistory(pos);
+				// todo remove this for future releases
+				if (pos.length == 0) {
+					pos = settings.getTrackHistory();
+					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), pos);
+				}
+				mShuffleList.setHistory(pos);
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				if (!makeShuffleList(true)) {

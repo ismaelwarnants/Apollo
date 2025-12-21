@@ -460,11 +460,11 @@ public final class PreferenceUtils {
 	 * @return array of track IDs
 	 */
 	@Deprecated
-	public int[] getTrackHistory() {
+	public long[] getTrackHistory() {
 		String trackHistory = defaultPref.getString(HISTORY, "");
 		if (!trackHistory.isEmpty()) {
 			String[] items = trackHistory.split(";");
-			int[] ids = new int[items.length];
+			long[] ids = new long[items.length];
 			for (int i = 0; i < ids.length; i++) {
 				try {
 					ids[i] = Integer.parseInt(items[i], 16);
@@ -474,7 +474,7 @@ public final class PreferenceUtils {
 			}
 			return ids;
 		}
-		return new int[0];
+		return new long[0];
 	}
 
 	/**

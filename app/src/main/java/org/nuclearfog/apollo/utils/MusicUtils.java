@@ -103,10 +103,9 @@ public final class MusicUtils {
 	 */
 	private static WeakHashMap<Activity, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
 
-	private static int foregroundActivities = 0;
-
-
-	/* This class is never initiated */
+	/**
+	 *
+	 */
 	private MusicUtils() {
 	}
 
@@ -124,7 +123,7 @@ public final class MusicUtils {
 		if (contextWrapper.bindService(intent, binder, 0)) {
 			mConnectionMap.put(activity, binder);
 		}
-		notifyForegroundStateChanged(activity, true);
+		binder.stopForeground();
 	}
 
 	/**
@@ -133,10 +132,18 @@ public final class MusicUtils {
 	 * @param activity activity to unbind the playback service
 	 */
 	public static void unbindFromService(Activity activity) {
-		notifyForegroundStateChanged(activity, false);
+		boolean isPlaying = isPlaying(activity);
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
 			activity.unbindService(mBinder);
+		}
+		// start foreground service if application is in background
+		if (mConnectionMap.isEmpty()) {
+			if (isPlaying) {
+				Intent intent = new Intent(activity, MusicPlaybackService.class);
+				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
+				ContextCompat.startForegroundService(activity, intent);
+			}
 		}
 	}
 
@@ -1056,36 +1063,6 @@ public final class MusicUtils {
 			ids[i] = songs.get(i).getId();
 		}
 		return ids;
-	}
-
-	/**
-	 * count active Activity connections to the playback service.
-	 * Start foreground service if there is no Activity in the foreground.
-	 *
-	 * @param activity     Activity connected/disconnected to the playback service
-	 * @param inForeground true if the Activity is in foreground
-	 */
-	private static void notifyForegroundStateChanged(Activity activity, boolean inForeground) {
-		if (inForeground) {
-			foregroundActivities++;
-		} else {
-			foregroundActivities--;
-		}
-		// start foreground service if application is in background
-		if (foregroundActivities == 0) {
-			if (isPlaying(activity)) {
-				Intent intent = new Intent(activity, MusicPlaybackService.class);
-				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
-				ContextCompat.startForegroundService(activity, intent);
-			}
-		}
-		// stop foreground activity of the playback service
-		else {
-			ServiceBinder binder = mConnectionMap.get(activity);
-			if (binder != null) {
-				binder.stopForeground();
-			}
-		}
 	}
 
 	/**
