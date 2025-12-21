@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * custom MediaPlayer implementation containing two MediaPlayer to switch fast tracks
+ * custom MediaPlayer implementation containing multiple MediaPlayer to switch fast tracks.
  *
  * @author nuclearfog
  */
@@ -39,9 +39,9 @@ public class MultiPlayer {
 	 */
 	private static final int FADE_OUT = 11;
 	/**
-	 * indicates that there is a crossfading in progress
+	 * indicates that the current track is fading out. The next track will be faded in
 	 */
-	private static final int XFADE = 12;
+	private static final int FADE_OUT_IN = 12;
 	/**
 	 * volume steps used to fade in or out
 	 */
@@ -64,26 +64,31 @@ public class MultiPlayer {
 	 * milliseconds to wait until to retry loading track
 	 */
 	private static final int ERROR_RETRY = 1000;
-
-	@Nullable
-	private Future<?> xfadeTask;
-	private MediaMetadataRetriever mmr;
-	private OnPlaybackStatusCallback callback;
-	private Handler playerHandler, xfadeHandler;
-
 	/**
-	 * thread pool used to periodically poll the current play position for crossfading
+	 * Thread pool used to periodically poll the current play position for audio fade effect
 	 */
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
-
+	/**
+	 * used to stop fade task if playback is paused or fade effect is disabled
+	 */
+	@Nullable
+	private Future<?> fadeTask;
+	/**
+	 * handler used to run tasks in the player'S thread
+	 */
+	private Handler playerHandler;
 	/**
 	 * mediaplayer used to switch between tracks
 	 */
 	private MediaPlayer[] mPlayers = new MediaPlayer[PLAYER_INST];
 	/**
+	 * used to check if media file is valid
+	 */
+	private MediaMetadataRetriever metadataLoader = new MediaMetadataRetriever();
+	/**
 	 * current mediaplayer's index of {@link #mPlayers}
 	 */
-	private int currentPlayer = 0;
+	private int selectedPlayer = 0;
 	/**
 	 * true if mediaplayer is currently playing
 	 */
@@ -99,11 +104,7 @@ public class MultiPlayer {
 	/**
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT}
 	 */
-	private volatile int xfadeMode = NONE;
-	/**
-	 * enable/disable fade in/out effect
-	 */
-	private boolean crossfade;
+	private volatile int fadeMode = NONE;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -114,18 +115,24 @@ public class MultiPlayer {
 	 */
 	@FloatRange(from = 0f, to = 1f)
 	private float maxVolume = 1f;
+	/**
+	 * enable/disable fade in/out effect
+	 */
+	private boolean fadeEffectEnabled;
+	/**
+	 * callback for playback changes
+	 */
+	private OnPlaybackStatusCallback callback;
 
 	/**
 	 * @param context   context from service
 	 * @param sessionId current media session ID
 	 * @param callback  a callback used to inform about playback changes
-	 * @param crossfade true to enable crossfade
+	 * @param fadeEnable true to enable fade effect
 	 */
-	public MultiPlayer(Context context, int sessionId, OnPlaybackStatusCallback callback, boolean crossfade) {
+	public MultiPlayer(Context context, int sessionId, OnPlaybackStatusCallback callback, boolean fadeEnable) {
 		playerHandler = new Handler(context.getMainLooper());
-		xfadeHandler = new Handler(context.getMainLooper());
-		mmr = new MediaMetadataRetriever();
-		this.crossfade = crossfade;
+		this.fadeEffectEnabled = fadeEnable;
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = new MediaPlayer();
@@ -134,7 +141,7 @@ public class MultiPlayer {
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}
-		if (crossfade) {
+		if (fadeEnable) {
 			setAllVolume(0f);
 		}
 	}
@@ -144,12 +151,8 @@ public class MultiPlayer {
 	 * @return true if player is ready to play
 	 */
 	public boolean setDataSource(Context context, @NonNull Uri uri) {
-		// stop current playback
-		MediaPlayer player = mPlayers[currentPlayer];
-		if (initialized)
-			player.stop();
 		// set source of the current selected player
-		initialized = setDataSourceImpl(player, context, uri);
+		initialized = setDataSourceImpl(mPlayers[selectedPlayer], context, uri);
 		return initialized;
 	}
 
@@ -160,8 +163,8 @@ public class MultiPlayer {
 	 * @return true if next data source is initialized successfully
 	 */
 	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
-		MediaPlayer current = mPlayers[currentPlayer];
-		MediaPlayer next = mPlayers[(currentPlayer + 1) % mPlayers.length];
+		MediaPlayer current = mPlayers[selectedPlayer];
+		MediaPlayer next = mPlayers[(selectedPlayer + 1) % mPlayers.length];
 		if (uri != null) {
 			continuous = setDataSourceImpl(next, context, uri);
 			if (initialized) {
@@ -192,24 +195,24 @@ public class MultiPlayer {
 	 * Starts or resumes playback.
 	 */
 	public synchronized void play() {
+		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
-			MediaPlayer player = mPlayers[currentPlayer];
 			if (!player.isPlaying()) {
 				isPlaying = true;
-				if (!crossfade) {
-					setCrossfadeTask(false);
+				if (!fadeEffectEnabled) {
+					setFadeTask(false);
 					setCurrentVolume(1f);
 				} else {
-					xfadeMode = FADE_IN;
+					fadeMode = FADE_IN;
 					setCurrentVolume(0f);
-					setCrossfadeTask(true);
+					setFadeTask(true);
 				}
 				player.start();
 				callback.onPlaybackChanged();
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to start player");
-			stop();
+			Log.e(TAG, "play()", exception);
+			reset();
 		}
 	}
 
@@ -219,19 +222,19 @@ public class MultiPlayer {
 	 * @param force true to stop playback immediately
 	 */
 	public synchronized void pause(boolean force) {
-		MediaPlayer player = mPlayers[currentPlayer];
+		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
-			if (force || !crossfade) {
-				setCrossfadeTask(false);
+			if (force || !fadeEffectEnabled) {
+				setFadeTask(false);
 				player.pause();
 				isPlaying = false;
 				callback.onPlaybackChanged();
 			} else {
-				xfadeMode = FADE_OUT;
+				fadeMode = FADE_OUT;
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to pause player");
-			stop();
+			Log.e(TAG, "pause()", exception);
+			reset();
 		}
 	}
 
@@ -239,17 +242,17 @@ public class MultiPlayer {
 	 * stops playback
 	 */
 	public synchronized void stop() {
-		MediaPlayer player = mPlayers[currentPlayer];
+		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
-			setCrossfadeTask(false);
-			player.pause();
+			setFadeTask(false);
+			if (player.isPlaying())
+				player.pause();
 			player.seekTo(0);
 			isPlaying = false;
 			callback.onPlaybackChanged();
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "stop():", exception);
-			player.reset();
-			initialized = false;
+			Log.e(TAG, "stop()", exception);
+			reset();
 		}
 	}
 
@@ -259,11 +262,7 @@ public class MultiPlayer {
 	public synchronized void release() {
 		threadPool.shutdown();
 		for (MediaPlayer player : mPlayers) {
-			try {
-				player.release();
-			} catch (IllegalStateException exception) {
-				Log.e(TAG, "failed to release player", exception);
-			}
+			player.release();
 		}
 	}
 
@@ -274,10 +273,11 @@ public class MultiPlayer {
 	 */
 	public synchronized long getDuration() {
 		try {
-			if (initialized)
-				return mPlayers[currentPlayer].getDuration();
-		} catch (IllegalStateException exception) {
-			Log.e(TAG, "invalid player duration");
+			if (initialized) {
+				return Math.max(mPlayers[selectedPlayer].getDuration(), 0);
+			}
+		} catch (RuntimeException exception) {
+			Log.e(TAG, "getDuration()", exception);
 		}
 		return 0;
 	}
@@ -290,9 +290,9 @@ public class MultiPlayer {
 	public synchronized long getPosition() {
 		try {
 			if (initialized)
-				return mPlayers[currentPlayer].getCurrentPosition();
-		} catch (IllegalStateException exception) {
-			Log.e(TAG, "getPosition(): invalid player position!");
+				return Math.max(mPlayers[selectedPlayer].getCurrentPosition(), 0);
+		} catch (RuntimeException exception) {
+			Log.e(TAG, "getPosition()", exception);
 		}
 		return 0;
 	}
@@ -304,20 +304,22 @@ public class MultiPlayer {
 	 */
 	public synchronized void setPosition(long position) {
 		try {
-			if (initialized && (!crossfade || xfadeMode == NONE)) {
+			if (initialized && (!fadeEffectEnabled || fadeMode == NONE)) {
 				// limit max position to prevent conflict with fade out
-				long max = getDuration() - (FADE_DELAY * 2);
+				long max = getDuration();
+				if (fadeEffectEnabled)
+					max -= FADE_DELAY * 2;
 				if (max > 0) {
 					if (position > max) {
 						position = max;
 					} else if (position < 0) {
 						position = 0;
 					}
-					mPlayers[currentPlayer].seekTo((int) position);
+					mPlayers[selectedPlayer].seekTo((int) position);
 				}
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "setPosition() failed! pos=" + position + " duration=" + getDuration());
+			Log.e(TAG, "setPosition() pos=" + position, exception);
 		}
 	}
 
@@ -337,7 +339,7 @@ public class MultiPlayer {
 	 */
 	public synchronized void setMaxVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		maxVolume = newVolume;
-		if (crossfade) {
+		if (fadeEffectEnabled) {
 			setCurrentVolume(Math.min(volume, newVolume));
 		} else {
 			setAllVolume(newVolume);
@@ -345,14 +347,14 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * enable/disable crossfade
+	 * enable/disable fade effect
 	 */
-	public synchronized void setCrossfade(boolean enable) {
-		if (crossfade != enable) {
-			crossfade = enable;
-			xfadeMode = NONE;
-			setCrossfadeTask(enable);
-			if (!crossfade) {
+	public synchronized void setFadeEffect(boolean enable) {
+		if (fadeEffectEnabled != enable) {
+			fadeEffectEnabled = enable;
+			fadeMode = NONE;
+			setFadeTask(enable);
+			if (!fadeEffectEnabled) {
 				setAllVolume(maxVolume);
 			}
 		}
@@ -365,15 +367,15 @@ public class MultiPlayer {
 	 */
 	private boolean setDataSourceImpl(MediaPlayer player, Context context, @NonNull Uri uri) {
 		try {
+			player.reset();
 			// check file if valid
-			mmr.setDataSource(context, uri);
-			String hasAudio = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
+			metadataLoader.setDataSource(context, uri);
+			String hasAudio = metadataLoader.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
 			if (hasAudio == null || !hasAudio.equals("yes")) {
 				Log.w(TAG, "invalid media file!");
 				return false;
 			}
 			// init player
-			player.reset();
 			player.setDataSource(context, uri);
 			player.prepare();
 			return true;
@@ -393,7 +395,7 @@ public class MultiPlayer {
 			volume = newVolume;
 			// use cubic volume scale
 			newVolume = newVolume * newVolume;
-			mPlayers[currentPlayer].setVolume(newVolume, newVolume);
+			mPlayers[selectedPlayer].setVolume(newVolume, newVolume);
 		} catch (RuntimeException exception) {
 			Log.e(TAG, "setVolume(): failed to set volume!");
 		}
@@ -406,21 +408,25 @@ public class MultiPlayer {
 	 */
 	private void setAllVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		for (MediaPlayer mp : mPlayers) {
-			mp.setVolume(newVolume, newVolume);
+			try {
+				mp.setVolume(newVolume, newVolume);
+			} catch (RuntimeException exception) {
+				Log.e(TAG, "setAllVolume(): failed to set volume!");
+			}
 		}
 	}
 
 	/**
-	 * called periodically while playback to detect playback changes for crossfading
+	 * called periodically while playback to detect playback changes for fade effect
 	 */
-	private void onCrossfadeTrack() {
-		if (xfadeTask != null) {
-			switch (xfadeMode) {
-				// force crossfade between two tracks
-				case XFADE:
+	private void onAudioFadeTrack() {
+		if (fadeTask != null) {
+			switch (fadeMode) {
+				// fade out current track, then fade in next track
+				case FADE_OUT_IN:
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
-						xfadeMode = FADE_IN;
+						fadeMode = FADE_IN;
 						setNextPlayer();
 						callback.onWentToNext();
 					}
@@ -431,7 +437,7 @@ public class MultiPlayer {
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
 						pause(true);
-						xfadeMode = NONE;
+						fadeMode = NONE;
 					}
 					break;
 
@@ -439,15 +445,15 @@ public class MultiPlayer {
 				case FADE_IN:
 					setCurrentVolume(Math.min(volume + FADE_STEPS, maxVolume));
 					if (volume == maxVolume) {
-						xfadeMode = NONE;
+						fadeMode = NONE;
 					}
 					break;
 
-				// detect end of the track then cross fade to new track if any
+				// detect end of the track, then fade out, then fade in to new track if any
 				default:
 					long diff = Math.abs(getDuration() - getPosition());
 					if (diff <= FADE_DELAY) {
-						xfadeMode = continuous ? XFADE : FADE_OUT;
+						fadeMode = continuous ? FADE_OUT_IN : FADE_OUT;
 					}
 					break;
 			}
@@ -455,28 +461,38 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * enable/disable periodic crossfade polling
+	 * enable/disable periodic fade polling
 	 *
-	 * @param enable true to enable crossfading
+	 * @param enable true to enable fading
 	 */
-	private void setCrossfadeTask(boolean enable) {
-		// set new cross fade task
+	private void setFadeTask(boolean enable) {
 		if (enable) {
-			if (xfadeTask == null) {
-				xfadeTask = threadPool.scheduleWithFixedDelay(() -> xfadeHandler.post(this::onCrossfadeTrack), FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
+			if (fadeTask == null) {
+				fadeTask = threadPool.scheduleWithFixedDelay(() -> playerHandler.post(this::onAudioFadeTrack), FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
 			}
-		} else if (xfadeTask != null) {
-			xfadeTask.cancel(false);
-			xfadeTask = null;
-			xfadeMode = NONE;
+		} else if (fadeTask != null) {
+			fadeTask.cancel(false);
+			fadeTask = null;
+			fadeMode = NONE;
 		}
+	}
+
+	/**
+	 * resets all media player instances
+	 */
+	private void reset() {
+		for (MediaPlayer mp : mPlayers) {
+			mp.reset();
+		}
+		initialized = false;
+		isPlaying = false;
 	}
 
 	/**
 	 * increase player index
 	 */
 	private void setNextPlayer() {
-		currentPlayer = (currentPlayer + 1) % PLAYER_INST;
+		selectedPlayer = (selectedPlayer + 1) % PLAYER_INST;
 	}
 
 	/**
@@ -486,7 +502,7 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnCompletionListener
 	 */
 	private void onCompletion(MediaPlayer mp) {
-		if (!crossfade) {
+		if (!fadeEffectEnabled) {
 			if (continuous) {
 				setNextPlayer();
 				callback.onWentToNext();
@@ -502,12 +518,12 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnErrorListener
 	 */
 	private boolean onError(MediaPlayer mp, int what, int extra) {
-		Log.e(TAG, "onError(): (" + what + ", " + extra + ")");
+		Log.e(TAG, "onError(" + what + ", " + extra + "), " + this);
 		if (initialized) {
-			setCrossfadeTask(false);
+			setFadeTask(false);
 			initialized = false;
 			isPlaying = false;
-			xfadeMode = NONE;
+			fadeMode = NONE;
 			mp.reset();
 			// delay callback
 			playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
@@ -520,7 +536,7 @@ public class MultiPlayer {
 	@NonNull
 	@Override
 	public String toString() {
-		return "current=" + currentPlayer + " initialized=" + initialized + " isPlaying=" + isPlaying + " fade=" + (xfadeMode != NONE);
+		return "current=" + selectedPlayer + " initialized=" + initialized + " isPlaying=" + isPlaying + " fade=" + (fadeEffectEnabled && fadeMode != NONE);
 	}
 
 	/**

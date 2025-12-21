@@ -1010,7 +1010,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * enable/disable player fade effects
 	 */
 	public void setCrossfade(boolean enable) {
-		mPlayer.setCrossfade(enable);
+		mPlayer.setFadeEffect(enable);
 	}
 
 	/**
