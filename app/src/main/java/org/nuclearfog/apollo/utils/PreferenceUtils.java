@@ -432,11 +432,14 @@ public final class PreferenceUtils {
 	/**
 	 * get last playlist
 	 *
+	 * @deprecated replaced by database {@link org.nuclearfog.apollo.store.PlaylistStore}
 	 * @return playlist
 	 */
 	@Deprecated
 	public long[] getPlaylist() {
 		String trackQueue = defaultPref.getString(QUEUE, "");
+		// delete playlist from shared preferences as it isn't used anymore
+		defaultPref.edit().remove(QUEUE).commit();
 		if (!trackQueue.isEmpty()) {
 			String[] items = trackQueue.split(";");
 			long[] ids = new long[items.length];
@@ -457,11 +460,14 @@ public final class PreferenceUtils {
 	/**
 	 * get track history
 	 *
+	 * @deprecated replaced by database {@link org.nuclearfog.apollo.store.PlaylistStore}
 	 * @return array of track IDs
 	 */
 	@Deprecated
 	public long[] getTrackHistory() {
 		String trackHistory = defaultPref.getString(HISTORY, "");
+		// delete shuffle history from shared preferences as it isn't used anymore
+		defaultPref.edit().remove(HISTORY).commit();
 		if (!trackHistory.isEmpty()) {
 			String[] items = trackHistory.split(";");
 			long[] ids = new long[items.length];

@@ -235,7 +235,8 @@ public class MultiPlayer {
 		try {
 			if (force || !fadeEffectEnabled) {
 				setFadeTask(false);
-				player.pause();
+				if (player.isPlaying())
+					player.pause();
 				isPlaying = false;
 				callback.onPlaybackChanged();
 			} else {
