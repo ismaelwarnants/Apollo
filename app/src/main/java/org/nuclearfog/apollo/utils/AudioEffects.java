@@ -32,7 +32,7 @@ public final class AudioEffects {
 	/**
 	 * priority used by audiofx (default 0, high > 0, low < 0)
 	 */
-	private static final int FX_PRIORITY = 1;
+	private static final int FX_PRIORITY = 0;
 
 	/**
 	 * singleton instance

@@ -9,9 +9,6 @@ import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Used to turn off logging for jaudiotagger and free up memory when
  * {@code #onLowMemory()} is called on pre-ICS devices. On post-ICS memory is
@@ -28,8 +25,6 @@ public class ApolloApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// Turn off logging for jaudiotagger.
-		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && PreferenceUtils.getInstance(getApplicationContext()).certificationValidationDisabled()) {
 			ApolloUtils.disableSSLCertificateValidation();
 		}

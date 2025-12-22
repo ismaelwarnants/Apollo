@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentManager;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.PreferenceFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
@@ -48,7 +47,6 @@ public class SettingsActivity extends AppCompatActivity {
 			fm.beginTransaction().replace(R.id.settings_frame, PreferenceFragment.class, null, PreferenceFragment.TAG).commit();
 		}
 		ApolloUtils.setWakelock(this);
-		MusicUtils.bindToService(this, null);
 	}
 
 	/**
