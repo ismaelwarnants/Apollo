@@ -405,11 +405,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (mPlayer.isPlaying()) {
 					mPausedByFocusLoss = true;
 				}
-				pause(true);
-				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS:
-				stop();
+				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
