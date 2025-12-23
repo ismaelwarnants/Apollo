@@ -50,11 +50,11 @@ public class MultiPlayer {
 	/**
 	 * volume steps used to fade in or out
 	 */
-	private static final float FADE_STEPS = 0.08f;
+	private static final float FADE_STEPS = 0.1f;
 	/**
 	 * duration of fade effect in ms
 	 */
-	private static final long FADE_DELAY = 1000;
+	private static final long FADE_DELAY = 500;
 	/**
 	 * duration of one volume step of the fade effect
 	 */
@@ -255,12 +255,12 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
 			setFadeTask(false);
-			if (player.isPlaying())
-				player.pause();
+			player.stop();
+			player.prepare();
 			player.seekTo(0);
 			isPlaying = false;
 			callback.onPlaybackChanged();
-		} catch (IllegalStateException exception) {
+		} catch (IllegalStateException | IOException exception) {
 			Log.e(TAG, "stop()", exception);
 			reset();
 		}
@@ -438,7 +438,7 @@ public class MultiPlayer {
 					if (volume == 0f) {
 						fadeMode = FADE_IN;
 						setNextPlayer();
-						callback.onWentToNext();
+						playerHandler.postDelayed(()->callback.onWentToNext(), 100);
 					}
 					break;
 
@@ -461,7 +461,7 @@ public class MultiPlayer {
 
 				// detect end of the track, then fade out, then fade in to new track if any
 				default:
-					long diff = Math.abs(getDuration() - getPosition());
+					long diff = Math.abs(getDuration() - getPosition() - FADE_RESOLUTION);
 					if (diff <= FADE_DELAY) {
 						fadeMode = continuous ? FADE_OUT_IN : FADE_OUT;
 					}

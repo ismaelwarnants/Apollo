@@ -68,13 +68,7 @@ public final class PreferenceUtils {
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
 	private static final String FX_PRESET = "fx_preset_name";
-	// other settings
-	private static final String MODE_SHUFFLE = "shufflemode";
-	private static final String MODE_REPEAT = "repeatmode";
-	private static final String POS_SEEK = "seekpos";
-	private static final String POS_CURSOR = "curpos";
-	private static final String HISTORY = "history";
-	private static final String QUEUE = "queue";
+	// app settings
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
@@ -82,10 +76,19 @@ public final class PreferenceUtils {
 	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 	private static final String AUTOSCROLL = "autoscroll_current";
 	private static final String DISABLE_CERT_VALID = "disable_ssl_verification";
+	// playback settings
+	private static final String PLAYBACK_PREF_NAME = "playback_settings";
+	private static final String POS_SEEK = "seekpos";
+	private static final String MODE_SHUFFLE = "shufflemode";
+	private static final String MODE_REPEAT = "repeatmode";
+	private static final String POS_CURSOR = "curpos";
+	private static final String HISTORY = "history";
+	private static final String QUEUE = "queue";
 
 	private static PreferenceUtils sInstance;
 
 	private SharedPreferences defaultPref;
+	private SharedPreferences playbackPref;
 	private SharedPreferences audioEffectsPref;
 	private int defaultColor;
 
@@ -93,6 +96,7 @@ public final class PreferenceUtils {
 	private PreferenceUtils(Context context) {
 		defaultPref = PreferenceManager.getDefaultSharedPreferences(context);
 		audioEffectsPref = context.getSharedPreferences(FX_PREF_NAME, Context.MODE_PRIVATE);
+		playbackPref = context.getSharedPreferences(PLAYBACK_PREF_NAME, Context.MODE_PRIVATE);
 		defaultColor = context.getResources().getColor(R.color.holo_green);
 	}
 
@@ -297,7 +301,7 @@ public final class PreferenceUtils {
 	 * @param position cursor position
 	 */
 	public void setCursorPosition(int position) {
-		SharedPreferences.Editor editor = defaultPref.edit();
+		SharedPreferences.Editor editor = playbackPref.edit();
 		editor.putInt(POS_CURSOR, position);
 		editor.commit();
 	}
@@ -324,7 +328,7 @@ public final class PreferenceUtils {
 	 * @return position of the seekbar
 	 */
 	public long getSeekPosition() {
-		return defaultPref.getLong(POS_SEEK, 0L);
+		return playbackPref.getLong(POS_SEEK, 0L);
 	}
 
 	/**
@@ -333,7 +337,7 @@ public final class PreferenceUtils {
 	 * @param seekPos seekbar position
 	 */
 	public void setSeekPosition(long seekPos) {
-		SharedPreferences.Editor editor = defaultPref.edit();
+		SharedPreferences.Editor editor = playbackPref.edit();
 		editor.putLong(POS_SEEK, seekPos);
 		editor.commit();
 	}
@@ -353,7 +357,7 @@ public final class PreferenceUtils {
 	 * @return integer mode {@link MusicPlaybackService#SHUFFLE_NONE#SHUFFLE_NORMAL#SHUFFLE_AUTO}
 	 */
 	public int getShuffleMode() {
-		return defaultPref.getInt(MODE_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
+		return playbackPref.getInt(MODE_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
 	}
 
 	/**
@@ -363,7 +367,7 @@ public final class PreferenceUtils {
 	 * @param shuffleMode shuffle mode flags
 	 */
 	public void setRepeatAndShuffleMode(int repeatMode, int shuffleMode) {
-		SharedPreferences.Editor editor = defaultPref.edit();
+		SharedPreferences.Editor editor = playbackPref.edit();
 		editor.putInt(MODE_REPEAT, repeatMode);
 		editor.putInt(MODE_SHUFFLE, shuffleMode);
 		editor.commit();
@@ -437,9 +441,9 @@ public final class PreferenceUtils {
 	 */
 	@Deprecated
 	public long[] getPlaylist() {
-		String trackQueue = defaultPref.getString(QUEUE, "");
+		String trackQueue = playbackPref.getString(QUEUE, "");
 		// delete playlist from shared preferences as it isn't used anymore
-		defaultPref.edit().remove(QUEUE).commit();
+		playbackPref.edit().remove(QUEUE).commit();
 		if (!trackQueue.isEmpty()) {
 			String[] items = trackQueue.split(";");
 			long[] ids = new long[items.length];
@@ -465,9 +469,9 @@ public final class PreferenceUtils {
 	 */
 	@Deprecated
 	public long[] getTrackHistory() {
-		String trackHistory = defaultPref.getString(HISTORY, "");
+		String trackHistory = playbackPref.getString(HISTORY, "");
 		// delete shuffle history from shared preferences as it isn't used anymore
-		defaultPref.edit().remove(HISTORY).commit();
+		playbackPref.edit().remove(HISTORY).commit();
 		if (!trackHistory.isEmpty()) {
 			String[] items = trackHistory.split(";");
 			long[] ids = new long[items.length];
