@@ -461,8 +461,8 @@ public class MultiPlayer {
 
 				// detect end of the track, then fade out, then fade in to new track if any
 				default:
-					long diff = Math.abs(getDuration() - getPosition() - FADE_RESOLUTION);
-					if (diff <= FADE_DELAY) {
+					long diff = getDuration() - getPosition();
+					if (diff <= (FADE_DELAY + FADE_RESOLUTION)) {
 						fadeMode = continuous ? FADE_OUT_IN : FADE_OUT;
 					}
 					break;
@@ -518,6 +518,12 @@ public class MultiPlayer {
 				callback.onWentToNext();
 			} else {
 				pause(true);
+			}
+		} else {
+			// Fix: sometimes the end position doesn't match the duration
+			if (mp.getDuration() - mp.getCurrentPosition() > FADE_DELAY) {
+				// move position to the end of the current player to trigger fade out
+				mp.seekTo(mp.getDuration() - (int) FADE_DELAY);
 			}
 		}
 	}
