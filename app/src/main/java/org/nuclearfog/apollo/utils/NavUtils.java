@@ -15,6 +15,7 @@ import android.util.Log;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.SearchActivity;
@@ -63,6 +64,15 @@ public final class NavUtils {
 		// Create the intent to launch the profile activity
 		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);
+		activity.startActivity(intent);
+	}
+
+	/**
+	 * open audio player activity
+	 */
+	public static void openAudioPlayer(Activity activity) {
+		Intent intent = new Intent(activity, AudioPlayerActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		activity.startActivity(intent);
 	}
 

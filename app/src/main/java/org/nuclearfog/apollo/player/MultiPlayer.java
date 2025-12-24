@@ -255,12 +255,13 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
 			setFadeTask(false);
-			player.stop();
-			player.prepare();
-			player.seekTo(0);
+			if (initialized) {
+				player.stop();
+			}
+			initialized = false;
 			isPlaying = false;
 			callback.onPlaybackChanged();
-		} catch (IllegalStateException | IOException exception) {
+		} catch (IllegalStateException exception) {
 			Log.e(TAG, "stop()", exception);
 			reset();
 		}

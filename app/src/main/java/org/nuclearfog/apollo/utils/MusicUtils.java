@@ -269,6 +269,20 @@ public final class MusicUtils {
 	}
 
 	/**
+	 * shuffle all available songs
+	 */
+	public static void shuffleAll(Activity activity) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				service.setShuffleMode(MusicPlaybackService.SHUFFLE_AUTO);
+			} catch (RemoteException exception) {
+				Log.e(TAG, "shuffleAll()", exception);
+			}
+		}
+	}
+
+	/**
 	 * @return True if we're playing music, false otherwise.
 	 */
 	public static boolean isPlaying(Activity activity) {

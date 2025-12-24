@@ -879,13 +879,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					// open first track
 					mPlayList.setPosition(mShuffleList.next());
 					openCurrentAndNext();
+					play();
 				}
 			}
 			// shuffle current playlist
 			else if (shuffleMode == SHUFFLE_NORMAL) {
 				mSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
 				if (makeShuffleList(false)) {
-					mShuffleMode = SHUFFLE_NORMAL;
 					setRepeatMode(REPEAT_ALL);
 				}
 			}

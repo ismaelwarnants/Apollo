@@ -3,7 +3,6 @@ package org.nuclearfog.apollo.ui.activities;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
@@ -26,8 +25,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
@@ -45,8 +42,6 @@ import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
-import java.util.List;
-
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and bind to Apollo's service.
  *
@@ -59,8 +54,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * request code for permission result
 	 */
 	private static final int REQ_CHECK_PERM = 0x1139398F;
-
-	private AsyncCallback<List<Song>> onSongsShuffle = this::onShuffleSongs;
 
 	/**
 	 * Play and pause button (BAB)
@@ -89,8 +82,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * Broadcast receiver
 	 */
 	private PlaybackStatusReceiver mPlaybackStatus;
-
-	private SongLoader songLoader;
 
 	private ImageFetcher imageFetcher;
 
@@ -125,7 +116,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
-		songLoader = new SongLoader(this);
 		ThemeUtils mTheme = new ThemeUtils(this);
 		imageFetcher = new ImageFetcher(this);
 
@@ -188,15 +178,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Unbind from the service
 		MusicUtils.unbindFromService(this);
 		super.onStop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		songLoader.cancel();
-		super.onDestroy();
 	}
 
 	/**
@@ -290,19 +271,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			if (album != null) {
 				NavUtils.openAlbumProfile(this, album);
 			} else {
-				songLoader.execute(null, onSongsShuffle);
+				MusicUtils.shuffleAll(this);
 			}
 		}
-		// background clicked
+		// background clicked (right side of album art)
 		else if (v.getId() == R.id.bottom_action_bar_background) {
-			// open audio player activity
-			if (MusicUtils.getQueue(this).length > 0) {
-				Intent intent = new Intent(this, AudioPlayerActivity.class);
-				startActivity(intent);
-			}
-			// shuffle all track if queue is empty
-			else {
-				songLoader.execute(null, onSongsShuffle);
+			Song song = MusicUtils.getCurrentTrack(this);
+			if (song != null) {
+				NavUtils.openAudioPlayer(this);
+			} else {
+				MusicUtils.shuffleAll(this);
 			}
 		}
 		// repeat button clicked
@@ -406,14 +384,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mShuffleButton.updateButtonState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
 		mRepeatButton.updateButtonState(MusicUtils.getRepeatMode(this));
-	}
-
-	/**
-	 * called after songs loaded asynchronously to shuffle all tracks
-	 */
-	private void onShuffleSongs(List<Song> songs) {
-		MusicUtils.playAll(this, songs, true);
-		updatePlaybackControls();
 	}
 
 	/**

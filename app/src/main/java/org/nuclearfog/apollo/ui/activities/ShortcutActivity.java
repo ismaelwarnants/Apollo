@@ -198,9 +198,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 */
 	private void redirectToPlayerActivity() {
 		if (shouldOpenAudioPlayer) {
-			Intent intent = new Intent(this, AudioPlayerActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			startActivity(intent);
+			NavUtils.openAudioPlayer(this);
 		}
 		finish();
 	}

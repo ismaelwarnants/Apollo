@@ -40,7 +40,6 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
-import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
@@ -89,12 +88,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private static final String KEY_QUEUE_VISIBILITY = "queue_visibility";
 
 	/**
-	 * highest jump when scanning forward or backward in millisecond
+	 * highest jump when scanning forward or backward in milliseconds
 	 */
 	private static final long SCAN_MAX_TIME = 30000;
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
-	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 	/**
 	 * Play & pause button
 	 */
@@ -154,7 +152,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private PlaylistSongLoader playlistSongLoader;
 	private ArtistSongLoader artistSongLoader;
 	private AlbumSongLoader albumSongLoader;
-	private SongLoader songLoader;
 
 	private int playPos = 0;
 
@@ -191,7 +188,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		playlistSongLoader = new PlaylistSongLoader(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
-		songLoader = new SongLoader(this);
 		mImageFetcher = new ImageFetcher(this);
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
@@ -295,7 +291,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	protected void onDestroy() {
 		playerSeekbar.release();
-		songLoader.cancel();
 		albumSongLoader.cancel();
 		artistSongLoader.cancel();
 		playlistSongLoader.cancel();
@@ -357,7 +352,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			NavUtils.goHome(this);
 		} else if (vId == R.id.menu_shuffle) {
 			// Shuffle all the songs
-			songLoader.execute(null, onShuffleSongs);
+			MusicUtils.shuffleAll(this);
 		} else if (vId == R.id.menu_favorite) {
 			// Toggle the current track as a favorite and update the menu item
 			Song song = MusicUtils.getCurrentTrack(this);
@@ -738,14 +733,5 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		MusicUtils.playAll(this, ids, playPos, false);
 		refreshQueue();
 		playPos = 0;
-	}
-
-	/**
-	 * called after songs loaded asynchronously to play
-	 */
-	private void onShuffleSongs(List<Song> songs) {
-		MusicUtils.playAll(this, songs, true);
-		playPos = MusicUtils.getQueuePosition(this);
-		refreshQueue();
 	}
 }
