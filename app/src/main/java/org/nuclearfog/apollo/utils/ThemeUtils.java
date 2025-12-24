@@ -21,6 +21,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.drawables.HoloSelector;
 
 /**
@@ -40,14 +41,14 @@ public class ThemeUtils {
 	 * The theme resources.
 	 */
 	private Resources resources;
-	private PreferenceUtils mPref;
+	private AppPreferences mPref;
 
 	/**
 	 *
 	 */
 	public ThemeUtils(Context context) {
 		resources = context.getResources();
-		mPref = PreferenceUtils.getInstance(context);
+		mPref = AppPreferences.getInstance(context);
 	}
 
 	/**

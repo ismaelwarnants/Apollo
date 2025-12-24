@@ -37,6 +37,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Playlist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog;
 import org.nuclearfog.apollo.ui.dialogs.ImageSelectorDialog.OnItemSelectedListener;
@@ -51,7 +52,6 @@ import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -149,7 +149,7 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 	private PopularSongLoader popularSongLoader;
 	private FolderSongLoader folderSongLoader;
 
-	private PreferenceUtils mPreferences;
+	private AppPreferences mPreferences;
 
 	private FragmentViewModel viewModel;
 
@@ -172,7 +172,7 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
-		mPreferences = PreferenceUtils.getInstance(this);
+		mPreferences = AppPreferences.getInstance(this);
 		// Initialize the image fetcher
 		mImageFetcher = new ImageFetcher(this);
 		artistSongLoader = new ArtistSongLoader(this);

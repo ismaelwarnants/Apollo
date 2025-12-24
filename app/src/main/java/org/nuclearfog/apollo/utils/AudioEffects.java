@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.model.AudioPreset;
+import org.nuclearfog.apollo.store.preferences.AudioEffectsPreferences;
 
 /**
  * Audio effect class providing methods to manage effects at realtime
@@ -43,7 +44,7 @@ public final class AudioEffects {
 	private Equalizer equalizer;
 	private BassBoost bassBooster;
 	private PresetReverb reverb;
-	private PreferenceUtils prefs;
+	private AudioEffectsPreferences prefs;
 
 	private int sessionId;
 
@@ -94,7 +95,7 @@ public final class AudioEffects {
 		equalizer = new Equalizer(FX_PRIORITY, sessionId);
 		bassBooster = new BassBoost(FX_PRIORITY, sessionId);
 		reverb = new PresetReverb(FX_PRIORITY, sessionId);
-		prefs = PreferenceUtils.getInstance(context);
+		prefs = AudioEffectsPreferences.getInstance(context);
 		this.sessionId = sessionId;
 		boolean active = prefs.isAudioFxEnabled();
 

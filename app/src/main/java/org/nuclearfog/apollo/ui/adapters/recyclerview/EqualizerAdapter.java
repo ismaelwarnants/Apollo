@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.EqualizerHolder;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.text.NumberFormat;
 
@@ -135,7 +135,7 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerHolder> {
 			level = itemView.findViewById(R.id.eq_level);
 			frequency = itemView.findViewById(R.id.eq_freq);
 
-			PreferenceUtils mPrefs = PreferenceUtils.getInstance(parent.getContext());
+			AppPreferences mPrefs = AppPreferences.getInstance(parent.getContext());
 			slider.getProgressDrawable().setColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
 			slider.getThumb().setColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
 		}

@@ -47,10 +47,11 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PlaylistStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
+import org.nuclearfog.apollo.store.preferences.PlayerPreferences;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.CursorFactory;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -219,9 +220,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private NotificationHelper mNotificationHelper;
 	/**
-	 * app wide settings
+	 * player settings
 	 */
-	private PreferenceUtils settings;
+	private PlayerPreferences playerSettings;
 	/**
 	 * database for recently played tracks
 	 */
@@ -317,12 +318,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		headsetReceiver = new HeadsetStatusReceiver(this);
 		imageFetcher = new ImageFetcher(this);
 		// Initialize the preferences
-		settings = PreferenceUtils.getInstance(this);
+		playerSettings = PlayerPreferences.getInstance(this);
+		AppPreferences appSettings = AppPreferences.getInstance(this);
 		// initialize audio manager and audio session ID
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		audioSessionId = mAudio.generateAudioSessionId();
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getApplicationContext(), audioSessionId, this, settings.crossfadeEnabled());
+		mPlayer = new MultiPlayer(getApplicationContext(), audioSessionId, this, appSettings.crossfadeEnabled());
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
@@ -359,7 +361,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		ContextCompat.registerReceiver(this, mUnmountReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
 		ContextCompat.registerReceiver(this, headsetReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
 		// initialize audio effects
-		if (settings.isExternalAudioFxPreferred()) {
+		if (appSettings.isExternalAudioFxPreferred()) {
 			// send session ID to external equalizer if set
 			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
 		} else {
@@ -746,7 +748,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					shutdownHandler.stop();
 				}
 				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
-					settings.setSeekPosition(mPlayer.getPosition());
+					playerSettings.setSeekPosition(mPlayer.getPosition());
 				}
 				break;
 
@@ -760,7 +762,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_SEEK:
 				updatePlaybackState();
-				settings.setSeekPosition(mPlayer.getPosition());
+				playerSettings.setSeekPosition(mPlayer.getPosition());
 				break;
 
 			default:
@@ -1373,11 +1375,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), mShuffleList.getHistory());
 			}
 		}
-		settings.setCursorPosition(mPlayList.getPosition());
+		playerSettings.setCursorPosition(mPlayList.getPosition());
 		if (mPlayer.initialized()) {
-			settings.setSeekPosition(mPlayer.getPosition());
+			playerSettings.setSeekPosition(mPlayer.getPosition());
 		}
-		settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
+		playerSettings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 	}
 
 	/**
@@ -1387,26 +1389,30 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
 		// todo remove this for future releases
 		if (ids.length == 0) {
-			ids = settings.getPlaylist();
+			AppPreferences appSettings = AppPreferences.getInstance(this);
+			ids = appSettings.getPlaylist();
 			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId(), ids);
 		}
+		// ^^^
 		mPlayList.setItems(ids);
 		if (!mPlayList.isEmpty()) {
-			mPlayList.setPosition(settings.getCursorPosition());
+			mPlayList.setPosition(playerSettings.getCursorPosition());
 			openCurrentAndNext();
 			if (mPlayer.initialized()) {
-				long seekPos = settings.getSeekPosition();
+				long seekPos = playerSettings.getSeekPosition();
 				mPlayer.setPosition(seekPos >= 0 && seekPos <= mPlayer.getDuration() ? seekPos : 0);
 			}
-			mRepeatMode = settings.getRepeatMode();
-			mShuffleMode = settings.getShuffleMode();
+			mRepeatMode = playerSettings.getRepeatMode();
+			mShuffleMode = playerSettings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
 				long[] pos = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
 				// todo remove this for future releases
 				if (pos.length == 0) {
-					pos = settings.getTrackHistory();
+					AppPreferences appSettings = AppPreferences.getInstance(this);
+					pos = appSettings.getTrackHistory();
 					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), pos);
 				}
+				// ^^^
 				mShuffleList.setHistory(pos);
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {

@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Dialog used to show user battery optimization settings
@@ -62,7 +62,7 @@ public class BatteryOptDialog extends DialogFragment implements OnClickListener 
 		if (which == DialogInterface.BUTTON_POSITIVE) {
 			NavUtils.openBatteryPage(requireActivity());
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
-			PreferenceUtils.getInstance(requireContext()).setIgnoreBatteryOptimization();
+			AppPreferences.getInstance(requireContext()).setIgnoreBatteryOptimization();
 		}
 	}
 }

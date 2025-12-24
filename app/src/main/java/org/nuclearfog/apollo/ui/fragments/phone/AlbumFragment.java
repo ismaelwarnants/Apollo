@@ -30,6 +30,7 @@ import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
@@ -39,7 +40,6 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	/**
 	 * app settings
 	 */
-	private PreferenceUtils preference;
+	private AppPreferences preference;
 
 	/**
 	 * The adapter for the grid
@@ -118,7 +118,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
 		//
-		preference = PreferenceUtils.getInstance(requireContext());
+		preference = AppPreferences.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		albumLoader = new AlbumLoader(requireContext());
 		albumSongLoader = new AlbumSongLoader(requireContext());
@@ -331,12 +331,12 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 */
 	private void initList() {
 		switch (preference.getAlbumLayout()) {
-			case PreferenceUtils.LAYOUT_SIMPLE:
+			case AppPreferences.LAYOUT_SIMPLE:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
 				mList.setNumColumns(1);
 				break;
 
-			case PreferenceUtils.LAYOUT_DETAILED:
+			case AppPreferences.LAYOUT_DETAILED:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
 				mAdapter.setLoadExtraData();
 				mList.setNumColumns(1);

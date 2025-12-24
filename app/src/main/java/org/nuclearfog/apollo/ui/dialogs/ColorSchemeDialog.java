@@ -21,9 +21,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.Locale;
 
@@ -46,7 +46,7 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 	private Button mNewColor;
 	private EditText mHexValue;
 
-	private PreferenceUtils mPreferences;
+	private AppPreferences mPreferences;
 
 	/**
 	 * show this dialog
@@ -80,7 +80,7 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		mPreferences = PreferenceUtils.getInstance(inflater.getContext());
+		mPreferences = AppPreferences.getInstance(inflater.getContext());
 		View mRootView = View.inflate(getContext(), R.layout.dialog_color_scheme, null);
 		mColorPicker = mRootView.findViewById(R.id.color_picker_view);
 		mNewColor = mRootView.findViewById(R.id.color_scheme_dialog_new_color);

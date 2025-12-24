@@ -132,20 +132,6 @@ public class ShuffleList {
 	 *
 	 * @param history array of track positions
 	 */
-	public void setHistory(int[] history) {
-		synchronized (mHistory) {
-			mHistory.clear();
-			for (int pos : history) {
-				mHistory.add(pos);
-			}
-		}
-	}
-
-	/**
-	 * replaces all previously played track positions
-	 *
-	 * @param history array of track positions
-	 */
 	public void setHistory(long[] history) {
 		synchronized (mHistory) {
 			mHistory.clear();

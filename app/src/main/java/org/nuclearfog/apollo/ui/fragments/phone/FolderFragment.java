@@ -28,6 +28,7 @@ import org.nuclearfog.apollo.async.loader.FolderSongLoader;
 import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -36,7 +37,6 @@ import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -69,7 +69,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	/**
 	 * app settings
 	 */
-	private PreferenceUtils preference;
+	private AppPreferences preference;
 
 	/**
 	 * context menu selection
@@ -89,7 +89,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		ListView mList = mRootView.findViewById(R.id.list_base);
 		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
 		//
-		preference = PreferenceUtils.getInstance(requireContext());
+		preference = AppPreferences.getInstance(requireContext());
 		mAdapter = new FolderAdapter(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		folderLoader = new FolderLoader(requireContext());

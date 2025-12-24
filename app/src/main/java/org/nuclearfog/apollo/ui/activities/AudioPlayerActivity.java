@@ -48,6 +48,7 @@ import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.ForwardRewindButton;
 import org.nuclearfog.apollo.ui.views.ForwardRewindButton.RepeatListener;
@@ -60,7 +61,6 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -147,7 +147,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private ThemeUtils mResources;
 
-	private PreferenceUtils mPrefs;
+	private AppPreferences mPrefs;
 
 	private FragmentViewModel viewModel;
 
@@ -187,7 +187,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		playerSeekbar = findViewById(R.id.player_progress);
 		//
 		mResources = new ThemeUtils(this);
-		mPrefs = PreferenceUtils.getInstance(this);
+		mPrefs = AppPreferences.getInstance(this);
 		playlistSongLoader = new PlaylistSongLoader(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);

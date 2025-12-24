@@ -22,10 +22,10 @@ import org.nuclearfog.apollo.lookup.entities.ArtistMB;
 import org.nuclearfog.apollo.lookup.entities.Artwork;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.Constants.ImageType;
 import org.nuclearfog.apollo.utils.ImageUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -44,14 +44,14 @@ public class ImageWorker extends AsyncExecutor<Param, Result> {
 
 	private static final Uri URI_ARTWORK = Uri.parse("content://media/external/audio/albumart");
 
-	private PreferenceUtils mPrefs;
+	private AppPreferences mPrefs;
 	private ImageCache mImageCache;
 
 
 	public ImageWorker(Context context) {
 		super(context);
 		mImageCache = ImageCache.getInstance(context);
-		mPrefs = PreferenceUtils.getInstance(context);
+		mPrefs = AppPreferences.getInstance(context);
 	}
 
 

@@ -17,11 +17,11 @@ import androidx.fragment.app.Fragment;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.AppTheme;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Used to show all of the available themes on a user's device.
@@ -37,7 +37,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 	 * grid list adapter to show themes
 	 */
 	private ThemesAdapter mAdapter;
-	private PreferenceUtils mPreferences;
+	private AppPreferences mPreferences;
 
 	/**
 	 * {@inheritDoc}
@@ -52,7 +52,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		emptyInfo.setVisibility(View.GONE);
 		// init adapter
 		mAdapter = new ThemesAdapter(requireContext());
-		mPreferences = PreferenceUtils.getInstance(requireContext());
+		mPreferences = AppPreferences.getInstance(requireContext());
 		// Release any reference to the recycled Views
 		mGridView.setRecyclerListener(new RecycleHolder());
 		mGridView.setOnItemClickListener(this);

@@ -26,6 +26,7 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.QueueLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
@@ -37,7 +38,6 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +85,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 	 */
 	private FragmentViewModel viewModel;
 
-	private PreferenceUtils mPref;
+	private AppPreferences mPref;
 
 	private QueueLoader mLoader;
 
@@ -109,7 +109,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mAdapter = new SongAdapter(requireContext(), true);
 		mLoader = new QueueLoader(requireContext());
-		mPref = PreferenceUtils.getInstance(requireContext());
+		mPref = AppPreferences.getInstance(requireContext());
 		// setup listview
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());

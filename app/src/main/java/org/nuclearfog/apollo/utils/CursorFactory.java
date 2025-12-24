@@ -19,6 +19,8 @@ import android.provider.MediaStore.MediaColumns;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
+
 /**
  * class to create MediaStore cursor to access all music files
  *
@@ -385,7 +387,7 @@ public final class CursorFactory {
 	@SuppressLint("InlinedApi")
 	public static Cursor makeGenreSongCursor(Context context, long genreId) {
 		ContentResolver resolver = context.getContentResolver();
-		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getSongSortOrder();
 
 		Uri media = Genres.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, genreId);
 		return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
@@ -416,7 +418,7 @@ public final class CursorFactory {
 		ContentResolver contentResolver = context.getContentResolver();
 
 		String[] args = {folderName + "%"};
-		String sortOrder = PreferenceUtils.getInstance(context).getFolderSongSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getFolderSongSortOrder();
 		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, sortOrder);
 	}
 
@@ -430,7 +432,7 @@ public final class CursorFactory {
 	public static Cursor makeFolderCursor(Context context) {
 		ContentResolver contentResolver = context.getContentResolver();
 
-		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getSongSortOrder();
 		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
 	}
 
@@ -444,7 +446,7 @@ public final class CursorFactory {
 	public static Cursor makeArtistCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
-		String order = PreferenceUtils.getInstance(context).getArtistSortOrder();
+		String order = AppPreferences.getInstance(context).getArtistSortOrder();
 		return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, null, null, order);
 	}
 
@@ -491,7 +493,7 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 		Uri uri = Artists.Albums.getContentUri(MediaStore.VOLUME_EXTERNAL, artistId);
 
-		String order = PreferenceUtils.getInstance(context).getArtistAlbumSortOrder();
+		String order = AppPreferences.getInstance(context).getArtistAlbumSortOrder();
 		return resolver.query(uri, ARTIST_ALBUM_COLUMN, null, null, order);
 	}
 
@@ -507,7 +509,7 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 
 		String[] args = {Long.toString(artistId)};
-		String order = PreferenceUtils.getInstance(context).getArtistSongSortOrder();
+		String order = AppPreferences.getInstance(context).getArtistSongSortOrder();
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ARTIST_SONG_SELECT, args, order);
 	}
 
@@ -521,7 +523,7 @@ public final class CursorFactory {
 	public static Cursor makeAlbumCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
-		String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getAlbumSortOrder();
 		return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, null, null, sortOrder);
 	}
 
@@ -537,7 +539,7 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 
 		String[] args = {Long.toString(id)};
-		String sortOrder = PreferenceUtils.getInstance(context).getAlbumSongSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getAlbumSongSortOrder();
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ALBUM_SONG_SELECT, args, sortOrder);
 	}
 
@@ -553,7 +555,7 @@ public final class CursorFactory {
 		ContentResolver resolver = context.getContentResolver();
 
 		String[] args = {Long.toString(id)};
-		String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
+		String sortOrder = AppPreferences.getInstance(context).getAlbumSortOrder();
 		return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_ID_SELECT, args, sortOrder);
 	}
 
@@ -635,7 +637,7 @@ public final class CursorFactory {
 	public static Cursor makeTrackCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
-		String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
+		String sort = AppPreferences.getInstance(context).getSongSortOrder();
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sort);
 	}
 

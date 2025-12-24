@@ -28,13 +28,13 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.PresetLoader;
 import org.nuclearfog.apollo.model.AudioPreset;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.PresetAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.BandLevelChangeListener;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog.OnPresetSaveCallback;
 import org.nuclearfog.apollo.utils.AudioEffects;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -88,7 +88,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		presetLoader = new PresetLoader(this);
 		audioEffects = AudioEffects.getInstance(this, sessionId);
 		ThemeUtils mResources = new ThemeUtils(this);
-		PreferenceUtils mPrefs = PreferenceUtils.getInstance(this);
+		AppPreferences mPrefs = AppPreferences.getInstance(this);
 		ColorFilter colorFilter = new PorterDuffColorFilter(mPrefs.getThemeColor(), PorterDuff.Mode.SRC_IN);
 
 		bassBoost.getProgressDrawable().setColorFilter(colorFilter);

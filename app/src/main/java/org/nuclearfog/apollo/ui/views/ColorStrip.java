@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import org.nuclearfog.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 
 /**
  * Used as a thin strip placed just above the bottom action bar or just below
@@ -20,7 +20,7 @@ public class ColorStrip extends View {
 	public ColorStrip(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the color strip
-		int color = PreferenceUtils.getInstance(context).getThemeColor();
+		int color = AppPreferences.getInstance(context).getThemeColor();
 		setBackgroundColor(color);
 	}
 }

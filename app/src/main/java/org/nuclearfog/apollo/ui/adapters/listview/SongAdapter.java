@@ -11,10 +11,10 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.ui.fragments.phone.SongFragment;
 import org.nuclearfog.apollo.utils.Constants;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
@@ -57,7 +57,7 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	public SongAdapter(Context context, boolean enableDrag) {
 		super(context, LAYOUT);
-		PreferenceUtils prefs = PreferenceUtils.getInstance(context);
+		AppPreferences prefs = AppPreferences.getInstance(context);
 		selectedColor = prefs.getThemeColor() & TRANSPARENCY_MASK;
 		enableDnD = enableDrag;
 	}

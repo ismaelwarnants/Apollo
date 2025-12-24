@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 
 import java.lang.ref.WeakReference;
 
@@ -317,7 +317,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		setDragScrollStarts(mDragUpScrollStartFrac, mDragUpScrollStartFrac);
 		mController.setRemoveEnabled(true);
 		mController.setSortEnabled(true);
-		mController.setBackgroundColor(PreferenceUtils.getInstance(context).getThemeColor());
+		mController.setBackgroundColor(AppPreferences.getInstance(context).getThemeColor());
 
 		setOnTouchListener(mController);
 		setOnScrollListener(this);

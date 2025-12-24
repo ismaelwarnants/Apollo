@@ -17,6 +17,8 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.widget.TextView;
 
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
+
 /**
  * Highlights the text in a text field.
  */
@@ -31,7 +33,7 @@ public class PrefixHighlighter {
 	 *
 	 */
 	public PrefixHighlighter(Context context) {
-		mPrefixHighlightColor = PreferenceUtils.getInstance(context).getThemeColor();
+		mPrefixHighlightColor = AppPreferences.getInstance(context).getThemeColor();
 	}
 
 	/**

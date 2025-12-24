@@ -15,8 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.lang.ref.WeakReference;
@@ -76,7 +76,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		seekbar = new SeekBar(context);
 		posText = new TextView(context);
 		durText = new TextView(context);
-		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
+		AppPreferences mPrefs = AppPreferences.getInstance(context);
 		LayoutParams seekbarParam = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 8.0f);
 		LayoutParams textParam = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
 		int color = getResources().getColor(R.color.audio_player_current_time);

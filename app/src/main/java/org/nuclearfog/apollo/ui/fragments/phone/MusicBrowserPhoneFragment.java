@@ -20,13 +20,13 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -74,7 +74,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	/**
 	 *
 	 */
-	private PreferenceUtils mPreferences;
+	private AppPreferences mPreferences;
 
 	/**
 	 * viewmodel used to communicate with sub fragments
@@ -93,7 +93,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
 
 		MusicBrowserAdapter adapter = new MusicBrowserAdapter(this);
-		mPreferences = PreferenceUtils.getInstance(requireContext());
+		mPreferences = AppPreferences.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mResources = new ThemeUtils(requireContext());
 		songLoader = new SongLoader(requireContext());
@@ -282,39 +282,39 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// set simple item view
 		else if (item.getItemId() == R.id.menu_view_as_simple) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_SIMPLE);
+				mPreferences.setRecentLayout(AppPreferences.LAYOUT_SIMPLE);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_SIMPLE);
+				mPreferences.setArtistLayout(AppPreferences.LAYOUT_SIMPLE);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_SIMPLE);
+				mPreferences.setAlbumLayout(AppPreferences.LAYOUT_SIMPLE);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}
 		// set detailed item view
 		else if (item.getItemId() == R.id.menu_view_as_detailed) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_DETAILED);
+				mPreferences.setRecentLayout(AppPreferences.LAYOUT_DETAILED);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_DETAILED);
+				mPreferences.setArtistLayout(AppPreferences.LAYOUT_DETAILED);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_DETAILED);
+				mPreferences.setAlbumLayout(AppPreferences.LAYOUT_DETAILED);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}
 		// set grid item view
 		else if (item.getItemId() == R.id.menu_view_as_grid) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_GRID);
+				mPreferences.setRecentLayout(AppPreferences.LAYOUT_GRID);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_GRID);
+				mPreferences.setArtistLayout(AppPreferences.LAYOUT_GRID);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_GRID);
+				mPreferences.setAlbumLayout(AppPreferences.LAYOUT_GRID);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}

@@ -29,6 +29,7 @@ import org.nuclearfog.apollo.async.loader.GenreSongLoader;
 import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -38,7 +39,6 @@ import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -72,7 +72,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	/**
 	 * app settings
 	 */
-	private PreferenceUtils preference;
+	private AppPreferences preference;
 
 	private GenreLoader genreLoader;
 	private GenreSongLoader genreSongLoader;
@@ -93,7 +93,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		ListView mList = mRootView.findViewById(R.id.list_base);
 		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
 		//
-		preference = PreferenceUtils.getInstance(requireContext());
+		preference = AppPreferences.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mAdapter = new GenreAdapter(requireContext());
 		genreLoader = new GenreLoader(requireContext());

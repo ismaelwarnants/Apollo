@@ -34,6 +34,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.ShuffleRepeatButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
@@ -41,7 +42,6 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -216,7 +216,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Update the favorites icon
 		invalidateOptionsMenu();
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this, PreferenceUtils.getInstance(this).crossfadeEnabled());
+		MusicUtils.setCrossfade(this, AppPreferences.getInstance(this).crossfadeEnabled());
 	}
 
 	/**

@@ -30,6 +30,7 @@ import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
 import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
@@ -39,7 +40,6 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -91,7 +91,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	/**
 	 * app preferences
 	 */
-	private PreferenceUtils preference;
+	private AppPreferences preference;
 
 	/**
 	 * viewmodel used for communication with hosting activity
@@ -119,7 +119,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		mList = mRootView.findViewById(R.id.grid_base);
 		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		preference = PreferenceUtils.getInstance(requireContext());
+		preference = AppPreferences.getInstance(requireContext());
 		artistLoader = new ArtistLoader(requireContext());
 		artistSongLoader = new ArtistSongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
@@ -327,12 +327,12 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 */
 	private void initList() {
 		switch (preference.getArtistLayout()) {
-			case PreferenceUtils.LAYOUT_SIMPLE:
+			case AppPreferences.LAYOUT_SIMPLE:
 				mAdapter = new ArtistAdapter(requireActivity(), 1, R.layout.list_item_normal);
 				mList.setNumColumns(1);
 				break;
 
-			case PreferenceUtils.LAYOUT_DETAILED:
+			case AppPreferences.LAYOUT_DETAILED:
 				mAdapter = new ArtistAdapter(requireActivity(), 1, R.layout.list_item_detailed);
 				mAdapter.setLoadExtraData();
 				mList.setNumColumns(1);

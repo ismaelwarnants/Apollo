@@ -20,8 +20,8 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 
@@ -110,7 +110,7 @@ public class TitlePageIndicator extends View implements OnPageChangeListener {
 		super(context, attrs, defStyle);
 		//Load defaults from resources
 		Resources res = getResources();
-		PreferenceUtils mPref = PreferenceUtils.getInstance(context);
+		AppPreferences mPref = AppPreferences.getInstance(context);
 		mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
 		mFooterLine = res.getDimension(R.dimen.default_title_indicator_footer_line_height);
 		mFooterIndicatorHeight = res.getDimension(R.dimen.default_title_indicator_footer_indicator_height);

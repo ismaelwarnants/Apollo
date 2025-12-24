@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentActivity;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
@@ -274,7 +275,7 @@ public final class ApolloUtils {
 	 * set wakelock status depending on app settings
 	 */
 	public static void setWakelock(Activity activity) {
-		PreferenceUtils prefs = PreferenceUtils.getInstance(activity);
+		AppPreferences prefs = AppPreferences.getInstance(activity);
 		if (prefs.getWakelockStatus()) {
 			activity.getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 		} else {
@@ -301,7 +302,7 @@ public final class ApolloUtils {
 	 */
 	public static void openBatteryOptimizationDialog(FragmentActivity activity) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			PreferenceUtils pref = PreferenceUtils.getInstance(activity);
+			AppPreferences pref = AppPreferences.getInstance(activity);
 			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
 				BatteryOptDialog.show(activity.getSupportFragmentManager());

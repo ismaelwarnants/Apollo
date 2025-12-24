@@ -26,6 +26,7 @@ import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
@@ -35,7 +36,6 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 	/**
 	 * app settings
 	 */
-	private PreferenceUtils preference;
+	private AppPreferences preference;
 
 	private SongLoader songLoader;
 	private ExcludeMusicWorker excludeMusicWorker;
@@ -110,7 +110,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 		TextView emptyText = mRootView.findViewById(R.id.list_base_empty_info);
 		mList = mRootView.findViewById(R.id.list_base);
 		//
-		preference = PreferenceUtils.getInstance(requireContext());
+		preference = AppPreferences.getInstance(requireContext());
 		mAdapter = new SongAdapter(requireContext(), false);
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);

@@ -6,8 +6,8 @@ import android.os.Build;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.nuclearfog.apollo.cache.ImageCache;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Used to turn off logging for jaudiotagger and free up memory when
@@ -25,7 +25,7 @@ public class ApolloApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && PreferenceUtils.getInstance(getApplicationContext()).certificationValidationDisabled()) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && AppPreferences.getInstance(getApplicationContext()).certificationValidationDisabled()) {
 			ApolloUtils.disableSSLCertificateValidation();
 		}
 	}

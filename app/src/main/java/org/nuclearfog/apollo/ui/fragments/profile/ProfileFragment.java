@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
@@ -26,7 +27,6 @@ import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListen
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollController;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * this fragment hosts a {@link ListView} with a {@link ProfileTabCarousel} header
@@ -67,7 +67,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	private FragmentViewModel viewModel;
 
-	private PreferenceUtils mPrefs;
+	private AppPreferences mPrefs;
 
 	/**
 	 * {@inheritDoc}
@@ -91,7 +91,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 		mList = rootView.findViewById(R.id.list_base);
 		// get profile tab carousel from parent activity
 		ProfileTabCarousel mProfileTabCarousel = requireActivity().findViewById(R.id.activity_profile_base_tab_carousel);
-		mPrefs = PreferenceUtils.getInstance(requireContext());
+		mPrefs = AppPreferences.getInstance(requireContext());
 		// Set empty list info
 		mList.setEmptyView(emptyInfo);
 		// Release any references to the recycled Views
