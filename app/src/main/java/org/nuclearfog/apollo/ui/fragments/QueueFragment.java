@@ -199,6 +199,9 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 				switch (item.getItemId()) {
 					case ContextMenuItems.PLAY_NEXT:
 						MusicUtils.playNext(requireActivity(), selectedSong.getId());
+						int index = MusicUtils.getQueuePosition(requireActivity()) + 1;
+						if (index > 0 && index <= mAdapter.getCount())
+							mAdapter.insert(selectedSong, index);
 						return true;
 
 					case ContextMenuItems.REMOVE_FROM_QUEUE:

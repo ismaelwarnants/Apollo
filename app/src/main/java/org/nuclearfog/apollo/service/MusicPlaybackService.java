@@ -645,15 +645,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * restart current track or go to preview track
 	 */
 	void gotoPrev() {
+		long pos = mPlayer.getPosition();
+		mPlayer.stop();
 		// go to previous track if playback position is at beginning
-		if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-			int pos = mPlayList.getPosition();
-			mPlayList.setPosition(decrementPosition(pos));
+		if (pos < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+			mPlayList.setPosition(decrementPosition(mPlayList.getPosition()));
 			openCurrentAndNext();
-		}
-		// go back to start
-		else {
-			mPlayer.stop();
 		}
 		play();
 	}
@@ -733,6 +730,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (isForeground) {
 					mNotificationHelper.updateNotification();
 				}
+				playerSettings.setCursorPosition(mPlayList.getPosition());
 				break;
 
 			case CHANGED_PLAYSTATE:
@@ -975,6 +973,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setNextTrack(false);
 			}
 		}
+		notifyChange(CHANGED_QUEUE);
 	}
 
 	/**
@@ -1405,15 +1404,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mRepeatMode = playerSettings.getRepeatMode();
 			mShuffleMode = playerSettings.getShuffleMode();
 			if (mShuffleMode != SHUFFLE_NONE) {
-				long[] pos = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
+				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
 				// todo remove this for future releases
-				if (pos.length == 0) {
+				if (history.length == 0) {
 					AppPreferences appSettings = AppPreferences.getInstance(this);
-					pos = appSettings.getTrackHistory();
-					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), pos);
+					history = appSettings.getTrackHistory();
+					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), history);
 				}
 				// ^^^
-				mShuffleList.setHistory(pos);
+				mShuffleList.setHistory(history);
 			}
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				if (!makeShuffleList(true)) {

@@ -255,13 +255,14 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
 			setFadeTask(false);
-			if (initialized) {
-				player.stop();
-			}
-			initialized = false;
+			player.stop();
 			isPlaying = false;
+			if (initialized) {
+				player.prepare();
+				player.seekTo(0);
+			}
 			callback.onPlaybackChanged();
-		} catch (IllegalStateException exception) {
+		} catch (IllegalStateException | IOException exception) {
 			Log.e(TAG, "stop()", exception);
 			reset();
 		}
@@ -489,14 +490,18 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * resets all media player instances
+	 * reset Multiplayer
 	 */
-	private void reset() {
+	private synchronized void reset() {
 		for (MediaPlayer mp : mPlayers) {
 			mp.reset();
 		}
 		initialized = false;
 		isPlaying = false;
+		fadeMode = NONE;
+		selectedPlayer = 0;
+		volume = 0f;
+		maxVolume = 1f;
 	}
 
 	/**
@@ -538,12 +543,14 @@ public class MultiPlayer {
 		Log.e(TAG, "onError(" + what + ", " + extra + "), " + this);
 		if (initialized) {
 			setFadeTask(false);
-			initialized = false;
-			isPlaying = false;
-			fadeMode = NONE;
-			mp.reset();
-			// delay callback
-			playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
+			reset();
+			if (what != -38) {
+				// delay error handling
+				playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
+			} else {
+				// just stop playback
+				callback.onPlaybackChanged();
+			}
 			return true;
 		}
 		return false;
