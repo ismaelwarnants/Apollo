@@ -19,7 +19,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,7 +28,6 @@ import androidx.core.content.ContextCompat;
 import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
-import androidx.media.session.MediaButtonReceiver;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -517,18 +515,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setShuffleMode(SHUFFLE_NONE);
 			}
 		}
-		// handle media button
-		else if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
-			KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-			if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-				if (isPlaying()) {
-					pause(false);
-				} else {
-					play();
-				}
-			}
-		}
-		MediaButtonReceiver.handleIntent(mSession, intent);
 	}
 
 	/**

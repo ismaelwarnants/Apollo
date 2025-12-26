@@ -271,9 +271,6 @@
 			android:exported="false"
 			android:process=":music"
 			android:foregroundServiceType="mediaPlayback">
-			<intent-filter>
-				<action android:name="android.intent.action.MEDIA_BUTTON" />
-			</intent-filter>
 		</service>
 
 	</application>

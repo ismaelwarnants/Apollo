@@ -34,7 +34,7 @@ public class MultiPlayer {
 	/**
 	 * indicates that there is no fade in/out in progress
 	 */
-	private static final int NONE = 9;
+	private static final int FADE_IDLE = 9;
 	/**
 	 * indicates that the current track is fading in
 	 */
@@ -107,9 +107,9 @@ public class MultiPlayer {
 	 */
 	private volatile boolean continuous = true;
 	/**
-	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT}
+	 * current fade in/out status {@link #FADE_IDLE ,#FADE_IN,#FADE_OUT}
 	 */
-	private volatile int fadeMode = NONE;
+	private volatile int fadeMode = FADE_IDLE;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -316,7 +316,7 @@ public class MultiPlayer {
 	 */
 	public synchronized void setPosition(long position) {
 		try {
-			if (initialized && (!fadeEffectEnabled || fadeMode == NONE)) {
+			if (initialized && (!fadeEffectEnabled || fadeMode == FADE_IDLE)) {
 				// limit max position to prevent conflict with fade out
 				long max = getDuration();
 				if (fadeEffectEnabled)
@@ -364,7 +364,7 @@ public class MultiPlayer {
 	public synchronized void setFadeEffect(boolean enable) {
 		if (fadeEffectEnabled != enable) {
 			fadeEffectEnabled = enable;
-			fadeMode = NONE;
+			fadeMode = FADE_IDLE;
 			setFadeTask(enable);
 			if (!fadeEffectEnabled) {
 				setAllVolume(maxVolume);
@@ -449,7 +449,7 @@ public class MultiPlayer {
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
 						pause(true);
-						fadeMode = NONE;
+						fadeMode = FADE_IDLE;
 					}
 					break;
 
@@ -457,7 +457,7 @@ public class MultiPlayer {
 				case FADE_IN:
 					setCurrentVolume(Math.min(volume + FADE_STEPS, maxVolume));
 					if (volume == maxVolume) {
-						fadeMode = NONE;
+						fadeMode = FADE_IDLE;
 					}
 					break;
 
@@ -485,7 +485,7 @@ public class MultiPlayer {
 		} else if (fadeTask != null) {
 			fadeTask.cancel(false);
 			fadeTask = null;
-			fadeMode = NONE;
+			fadeMode = FADE_IDLE;
 		}
 	}
 
@@ -498,7 +498,7 @@ public class MultiPlayer {
 		}
 		initialized = false;
 		isPlaying = false;
-		fadeMode = NONE;
+		fadeMode = FADE_IDLE;
 		selectedPlayer = 0;
 		volume = 0f;
 		maxVolume = 1f;
@@ -526,10 +526,10 @@ public class MultiPlayer {
 				pause(true);
 			}
 		} else {
-			// Fix: sometimes the end position doesn't match the duration
+			// Fix: sometimes the end position doesn't match the track duration
+			// which causes that the "track end" detection will fail
 			if (mp.getDuration() - mp.getCurrentPosition() > FADE_DELAY) {
-				// move position to the end of the current player to trigger fade out
-				mp.seekTo(mp.getDuration() - (int) FADE_DELAY);
+				fadeMode = continuous ? FADE_OUT_IN : FADE_OUT;
 			}
 		}
 	}
@@ -560,7 +560,7 @@ public class MultiPlayer {
 	@NonNull
 	@Override
 	public String toString() {
-		return "current=" + selectedPlayer + " initialized=" + initialized + " isPlaying=" + isPlaying + " fade=" + (fadeEffectEnabled && fadeMode != NONE);
+		return "current=" + selectedPlayer + " initialized=" + initialized + " isPlaying=" + isPlaying + " isFading=" + (fadeEffectEnabled && fadeMode != FADE_IDLE);
 	}
 
 	/**

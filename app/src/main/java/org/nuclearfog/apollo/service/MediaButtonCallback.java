@@ -6,7 +6,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 /**
- * callback class used by media buttons to control playback
+ * callback class used by notification/media buttons to control playback
  *
  * @author nuclearfog
  */
