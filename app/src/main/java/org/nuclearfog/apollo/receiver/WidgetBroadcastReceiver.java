@@ -13,11 +13,16 @@ import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 
 /**
- * widget Broadcast listener
+ * widget Broadcast listener used to update all widgets
  *
  * @author nuclearfog
  */
 public class WidgetBroadcastReceiver extends BroadcastReceiver {
+
+	/**
+	 *
+	 */
+	public static final String WIDGET_TYPE = "widget_type";
 
 	private AppWidgetBase smallWidget = new AppWidgetSmall();
 	private AppWidgetBase largeWidget = new AppWidgetLarge();
@@ -38,19 +43,18 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		String command = intent.getStringExtra(MusicPlaybackService.CMDNAME);
+		// type of widget to update
+		String type = intent.getStringExtra(WIDGET_TYPE);
+		// IDs of the widgets to update
 		int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-
-		if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
+		if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(type)) {
 			smallWidget.performUpdate(service, small);
-		} else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
+		} else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(type)) {
 			largeWidget.performUpdate(service, small);
-		} else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
+		} else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(type)) {
 			altWidget.performUpdate(service, small);
-		} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
+		} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(type)) {
 			recentWidget.performUpdate(service, small);
-		} else {
-			service.handleCommandIntent(intent);
 		}
 	}
 

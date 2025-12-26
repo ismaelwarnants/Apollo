@@ -16,6 +16,7 @@ import android.widget.RemoteViews;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.service.RecentWidgetService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
@@ -83,7 +84,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 			mViews.setRemoteAdapter(R.id.app_widget_recents_list, recentIntent);
 			// init playback control
 			Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-			updateIntent.putExtra(MusicPlaybackService.CMDNAME, RecentWidgetProvider.CMDAPPWIDGETUPDATE);
+			updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, RecentWidgetProvider.CMDAPPWIDGETUPDATE);
 			updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 			updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 			context.sendBroadcast(updateIntent);

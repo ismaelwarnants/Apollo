@@ -131,10 +131,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String ACTION_REFRESH = APOLLO_PACKAGE_NAME + ".refresh";
 	/**
-	 *
-	 */
-	public static final String CMDNAME = "command";
-	/**
 	 * Moves a list to the next position in the queue
 	 */
 	public static final int MOVE_NEXT = 0xAE960453;
@@ -430,6 +426,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		if (intent != null) {
+			// check for playback commands
+			handleCommandIntent(intent);
 			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, true);
 			// create player control notification if player is not stopped
 			if (!ACTION_STOP.equals(intent.getAction())) {
@@ -439,7 +437,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					return START_NOT_STICKY;
 				}
 			}
-			handleCommandIntent(intent);
 			return START_STICKY;
 		}
 		// Make sure the service will shut down on its own if it was
@@ -469,52 +466,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
 		openCurrentAndNext();
 		notifyChange(CHANGED_PLAYSTATE);
-	}
-
-	/**
-	 * used by widgets or other intents to change playback state
-	 */
-	public void handleCommandIntent(Intent intent) {
-		String action = intent.getAction();
-		// go to next track
-		if (ACTION_NEXT.equals(action)) {
-			gotoNext();
-		}
-		// go to previous track
-		else if (ACTION_PREVIOUS.equals(action)) {
-			gotoPrev();
-		}
-		// pause/play track
-		else if (ACTION_TOGGLEPAUSE.equals(action)) {
-			if (mPlayer.isPlaying()) {
-				pause(false);
-			} else {
-				play();
-			}
-		}
-		// stop track/dismiss notification
-		else if (ACTION_STOP.equals(action)) {
-			stop();
-			releaseService(false);
-		}
-		// set 'repeat' mode
-		else if (ACTION_REPEAT.equals(action)) {
-			if (mRepeatMode == REPEAT_NONE) {
-				setRepeatMode(REPEAT_ALL);
-			} else if (mRepeatMode == REPEAT_ALL) {
-				setRepeatMode(REPEAT_CURRENT);
-			} else {
-				setRepeatMode(REPEAT_NONE);
-			}
-		}
-		// set 'shuffle' mode
-		else if (ACTION_SHUFFLE.equals(action)) {
-			if (mShuffleMode == SHUFFLE_NONE) {
-				setShuffleMode(SHUFFLE_NORMAL);
-			} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
-				setShuffleMode(SHUFFLE_NONE);
-			}
-		}
 	}
 
 	/**
@@ -1404,6 +1355,52 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (!makeShuffleList(true)) {
 					mShuffleMode = SHUFFLE_NONE;
 				}
+			}
+		}
+	}
+
+	/**
+	 * used by widgets or other intents to change playback state
+	 */
+	private void handleCommandIntent(Intent intent) {
+		String action = intent.getAction();
+		// go to next track
+		if (ACTION_NEXT.equals(action)) {
+			gotoNext();
+		}
+		// go to previous track
+		else if (ACTION_PREVIOUS.equals(action)) {
+			gotoPrev();
+		}
+		// pause/play track
+		else if (ACTION_TOGGLEPAUSE.equals(action)) {
+			if (mPlayer.isPlaying()) {
+				pause(false);
+			} else {
+				play();
+			}
+		}
+		// stop track/dismiss notification
+		else if (ACTION_STOP.equals(action)) {
+			stop();
+			releaseService(false);
+		}
+		// set 'repeat' mode
+		else if (ACTION_REPEAT.equals(action)) {
+			if (mRepeatMode == REPEAT_NONE) {
+				setRepeatMode(REPEAT_ALL);
+			} else if (mRepeatMode == REPEAT_ALL) {
+				setRepeatMode(REPEAT_CURRENT);
+			} else {
+				setRepeatMode(REPEAT_NONE);
+			}
+		}
+		// set 'shuffle' mode
+		else if (ACTION_SHUFFLE.equals(action)) {
+			if (mShuffleMode == SHUFFLE_NONE) {
+				setShuffleMode(SHUFFLE_NORMAL);
+			} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
+				setShuffleMode(SHUFFLE_NONE);
 			}
 		}
 	}
