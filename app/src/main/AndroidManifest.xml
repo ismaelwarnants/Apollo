@@ -29,7 +29,6 @@
 		android:fullBackupContent="false"
 		android:dataExtractionRules="@xml/rules"
 		android:allowTaskReparenting="true"
-		android:hardwareAccelerated="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
 		android:largeHeap="true"
@@ -232,7 +231,7 @@
 
 			<meta-data
 				android:name="android.appwidget.provider"
-				android:resource="@xml/app_widget_large_alternate" />
+				android:resource="@xml/app_widget_large_alt" />
 		</receiver>
 
 		<!-- Resizable recently listened App Widget -->
