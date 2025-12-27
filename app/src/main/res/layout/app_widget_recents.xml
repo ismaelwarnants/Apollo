@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_margin="0dp"
-	tools:ignore="RelativeOverlap,ContentDescription">
+	android:orientation="vertical">
 
 	<RelativeLayout
 		android:id="@+id/app_widget_recents_action_bar"
@@ -16,7 +16,6 @@
 			android:id="@+id/app_widget_recents_icon"
 			android:layout_width="@dimen/app_widget_recents_action_bar_icon_size"
 			android:layout_height="@dimen/app_widget_recents_action_bar_icon_size"
-			android:background="@android:color/transparent"
 			android:layout_marginStart="@dimen/app_widget_recents_action_bar_icon_margin"
 			android:layout_marginEnd="@dimen/app_widget_recents_action_bar_icon_margin"
 			android:contentDescription="@string/app_name"
@@ -54,7 +53,8 @@
 			android:layout_centerVertical="true"
 			android:layout_toStartOf="@+id/app_widget_recents_next"
 			android:scaleType="center"
-			android:src="@drawable/btn_playback_play" />
+			android:src="@drawable/btn_playback_play"
+			tools:ignore="ContentDescription" />
 
 		<ImageButton
 			android:id="@+id/app_widget_recents_next"
@@ -74,16 +74,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="@dimen/colorstrip_height"
 		android:background="@color/transparent_white"
-		android:contentDescription="@null"
-		android:layout_below="@+id/app_widget_recents_action_bar" />
+		android:contentDescription="@null" />
 
 	<ListView
 		android:id="@+id/app_widget_recents_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@drawable/appwidget_bg"
-		android:cacheColorHint="@android:color/transparent"
-		android:layout_below="@+id/colorstrip"
-		android:layout_centerVertical="true" />
+		android:background="@drawable/widget_background"
+		android:cacheColorHint="@android:color/transparent" />
 
-</RelativeLayout>
+</LinearLayout>

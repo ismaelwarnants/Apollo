@@ -36,7 +36,7 @@ public class AppWidgetLargeAlt extends AppWidgetBase {
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
+		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alt);
 		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
 		linkButtons(context, appWidgetViews, false);
 		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
@@ -66,7 +66,7 @@ public class AppWidgetLargeAlt extends AppWidgetBase {
 	 */
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
+		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alt);
 		Album album = service.getCurrentAlbum();
 		Song song = service.getCurrentSong();
 		boolean isPlaying = service.isPlaying();

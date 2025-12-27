@@ -107,7 +107,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		public RemoteViews getViewAt(int position) {
 			Album album = albums.get(position);
 			// Create the remote views
-			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
+			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.list_item_widget_recent);
 			// Set the album names
 			mViews.setTextViewText(R.id.app_widget_recents_line_one, album.getName());
 			// Set the artist names

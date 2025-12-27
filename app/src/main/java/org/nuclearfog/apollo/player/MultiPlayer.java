@@ -538,6 +538,7 @@ public class MultiPlayer {
 	 * called if the mediaplayer reports an error
 	 *
 	 * @see android.media.MediaPlayer.OnErrorListener
+	 * @noinspection unused
 	 */
 	private boolean onError(MediaPlayer mp, int what, int extra) {
 		Log.e(TAG, "onError(" + what + ", " + extra + "), " + this);

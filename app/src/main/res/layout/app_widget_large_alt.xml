@@ -4,7 +4,7 @@
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:background="@drawable/appwidget_bg"
+	android:background="@drawable/widget_background"
 	tools:ignore="ContentDescription,RtlSymmetry">
 
 	<LinearLayout
@@ -61,7 +61,7 @@
 		android:orientation="horizontal"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="@dimen/app_widget_bottom_margin"
+		android:layout_marginBottom="@dimen/app_widget_layout_margin"
 		android:gravity="center_vertical"
 		android:layout_gravity="fill_horizontal"
 		android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"

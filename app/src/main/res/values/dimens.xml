@@ -2,7 +2,6 @@
 <resources>
 
 	<!-- Text sizes -->
-	<dimen name="text_size_extra_micro">10.0sp</dimen>
 	<dimen name="text_size_micro">12.0sp</dimen>
 	<dimen name="text_size_small">14.0sp</dimen>
 	<dimen name="text_size_medium">16.0sp</dimen>
@@ -83,7 +82,7 @@
 	<dimen name="app_widget_recents_action_bar_height">48.0dp</dimen>
 	<dimen name="app_widget_recents_action_bar_icon_size">32.0dp</dimen>
 	<dimen name="app_widget_recents_action_bar_icon_margin">8.0dp</dimen>
-	<dimen name="app_widget_bottom_margin">4.0dp</dimen>
+	<dimen name="app_widget_layout_margin">4.0dp</dimen>
 
 	<!-- Shadow height -->
 	<dimen name="shadow_height">5.0dp</dimen>

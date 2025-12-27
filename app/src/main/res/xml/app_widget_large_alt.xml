@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-	android:initialLayout="@layout/app_widget_large_alternate"
+	android:initialLayout="@layout/app_widget_large_alt"
 	android:minHeight="@dimen/app_widget_large_min_height"
 	android:minWidth="@dimen/app_widget_large_min_width"
-	android:previewImage="@drawable/app_widget_large_alternate"
+	android:previewImage="@drawable/app_widget_large_alt"
 	android:updatePeriodMillis="0"
 	android:widgetCategory="keyguard|home_screen" />
