@@ -222,7 +222,7 @@
 
 		<!-- 4x2 alternate App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate"
+			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlt"
 			android:exported="false"
 			android:label="@string/app_widget_large_alt">
 
@@ -237,7 +237,7 @@
 
 		<!-- Resizable recently listened App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider"
+			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetRecent"
 			android:exported="false"
 			android:label="@string/app_widget_recent">
 

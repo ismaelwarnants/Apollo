@@ -32,8 +32,7 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	}
 
 	/**
-	 * Check against {@link AppWidgetManager} if there are any instances of this
-	 * widget.
+	 * Check against {@link AppWidgetManager} if there are any instances of this widget.
 	 */
 	protected boolean hasInstances(Context context) {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -59,8 +58,7 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	public abstract void performUpdate(MusicPlaybackService service, int[] appWidgetIds);
 
 	/**
-	 * Handle a change notification coming over from
-	 * {@link MusicPlaybackService}
+	 * Handle a change notification coming over from {@link MusicPlaybackService}
 	 */
 	public abstract void notifyChange(MusicPlaybackService service, String what);
 }

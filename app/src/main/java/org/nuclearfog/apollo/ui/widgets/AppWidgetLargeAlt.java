@@ -23,18 +23,24 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class AppWidgetLargeAlternate extends AppWidgetBase {
+public class AppWidgetLargeAlt extends AppWidgetBase {
 
-	public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";
+	/**
+	 * tag used to identify this widget
+	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
+	 */
+	public static final String TYPE = "app_widget_large_alternate_update";
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		defaultAppWidget(context, appWidgetIds);
+		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
 		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE);
+		linkButtons(context, appWidgetViews, false);
+		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
+		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
 		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 		context.sendBroadcast(updateIntent);
@@ -61,18 +67,21 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
-		ImageFetcher imageFetcher = new ImageFetcher(service);
 		Album album = service.getCurrentAlbum();
 		Song song = service.getCurrentSong();
+		boolean isPlaying = service.isPlaying();
+		int repeatMode = service.getRepeatMode();
+		int shuffleMode = service.getShuffleMode();
 		// Set the titles and artwork
 		if (album != null && song != null) {
+			ImageFetcher imageFetcher = new ImageFetcher(service);
 			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, album.getArtist());
 			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, album.getName());
 			appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, imageFetcher.getAlbumArtwork(album));
 		}
 		// Set correct drawable for pause state
-		if (service.isPlaying()) {
+		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play, R.drawable.btn_playback_pause);
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play, service.getString(R.string.accessibility_pause));
 		} else {
@@ -80,11 +89,11 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play, service.getString(R.string.accessibility_play));
 		}
 		// Set the correct drawable and color for the repeat state
-		if (service.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
+		if (repeatMode == MusicPlaybackService.REPEAT_CURRENT) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat_one);
 			appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setColorFilter", Color.WHITE);
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_repeat, service.getString(R.string.accessibility_repeat_one));
-		} else if (service.getRepeatMode() == MusicPlaybackService.REPEAT_ALL) {
+		} else if (repeatMode == MusicPlaybackService.REPEAT_ALL) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat);
 			appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setColorFilter", Color.WHITE);
 			appWidgetView.setContentDescription(R.id.app_widget_large_alternate_repeat, service.getString(R.string.accessibility_repeat_all));
@@ -96,25 +105,15 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 		// Set the correct drawable color for the shuffle state
 		appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle);
 		appWidgetView.setContentDescription(R.id.app_widget_large_alternate_shuffle, service.getString(R.string.accessibility_shuffle));
-		if (service.getShuffleMode() == MusicPlaybackService.SHUFFLE_NONE) {
+		if (shuffleMode == MusicPlaybackService.SHUFFLE_NONE) {
 			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.GRAY);
 		} else {
 			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.WHITE);
 		}
 		// Link actions buttons to intents
-		linkButtons(service, appWidgetView, service.isPlaying());
+		linkButtons(service, appWidgetView, isPlaying);
 		// Update the app-widget
 		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
-	}
-
-	/**
-	 * Initialize given widgets to default state, where we launch Music on
-	 * default click and hide actions if service not running.
-	 */
-	private void defaultAppWidget(Context context, int[] appWidgetIds) {
-		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
-		linkButtons(context, appWidgetViews, false);
-		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
 	}
 
 	/**

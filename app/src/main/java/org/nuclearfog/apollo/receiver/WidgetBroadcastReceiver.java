@@ -8,9 +8,9 @@ import android.content.Intent;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetBase;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
-import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlt;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetRecent;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
-import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 
 /**
  * widget Broadcast listener used to update all widgets
@@ -26,8 +26,8 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 
 	private AppWidgetBase smallWidget = new AppWidgetSmall();
 	private AppWidgetBase largeWidget = new AppWidgetLarge();
-	private AppWidgetBase altWidget = new AppWidgetLargeAlternate();
-	private AppWidgetBase recentWidget = new RecentWidgetProvider();
+	private AppWidgetBase altWidget = new AppWidgetLargeAlt();
+	private AppWidgetBase recentWidget = new AppWidgetRecent();
 
 	private MusicPlaybackService service;
 
@@ -47,13 +47,13 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 		String type = intent.getStringExtra(WIDGET_TYPE);
 		// IDs of the widgets to update
 		int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-		if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(type)) {
+		if (AppWidgetSmall.TYPE.equals(type)) {
 			smallWidget.performUpdate(service, small);
-		} else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(type)) {
+		} else if (AppWidgetLarge.TYPE.equals(type)) {
 			largeWidget.performUpdate(service, small);
-		} else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(type)) {
+		} else if (AppWidgetLargeAlt.TYPE.equals(type)) {
 			altWidget.performUpdate(service, small);
-		} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(type)) {
+		} else if (AppWidgetRecent.TYPE.equals(type)) {
 			recentWidget.performUpdate(service, small);
 		}
 	}

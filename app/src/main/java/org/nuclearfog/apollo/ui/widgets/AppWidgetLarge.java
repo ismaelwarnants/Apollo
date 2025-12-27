@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
-import androidx.annotation.NonNull;
-
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
@@ -23,10 +21,15 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
  * 4x2 App-Widget
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class AppWidgetLarge extends AppWidgetBase {
 
-	public static final String CMDAPPWIDGETUPDATE = "app_widget_large_update";
+	/**
+	 * tag used to identify this widget
+	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
+	 */
+	public static final String TYPE = "app_widget_large_update";
 
 	/**
 	 * {@inheritDoc}
@@ -35,7 +38,7 @@ public class AppWidgetLarge extends AppWidgetBase {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		defaultAppWidget(context, appWidgetIds);
 		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, AppWidgetLarge.CMDAPPWIDGETUPDATE);
+		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
 		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 		context.sendBroadcast(updateIntent);
@@ -58,10 +61,20 @@ public class AppWidgetLarge extends AppWidgetBase {
 	 */
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-		RemoteViews appWidgetView = getRemoteViews(service);
-
-		// Set correct drawable for pause state
+		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
+		Album album = service.getCurrentAlbum();
+		Song song = service.getCurrentSong();
 		boolean isPlaying = service.isPlaying();
+		// Set the titles and artwork
+		if (album != null && song != null) {
+			ImageFetcher imageFetcher = new ImageFetcher(service);
+			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
+			appWidgetView.setTextViewText(R.id.app_widget_large_line_one, song.getName());
+			appWidgetView.setTextViewText(R.id.app_widget_large_line_two, song.getArtist());
+			appWidgetView.setTextViewText(R.id.app_widget_large_line_three, song.getAlbum());
+			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
+		}
+		// Set correct drawable for pause state
 		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_pause);
 			appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_pause));
@@ -73,24 +86,6 @@ public class AppWidgetLarge extends AppWidgetBase {
 		linkButtons(service, appWidgetView, isPlaying);
 		// Update the app-widget
 		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
-	}
-
-
-	@NonNull
-	private static RemoteViews getRemoteViews(MusicPlaybackService service) {
-		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
-		Album album = service.getCurrentAlbum();
-		Song song = service.getCurrentSong();
-		if (album != null && song != null) {
-			ImageFetcher imageFetcher = new ImageFetcher(service);
-			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
-			// Set the titles and artwork
-			appWidgetView.setTextViewText(R.id.app_widget_large_line_one, song.getName());
-			appWidgetView.setTextViewText(R.id.app_widget_large_line_two, song.getArtist());
-			appWidgetView.setTextViewText(R.id.app_widget_large_line_three, song.getAlbum());
-			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
-		}
-		return appWidgetView;
 	}
 
 	/**

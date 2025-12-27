@@ -11,7 +11,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.store.RecentStore;
-import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetRecent;
 import org.nuclearfog.apollo.utils.Constants;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * This class is used to build the recently listened list for the
- * {@link RecentWidgetProvider}.
+ * {@link AppWidgetRecent}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
@@ -47,8 +47,10 @@ public class RecentWidgetService extends RemoteViewsService {
 		 * Image cache
 		 */
 		private ImageFetcher mFetcher;
-
-		private Context mContext;
+		/**
+		 * database to the recent played albums
+		 */
+		private RecentStore recentStore;
 
 		private List<Album> albums = new ArrayList<>();
 
@@ -56,9 +58,30 @@ public class RecentWidgetService extends RemoteViewsService {
 		 * {@inheritDoc}
 		 */
 		WidgetRemoteViewsFactory(Context context) {
-			// Initialize the image cache
 			mFetcher = new ImageFetcher(context);
-			mContext = context.getApplicationContext();
+			recentStore = RecentStore.getInstance(context);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onCreate() {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onDestroy() {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public RemoteViews getLoadingView() {
+			return null;
 		}
 
 		/**
@@ -101,12 +124,12 @@ public class RecentWidgetService extends RemoteViewsService {
 			profileIntent.putExtra(Constants.ID, album.getId());
 			profileIntent.putExtra(Constants.NAME, album.getName());
 			profileIntent.putExtra(Constants.ARTIST_NAME, album.getArtist());
-			profileIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
+			profileIntent.putExtra(AppWidgetRecent.KEY_ACTION, AppWidgetRecent.ACTION_OPEN_PROFILE);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
 			// Play the album when the artwork is touched
 			Intent playAlbumIntent = new Intent();
 			playAlbumIntent.putExtra(Constants.ID, album.getId());
-			playAlbumIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
+			playAlbumIntent.putExtra(AppWidgetRecent.KEY_ACTION, AppWidgetRecent.ACTION_PLAY_ALBUM);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbumIntent);
 			return mViews;
 		}
@@ -132,29 +155,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public void onDataSetChanged() {
-			albums = RecentStore.getInstance(mContext).getRecentAlbums();
-		}
-
-
-		@Override
-		public void onDestroy() {
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public RemoteViews getLoadingView() {
-			// Nothing to do
-			return null;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void onCreate() {
-			// Nothing to do
+			albums = recentStore.getRecentAlbums();
 		}
 	}
 }

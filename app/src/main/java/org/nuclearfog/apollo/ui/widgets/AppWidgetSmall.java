@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -22,20 +21,27 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
  * 4x1 App-Widget
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class AppWidgetSmall extends AppWidgetBase {
 
-
-	public static final String CMDAPPWIDGETUPDATE = "app_widget_small_update";
+	/**
+	 * tag used to identify this widget
+	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
+	 */
+	public static final String TYPE = "app_widget_small_update";
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		defaultAppWidget(context, appWidgetIds);
+		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
 		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, AppWidgetSmall.CMDAPPWIDGETUPDATE);
+		appWidgetViews.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
+		linkButtons(context, appWidgetViews, false);
+		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
+		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
 		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 		updateIntent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 		context.sendBroadcast(updateIntent);
@@ -63,12 +69,11 @@ public class AppWidgetSmall extends AppWidgetBase {
 		Album album = service.getCurrentAlbum();
 		if (song != null && album != null) {
 			ImageFetcher imageFetcher = new ImageFetcher(service);
-			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
 			// Set the titles and artwork
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, song.getArtist());
-			appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, bitmap);
+			appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, imageFetcher.getAlbumArtwork(album));
 		}
 		// Set correct drawable for pause state
 		boolean isPlaying = service.isPlaying();
@@ -83,17 +88,6 @@ public class AppWidgetSmall extends AppWidgetBase {
 		linkButtons(service, appWidgetView, isPlaying);
 		// Update the app-widget
 		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
-	}
-
-	/**
-	 * Initialize given widgets to default state, where we launch Music on
-	 * default click and hide actions if service not running.
-	 */
-	private void defaultAppWidget(Context context, int[] appWidgetIds) {
-		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
-		appWidgetViews.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
-		linkButtons(context, appWidgetViews, false);
-		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
 	}
 
 	/**
