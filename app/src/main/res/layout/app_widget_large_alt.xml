@@ -5,7 +5,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="@drawable/widget_background"
-	tools:ignore="ContentDescription,RtlSymmetry">
+	android:clipToOutline="true"
+	tools:ignore="ContentDescription,RtlSymmetry,UnusedAttribute,UnusedAttribute">
 
 	<LinearLayout
 		android:orientation="horizontal"
@@ -16,7 +17,7 @@
 			android:id="@+id/app_widget_large_alternate_image"
 			android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
 			android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
-			android:background="@drawable/default_artwork" />
+			android:src="@drawable/default_artwork" />
 
 		<LinearLayout
 			android:id="@+id/app_widget_large_alternate_info_container"

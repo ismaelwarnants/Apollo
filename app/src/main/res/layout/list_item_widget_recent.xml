@@ -11,6 +11,7 @@
 		android:id="@+id/app_widget_recents_base_image"
 		android:layout_width="@dimen/item_normal_height"
 		android:layout_height="@dimen/item_normal_height"
+		android:src="@drawable/default_artwork"
 		android:scaleType="centerCrop" />
 
 	<LinearLayout

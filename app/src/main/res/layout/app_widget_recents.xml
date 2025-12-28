@@ -4,13 +4,13 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_margin="0dp"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="@drawable/widget_background">
 
 	<RelativeLayout
 		android:id="@+id/app_widget_recents_action_bar"
 		android:layout_width="match_parent"
-		android:layout_height="@dimen/app_widget_recents_action_bar_height"
-		android:background="@color/action_bar_color">
+		android:layout_height="@dimen/app_widget_recents_action_bar_height">
 
 		<ImageView
 			android:id="@+id/app_widget_recents_icon"
@@ -80,7 +80,7 @@
 		android:id="@+id/app_widget_recents_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@drawable/widget_background"
-		android:cacheColorHint="@android:color/transparent" />
+		android:cacheColorHint="@android:color/transparent"
+		android:padding="@dimen/app_widget_layout_margin" />
 
 </LinearLayout>

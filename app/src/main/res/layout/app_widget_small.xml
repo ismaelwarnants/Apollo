@@ -5,7 +5,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:background="@drawable/widget_background"
-	tools:ignore="ContentDescription">
+	android:clipToOutline="true"
+	tools:ignore="ContentDescription,UnusedAttribute">
 
 	<LinearLayout
 		android:orientation="horizontal"
@@ -19,7 +20,7 @@
 			android:id="@+id/app_widget_small_image"
 			android:layout_width="@dimen/app_widget_small_artwork_size"
 			android:layout_height="@dimen/app_widget_small_artwork_size"
-			android:background="@drawable/default_artwork"
+			android:src="@drawable/default_artwork"
 			android:scaleType="centerInside" />
 
 		<ImageButton

@@ -5,13 +5,14 @@
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/app_widget_large_min_height"
 	android:background="@drawable/widget_background"
-	tools:ignore="ContentDescription,RtlSymmetry">
+	android:clipToOutline="true"
+	tools:ignore="ContentDescription,RtlSymmetry,UnusedAttribute">
 
 	<ImageView
 		android:id="@+id/app_widget_large_image"
 		android:layout_width="@dimen/notification_expanded_height"
 		android:layout_height="@dimen/notification_expanded_height"
-		android:background="@drawable/default_artwork"
+		android:src="@drawable/default_artwork"
 		android:scaleType="centerCrop" />
 
 	<LinearLayout
