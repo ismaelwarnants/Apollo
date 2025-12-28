@@ -1,12 +1,12 @@
 package org.nuclearfog.apollo.service;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -126,12 +127,9 @@ class NotificationHelper {
 	/**
 	 * create a new notification and attach it to the foreground service
 	 */
+	@SuppressLint("InlinedApi")
 	void createNotification() {
-		if (VERSION.SDK_INT >= VERSION_CODES.Q) {
-			mService.startForeground(APOLLO_MUSIC_SERVICE, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-		} else {
-			mService.startForeground(APOLLO_MUSIC_SERVICE, buildNotification());
-		}
+		ServiceCompat.startForeground(mService, APOLLO_MUSIC_SERVICE, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 	}
 
 	/**

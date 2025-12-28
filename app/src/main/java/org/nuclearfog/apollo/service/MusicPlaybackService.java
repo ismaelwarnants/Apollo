@@ -426,11 +426,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		if (intent != null) {
-			// check for playback commands
-			handleCommandIntent(intent);
+			boolean updateService = handleCommandIntent(intent);
 			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, true);
-			// create player control notification if player is not stopped
-			if (!ACTION_STOP.equals(intent.getAction())) {
+			// update service status
+			if (updateService) {
 				mNotificationHelper.createNotification();
 				if (isForeground && !isPlaying()) {
 					shutdownHandler.start();
@@ -479,10 +478,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * called if multimedia card was mounted
 	 */
 	public void onExternalStorageChanged(boolean mounted) {
+		stop();
 		if (mounted) {
 			initPlaybackList();
 		} else {
-			stop();
 			savePlaybackList(true);
 		}
 		notifyChange(CHANGED_QUEUE);
@@ -742,6 +741,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void clearQueue() {
 		stop();
 		mPlayList.clear();
+		mShuffleList.clear();
 		clearCurrentTrackInformation();
 		notifyChange(CHANGED_QUEUE);
 	}
@@ -935,7 +935,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {
 				if (stopSelfResult(mServiceStartId)) {
-					savePlaybackList(true);
 					Log.d(TAG, "service stopped");
 				}
 			}
@@ -1322,6 +1321,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * initialize the playback list
 	 */
 	private void initPlaybackList() {
+		mRepeatMode = playerSettings.getRepeatMode();
+		mShuffleMode = playerSettings.getShuffleMode();
+		int pos = playerSettings.getCursorPosition();
+
+		// init playback list
 		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
 		// todo remove this for future releases
 		if (ids.length == 0) {
@@ -1331,17 +1335,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// ^^^
 		mPlayList.setItems(ids);
+		mPlayList.setPosition(pos);
+
+		// init playback/shuffle
 		if (!mPlayList.isEmpty()) {
-			mPlayList.setPosition(playerSettings.getCursorPosition());
-			openCurrentAndNext();
-			if (mPlayer.initialized()) {
-				long seekPos = playerSettings.getSeekPosition();
-				mPlayer.setPosition(seekPos >= 0 && seekPos <= mPlayer.getDuration() ? seekPos : 0);
-			}
-			mRepeatMode = playerSettings.getRepeatMode();
-			mShuffleMode = playerSettings.getShuffleMode();
-			if (mShuffleMode != SHUFFLE_NONE) {
-				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
+			// init shuffle list
+			if (mShuffleMode == SHUFFLE_NORMAL) {
+				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId());
 				// todo remove this for future releases
 				if (history.length == 0) {
 					AppPreferences appSettings = AppPreferences.getInstance(this);
@@ -1350,19 +1350,25 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 				// ^^^
 				mShuffleList.setHistory(history);
+			} else {
+				mShuffleMode = SHUFFLE_NONE;
 			}
-			if (mShuffleMode == SHUFFLE_AUTO) {
-				if (!makeShuffleList(true)) {
-					mShuffleMode = SHUFFLE_NONE;
-				}
-			}
+			// init playback
+			openCurrentAndNext();
+			mPlayer.setPosition(playerSettings.getSeekPosition());
+		} else {
+			// reset playback/shuffle
+			clearCurrentTrackInformation();
+			mShuffleList.clear();
 		}
 	}
 
 	/**
 	 * used by widgets or other intents to change playback state
+	 *
+	 * @return true if command changes the playback status
 	 */
-	private void handleCommandIntent(Intent intent) {
+	private boolean handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
 		// go to next track
 		if (ACTION_NEXT.equals(action)) {
@@ -1384,6 +1390,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (ACTION_STOP.equals(action)) {
 			stop();
 			releaseService(false);
+			return false;
 		}
 		// set 'repeat' mode
 		else if (ACTION_REPEAT.equals(action)) {
@@ -1394,6 +1401,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			} else {
 				setRepeatMode(REPEAT_NONE);
 			}
+			return false;
 		}
 		// set 'shuffle' mode
 		else if (ACTION_SHUFFLE.equals(action)) {
@@ -1402,6 +1410,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
 				setShuffleMode(SHUFFLE_NONE);
 			}
+			return false;
 		}
+		return true;
 	}
 }
