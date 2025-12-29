@@ -2,18 +2,15 @@ package org.nuclearfog.apollo.ui.widgets;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.service.RecentWidgetService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
@@ -32,15 +29,9 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 public class AppWidgetRecent extends AppWidgetBase {
 
 	/**
-	 * tag used to identify this widget
-	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
-	 */
-	public static final String TYPE = "app_widget_recents_update";
-
-	/**
 	 * Bundle key used to add the actions {@link #ACTION_OPEN_PROFILE} & {@link #ACTION_PLAY_ALBUM}
 	 */
-	public static final String KEY_ACTION = "set_action";
+	public static final String KEY_SELECT = "set_action";
 	/**
 	 * open selected album with {@link ProfileActivity}
 	 */
@@ -54,53 +45,16 @@ public class AppWidgetRecent extends AppWidgetBase {
 	 */
 	private static final String ACTION_CLICK = BuildConfig.APPLICATION_ID + ".recents.appwidget.action.CLICK";
 
-	private static final int REQUEST_RECENT = 0x5103;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		for (int appWidgetId : appWidgetIds) {
-			// Create the remote views
-			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
-			// Link actions buttons to intents
-			linkButtons(context, mViews, false);
-			// fill list with recent albums
-			Intent recentIntent = new Intent(context, RecentWidgetService.class);
-			recentIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			recentIntent.setData(Uri.parse(recentIntent.toUri(Intent.URI_INTENT_SCHEME)));
-			mViews.setRemoteAdapter(R.id.app_widget_recents_list, recentIntent);
-			// init playback control
-			Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-			updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
-			updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-			updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-			context.sendBroadcast(updateIntent);
-			// register this class
-			Intent intent = new Intent(context, AppWidgetRecent.class);
-			intent.setAction(ACTION_CLICK);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-			PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, REQUEST_RECENT, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-			mViews.setPendingIntentTemplate(R.id.app_widget_recents_list, onClickPendingIntent);
-			// Update the widget
-			appWidgetManager.updateAppWidget(appWidgetId, mViews);
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		context = context.getApplicationContext();
 		if (ACTION_CLICK.equals(intent.getAction())) {
 			long albumId = intent.getLongExtra(Constants.ID, -1L);
-			String action = intent.getStringExtra(KEY_ACTION);
+			String option = intent.getStringExtra(KEY_SELECT);
 			// Play the selected album
-			if (ACTION_PLAY_ALBUM.equals(action)) {
+			if (ACTION_PLAY_ALBUM.equals(option)) {
 				Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
 				shortcutIntent.setAction(Intent.ACTION_VIEW);
 				shortcutIntent.putExtra(Constants.ID, albumId);
@@ -110,7 +64,7 @@ public class AppWidgetRecent extends AppWidgetBase {
 				context.startActivity(shortcutIntent);
 			}
 			// Open the album profile
-			else if (ACTION_OPEN_PROFILE.equals(action)) {
+			else if (ACTION_OPEN_PROFILE.equals(option)) {
 				Album album = MusicUtils.getAlbumForId(context, albumId);
 				Intent profileIntent = new Intent(context, ProfileActivity.class);
 				profileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -122,41 +76,42 @@ public class AppWidgetRecent extends AppWidgetBase {
 				context.startActivity(profileIntent);
 			}
 		}
+		super.onReceive(context, intent);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyChange(MusicPlaybackService service, String what) {
-		if (hasInstances(service)) {
-			if (MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)) {
-				performUpdate(service, null);
-			} else if (MusicPlaybackService.CHANGED_META.equals(what)) {
-				Handler handler = new Handler(service.getMainLooper());
-				handler.post(() -> {
-					Context context = service.getApplicationContext();
-					AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-					ComponentName componentName = new ComponentName(context, AppWidgetRecent.class);
-					appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(componentName), R.id.app_widget_recents_list);
-				});
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-		RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
-		boolean isPlaying = service.isPlaying();
-		// set button drawable
-		mViews.setImageViewResource(R.id.app_widget_recents_play, isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
+	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+		// Create the remote views
+		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
 		// Link actions buttons to intents
-		linkButtons(service, mViews, isPlaying);
-		// Update the app-widget
-		pushUpdate(service, getClass(), appWidgetIds, mViews);
+		linkButtons(context, appWidgetView, false);
+		// fill list with recent albums
+		Intent recentIntent = new Intent(context, RecentWidgetService.class);
+		recentIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+		recentIntent.setData(Uri.parse(recentIntent.toUri(Intent.URI_INTENT_SCHEME)));
+		appWidgetView.setRemoteAdapter(R.id.app_widget_recents_list, recentIntent);
+		// init playback control
+		if (isPlaying) {
+			appWidgetView.setImageViewResource(R.id.app_widget_recents_play, R.drawable.btn_playback_pause);
+			appWidgetView.setContentDescription(R.id.app_widget_recents_play, context.getString(R.string.accessibility_pause));
+		} else {
+			appWidgetView.setImageViewResource(R.id.app_widget_recents_play, R.drawable.btn_playback_play);
+			appWidgetView.setContentDescription(R.id.app_widget_recents_play, context.getString(R.string.accessibility_play));
+		}
+		// register this class
+		Intent intent = new Intent(context, AppWidgetRecent.class);
+		intent.setAction(ACTION_CLICK);
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds);
+		intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+		PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+		appWidgetView.setPendingIntentTemplate(R.id.app_widget_recents_list, onClickPendingIntent);
+		// Update the widget
+		appWidgetManager.updateAppWidget(appWidgetIds, appWidgetView);
+		// Link actions buttons to intents
+		linkButtons(context, appWidgetView, isPlaying);
 	}
 
 	/**

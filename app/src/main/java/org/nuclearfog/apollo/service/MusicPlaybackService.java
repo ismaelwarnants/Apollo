@@ -1,7 +1,9 @@
 package org.nuclearfog.apollo.service;
 
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -36,20 +38,23 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
-import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
-import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
-import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
+import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver;
 import org.nuclearfog.apollo.service.lists.PlaybackList;
 import org.nuclearfog.apollo.service.lists.ShuffleList;
-import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PlaylistStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.store.preferences.PlayerPreferences;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlt;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetRecent;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.CursorFactory;
+
+import java.io.Serializable;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -66,14 +71,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 */
 	private static final String APOLLO_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
-	/**
-	 *
-	 */
-	private static final String MUSIC_PACKAGE_NAME = "com.android.music";
-	/**
-	 * Called to indicate a general service command.
-	 */
-	public static final String SERVICECMD = APOLLO_PACKAGE_NAME + ".musicservicecommand";
 	/**
 	 * used to determine if app is in foreground
 	 */
@@ -94,6 +91,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Indicates that the seek position of the current track has changed
 	 */
 	public static final String CHANGED_SEEK = APOLLO_PACKAGE_NAME + ".seekposchanged";
+	/**
+	 * Indicates that a widget was installed and needs to be updated
+	 */
+	public static final String CHANGED_WIDGET = APOLLO_PACKAGE_NAME + ".widgetchanged";
 	/**
 	 * Indicates the repeat mode changed
 	 */
@@ -131,6 +132,26 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String ACTION_REFRESH = APOLLO_PACKAGE_NAME + ".refresh";
 	/**
+	 * bundle key of the play status (play/pause)
+	 */
+	public static final String KEY_IS_PLAYING = "isPlaying";
+	/**
+	 * bundle key used for the selected song of the playback list
+	 */
+	public static final String KEY_SONG = "song";
+	/**
+	 * bundle key used for the selected song album of the playback list
+	 */
+	public static final String KEY_ALBUM = "album";
+	/**
+	 * bundle key used for the current shuffle mode
+	 */
+	public static final String KEY_SHUFFLE = "shuffle";
+	/**
+	 * bundle key used for the current repeat mode
+	 */
+	public static final String KEY_REPEAT = "repeat";
+	/**
 	 * Moves a list to the next position in the queue
 	 */
 	public static final int MOVE_NEXT = 0xAE960453;
@@ -162,7 +183,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Repeats all the tracks in a list
 	 */
 	public static final int REPEAT_ALL = 0xEE3F9E0B;
-
+	/**
+	 * widget classes used to update all widgets
+	 */
+	private static final Class<?>[] widgets = {AppWidgetLarge.class, AppWidgetLargeAlt.class, AppWidgetRecent.class, AppWidgetSmall.class};
 	/**
 	 * Song play time used as threshold for rewinding to the beginning of the
 	 * track instead of skipping to the previous track when getting the PREVIOUS
@@ -190,13 +214,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private AudioFocusRequestCompat focusRequest;
 	/**
-	 * Broadcast receiver for widget actions
+	 * broadcast listener to detect status changes (e.g. widget update, headphone disconnect)
 	 */
-	private WidgetBroadcastReceiver mIntentReceiver;
-	/**
-	 * broadcast listener for unmounting external storage
-	 */
-	private BroadcastReceiver mUnmountReceiver, headsetReceiver;
+	private BroadcastReceiver serviceBroadcastReceiver;
 	/**
 	 * handler used to shutdown service after idle
 	 */
@@ -226,13 +246,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private PopularStore popularStore;
 	/**
-	 * database for favorited tracks
-	 */
-	private FavoritesStore favoriteStore;
-	/**
 	 * database for current playback list
 	 */
 	private PlaylistStore playlistStore;
+	/**
+	 *
+	 */
+	private AppWidgetManager widgetManager;
 	/**
 	 * current audio session ID
 	 */
@@ -304,16 +324,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// Initialize the database instances
 		recentStore = RecentStore.getInstance(getApplicationContext());
 		popularStore = PopularStore.getInstance(getApplicationContext());
-		favoriteStore = FavoritesStore.getInstance(getApplicationContext());
 		playlistStore = PlaylistStore.getInstance(getApplicationContext());
 		// initialize broadcast receiver
-		mIntentReceiver = new WidgetBroadcastReceiver(this);
-		mUnmountReceiver = new UnmountBroadcastReceiver(this);
-		headsetReceiver = new HeadsetStatusReceiver(this);
+		serviceBroadcastReceiver = new ServiceBroadcastReceiver(this);
 		imageFetcher = new ImageFetcher(this);
 		// Initialize the preferences
 		playerSettings = PlayerPreferences.getInstance(this);
 		AppPreferences appSettings = AppPreferences.getInstance(this);
+		widgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// initialize audio manager and audio session ID
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		audioSessionId = mAudio.generateAudioSessionId();
@@ -343,17 +361,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		headsetIntent.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		// init the intent filter and each action
 		IntentFilter playerIntent = new IntentFilter();
-		playerIntent.addAction(SERVICECMD);
 		playerIntent.addAction(ACTION_TOGGLEPAUSE);
 		playerIntent.addAction(ACTION_STOP);
 		playerIntent.addAction(ACTION_NEXT);
 		playerIntent.addAction(ACTION_PREVIOUS);
 		playerIntent.addAction(ACTION_REPEAT);
 		playerIntent.addAction(ACTION_SHUFFLE);
+		// init widget listener
+		IntentFilter widgetIntent = new IntentFilter();
+		widgetIntent.addAction(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
 		// register all receiver
-		ContextCompat.registerReceiver(this, mIntentReceiver, playerIntent, ContextCompat.RECEIVER_EXPORTED);
-		ContextCompat.registerReceiver(this, mUnmountReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
-		ContextCompat.registerReceiver(this, headsetReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, widgetIntent, ContextCompat.RECEIVER_EXPORTED);
 		// initialize audio effects
 		if (appSettings.isExternalAudioFxPreferred()) {
 			// send session ID to external equalizer if set
@@ -382,10 +402,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mPlayer.release();
 		// release player callbacks
 		mSession.release();
-		// Unregister the mount listener
-		unregisterReceiver(mUnmountReceiver);
-		unregisterReceiver(mIntentReceiver);
-		unregisterReceiver(headsetReceiver);
+		// Unregister the broadcast receiver
+		unregisterReceiver(serviceBroadcastReceiver);
 		// remove notification
 		mNotificationHelper.dismissNotification();
 		super.onDestroy();
@@ -468,13 +486,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * @return True if music is playing, false otherwise
-	 */
-	public boolean isPlaying() {
-		return mPlayer.isPlaying();
-	}
-
-	/**
 	 * called if multimedia card was mounted
 	 */
 	public void onExternalStorageChanged(boolean mounted) {
@@ -485,6 +496,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			savePlaybackList(true);
 		}
 		notifyChange(CHANGED_QUEUE);
+	}
+
+	/**
+	 * called if a new installed widget needs to be initialized/updated
+	 */
+	public void onWidgetUpdate() {
+		notifyChange(CHANGED_WIDGET);
+	}
+
+	/**
+	 * @return True if music is playing, false otherwise
+	 */
+	public boolean isPlaying() {
+		return mPlayer.isPlaying();
 	}
 
 	/**
@@ -638,19 +663,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void notifyChange(String what) {
 		Song song = currentSong;
 		Album album = currentAlbum;
-		// send broadcast
+
+		// send broadcast to activities and widgets
 		Intent intent = new Intent(what);
-		intent.putExtra("playing", mPlayer.isPlaying());
-		if (song != null) {
-			intent.putExtra("id", song.getId());
-			intent.putExtra("artist", song.getArtist());
-			intent.putExtra("album", song.getAlbum());
-			intent.putExtra("track", song.getName());
-			intent.putExtra("isfavorite", favoriteStore.exists(song.getId()));
+		intent.putExtra(KEY_IS_PLAYING, mPlayer.isPlaying());
+		intent.putExtra(KEY_SHUFFLE, mShuffleMode);
+		intent.putExtra(KEY_REPEAT, mRepeatMode);
+		if (song != null && album != null) {
+			intent.putExtra(KEY_SONG, (Serializable) song);
+			intent.putExtra(KEY_ALBUM, (Serializable) album);
 		}
-		Intent musicIntent = new Intent(intent);
-		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
-		sendBroadcast(musicIntent);
 		sendBroadcast(intent);
 
 		switch (what) {
@@ -667,6 +689,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mNotificationHelper.updateNotification();
 				}
 				playerSettings.setCursorPosition(mPlayList.getPosition());
+				updateWidgets(intent);
 				break;
 
 			case CHANGED_PLAYSTATE:
@@ -684,6 +707,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
 					playerSettings.setSeekPosition(mPlayer.getPosition());
 				}
+				updateWidgets(intent);
 				break;
 
 			case CHANGED_QUEUE:
@@ -699,11 +723,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				playerSettings.setSeekPosition(mPlayer.getPosition());
 				break;
 
+			case CHANGED_WIDGET:
+			case CHANGED_REPEATMODE:
+			case CHANGED_SHUFFLEMODE:
+				updateWidgets(intent);
+				// fall through
+
 			default:
 				savePlaybackList(false);
 				break;
 		}
-		mIntentReceiver.updateWidgets(this, what);
 	}
 
 	/**
@@ -1413,5 +1442,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * send broadcast to update all installed widgets
+	 *
+	 * @param intent Intent containing playback information
+	 */
+	private void updateWidgets(Intent intent) {
+		for (Class<?> widget : widgets) {
+			int[] ids = widgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), widget));
+			if (ids.length > 0) {
+				Intent widgetIntent = new Intent(intent);
+				widgetIntent.setClass(getApplicationContext(), widget);
+				widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+				widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+				sendBroadcast(widgetIntent);
+			}
+		}
 	}
 }

@@ -6,10 +6,15 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
@@ -18,6 +23,45 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
  * @author nuclearfog
  */
 public abstract class AppWidgetBase extends AppWidgetProvider {
+
+	/**
+	 * track information to show
+	 */
+	protected Song song;
+	/**
+	 * album information to show
+	 */
+	protected Album album;
+	/**
+	 * playback status
+	 */
+	protected boolean isPlaying = false;
+	/**
+	 * shuffle/repeat status
+	 */
+	protected int repeatMode, shuffleMode;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@CallSuper
+	public void onReceive(Context context, Intent intent) {
+		if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(intent.getAction())) {
+			Bundle extras = intent.getExtras();
+			if (extras != null && extras.containsKey(MusicPlaybackService.KEY_IS_PLAYING)) {
+				song = (Song) extras.getSerializable(MusicPlaybackService.KEY_SONG);
+				album = (Album) extras.getSerializable(MusicPlaybackService.KEY_ALBUM);
+				isPlaying = extras.getBoolean(MusicPlaybackService.KEY_IS_PLAYING, false);
+				repeatMode = extras.getInt(MusicPlaybackService.KEY_REPEAT, MusicPlaybackService.REPEAT_NONE);
+				shuffleMode = extras.getInt(MusicPlaybackService.KEY_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
+			} else {
+				Intent broadcastIntent = new Intent(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
+				context.sendBroadcast(broadcastIntent);
+			}
+		}
+		super.onReceive(context, intent);
+	}
 
 	/**
 	 * create pending intent used for playback control
@@ -32,16 +76,7 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	}
 
 	/**
-	 * Check against {@link AppWidgetManager} if there are any instances of this widget.
-	 */
-	protected boolean hasInstances(Context context) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
-		return mAppWidgetIds.length > 0;
-	}
-
-	/**
-	 *
+	 * send update to all installed widgets
 	 */
 	protected void pushUpdate(Context context, Class<?> widgetClass, @Nullable int[] appWidgetIds, RemoteViews views) {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -51,14 +86,4 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 			appWidgetManager.updateAppWidget(new ComponentName(context, widgetClass), views);
 		}
 	}
-
-	/**
-	 * Update all active widget instances by pushing changes
-	 */
-	public abstract void performUpdate(MusicPlaybackService service, int[] appWidgetIds);
-
-	/**
-	 * Handle a change notification coming over from {@link MusicPlaybackService}
-	 */
-	public abstract void notifyChange(MusicPlaybackService service, String what);
 }

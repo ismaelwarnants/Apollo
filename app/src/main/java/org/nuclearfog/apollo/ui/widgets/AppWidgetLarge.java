@@ -4,15 +4,11 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -26,76 +22,30 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
 public class AppWidgetLarge extends AppWidgetBase {
 
 	/**
-	 * tag used to identify this widget
-	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
-	 */
-	public static final String TYPE = "app_widget_large_update";
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		defaultAppWidget(context, appWidgetIds);
-		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
-		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-		updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-		context.sendBroadcast(updateIntent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void notifyChange(MusicPlaybackService service, String what) {
-		if (hasInstances(service)) {
-			if (MusicPlaybackService.CHANGED_META.equals(what) || MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)) {
-				performUpdate(service, null);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
-		Album album = service.getCurrentAlbum();
-		Song song = service.getCurrentSong();
-		boolean isPlaying = service.isPlaying();
-		// Set the titles and artwork
+		// update views
 		if (album != null && song != null) {
-			ImageFetcher imageFetcher = new ImageFetcher(service);
-			Bitmap bitmap = imageFetcher.getAlbumArtwork(album);
+			ImageFetcher imageFetcher = new ImageFetcher(context);
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_two, song.getArtist());
 			appWidgetView.setTextViewText(R.id.app_widget_large_line_three, song.getAlbum());
-			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
+			appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, imageFetcher.getAlbumArtwork(album));
 		}
-		// Set correct drawable for pause state
 		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_pause);
-			appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_pause));
+			appWidgetView.setContentDescription(R.id.app_widget_large_play, context.getString(R.string.accessibility_pause));
 		} else {
 			appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_play);
-			appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_play));
+			appWidgetView.setContentDescription(R.id.app_widget_large_play, context.getString(R.string.accessibility_play));
 		}
 		// Link actions buttons to intents
-		linkButtons(service, appWidgetView, isPlaying);
+		linkButtons(context, appWidgetView, isPlaying);
 		// Update the app-widget
-		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
-	}
-
-	/**
-	 * Initialize given widgets to default state, where we launch Music on
-	 * default click and hide actions if service not running.
-	 */
-	private void defaultAppWidget(Context context, int[] appWidgetIds) {
-		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
-		linkButtons(context, appWidgetViews, false);
-		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
+		pushUpdate(context, getClass(), appWidgetIds, appWidgetView);
 	}
 
 	/**

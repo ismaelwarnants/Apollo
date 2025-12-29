@@ -43,8 +43,8 @@ import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
-import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
+import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
+import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
@@ -133,7 +133,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * Broadcast receiver
 	 */
-	private PlaybackStatusReceiver mPlaybackStatus;
+	private PlaybackBroadcastReceiver mPlaybackStatus;
 
 	private FragmentContainerView queueContainer;
 	/**
@@ -189,7 +189,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
 		mImageFetcher = new ImageFetcher(this);
-		mPlaybackStatus = new PlaybackStatusReceiver(this);
+		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Theme the action bar
 		if (toolbar != null)

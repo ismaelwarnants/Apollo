@@ -124,12 +124,12 @@ public class RecentWidgetService extends RemoteViewsService {
 			profileIntent.putExtra(Constants.ID, album.getId());
 			profileIntent.putExtra(Constants.NAME, album.getName());
 			profileIntent.putExtra(Constants.ARTIST_NAME, album.getArtist());
-			profileIntent.putExtra(AppWidgetRecent.KEY_ACTION, AppWidgetRecent.ACTION_OPEN_PROFILE);
+			profileIntent.putExtra(AppWidgetRecent.KEY_SELECT, AppWidgetRecent.ACTION_OPEN_PROFILE);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
 			// Play the album when the artwork is touched
 			Intent playAlbumIntent = new Intent();
 			playAlbumIntent.putExtra(Constants.ID, album.getId());
-			playAlbumIntent.putExtra(AppWidgetRecent.KEY_ACTION, AppWidgetRecent.ACTION_PLAY_ALBUM);
+			playAlbumIntent.putExtra(AppWidgetRecent.KEY_SELECT, AppWidgetRecent.ACTION_PLAY_ALBUM);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbumIntent);
 			return mViews;
 		}

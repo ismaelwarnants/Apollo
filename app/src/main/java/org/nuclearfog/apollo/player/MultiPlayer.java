@@ -97,19 +97,19 @@ public class MultiPlayer {
 	/**
 	 * true if mediaplayer is currently playing
 	 */
-	private volatile boolean isPlaying = false;
+	private boolean isPlaying = false;
 	/**
 	 * set to true if player was initialized successfully
 	 */
-	private volatile boolean initialized = false;
+	private boolean initialized = false;
 	/**
 	 * true if player continues to next track automatically
 	 */
-	private volatile boolean continuous = true;
+	private boolean continuous = true;
 	/**
 	 * current fade in/out status {@link #FADE_IDLE ,#FADE_IN,#FADE_OUT}
 	 */
-	private volatile int fadeMode = FADE_IDLE;
+	private int fadeMode = FADE_IDLE;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -159,7 +159,7 @@ public class MultiPlayer {
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
 	 * @return true if player is ready to play
 	 */
-	public boolean setDataSource(Context context, @NonNull Uri uri) {
+	public synchronized boolean setDataSource(Context context, @NonNull Uri uri) {
 		// set source of the current selected player
 		initialized = setDataSourceImpl(mPlayers[selectedPlayer], context, uri);
 		return initialized;
@@ -171,7 +171,7 @@ public class MultiPlayer {
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
 	 * @return true if next data source is initialized successfully
 	 */
-	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
+	public synchronized boolean setNextDataSource(Context context, @Nullable Uri uri) {
 		MediaPlayer current = mPlayers[selectedPlayer];
 		MediaPlayer next = mPlayers[(selectedPlayer + 1) % mPlayers.length];
 		if (uri != null) {
@@ -196,7 +196,7 @@ public class MultiPlayer {
 	/**
 	 * @return True if the player is ready to go, false otherwise
 	 */
-	public boolean initialized() {
+	public synchronized boolean initialized() {
 		return initialized;
 	}
 

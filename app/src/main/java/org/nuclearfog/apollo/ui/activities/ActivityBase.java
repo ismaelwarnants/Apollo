@@ -28,8 +28,8 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
-import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
+import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
+import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
@@ -81,7 +81,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * Broadcast receiver
 	 */
-	private PlaybackStatusReceiver mPlaybackStatus;
+	private PlaybackBroadcastReceiver mPlaybackStatus;
 
 	private ImageFetcher imageFetcher;
 
@@ -115,7 +115,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// background of bottom action bar
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 
-		mPlaybackStatus = new PlaybackStatusReceiver(this);
+		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
 		ThemeUtils mTheme = new ThemeUtils(this);
 		imageFetcher = new ImageFetcher(this);
 

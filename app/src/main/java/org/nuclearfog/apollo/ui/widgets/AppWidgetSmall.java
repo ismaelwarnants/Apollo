@@ -10,9 +10,6 @@ import android.widget.RemoteViews;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -26,68 +23,30 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
 public class AppWidgetSmall extends AppWidgetBase {
 
 	/**
-	 * tag used to identify this widget
-	 * @see WidgetBroadcastReceiver#WIDGET_TYPE
-	 */
-	public static final String TYPE = "app_widget_small_update";
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
-		Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
-		appWidgetViews.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
-		linkButtons(context, appWidgetViews, false);
-		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
-		updateIntent.putExtra(WidgetBroadcastReceiver.WIDGET_TYPE, TYPE);
-		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-		updateIntent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
-		context.sendBroadcast(updateIntent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void notifyChange(MusicPlaybackService service, String what) {
-		if (hasInstances(service)) {
-			if (MusicPlaybackService.CHANGED_META.equals(what) || MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)) {
-				performUpdate(service, null);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
-		Song song = service.getCurrentSong();
-		Album album = service.getCurrentAlbum();
+		// update views
 		if (song != null && album != null) {
-			ImageFetcher imageFetcher = new ImageFetcher(service);
-			// Set the titles and artwork
+			ImageFetcher imageFetcher = new ImageFetcher(context);
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, song.getArtist());
 			appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, imageFetcher.getAlbumArtwork(album));
 		}
-		// Set correct drawable for pause state
-		boolean isPlaying = service.isPlaying();
 		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_small_play, R.drawable.btn_playback_pause);
-			appWidgetView.setContentDescription(R.id.app_widget_small_play, service.getString(R.string.accessibility_pause));
+			appWidgetView.setContentDescription(R.id.app_widget_small_play, context.getString(R.string.accessibility_pause));
 		} else {
 			appWidgetView.setImageViewResource(R.id.app_widget_small_play, R.drawable.btn_playback_play);
-			appWidgetView.setContentDescription(R.id.app_widget_small_play, service.getString(R.string.accessibility_play));
+			appWidgetView.setContentDescription(R.id.app_widget_small_play, context.getString(R.string.accessibility_play));
 		}
 		// Link actions buttons to intents
-		linkButtons(service, appWidgetView, isPlaying);
+		linkButtons(context, appWidgetView, isPlaying);
 		// Update the app-widget
-		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
+		pushUpdate(context, getClass(), appWidgetIds, appWidgetView);
 	}
 
 	/**

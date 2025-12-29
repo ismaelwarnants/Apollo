@@ -106,7 +106,7 @@ public class PlaylistStore extends AppStore {
 	public void setPlaylist(int type, int cardId, long[] ids) {
 		SQLiteDatabase db = getWritableDatabase();
 		String[] selectionArg = {Integer.toString(type), Integer.toString(cardId)};
-		int t = db.delete(PlaylistTable.TABLE, SELECTION_PLAYBACK, selectionArg);
+		db.delete(PlaylistTable.TABLE, SELECTION_PLAYBACK, selectionArg);
 		for (int i = 0; i < ids.length; i++) {
 			ContentValues column = new ContentValues();
 			column.put(PlaylistTable.ID, ids[i]);

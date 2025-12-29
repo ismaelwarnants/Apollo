@@ -11,18 +11,17 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
  *
  * @author nuclearfog
  */
-public class PlaybackStatusReceiver extends BroadcastReceiver {
+public class PlaybackBroadcastReceiver extends BroadcastReceiver {
 
 	/**
 	 * callback reference
 	 */
 	private PlayStatusListener callback;
 
-
 	/**
 	 * @param callback callback listener to update information
 	 */
-	public PlaybackStatusReceiver(PlayStatusListener callback) {
+	public PlaybackBroadcastReceiver(PlayStatusListener callback) {
 		this.callback = callback;
 	}
 
