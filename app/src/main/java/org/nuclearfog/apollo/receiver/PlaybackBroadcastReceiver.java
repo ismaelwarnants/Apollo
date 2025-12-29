@@ -3,11 +3,13 @@ package org.nuclearfog.apollo.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
- * this class updates the current play status from {@link MusicPlaybackService} to an activity
+ * A Broadcast receiver used by Activities to receive updates from {@link MusicPlaybackService}
+ * through {@link PlayStatusListener}
  *
  * @author nuclearfog
  */
@@ -51,6 +53,24 @@ public class PlaybackBroadcastReceiver extends BroadcastReceiver {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * create IntentFilter for this BroadcastReceiver class
+	 */
+	public IntentFilter getFilter() {
+		IntentFilter intentFilter = new IntentFilter();
+		// Play and pause changes
+		intentFilter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
+		// Shuffle and repeat changes
+		intentFilter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
+		intentFilter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
+		intentFilter.addAction(MusicPlaybackService.CHANGED_QUEUE);
+		// Track changes
+		intentFilter.addAction(MusicPlaybackService.CHANGED_META);
+		// Update a list, probably the playlist fragment's
+		intentFilter.addAction(MusicPlaybackService.ACTION_REFRESH);
+		return intentFilter;
 	}
 
 	/**

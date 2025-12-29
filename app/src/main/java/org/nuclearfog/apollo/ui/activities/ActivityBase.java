@@ -3,7 +3,6 @@ package org.nuclearfog.apollo.ui.activities;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver.PlayStatusListener;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.ShuffleRepeatButton;
@@ -148,19 +146,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	@Override
 	protected void onStart() {
 		super.onStart();
-		IntentFilter filter = new IntentFilter();
-		// Play and pause changes
-		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
-		// Shuffle and repeat changes
-		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_QUEUE);
-		// Track changes
-		filter.addAction(MusicPlaybackService.CHANGED_META);
-		// Update a list, probably the playlist fragment's
-		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		// register play state callback
-		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mPlaybackStatus, mPlaybackStatus.getFilter(), ContextCompat.RECEIVER_EXPORTED);
 		// check permissions before initialization
 		if (ApolloUtils.permissionsGranted(this)) {
 			// Bind Apollo's service

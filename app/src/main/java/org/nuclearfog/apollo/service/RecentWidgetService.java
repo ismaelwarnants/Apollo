@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used to build the recently listened list for the
- * {@link AppWidgetRecent}.
+ * This class is used to build the recently listened list for the {@link AppWidgetRecent}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class RecentWidgetService extends RemoteViewsService {
 

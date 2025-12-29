@@ -2,7 +2,6 @@ package org.nuclearfog.apollo.service;
 
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +38,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
 import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver;
+import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver.OnStatusChangedListener;
 import org.nuclearfog.apollo.service.lists.PlaybackList;
 import org.nuclearfog.apollo.service.lists.ShuffleList;
 import org.nuclearfog.apollo.store.PlaylistStore;
@@ -62,7 +62,7 @@ import java.io.Serializable;
  *
  * @author nuclearfog
  */
-public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener, OnPlaybackStatusCallback {
+public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener, OnStatusChangedListener, OnPlaybackStatusCallback {
 	/**
 	 *
 	 */
@@ -216,7 +216,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * broadcast listener to detect status changes (e.g. widget update, headphone disconnect)
 	 */
-	private BroadcastReceiver serviceBroadcastReceiver;
+	private ServiceBroadcastReceiver serviceBroadcastReceiver;
 	/**
 	 * handler used to shutdown service after idle
 	 */
@@ -351,29 +351,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				.setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH).build();
 		focusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
 				.setAudioAttributes(mAttributes).setOnAudioFocusChangeListener(this).build();
-		// init external storage listener
-		IntentFilter storageIntent = new IntentFilter();
-		storageIntent.addAction(Intent.ACTION_MEDIA_EJECT);
-		storageIntent.addAction(Intent.ACTION_MEDIA_MOUNTED);
-		storageIntent.addDataScheme("file");
-		// init headset listener
-		IntentFilter headsetIntent = new IntentFilter();
-		headsetIntent.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-		// init the intent filter and each action
-		IntentFilter playerIntent = new IntentFilter();
-		playerIntent.addAction(ACTION_TOGGLEPAUSE);
-		playerIntent.addAction(ACTION_STOP);
-		playerIntent.addAction(ACTION_NEXT);
-		playerIntent.addAction(ACTION_PREVIOUS);
-		playerIntent.addAction(ACTION_REPEAT);
-		playerIntent.addAction(ACTION_SHUFFLE);
-		// init widget listener
-		IntentFilter widgetIntent = new IntentFilter();
-		widgetIntent.addAction(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
-		// register all receiver
-		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
-		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
-		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, widgetIntent, ContextCompat.RECEIVER_EXPORTED);
+		// register receiver
+		IntentFilter intentFilter = serviceBroadcastReceiver.createIntentFiler();
+		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
 		// initialize audio effects
 		if (appSettings.isExternalAudioFxPreferred()) {
 			// send session ID to external equalizer if set
@@ -462,13 +442,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		return START_NOT_STICKY;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onPlaybackChanged() {
 		notifyChange(CHANGED_PLAYSTATE);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onWentToNext() {
 		mPlayList.setPosition(mNextPlayPos);
@@ -477,7 +461,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		notifyChange(CHANGED_SEEK);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onPlaybackError() {
 		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
@@ -486,8 +472,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * called if multimedia card was mounted
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void onExternalStorageChanged(boolean mounted) {
 		stop();
 		if (mounted) {
@@ -499,10 +486,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * called if a new installed widget needs to be initialized/updated
+	 * {@inheritDoc}
 	 */
-	public void onWidgetUpdate() {
+	@Override
+	public void onWidgetInstalled() {
 		notifyChange(CHANGED_WIDGET);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onHeadphoneDisconnected() {
+		pause(true);
 	}
 
 	/**

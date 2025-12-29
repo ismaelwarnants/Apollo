@@ -508,14 +508,24 @@ public final class MusicUtils {
 	 */
 	public static void playAll(Activity activity, long[] list, int position, boolean forceShuffle) {
 		IApolloService service = getService(activity);
-		if (list.length > 0 && service != null) {
+		if (service != null) {
 			try {
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-					service.open(list, new Random().nextInt(list.length - 1));
+					if (list.length == 1) {
+						service.open(list, 0);
+					} else if (list.length > 1) {
+						service.open(list, new Random().nextInt(list.length - 1));
+					} else {
+						service.stop();
+					}
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
-					service.open(list, position);
+					if (list.length > 0) {
+						service.open(list, position);
+					} else {
+						service.stop();
+					}
 				}
 			} catch (RemoteException exception) {
 				Log.e(TAG, "playAll()", exception);

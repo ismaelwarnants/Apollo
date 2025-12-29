@@ -5,7 +5,6 @@ import android.app.SearchableInfo;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -45,7 +44,6 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver.PlayStatusListener;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
@@ -253,13 +251,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	protected void onStart() {
 		super.onStart();
 		// register playback status receiver
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
-		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_META);
-		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mPlaybackStatus, mPlaybackStatus.getFilter(), ContextCompat.RECEIVER_EXPORTED);
 		// bind activity to service
 		MusicUtils.bindToService(this, this);
 	}

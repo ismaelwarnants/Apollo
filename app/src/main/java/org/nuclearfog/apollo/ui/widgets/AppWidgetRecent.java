@@ -91,8 +91,8 @@ public class AppWidgetRecent extends AppWidgetBase {
 		// fill list with recent albums
 		Intent recentIntent = new Intent(context, RecentWidgetService.class);
 		recentIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-		recentIntent.setData(Uri.parse(recentIntent.toUri(Intent.URI_INTENT_SCHEME)));
 		appWidgetView.setRemoteAdapter(R.id.app_widget_recents_list, recentIntent);
+		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.app_widget_recents_list);
 		// init playback control
 		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_recents_play, R.drawable.btn_playback_pause);
