@@ -20,8 +20,6 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 	 */
 	public static final String ACTION_WIDGET_UPDATE = "widget-update";
 
-	private static final String SCHEME_FILE = "file";
-
 	private OnStatusChangedListener listener;
 
 	/**
@@ -56,11 +54,10 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 		// init external storage intent filter
 		intentFilter.addAction(Intent.ACTION_MEDIA_EJECT);
 		intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-		intentFilter.addDataScheme(SCHEME_FILE);
-		// init headset intent filter
-		intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		// init widget listener
 		intentFilter.addAction(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
+		// init headset intent filter
+		intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		return intentFilter;
 	}
 
