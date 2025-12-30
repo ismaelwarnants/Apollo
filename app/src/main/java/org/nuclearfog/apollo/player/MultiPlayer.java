@@ -439,9 +439,9 @@ public class MultiPlayer {
 				case FADE_OUT_IN:
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
-						fadeMode = FADE_IN;
 						setNextPlayer();
-						playerHandler.postDelayed(()->callback.onWentToNext(), 100);
+						fadeMode = FADE_IN;
+						callback.onWentToNext();
 					}
 					break;
 

@@ -24,6 +24,11 @@ public class PlaybackList {
 	private int playPos = -1;
 
 	/**
+	 * index of the next song to play
+	 */
+	private int nextPlayPos = -1;
+
+	/**
 	 * check if list is empty
 	 *
 	 * @return true if list is empty
@@ -80,7 +85,28 @@ public class PlaybackList {
 				playPos = position;
 			} else {
 				playPos = -1;
+				nextPlayPos = -1;
 			}
+		}
+	}
+
+	/**
+	 * switch to the next play position
+	 */
+	public void gotoNextPosition() {
+		synchronized (mPlaylist) {
+			playPos = nextPlayPos;
+		}
+	}
+
+	/**
+	 * set next position to play
+	 *
+	 * @param nextPosition next play position
+	 */
+	public void setNextPosition(int nextPosition) {
+		synchronized (mPlaylist) {
+			this.nextPlayPos = nextPosition;
 		}
 	}
 

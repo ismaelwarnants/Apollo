@@ -164,11 +164,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final int SHUFFLE_NONE = 0xD47F8582;
 	/**
-	 * Shuffles all songs
+	 * Shuffles all tracks of the playback list
 	 */
 	public static final int SHUFFLE_NORMAL = 0xC5F90214;
 	/**
-	 * Party shuffle
+	 * shuffle all available tracks
 	 */
 	public static final int SHUFFLE_AUTO = 0x45EBC386;
 	/**
@@ -250,7 +250,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private PlaylistStore playlistStore;
 	/**
-	 *
+	 * app widget manager used to update all installed widget on track/playback changes
 	 */
 	private AppWidgetManager widgetManager;
 	/**
@@ -269,23 +269,32 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * used to check if service is running in the foreground
 	 */
 	private boolean isForeground = false;
-
+	/**
+	 *
+	 */
 	private ImageFetcher imageFetcher;
 	/**
 	 * current song to play
 	 */
 	@Nullable
-	private volatile Song currentSong;
+	private Song currentSong;
 	/**
 	 * current album of the song to play
 	 */
 	@Nullable
-	private volatile Album currentAlbum;
-
-	private int mServiceStartId = -1;
+	private Album currentAlbum;
+	/**
+	 * current shuffle mode {@link #SHUFFLE_NONE,#SHUFFLE_NORMAL,#SHUFFLE_AUTO}
+	 */
 	private int mShuffleMode = SHUFFLE_NONE;
+	/**
+	 * current repeat mode {@link #REPEAT_NONE,#REPEAT_CURRENT,#REPEAT_ALL}
+	 */
 	private int mRepeatMode = REPEAT_ALL;
-	private int mNextPlayPos = -1;
+	/**
+	 * ID of the current running service (used to stop service)
+	 */
+	private int mServiceStartId = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -455,7 +464,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public void onWentToNext() {
-		mPlayList.setPosition(mNextPlayPos);
+		mPlayList.gotoNextPosition();
 		updateTrackInformation(mPlayList.getSelected());
 		setNextTrack(false);
 		notifyChange(CHANGED_SEEK);
@@ -629,25 +638,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void openFile(@NonNull Uri uri) {
 		stop();
+		// open new track
 		updateTrackInformation(uri);
 		Song song = currentSong;
 		// check if track is valid
-		if (song != null) {
+		if (song != null && mPlayer.setDataSource(getApplicationContext(), uri)) {
 			// add at the beginning of the playlist
 			mPlayList.addFirst(song.getId());
 			mPlayList.setPosition(0);
 			// update metadata
+			notifyChange(CHANGED_META);
 			notifyChange(CHANGED_QUEUE);
-			if (mPlayer.setDataSource(getApplicationContext(), uri)) {
-				play();
-				setNextTrack(false);
-			} else {
-				stop();
-			}
-		}
-		// restore track information after error
-		else {
-			updateTrackInformation(mPlayList.getSelected());
+			// setup player & start
+			setNextTrack(false);
+			play();
+		} else {
+			// restore track information after error
+			openCurrentAndNext();
 		}
 	}
 
@@ -1082,7 +1089,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			updateTrackInformation(cursor);
 		} else {
 			clearCurrentTrackInformation();
-			Log.e(TAG, "failed to open track!");
+			Log.e(TAG, "failed to open track! uri=\"" + uri + "\"");
 		}
 	}
 
@@ -1202,7 +1209,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + trackId);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
 					// stop searching if the next track was set successfully
-					mNextPlayPos = nextPos;
+					mPlayList.setNextPosition(nextPos);
 					return;
 				}
 			} else {
@@ -1211,7 +1218,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// if no track was found, stop player after playback end
 		mPlayer.setNextDataSource(getApplicationContext(), null);
-		mNextPlayPos = -1;
+		mPlayList.setNextPosition(-1);
 	}
 
 	/**
