@@ -52,6 +52,11 @@ public final class Constants {
 	 * key used for context menu to add IDs to playlist entries
 	 */
 	public static final String PLAYLIST_ID = "context_playlist_id";
+
+	public static final long DURATION_SHORT = 2000;
+
+	public static final long DURATION_LONG = 5000;
+
 	/**
 	 * maximal scroll speed when dragging a list element
 	 */

@@ -33,8 +33,8 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -392,7 +392,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	private void onAlbumHide(Boolean hidden) {
 		if (getActivity() != null && selectedAlbum != null) {
 			if (hidden) {
-				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(requireActivity(), R.string.item_hidden);
 			}
 			MusicUtils.refresh(requireActivity());
 		}

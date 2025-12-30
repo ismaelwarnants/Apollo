@@ -16,7 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Playlist;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
@@ -78,10 +78,10 @@ public class DeletePlaylistDialog extends DialogFragment implements OnClickListe
 				Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, playlist.getId());
 				int deleted = requireActivity().getContentResolver().delete(mUri, null, null);
 				if (deleted > 0) {
-					AppMsg.makeText(requireActivity(), R.string.info_removed_playlist, AppMsg.STYLE_CONFIRM).show();
+					ApolloUtils.showInfoToast(requireActivity(), R.string.info_removed_playlist);
 					MusicUtils.refresh(requireActivity());
 				} else {
-					AppMsg.makeText(requireActivity(), R.string.error_delete_playlist, AppMsg.STYLE_ALERT).show();
+					ApolloUtils.showAlertToast(requireActivity(), R.string.error_delete_playlist);
 				}
 			}
 			dialog.dismiss();

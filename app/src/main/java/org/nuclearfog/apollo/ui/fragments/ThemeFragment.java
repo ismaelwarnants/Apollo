@@ -20,7 +20,6 @@ import org.nuclearfog.apollo.model.AppTheme;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 
 /**
@@ -90,7 +89,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		if (selection != null) {
 			String name = getString(R.string.theme_set, selection.mName);
 			mPreferences.setThemeSelectionIndex(position);
-			AppMsg.makeText(requireActivity(), name, AppMsg.STYLE_CONFIRM).show();
+			ApolloUtils.showInfoToast(requireActivity(), name);
 		}
 	}
 }

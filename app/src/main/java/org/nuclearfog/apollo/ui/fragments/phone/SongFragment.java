@@ -29,8 +29,8 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -299,7 +299,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 	private void onSongsHidden(Boolean hidden) {
 		if (getActivity() != null && selectedSong != null) {
 			if (hidden) {
-				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(requireActivity(), R.string.item_hidden);
 			}
 			MusicUtils.refresh(requireActivity());
 		}

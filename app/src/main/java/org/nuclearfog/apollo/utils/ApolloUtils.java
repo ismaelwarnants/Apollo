@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewParent;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.TextView;
@@ -27,6 +29,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -35,8 +39,8 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
+import org.nuclearfog.apollo.ui.views.ToastView;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -166,7 +170,7 @@ public final class ApolloUtils {
 				intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
 				activity.sendBroadcast(intent);
 				String resultMsg = activity.getString(R.string.pinned_to_home_screen, displayName);
-				AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
+				showAlertToast(activity, resultMsg);
 			} else {
 				// use shortcut manager to install shortcut
 				ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
@@ -181,7 +185,7 @@ public final class ApolloUtils {
 		} catch (Exception e) {
 			Log.e(TAG, "createShortcutIntent()", e);
 			String resultMsg = activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName);
-			AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
+			showAlertToast(activity, resultMsg);
 		}
 	}
 
@@ -311,6 +315,67 @@ public final class ApolloUtils {
 	}
 
 	/**
+	 * show info toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 */
+	public static void showInfoToast(Activity activity, @PluralsRes int plural, int quant) {
+		CharSequence message = activity.getResources().getQuantityString(plural, quant, quant);
+		showToast(activity, message.toString(), false, Constants.DURATION_SHORT);
+	}
+
+	/**
+	 * show info toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 * @param text     toast message
+	 */
+	public static void showInfoToast(Activity activity, @StringRes int text) {
+		showToast(activity, activity.getString(text), false, Constants.DURATION_SHORT);
+	}
+
+	/**
+	 * show info toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 * @param text     toast message
+	 */
+	public static void showInfoToast(Activity activity, String text) {
+		showToast(activity, text, false, Constants.DURATION_SHORT);
+	}
+
+	/**
+	 * show alert toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 * @param text     toast message
+	 */
+	public static void showAlertToast(Activity activity, @StringRes int text) {
+		showToast(activity, activity.getString(text), true, Constants.DURATION_LONG);
+	}
+
+	/**
+	 * show alert toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 * @param text     toast message
+	 */
+	public static void showAlertToast(Activity activity, String text) {
+		showToast(activity, text, true, Constants.DURATION_LONG);
+	}
+
+	/**
+	 * get the height of the status bar (notification bar)
+	 *
+	 * @return height in pixels
+	 */
+	public static int statusBarHeight(Activity activity) {
+		Rect rectangle = new Rect();
+		activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rectangle);
+		return rectangle.top;
+	}
+
+	/**
 	 * disable SSL certificate validation on Android < 6.0
 	 */
 	@SuppressLint("CustomX509TrustManager,TrustAllX509TrustManager")
@@ -374,5 +439,28 @@ public final class ApolloUtils {
 			result[i] = array[i];
 		}
 		return result;
+	}
+
+	/**
+	 * show toast message at the top of the activity view, then disappear after a given time
+	 *
+	 * @param activity activity to attach the toast view
+	 * @param text     text to show on the toast view
+	 * @param alert    true to enable the alert layout
+	 * @param duration duration in milliseconds to show the message
+	 */
+	public static void showToast(Activity activity, String text, boolean alert, long duration) {
+		MarginLayoutParams params = new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		params.topMargin = statusBarHeight(activity);
+		ToastView toastView = new ToastView(activity.getApplicationContext());
+		toastView.setText(text);
+		toastView.setAlert(alert);
+		activity.addContentView(toastView, params);
+		toastView.postDelayed(() -> {
+			ViewParent p = toastView.getParent();
+			if (p instanceof ViewGroup) {
+				((ViewGroup) p).removeView(toastView);
+			}
+		}, duration);
 	}
 }

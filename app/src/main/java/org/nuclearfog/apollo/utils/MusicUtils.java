@@ -38,7 +38,6 @@ import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
@@ -649,7 +648,7 @@ public final class MusicUtils {
 				}
 			}
 		} catch (RuntimeException exception) {
-			AppMsg.makeText(activity, R.string.error_create_playlist, AppMsg.STYLE_CONFIRM).show();
+			ApolloUtils.showInfoToast(activity, R.string.error_create_playlist);
 		}
 		return id;
 	}
@@ -694,13 +693,13 @@ public final class MusicUtils {
 						numInserted += activity.getContentResolver().bulkInsert(uri, mContentValuesCache);
 					}
 					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numInserted, numInserted);
-					AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+					ApolloUtils.showInfoToast(activity, message);
 				}
 				cursor.close();
 			}
 		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
-			AppMsg.makeText(activity, R.string.error_add_playlist, AppMsg.STYLE_CONFIRM).show();
+			ApolloUtils.showInfoToast(activity, R.string.error_add_playlist);
 		}
 	}
 
@@ -720,9 +719,9 @@ public final class MusicUtils {
 			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, id);
 			ContentResolver resolver = activity.getContentResolver();
 			resolver.update(uri, values, null, null);
-		} catch (Exception exception) {
+		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
-			AppMsg.makeText(activity, R.string.error_rename_playlist, AppMsg.STYLE_CONFIRM).show();
+			ApolloUtils.showInfoToast(activity, R.string.error_rename_playlist);
 		}
 	}
 
@@ -762,8 +761,7 @@ public final class MusicUtils {
 			ContentResolver resolver = activity.getContentResolver();
 			int count = resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
 			if (count > 0) {
-				String message = activity.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
-				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(activity, R.plurals.NNNtracksfromplaylist, count);
 				return true;
 			}
 		} catch (RuntimeException exception) {
@@ -799,7 +797,7 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_LAST);
-				AppMsg.makeText(activity, R.plurals.NNNtrackstoqueue, list.length, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(activity, R.plurals.NNNtrackstoqueue, list.length);
 			} catch (RemoteException exception) {
 				Log.e(TAG, "addToQueue()", exception);
 			}
@@ -849,7 +847,7 @@ public final class MusicUtils {
 				if (title.length() > 20)
 					title = title.substring(0, 17) + "...";
 				String message = activity.getString(R.string.set_as_ringtone, title);
-				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(activity, message);
 			}
 			cursor.close();
 		}

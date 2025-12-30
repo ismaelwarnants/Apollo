@@ -20,7 +20,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -216,7 +216,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 						if (playlistId != -1) {
 							MusicUtils.addToPlaylist(requireActivity(), playlistId, songIds);
 						} else {
-							AppMsg.makeText(requireActivity(), R.string.error_duplicate_playlistname, AppMsg.STYLE_ALERT).show();
+							ApolloUtils.showAlertToast(requireActivity(), R.string.error_duplicate_playlistname);
 						}
 						break;
 				}

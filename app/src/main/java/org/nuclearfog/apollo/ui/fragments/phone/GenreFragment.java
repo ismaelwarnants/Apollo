@@ -33,7 +33,6 @@ import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -242,7 +241,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	private void onGenreHidden(Boolean hidden) {
 		if (getActivity() != null && selectedGenre != null) {
 			if (hidden) {
-				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+				ApolloUtils.showInfoToast(requireActivity(), R.string.item_hidden);
 			}
 			MusicUtils.refresh(requireActivity());
 		}

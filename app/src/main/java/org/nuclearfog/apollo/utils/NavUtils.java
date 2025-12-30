@@ -20,7 +20,6 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.SearchActivity;
 import org.nuclearfog.apollo.ui.activities.SettingsActivity;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 /**
  * Various navigation helpers.
@@ -87,11 +86,11 @@ public final class NavUtils {
 			try {
 				activity.startActivity(effects);
 			} catch (ActivityNotFoundException exception) {
-				AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);
+				ApolloUtils.showAlertToast(activity, R.string.no_effects_for_you);
 				Log.w(TAG, "couldn't open external equalizer!", exception);
 			}
 		} else {
-			AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);
+			ApolloUtils.showAlertToast(activity, R.string.no_effects_for_you);
 			Log.w(TAG, "invalid audio session!");
 		}
 	}
