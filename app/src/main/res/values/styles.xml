@@ -33,7 +33,7 @@
 	</style>
 
 	<!-- Notification bar event text -->
-	<style name="NotificationText">
+	<style name="WidgetTextStyle">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:textColor">@android:color/white</item>

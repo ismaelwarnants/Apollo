@@ -33,19 +33,19 @@
 				android:textColor="@android:color/white"
 				android:textSize="@dimen/text_size_medium"
 				android:textStyle="bold"
-				style="@style/NotificationText" />
+				style="@style/WidgetTextStyle" />
 
 			<TextView
 				android:id="@+id/app_widget_large_alternate_line_two"
 				android:textColor="@color/transparent_white"
 				android:textSize="@dimen/text_size_small"
-				style="@style/NotificationText" />
+				style="@style/WidgetTextStyle" />
 
 			<TextView
 				android:id="@+id/app_widget_large_alternate_line_three"
 				android:textColor="@color/transparent_white"
 				android:textSize="@dimen/text_size_small"
-				style="@style/NotificationText" />
+				style="@style/WidgetTextStyle" />
 
 		</LinearLayout>
 
@@ -55,7 +55,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="1dp"
 		android:background="@color/transparent_white"
-		android:layout_marginTop="2dp"
 		android:layout_marginBottom="2dp" />
 
 	<LinearLayout

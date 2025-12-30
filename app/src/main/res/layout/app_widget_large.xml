@@ -21,27 +21,29 @@
 		android:layout_width="0dp"
 		android:layout_height="@dimen/notification_expanded_height"
 		android:layout_weight="1"
-		android:paddingStart="@dimen/notification_info_container_padding_left"
 		android:gravity="center">
 
 		<TextView
 			android:id="@+id/app_widget_large_line_one"
+			android:paddingStart="@dimen/notification_info_container_padding_left"
 			android:textColor="@android:color/white"
 			android:textSize="@dimen/text_size_medium"
 			android:textStyle="bold"
-			style="@style/NotificationText" />
+			style="@style/WidgetTextStyle" />
 
 		<TextView
 			android:id="@+id/app_widget_large_line_two"
+			android:paddingStart="@dimen/notification_info_container_padding_left"
 			android:textColor="@color/transparent_white"
 			android:textSize="@dimen/text_size_small"
-			style="@style/NotificationText" />
+			style="@style/WidgetTextStyle" />
 
 		<TextView
 			android:id="@+id/app_widget_large_line_three"
+			android:paddingStart="@dimen/notification_info_container_padding_left"
 			android:textColor="@color/transparent_white"
 			android:textSize="@dimen/text_size_small"
-			style="@style/NotificationText" />
+			style="@style/WidgetTextStyle" />
 
 		<ImageView
 			android:layout_width="match_parent"
