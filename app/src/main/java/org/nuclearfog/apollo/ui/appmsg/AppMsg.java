@@ -45,6 +45,7 @@ public class AppMsg {
 
 	private Activity activity;
 	private LayoutParams mLayoutParams;
+
 	private View mView;
 
 	private int mDuration = LENGTH_SHORT;
@@ -54,6 +55,7 @@ public class AppMsg {
 	 */
 	private AppMsg(Activity activity) {
 		this.activity = activity;
+		mLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 	}
 
 	/**
@@ -110,12 +112,16 @@ public class AppMsg {
 		return mView != null && mView.getParent() != null;
 	}
 
-
-	void addContentView(View v, LayoutParams params) {
-		activity.addContentView(v, params);
+	/**
+	 *
+	 */
+	void addContentView(View v) {
+		activity.addContentView(v, mLayoutParams);
 	}
 
-
+	/**
+	 *
+	 */
 	Context getContext() {
 		return activity.getApplicationContext();
 	}
@@ -132,18 +138,6 @@ public class AppMsg {
 	 */
 	int getDuration() {
 		return mDuration;
-	}
-
-	/**
-	 * Gets the crouton's layout parameters, constructing a default if necessary.
-	 *
-	 * @return the layout parameters
-	 */
-	LayoutParams getLayoutParams() {
-		if (mLayoutParams == null) {
-			mLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		}
-		return mLayoutParams;
 	}
 
 	/**

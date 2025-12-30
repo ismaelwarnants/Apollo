@@ -181,8 +181,7 @@
 		<!-- Used to set options -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.SettingsActivity"
-			android:label="@string/menu_settings"
-			android:theme="@style/Apollo.Theme.Dark" />
+			android:label="@string/menu_settings" />
 
 		<!-- Themes Activity -->
 		<activity

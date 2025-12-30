@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -21,7 +22,7 @@ class MsgManager extends Handler {
 
 	private static final MsgManager INSTANCE = new MsgManager();
 
-	private Queue<AppMsg> msgQueue = new LinkedList<>();
+	private Queue<WeakReference<AppMsg>> msgQueue = new LinkedList<>();
 	private Animation inAnimation, outAnimation;
 
 	/**
@@ -67,7 +68,7 @@ class MsgManager extends Handler {
 	 * Inserts a {@link AppMsg} to be displayed.
 	 */
 	void add(AppMsg appMsg) {
-		msgQueue.add(appMsg);
+		msgQueue.add(new WeakReference<>(appMsg));
 		if (inAnimation == null) {
 			inAnimation = AnimationUtils.loadAnimation(appMsg.getContext(), android.R.anim.fade_in);
 		}
@@ -81,25 +82,24 @@ class MsgManager extends Handler {
 	 * Displays the next {@link AppMsg} within the queue.
 	 */
 	private void displayMsg() {
-		if (msgQueue.isEmpty()) {
-			return;
-		}
-		// First peek whether the AppMsg is being displayed.
-		AppMsg appMsg = msgQueue.peek();
-		if (appMsg != null) {
-			// If the activity is null we throw away the AppMsg.
-			if (appMsg.getContext() == null) {
-				msgQueue.poll();
-			}
-			Message msg;
-			if (!appMsg.isShowing()) {
-				// Display the AppMsg
-				msg = obtainMessage(MESSAGE_ADD_VIEW);
-				msg.obj = appMsg;
-				sendMessage(msg);
+		WeakReference<AppMsg> ref = msgQueue.peek();
+		if (ref != null) {
+			// First peek whether the AppMsg is being displayed.
+			AppMsg appMsg = ref.get();
+			if (appMsg != null) {
+				Message msg;
+				if (!appMsg.isShowing()) {
+					// Display the AppMsg
+					msg = obtainMessage(MESSAGE_ADD_VIEW);
+					msg.obj = appMsg;
+					sendMessage(msg);
+				} else {
+					msg = obtainMessage(MESSAGE_DISPLAY);
+					sendMessageDelayed(msg, appMsg.getDuration() + inAnimation.getDuration() + outAnimation.getDuration());
+				}
 			} else {
-				msg = obtainMessage(MESSAGE_DISPLAY);
-				sendMessageDelayed(msg, appMsg.getDuration() + inAnimation.getDuration() + outAnimation.getDuration());
+				// remove item if reference is null
+				msgQueue.poll();
 			}
 		}
 	}
@@ -122,10 +122,12 @@ class MsgManager extends Handler {
 		}
 	}
 
-
+	/**
+	 *
+	 */
 	private void addMsgToView(AppMsg appMsg) {
 		if (appMsg.getView().getParent() == null) {
-			appMsg.addContentView(appMsg.getView(), appMsg.getLayoutParams());
+			appMsg.addContentView(appMsg.getView());
 		}
 		appMsg.getView().startAnimation(inAnimation);
 		Message msg = obtainMessage(MESSAGE_REMOVE);
