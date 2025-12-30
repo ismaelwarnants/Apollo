@@ -220,7 +220,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 						}
 						break;
 				}
-				MusicUtils.refresh(getActivity());
+				MusicUtils.refresh(requireContext());
 				dismiss();
 			}
 		} else if (which == Dialog.BUTTON_NEGATIVE) {
@@ -228,7 +228,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 			if (iManager != null) {
 				iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
 			}
-			MusicUtils.refresh(getActivity());
+			MusicUtils.refresh(requireContext());
 		}
 	}
 

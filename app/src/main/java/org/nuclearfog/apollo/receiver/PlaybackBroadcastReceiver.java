@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
  * A Broadcast receiver used by Activities to receive updates from {@link MusicPlaybackService}
- * through {@link PlayStatusListener}
+ * and other Activities through {@link PlayStatusListener}
  *
  * @author nuclearfog
  */
 public class PlaybackBroadcastReceiver extends BroadcastReceiver {
+
+	/**
+	 * Used to easily notify a list that it should refresh. i.e. A playlist changes
+	 */
+	public static final String ACTION_REFRESH = BuildConfig.APPLICATION_ID + ".refresh";
 
 	/**
 	 * callback reference
@@ -48,7 +54,7 @@ public class PlaybackBroadcastReceiver extends BroadcastReceiver {
 					callback.onModeChange();
 					break;
 
-				case MusicPlaybackService.ACTION_REFRESH:
+				case ACTION_REFRESH:
 					callback.refresh();
 					break;
 			}
@@ -69,7 +75,7 @@ public class PlaybackBroadcastReceiver extends BroadcastReceiver {
 		// Track changes
 		intentFilter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
-		intentFilter.addAction(MusicPlaybackService.ACTION_REFRESH);
+		intentFilter.addAction(ACTION_REFRESH);
 		return intentFilter;
 	}
 

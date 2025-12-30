@@ -23,7 +23,6 @@ interface IApolloService {
 	int getRepeatMode();
 	void setShuffleMode(int shufflemode);
 	void setRepeatMode(int repeatmode);
-	void refresh();
 	boolean isPlaying();
 	long getPlayerDuration();
 	long getPlayerPosition();

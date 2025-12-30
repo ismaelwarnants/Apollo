@@ -39,6 +39,10 @@ public class ShuffleList {
 	 * random generator used for shuffle
 	 */
 	private Random mRandom = new Random();
+
+	/**
+	 * selected index of the shuffle list
+	 */
 	private int index = -1;
 
 	/**
@@ -76,6 +80,7 @@ public class ShuffleList {
 	public void clear() {
 		synchronized (mShuffle) {
 			mShuffle.clear();
+			mHistory.clear();
 			index = -1;
 		}
 	}
@@ -84,7 +89,7 @@ public class ShuffleList {
 	 * create a new shuffle list with a new size.
 	 * Using a history to move listened track indexes to the end
 	 *
-	 * @param size    new size of the shuffle list
+	 * @param size new size of the shuffle list
 	 */
 	public void shuffle(int size) {
 		synchronized (mShuffle) {

@@ -141,6 +141,7 @@ public class PlaybackList {
 		synchronized (mPlaylist) {
 			mPlaylist.clear();
 			playPos = -1;
+			nextPlayPos = -1;
 			for (long item : items) {
 				mPlaylist.add(item);
 			}

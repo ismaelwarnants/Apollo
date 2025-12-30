@@ -116,15 +116,6 @@ class ServiceStub extends IApolloService.Stub {
 
 
 	@Override
-	public void refresh() {
-		MusicPlaybackService service = mService.get();
-		if (service != null) {
-			service.notifyChange(MusicPlaybackService.ACTION_REFRESH);
-		}
-	}
-
-
-	@Override
 	public boolean isPlaying() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)

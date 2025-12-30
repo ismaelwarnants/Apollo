@@ -36,6 +36,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
@@ -493,7 +494,7 @@ public final class MusicUtils {
 	 * play all listed songs
 	 *
 	 * @param songs   songs to play
-	 * @param shuffle true to shuffle tracks
+	 * @param shuffle True to force a shuffle, false otherwise.
 	 */
 	public static void playAll(Activity activity, List<Song> songs, boolean shuffle) {
 		playAll(activity, MusicUtils.getIDsFromSongList(songs), 0, shuffle);
@@ -517,14 +518,14 @@ public final class MusicUtils {
 					} else if (list.length > 1) {
 						service.open(list, new Random().nextInt(list.length - 1));
 					} else {
-						service.stop();
+						service.clearQueue();
 					}
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 					if (list.length > 0) {
 						service.open(list, position);
 					} else {
-						service.stop();
+						service.clearQueue();
 					}
 				}
 			} catch (RemoteException exception) {
@@ -943,15 +944,9 @@ public final class MusicUtils {
 	/**
 	 * Called when one of the lists should refresh or re-query.
 	 */
-	public static void refresh(Activity activity) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				service.refresh();
-			} catch (RemoteException exception) {
-				Log.e(TAG, "refresh()", exception);
-			}
-		}
+	public static void refresh(Context context) {
+		Intent broadcastIntent = new Intent(PlaybackBroadcastReceiver.ACTION_REFRESH);
+		context.sendBroadcast(broadcastIntent);
 	}
 
 	/**
