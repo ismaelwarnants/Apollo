@@ -182,7 +182,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * widget classes used to update all widgets
 	 */
-	private static final Class<?>[] widgets = {AppWidgetLarge.class, AppWidgetLargeAlt.class, AppWidgetRecent.class, AppWidgetSmall.class};
+	private static final Class<?>[] WIDGETS = {AppWidgetLarge.class, AppWidgetLargeAlt.class, AppWidgetRecent.class, AppWidgetSmall.class};
 	/**
 	 * Song play time used as threshold for rewinding to the beginning of the
 	 * track instead of skipping to the previous track when getting the PREVIOUS
@@ -1261,9 +1261,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void savePlaybackList(boolean full) {
 		if (full) {
-			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId(), mPlayList.getItems());
+			int cardId = getCurrentCardId();
+			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId, mPlayList.getItems());
 			if (mShuffleMode != SHUFFLE_NONE) {
-				playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), mShuffleList.getHistory());
+				playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId, mShuffleList.getHistory());
 			}
 		}
 		playerSettings.setCursorPosition(mPlayList.getPosition());
@@ -1279,30 +1280,30 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void initPlaybackList() {
 		mRepeatMode = playerSettings.getRepeatMode();
 		mShuffleMode = playerSettings.getShuffleMode();
-		int pos = playerSettings.getCursorPosition();
+		int cardId = getCurrentCardId();
 
 		// init playback list
-		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId());
+		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId);
 		// todo remove this for future releases
 		if (ids.length == 0) {
 			AppPreferences appSettings = AppPreferences.getInstance(this);
 			ids = appSettings.getPlaylist();
-			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, getCurrentCardId(), ids);
+			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId, ids);
 		}
 		// ^^^
 		mPlayList.setItems(ids);
-		mPlayList.setPosition(pos);
+		mPlayList.setPosition(playerSettings.getCursorPosition());
 
 		// init playback/shuffle
 		if (!mPlayList.isEmpty()) {
 			// init shuffle list
 			if (mShuffleMode == SHUFFLE_NORMAL) {
-				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId());
+				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId);
 				// todo remove this for future releases
 				if (history.length == 0) {
 					AppPreferences appSettings = AppPreferences.getInstance(this);
 					history = appSettings.getTrackHistory();
-					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, getCurrentCardId(), history);
+					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId, history);
 				}
 				// ^^^
 				mShuffleList.setHistory(history);
@@ -1377,7 +1378,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param intent Intent containing playback information
 	 */
 	private void updateWidgets(Intent intent) {
-		for (Class<?> widget : widgets) {
+		for (Class<?> widget : WIDGETS) {
 			int[] ids = widgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), widget));
 			if (ids.length > 0) {
 				Intent widgetIntent = new Intent(intent);

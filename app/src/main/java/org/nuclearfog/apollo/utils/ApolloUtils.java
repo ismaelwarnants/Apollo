@@ -56,6 +56,7 @@ import javax.net.ssl.X509TrustManager;
  * Mostly general and UI helpers.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public final class ApolloUtils {
 
@@ -169,8 +170,7 @@ public final class ApolloUtils {
 				intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
 				intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
 				activity.sendBroadcast(intent);
-				String resultMsg = activity.getString(R.string.pinned_to_home_screen, displayName);
-				showAlertToast(activity, resultMsg);
+				showAlertToast(activity, R.string.pinned_to_home_screen, displayName);
 			} else {
 				// use shortcut manager to install shortcut
 				ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
@@ -184,8 +184,7 @@ public final class ApolloUtils {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "createShortcutIntent()", e);
-			String resultMsg = activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName);
-			showAlertToast(activity, resultMsg);
+			showAlertToast(activity, R.string.could_not_be_pinned_to_home_screen, displayName);
 		}
 	}
 
@@ -318,10 +317,12 @@ public final class ApolloUtils {
 	 * show info toast at the top of the activity view
 	 *
 	 * @param activity activity to show the toast view
+	 * @param plural   plurals string resource
+	 * @param qnt      plurals quantity
 	 */
-	public static void showInfoToast(Activity activity, @PluralsRes int plural, int quant) {
-		CharSequence message = activity.getResources().getQuantityString(plural, quant, quant);
-		showToast(activity, message.toString(), false, Constants.DURATION_SHORT);
+	public static void showInfoToast(Activity activity, @PluralsRes int plural, int qnt) {
+		String message = activity.getResources().getQuantityString(plural, qnt, qnt);
+		showToast(activity, message, false, Constants.DURATION_SHORT);
 	}
 
 	/**
@@ -348,20 +349,22 @@ public final class ApolloUtils {
 	 * show alert toast at the top of the activity view
 	 *
 	 * @param activity activity to show the toast view
-	 * @param text     toast message
+	 * @param strRes   toast message
 	 */
-	public static void showAlertToast(Activity activity, @StringRes int text) {
-		showToast(activity, activity.getString(text), true, Constants.DURATION_LONG);
+	public static void showAlertToast(Activity activity, @StringRes int strRes) {
+		showToast(activity, activity.getString(strRes), true, Constants.DURATION_LONG);
 	}
 
 	/**
 	 * show alert toast at the top of the activity view
 	 *
 	 * @param activity activity to show the toast view
-	 * @param text     toast message
+	 * @param strRes   toast message string resource
+	 * @param text     argument for string resource
 	 */
-	public static void showAlertToast(Activity activity, String text) {
-		showToast(activity, text, true, Constants.DURATION_LONG);
+	public static void showAlertToast(Activity activity, @StringRes int strRes, String text) {
+		String resultMsg = activity.getString(strRes, text);
+		showToast(activity, resultMsg, true, Constants.DURATION_LONG);
 	}
 
 	/**

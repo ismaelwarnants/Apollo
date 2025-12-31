@@ -46,8 +46,8 @@
 
 	<color name="dialog_button">#595959</color>
 
-	<!-- appmsg colors -->
-	<color name="alert">#CC0000</color>
-	<color name="confirm">#FF8800</color>
+	<!-- ToastView colors -->
+	<color name="alert">#ffcc0000</color>
+	<color name="confirm">#ffff8800</color>
 
 </resources>

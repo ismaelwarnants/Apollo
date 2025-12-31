@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
@@ -18,8 +19,11 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 	/**
 	 * IntentFilter action used to trigger {@link MusicPlaybackService} to update the widgets
 	 */
-	public static final String ACTION_WIDGET_UPDATE = "widget-update";
+	public static final String ACTION_WIDGET_UPDATE = BuildConfig.APPLICATION_ID + ".update_widgets";
 
+	/**
+	 * listener used to update playback service
+	 */
 	private OnStatusChangedListener listener;
 
 	/**
