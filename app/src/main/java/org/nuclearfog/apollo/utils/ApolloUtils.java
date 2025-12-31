@@ -170,7 +170,7 @@ public final class ApolloUtils {
 				intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
 				intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
 				activity.sendBroadcast(intent);
-				showAlertToast(activity, R.string.pinned_to_home_screen, displayName);
+				showInfoToast(activity, R.string.pinned_to_home_screen, displayName);
 			} else {
 				// use shortcut manager to install shortcut
 				ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
@@ -343,6 +343,17 @@ public final class ApolloUtils {
 	 */
 	public static void showInfoToast(Activity activity, String text) {
 		showToast(activity, text, false, Constants.DURATION_SHORT);
+	}
+
+	/**
+	 * show info toast at the top of the activity view
+	 *
+	 * @param activity activity to show the toast view
+	 * @param text     toast message
+	 */
+	public static void showInfoToast(Activity activity, @StringRes int strRes, String text) {
+		String resultMsg = activity.getString(strRes, text);
+		showToast(activity, resultMsg, false, Constants.DURATION_SHORT);
 	}
 
 	/**
