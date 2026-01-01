@@ -16,6 +16,8 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
+import org.nuclearfog.apollo.ui.activities.HomeActivity;
 
 /**
  * super class for all app widgets
@@ -73,6 +75,17 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 		ComponentName component = new ComponentName(context, MusicPlaybackService.class);
 		Intent intent = new Intent(action).setComponent(component);
 		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+	}
+
+	/**
+	 * create pending intent used to open {@link HomeActivity} or {@link AudioPlayerActivity}
+	 *
+	 * @param isPlaying true to open {@link AudioPlayerActivity}
+	 * @return PendingIntent instance
+	 */
+	protected PendingIntent createAudioPlayerIntent(Context context, boolean isPlaying) {
+		Intent action = new Intent(context, isPlaying ? AudioPlayerActivity.class : HomeActivity.class);
+		return PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
 	}
 
 	/**

@@ -3,8 +3,6 @@ package org.nuclearfog.apollo.ui.widgets;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.Intent;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -12,7 +10,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
-import org.nuclearfog.apollo.ui.activities.HomeActivity;
 
 /**
  * 4x1 App-Widget
@@ -31,10 +28,13 @@ public class AppWidgetSmall extends AppWidgetBase {
 		// update views
 		if (song != null && album != null) {
 			ImageFetcher imageFetcher = new ImageFetcher(context);
-			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());
 			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, song.getArtist());
 			appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, imageFetcher.getAlbumArtwork(album));
+		} else {
+			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, "");
+			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, "");
+			appWidgetView.setImageViewResource(R.id.app_widget_small_image, R.drawable.default_artwork);
 		}
 		if (isPlaying) {
 			appWidgetView.setImageViewResource(R.id.app_widget_small_play, R.drawable.btn_playback_pause);
@@ -52,12 +52,11 @@ public class AppWidgetSmall extends AppWidgetBase {
 	/**
 	 * Link up various button actions using {@link PendingIntent}.
 	 *
-	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
+	 * @param isPlaying True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
-	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
+	private void linkButtons(Context context, RemoteViews views, boolean isPlaying) {
 		// open player
-		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
+		PendingIntent pendingIntent = createAudioPlayerIntent(context, isPlaying);
 		views.setOnClickPendingIntent(R.id.app_widget_small_info_container, pendingIntent);
 		views.setOnClickPendingIntent(R.id.app_widget_small_image, pendingIntent);
 		// Previous track

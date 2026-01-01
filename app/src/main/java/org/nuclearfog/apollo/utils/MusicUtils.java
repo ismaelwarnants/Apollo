@@ -43,7 +43,6 @@ import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.WeakHashMap;
 
 /**
@@ -512,20 +511,12 @@ public final class MusicUtils {
 			try {
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-					if (list.length == 1) {
-						service.open(list, 0);
-					} else if (list.length > 1) {
-						service.open(list, new Random().nextInt(list.length - 1));
-					} else {
-						service.clearQueue();
-					}
+					position = 0;
+				}
+				if (list.length > 0) {
+					service.open(list, position);
 				} else {
-					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
-					if (list.length > 0) {
-						service.open(list, position);
-					} else {
-						service.clearQueue();
-					}
+					service.clearQueue();
 				}
 			} catch (RemoteException exception) {
 				Log.e(TAG, "playAll()", exception);

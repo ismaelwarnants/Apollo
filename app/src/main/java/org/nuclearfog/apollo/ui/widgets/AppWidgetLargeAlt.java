@@ -3,7 +3,6 @@ package org.nuclearfog.apollo.ui.widgets;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.widget.RemoteViews;
 
@@ -12,7 +11,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
-import org.nuclearfog.apollo.ui.activities.HomeActivity;
 
 /**
  * 4x2 App-Widget
@@ -32,9 +30,14 @@ public class AppWidgetLargeAlt extends AppWidgetBase {
 		if (album != null && song != null) {
 			ImageFetcher imageFetcher = new ImageFetcher(context);
 			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, song.getName());
-			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, album.getArtist());
-			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, album.getName());
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, song.getArtist());
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, song.getAlbum());
 			appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, imageFetcher.getAlbumArtwork(album));
+		} else {
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, "");
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, "");
+			appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, "");
+			appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_image, R.drawable.default_artwork);
 		}
 		// Set correct drawable for pause state
 		if (isPlaying) {
@@ -61,10 +64,10 @@ public class AppWidgetLargeAlt extends AppWidgetBase {
 		// Set the correct drawable color for the shuffle state
 		appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle);
 		appWidgetView.setContentDescription(R.id.app_widget_large_alternate_shuffle, context.getString(R.string.accessibility_shuffle));
-		if (shuffleMode == MusicPlaybackService.SHUFFLE_NONE) {
-			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.GRAY);
-		} else {
+		if (shuffleMode == MusicPlaybackService.SHUFFLE_NORMAL || shuffleMode == MusicPlaybackService.SHUFFLE_AUTO) {
 			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.WHITE);
+		} else {
+			appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setColorFilter", Color.GRAY);
 		}
 		// Link actions buttons to intents
 		linkButtons(context, appWidgetView, isPlaying);
@@ -75,12 +78,11 @@ public class AppWidgetLargeAlt extends AppWidgetBase {
 	/**
 	 * Link up various button actions using {@link PendingIntent}.
 	 *
-	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
+	 * @param isPlaying True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
-	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
+	private void linkButtons(Context context, RemoteViews views, boolean isPlaying) {
 		// open player
-		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
+		PendingIntent pendingIntent = createAudioPlayerIntent(context, isPlaying);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_info_container, pendingIntent);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_image, pendingIntent);
 		// Shuffle modes

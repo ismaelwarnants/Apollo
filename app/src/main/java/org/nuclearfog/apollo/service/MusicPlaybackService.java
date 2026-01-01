@@ -258,10 +258,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private boolean mServiceInUse = false;
 	/**
-	 * Used to track what type of audio focus loss caused the playback to pause
-	 */
-	private boolean mPausedByFocusLoss = false;
-	/**
 	 * used to check if service is running in the foreground
 	 */
 	private boolean isForeground = false;
@@ -306,18 +302,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onRebind(Intent intent) {
-		mServiceInUse = true;
-		shutdownHandler.stop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		return isPlaying() || mPausedByFocusLoss;
+		return false;
 	}
 
 	/**
@@ -401,16 +388,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-				if (mPlayer.isPlaying()) {
-					mPausedByFocusLoss = true;
-				}
-
 			case AudioManager.AUDIOFOCUS_LOSS:
 				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
-				mPausedByFocusLoss = false;
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
 					mPlayer.setMaxVolume(1f);
 				break;
@@ -566,7 +548,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, focusRequest);
 		if (returnCode == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 			if (mPlayer.initialized() && !mPlayList.isEmpty()) {
-				mPausedByFocusLoss = false;
 				// jump to next track directly if reached the end
 				long duration = mPlayer.getDuration();
 				if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
@@ -1089,7 +1070,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// reset current playback
 		if (mPlayer.isPlaying())
 			mPlayer.pause(true);
-		clearCurrentTrackInformation();
 		if (!mPlayList.isEmpty() && mPlayList.getPosition() >= 0) {
 			for (int retry = 0; retry < RETRY_COUNT; retry++) {
 				// try to open current track
@@ -1103,6 +1083,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					}
 				} else {
 					Log.w(TAG, "openCurrentTrack(): Invalid track ID!");
+					clearCurrentTrackInformation();
 					return;
 				}
 				// go to next track if an error occurred
@@ -1113,6 +1094,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else {
 			Log.w(TAG, "openCurrentTrack(): Playlist invalid: " + mPlayList);
 		}
+		clearCurrentTrackInformation();
 	}
 
 	/**

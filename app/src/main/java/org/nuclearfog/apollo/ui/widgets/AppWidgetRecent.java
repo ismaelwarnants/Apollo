@@ -14,7 +14,6 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.service.RecentWidgetService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
-import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.utils.Constants;
@@ -117,12 +116,11 @@ public class AppWidgetRecent extends AppWidgetBase {
 	/**
 	 * Link up various button actions using {@link PendingIntent}.
 	 *
-	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
+	 * @param isPlaying True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
-	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
+	private void linkButtons(Context context, RemoteViews views, boolean isPlaying) {
 		// open player
-		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
+		PendingIntent pendingIntent = createAudioPlayerIntent(context, isPlaying);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_action_bar, pendingIntent);
 		// Previous track
 		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_PREVIOUS);
