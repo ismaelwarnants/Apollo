@@ -969,14 +969,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					// find track by document ID
 					int idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
 					if (idxName >= 0) {
-						String idStr = fileCursor.getString(idxName);
-						if (idStr != null) {
-							int cut = idStr.indexOf(":");
-							if (cut >= 0 && idStr.length() > 1) {
-								idStr = idStr.substring(cut + 1);
+						String name = fileCursor.getString(idxName);
+						if (name != null) {
+							int divider = name.indexOf(":");
+							if (divider >= 0 && name.length() > 1) {
+								name = name.substring(divider + 1);
 							}
-							if (idStr.matches("\\d{1,18}")) {
-								cursor = CursorFactory.makeTrackCursor(this, Long.parseLong(idStr));
+							// check if suffix is a document ID
+							if (name.matches("\\d{1,18}")) {
+								cursor = CursorFactory.makeTrackCursor(this, Long.parseLong(name));
+							}
+							// try to open as relative file path
+							if (cursor == null) {
+								cursor = CursorFactory.makeTrackCursor(this, name);
 							}
 						}
 					}
