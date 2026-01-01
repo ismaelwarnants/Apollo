@@ -3,7 +3,6 @@ package org.nuclearfog.apollo.store.preferences;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -22,8 +21,6 @@ import org.nuclearfog.apollo.utils.SortOrder;
  */
 @SuppressLint("ApplySharedPref")
 public final class AppPreferences {
-
-	private static final String TAG = "AppPreferences";
 
 	/* Default start page (Artist page) */
 	private static final int DEFAULT_PAGE = 3;
@@ -69,9 +66,6 @@ public final class AppPreferences {
 	private static final String AUTOSCROLL = "autoscroll_current";
 	private static final String DISABLE_CERT_VALID = "disable_ssl_verification";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
-
-	private static final String HISTORY = "history";
-	private static final String QUEUE = "queue";
 
 	private static AppPreferences sInstance;
 
@@ -444,59 +438,5 @@ public final class AppPreferences {
 	 */
 	public boolean crossfadeEnabled() {
 		return defaultPref.getBoolean(ENABLE_XFADE, true);
-	}
-
-	/**
-	 * get last playlist
-	 *
-	 * @return playlist
-	 * @deprecated replaced by database {@link org.nuclearfog.apollo.store.PlaylistStore}
-	 */
-	@Deprecated
-	public long[] getPlaylist() {
-		String trackQueue = defaultPref.getString(QUEUE, "");
-		// delete playlist from shared preferences as it isn't used anymore
-		if (!trackQueue.isEmpty()) {
-			String[] items = trackQueue.split(";");
-			long[] ids = new long[items.length];
-			for (int i = 0; i < items.length; i++) {
-				String item = items[i];
-				try {
-					ids[i] = Long.parseLong(item, 16);
-				} catch (NumberFormatException exception) {
-					Log.w(TAG, "bad playlist id: " + item);
-					ids[i] = -1;
-				}
-			}
-			defaultPref.edit().remove(QUEUE).commit();
-			return ids;
-		}
-		return new long[0];
-	}
-
-	/**
-	 * get track history
-	 *
-	 * @return array of track IDs
-	 * @deprecated replaced by database {@link org.nuclearfog.apollo.store.PlaylistStore}
-	 */
-	@Deprecated
-	public long[] getTrackHistory() {
-		String trackHistory = defaultPref.getString(HISTORY, "");
-		// delete shuffle history from shared preferences as it isn't used anymore
-		if (!trackHistory.isEmpty()) {
-			String[] items = trackHistory.split(";");
-			long[] ids = new long[items.length];
-			for (int i = 0; i < ids.length; i++) {
-				try {
-					ids[i] = Integer.parseInt(items[i], 16);
-				} catch (NumberFormatException exception) {
-					Log.w(TAG, "bad history index: " + items[i]);
-				}
-			}
-			defaultPref.edit().remove(HISTORY).commit();
-			return ids;
-		}
-		return new long[0];
 	}
 }

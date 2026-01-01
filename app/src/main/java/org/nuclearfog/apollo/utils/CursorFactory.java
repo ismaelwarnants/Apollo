@@ -120,18 +120,6 @@ public final class CursorFactory {
 	};
 
 	/**
-	 * projection for track search
-	 */
-	@SuppressLint("InlinedApi")
-	private static final String[] SEARCH_COLUMNS = {
-			Media._ID,
-			Media.ARTIST,
-			Media.ALBUM,
-			Media.TITLE,
-			Media.DURATION
-	};
-
-	/**
 	 * column selection for audio rows
 	 */
 	private static final String[] AUDIO_COLUMNS = {
@@ -560,21 +548,6 @@ public final class CursorFactory {
 	}
 
 	/**
-	 * creates cursor to search for tracks with fixed column order
-	 * {@link #SEARCH_COLUMNS}
-	 *
-	 * @param query The user's query.
-	 * @return The {@link Cursor} used to perform the search.
-	 */
-	@Nullable
-	public static Cursor makeSearchCursor(Context context, String query) {
-		ContentResolver resolver = context.getContentResolver();
-
-		Uri media = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query));
-		return resolver.query(media, SEARCH_COLUMNS, null, null, null);
-	}
-
-	/**
 	 * creates a playlist cursor with fixed columns
 	 * {@link #PLAYLIST_COUNT}
 	 *
@@ -616,15 +589,15 @@ public final class CursorFactory {
 	/**
 	 * creates cursor to search for a single track information
 	 *
-	 * @param path         path to the audio file
+	 * @param uri          uri to the audio file
 	 * @param fixedColumns true to use {@link #TRACK_COLUMNS} order for the results
 	 */
 	@Nullable
-	public static Cursor makeTrackCursor(Context context, Uri path, boolean fixedColumns) {
+	public static Cursor makeTrackCursor(Context context, Uri uri, boolean fixedColumns) {
 		ContentResolver resolver = context.getContentResolver();
 		if (fixedColumns)
-			return resolver.query(path, TRACK_COLUMNS, null, null, null);
-		return resolver.query(path, null, null, null, null);
+			return resolver.query(uri, TRACK_COLUMNS, null, null, null);
+		return resolver.query(uri, null, null, null, null);
 	}
 
 	/**

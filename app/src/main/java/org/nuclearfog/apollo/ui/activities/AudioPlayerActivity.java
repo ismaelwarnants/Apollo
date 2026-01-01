@@ -151,6 +151,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private ArtistSongLoader artistSongLoader;
 	private AlbumSongLoader albumSongLoader;
 
+	/**
+	 * intent set if player should play audio file
+	 */
+	@Nullable
+	private Intent playerIntent = null;
+
 	private int playPos = 0;
 
 	/**
@@ -189,6 +195,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mImageFetcher = new ImageFetcher(this);
 		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
+		playerIntent = getIntent();
 		// Theme the action bar
 		if (toolbar != null)
 			setSupportActionBar(toolbar);
@@ -240,8 +247,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	public void onNewIntent(Intent intent) {
+		playerIntent = intent;
 		super.onNewIntent(intent);
-		startPlayback(intent);
 	}
 
 	/**
@@ -398,7 +405,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onServiceConnected() {
 		// Check whether we were asked to start any playback
-		startPlayback(getIntent());
+		startPlayback();
 		// Set the playback drawables
 		updatePlaybackControls();
 		// Update the favorites icon
@@ -571,11 +578,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * and starts playback if that's the case
 	 */
 	@SuppressWarnings("deprecation")
-	private void startPlayback(@Nullable Intent intent) {
-		if (intent != null) {
-			Uri uri = intent.getData();
-			String mimeType = intent.getType();
-			setIntent(new Intent());
+	private void startPlayback() {
+		if (playerIntent != null) {
+			Uri uri = playerIntent.getData();
+			String mimeType = playerIntent.getType();
 			// open file
 			if (uri != null && !uri.toString().isEmpty()) {
 				MusicUtils.playFile(this, uri);
@@ -583,7 +589,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			}
 			// open playlist
 			else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
-				long id = parseIdFromIntent(intent, "playlistId", "playlist");
+				long id = parseIdFromIntent(playerIntent, "playlistId", "playlist");
 				if (id != -1L) {
 					playPos = 0;
 					playlistSongLoader.execute(id, onPlaySongs);
@@ -591,20 +597,22 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			}
 			// open album
 			else if (Albums.CONTENT_TYPE.equals(mimeType)) {
-				long id = parseIdFromIntent(intent, "albumId", "album");
+				long id = parseIdFromIntent(playerIntent, "albumId", "album");
 				if (id != -1L) {
-					playPos = intent.getIntExtra("position", 0);
+					playPos = playerIntent.getIntExtra("position", 0);
 					albumSongLoader.execute(id, onPlaySongs);
 				}
 			}
 			// open artist
 			else if (Artists.CONTENT_TYPE.equals(mimeType)) {
-				long id = parseIdFromIntent(intent, "artistId", "artist");
+				long id = parseIdFromIntent(playerIntent, "artistId", "artist");
 				if (id != -1L) {
-					playPos = intent.getIntExtra("position", 0);
+					playPos = playerIntent.getIntExtra("position", 0);
 					artistSongLoader.execute(id, onPlaySongs);
 				}
 			}
+			// reset intent if consumed
+			playerIntent = null;
 		}
 	}
 

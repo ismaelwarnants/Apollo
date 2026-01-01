@@ -942,43 +942,49 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
 			cursor = CursorFactory.makeTrackCursor(this, uri, true);
 		}
+		// use file path to get information
+		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
+			cursor = CursorFactory.makeTrackCursor(this, uri.getPath());
+		}
+		// use absolute file path
+		else if (uri.getPath() != null && uri.getPath().startsWith("/root/")) {
+			String path = uri.getPath().substring(5);
+			cursor = CursorFactory.makeTrackCursor(this, path);
+		}
 		// use audio ID to get information
 		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("audio:\\d{1,18}")) {
 			long id = Long.parseLong(uri.getLastPathSegment().substring(6));
 			cursor = CursorFactory.makeTrackCursor(this, id);
 		}
-		// use file path to get information
-		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
-			cursor = CursorFactory.makeTrackCursor(this, uri.getPath());
+		// use generic document ID
+		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("\\d{1,18}")) {
+			long id = Long.parseLong(uri.getLastPathSegment());
+			cursor = CursorFactory.makeTrackCursor(this, id);
 		}
-		// use absolute path
-		else if (uri.getPath() != null && uri.getPath().startsWith("/root/")) {
-			String path = uri.getPath().substring(5);
-			cursor = CursorFactory.makeTrackCursor(this, path);
-		}
-		// fallback, use file name/relative path to get information
-		else {
-			// get file information
+		// fallback, use content resolver to get file information
+		if (cursor == null) {
 			Cursor fileCursor = CursorFactory.makeTrackCursor(this, uri, false);
-			// search for file in the MediaStore
 			if (fileCursor != null) {
 				if (fileCursor.moveToFirst()) {
-					// find track by file path
-					int idxName = fileCursor.getColumnIndex(FileColumns.DATA);
-					if (idxName < 0)
-						idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
-					// if not found, find track by file name (less precise)
-					if (idxName < 0)
-						idxName = fileCursor.getColumnIndex(FileColumns.DISPLAY_NAME);
-					// if found, get track information
+					// find track by document ID
+					int idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
 					if (idxName >= 0) {
-						String name = fileCursor.getString(idxName);
-						if (name != null) {
-							int cut = name.indexOf(":");
-							if (cut > 0 && cut < name.length() + 1) {
-								name = name.substring(cut + 1);
+						String idStr = fileCursor.getString(idxName);
+						if (idStr != null) {
+							int cut = idStr.indexOf(":");
+							if (cut >= 0 && idStr.length() > 1) {
+								idStr = idStr.substring(cut + 1);
 							}
-							// set track information
+							if (idStr.matches("\\d{1,18}")) {
+								cursor = CursorFactory.makeTrackCursor(this, Long.parseLong(idStr));
+							}
+						}
+					}
+					// find track by file path
+					if (cursor == null) {
+						idxName = fileCursor.getColumnIndex(FileColumns.DATA);
+						if (idxName >= 0) {
+							String name = fileCursor.getString(idxName);
 							cursor = CursorFactory.makeTrackCursor(this, name);
 						}
 					}
@@ -1266,13 +1272,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 		// init playback list
 		long[] ids = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId);
-		// todo remove this for future releases
-		if (ids.length == 0) {
-			AppPreferences appSettings = AppPreferences.getInstance(this);
-			ids = appSettings.getPlaylist();
-			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId, ids);
-		}
-		// ^^^
 		mPlayList.setItems(ids);
 		mPlayList.setPosition(playerSettings.getCursorPosition());
 
@@ -1281,13 +1280,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			// init shuffle list
 			if (mShuffleMode == SHUFFLE_NORMAL) {
 				long[] history = playlistStore.getPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId);
-				// todo remove this for future releases
-				if (history.length == 0) {
-					AppPreferences appSettings = AppPreferences.getInstance(this);
-					history = appSettings.getTrackHistory();
-					playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId, history);
-				}
-				// ^^^
 				mShuffleList.setHistory(history);
 			} else {
 				mShuffleMode = SHUFFLE_NONE;
