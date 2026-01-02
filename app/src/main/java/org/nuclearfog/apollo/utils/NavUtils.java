@@ -55,7 +55,7 @@ public final class NavUtils {
 	public static void openAlbumProfile(Activity activity, Album album) {
 		// Create a new bundle to transfer the album info
 		Bundle bundle = new Bundle();
-		bundle.putString(Constants.ALBUM_YEAR, album.getRelease());
+		bundle.putString(Constants.ALBUM_YEAR, Integer.toString(album.getRelease()));
 		bundle.putString(Constants.ARTIST_NAME, album.getArtist());
 		bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
 		bundle.putLong(Constants.ID, album.getId());

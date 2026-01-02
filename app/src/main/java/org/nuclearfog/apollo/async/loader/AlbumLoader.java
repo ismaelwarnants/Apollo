@@ -54,7 +54,7 @@ public class AlbumLoader extends AsyncExecutor<Void, List<Album>> {
 							// Copy the number of songs
 							int songCount = mCursor.getInt(3);
 							// Copy the release year
-							String year = mCursor.getString(4);
+							int year = mCursor.getInt(4);
 							// check if album is excluded from viewing
 							boolean visible = !excludedIds.contains(id);
 							// Create a new album

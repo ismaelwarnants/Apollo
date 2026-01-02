@@ -117,12 +117,12 @@ public final class MusicUtils {
 	public static void bindToService(Activity activity, @Nullable ServiceBinderCallback callback) {
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
 		Intent intent = new Intent(activity, MusicPlaybackService.class);
+		intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, false);
 		activity.startService(intent);
 		ServiceBinder binder = new ServiceBinder(callback);
 		if (contextWrapper.bindService(intent, binder, 0)) {
 			mConnectionMap.put(activity, binder);
 		}
-		binder.stopForeground();
 	}
 
 	/**
@@ -595,13 +595,13 @@ public final class MusicUtils {
 	@Nullable
 	public static Album getAlbumForId(Context context, long id) {
 		Album album = null;
-		Cursor cursor = CursorFactory.makeArtistCursor(context, id);
+		Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				String albumName = cursor.getString(1);
 				String artist = cursor.getString(2);
 				int songCount = cursor.getInt(3);
-				String year = cursor.getString(4);
+				String year = Integer.toString(cursor.getInt(4));
 				album = new Album(id, albumName, artist, songCount, year, true);
 			}
 			cursor.close();

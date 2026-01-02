@@ -3,7 +3,8 @@ package org.nuclearfog.apollo.utils;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.os.RemoteException;
+
+import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.IApolloService;
 
@@ -19,8 +20,6 @@ public class ServiceBinder implements ServiceConnection {
 	private WeakReference<ServiceBinderCallback> callback;
 	private IApolloService service;
 
-	private boolean stopForeground = false;
-
 	/**
 	 * @param callback callback used to inform an activity that the service is connected
 	 */
@@ -32,14 +31,6 @@ public class ServiceBinder implements ServiceConnection {
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder iBinder) {
 		service = IApolloService.Stub.asInterface(iBinder);
-		try {
-			if (stopForeground) {
-				stopForeground = false;
-				service.stopForeground();
-			}
-		} catch (RemoteException e) {
-			// ignore
-		}
 		if (callback.get() != null) {
 			callback.get().onServiceConnected();
 		}
@@ -49,29 +40,14 @@ public class ServiceBinder implements ServiceConnection {
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
 		service = null;
-		stopForeground = false;
 	}
 
 	/**
 	 * get attached service interface
 	 */
+	@Nullable
 	public IApolloService getService() {
 		return service;
-	}
-
-	/**
-	 * stop foreground activity of the service after connecting
-	 */
-	public void stopForeground() {
-		if (service != null) {
-			try {
-				service.stopForeground();
-			} catch (RemoteException e) {
-				stopForeground = true;
-			}
-		} else {
-			stopForeground = true;
-		}
 	}
 
 	/**

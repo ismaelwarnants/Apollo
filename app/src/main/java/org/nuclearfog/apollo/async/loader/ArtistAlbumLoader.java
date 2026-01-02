@@ -48,7 +48,7 @@ public class ArtistAlbumLoader extends AsyncExecutor<Long, List<Album>> {
 							// Copy the number of songs
 							int songCount = mCursor.getInt(3);
 							// Copy the release year
-							String year = mCursor.getString(4);
+							int year = mCursor.getInt(4);
 							// Create a new album
 							Album album = new Album(id, albumName, artist, songCount, year, true);
 							// Add everything up

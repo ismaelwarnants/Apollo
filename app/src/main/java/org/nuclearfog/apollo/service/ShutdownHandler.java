@@ -1,6 +1,7 @@
 package org.nuclearfog.apollo.service;
 
 import android.os.Handler;
+import android.util.Log;
 
 /**
  * Handler used to shutdown (idle) playback service after timeout
@@ -8,6 +9,8 @@ import android.os.Handler;
  * @author nuclearfog
  */
 public class ShutdownHandler extends Handler implements Runnable {
+
+	private static final String TAG = "ShutdownHandler";
 
 	/**
 	 * Idle time in milliseconds before stopping the foreground notification
@@ -28,6 +31,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	@Override
 	public void run() {
 		service.releaseService(false);
+		Log.d(TAG, "shutdown executed.");
 	}
 
 	/**
@@ -36,6 +40,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	public void start() {
 		removeCallbacks(this);
 		postDelayed(this, IDLE_DELAY);
+		Log.d(TAG, "shutdown in (s): " + IDLE_DELAY);
 	}
 
 	/**
@@ -43,5 +48,6 @@ public class ShutdownHandler extends Handler implements Runnable {
 	 */
 	public void stop() {
 		removeCallbacks(this);
+		Log.d(TAG, "shutdown stopped.");
 	}
 }

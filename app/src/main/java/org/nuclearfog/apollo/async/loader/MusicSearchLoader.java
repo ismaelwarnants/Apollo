@@ -59,7 +59,7 @@ public class MusicSearchLoader extends AsyncExecutor<String, List<Music>> {
 							String albumName = cursor.getString(1);
 							String artist = cursor.getString(2);
 							int songCount = cursor.getInt(3);
-							String year = cursor.getString(4);
+							int year = cursor.getInt(4);
 							Album album = new Album(id, albumName, artist, songCount, year, true);
 							result.add(album);
 						} while (cursor.moveToNext());

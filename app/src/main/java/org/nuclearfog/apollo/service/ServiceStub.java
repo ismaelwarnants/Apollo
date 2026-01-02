@@ -107,15 +107,6 @@ class ServiceStub extends IApolloService.Stub {
 
 
 	@Override
-	public void stopForeground() {
-		MusicPlaybackService service = mService.get();
-		if (service != null) {
-			service.stopForeground();
-		}
-	}
-
-
-	@Override
 	public boolean isPlaying() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)

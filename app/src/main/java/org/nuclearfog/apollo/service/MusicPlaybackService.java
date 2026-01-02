@@ -13,7 +13,6 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files.FileColumns;
 import android.support.v4.media.MediaMetadataCompat;
@@ -416,15 +415,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceStartId = startId;
 		if (intent != null) {
 			boolean updateService = handleCommandIntent(intent);
-			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-			// start foreground service
-			if (isForeground) {
-				mNotificationHelper.startForeground();
+			if (intent.hasExtra(EXTRA_FOREGROUND)) {
+				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
+				Log.d(TAG, "isForeground=" + isForeground);
+				// start foreground service
+				if (isForeground) {
+					mNotificationHelper.startForeground();
+				}
 			}
 			// update service status
 			if (updateService) {
 				mNotificationHelper.updateNotification();
 				if (!isForeground || isPlaying()) {
+					shutdownHandler.stop();
 					return START_STICKY;
 				}
 			} else {
@@ -851,15 +854,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 *
-	 */
-	void stopForeground() {
-		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-		shutdownHandler.stop();
-		isForeground = false;
-	}
-
-	/**
 	 * releases playback service and removes notification/playback controls
 	 *
 	 * @param force true to force shutdown this service
@@ -868,6 +862,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!isPlaying() || force) {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+			isForeground = false;
 			if (!mServiceInUse || force) {
 				if (stopSelfResult(mServiceStartId)) {
 					Log.d(TAG, "service stopped");
@@ -897,7 +892,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, song.getDuration());
 		}
 		if (album != null) {
-			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, album.getRelease());
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, Integer.toString(album.getRelease()));
 			builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, album.getTrackCount());
 			builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, imageFetcher.getAlbumArtwork(album));
 		}
@@ -1050,11 +1045,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
-						long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
-						String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
-						String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
-						int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
-						String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
+						long id = cursor.getLong(0);
+						String name = cursor.getString(1);
+						String artist = cursor.getString(2);
+						int count = cursor.getInt(3);
+						int year = cursor.getInt(4);
 						album = new Album(id, name, artist, count, year, true);
 					}
 					cursor.close();
@@ -1411,11 +1406,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_PLAYSTATE:
 				updatePlaybackState();
-				if (isForeground && !mPlayer.isPlaying()) {
-					shutdownHandler.start();
-				} else {
-					shutdownHandler.stop();
-				}
 				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
 					playerSettings.setSeekPosition(mPlayer.getPosition());
 				}
