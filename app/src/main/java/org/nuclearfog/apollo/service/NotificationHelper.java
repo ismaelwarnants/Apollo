@@ -3,7 +3,7 @@ package org.nuclearfog.apollo.service;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Build;
@@ -23,6 +23,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -45,11 +46,6 @@ class NotificationHelper {
 	 * Notification channel ID
 	 */
 	private static final String NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
-
-	/**
-	 * intent used to open audio player after clicking on notification
-	 */
-	private static final String INTENT_AUDIO_PLAYER = BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER";
 
 	/**
 	 * Notification name
@@ -86,35 +82,28 @@ class NotificationHelper {
 	 * @param service  callback to the service
 	 * @param mSession media session of the current playback
 	 */
+	@SuppressLint("InlinedApi")
 	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
 		imageFetcher = new ImageFetcher(service.getApplicationContext());
-
 		// init notification manager & channel
 		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
 		channelBuilder.setName(NOTIFICATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(channelBuilder.build());
-
-		// initialize player activity callback
-		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
 		// initialize callbacks
-		callbackPlayPause = createIntent(MusicPlaybackService.ACTION_TOGGLEPAUSE);
-		callbackNext = createIntent(MusicPlaybackService.ACTION_NEXT);
-		callbackPrevious = createIntent(MusicPlaybackService.ACTION_PREVIOUS);
-		callbackStop = createIntent(MusicPlaybackService.ACTION_STOP);
-		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
+		callbackPlayPause = createServiceIntent(MusicPlaybackService.ACTION_TOGGLEPAUSE);
+		callbackNext = createServiceIntent(MusicPlaybackService.ACTION_NEXT);
+		callbackPrevious = createServiceIntent(MusicPlaybackService.ACTION_PREVIOUS);
+		callbackStop = createServiceIntent(MusicPlaybackService.ACTION_STOP);
+		PendingIntent playerIntent = createPlayerIntent(AudioPlayerActivity.ACTION_OPEN_PLAYER);
 		// style for the notification
 		MediaStyle mediaStyle = new MediaStyle();
 		mediaStyle.setMediaSession(mSession.getSessionToken());
-
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICATION_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
-				.setContentIntent(contentIntent)
+				.setContentIntent(playerIntent)
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 				.setCategory(NotificationCompat.CATEGORY_PROGRESS)
@@ -122,13 +111,7 @@ class NotificationHelper {
 				.setProgress(0, 0, true).setAutoCancel(false)
 				.setShowWhen(false).setOngoing(true)
 				.setSilent(true).setStyle(mediaStyle);
-	}
-
-	/**
-	 * create a new notification and attach it to the foreground service
-	 */
-	@SuppressLint("InlinedApi")
-	void createNotification() {
+		// create notification & start foreground service
 		ServiceCompat.startForeground(mService, APOLLO_MUSIC_SERVICE, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 	}
 
@@ -186,18 +169,29 @@ class NotificationHelper {
 				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
 			}
 		} catch (SecurityException exception) {
-			Log.e(TAG, "error while updating notification");
+			Log.e(TAG, "postNotification()", exception);
 		}
 	}
 
 	/**
 	 * create playback service intent
 	 *
-	 * @param action action send to playback service
+	 * @param action action to send to playback service
 	 */
-	private PendingIntent createIntent(String action) {
-		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
-		Intent intent = new Intent(action).setComponent(serviceName);
-		return PendingIntent.getService(mService, 0, intent, PendingIntent.FLAG_MUTABLE);
+	private PendingIntent createServiceIntent(String action) {
+		Context context = mService.getApplicationContext();
+		Intent intent = new Intent(context, MusicPlaybackService.class).setAction(action);
+		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+	}
+
+	/**
+	 * create PendingIntent for the {@link AudioPlayerActivity}
+	 *
+	 * @param action action to send to the activity
+	 */
+	private PendingIntent createPlayerIntent(String action) {
+		Context context = mService.getApplicationContext();
+		Intent intent = new Intent(context, AudioPlayerActivity.class).setAction(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 	}
 }

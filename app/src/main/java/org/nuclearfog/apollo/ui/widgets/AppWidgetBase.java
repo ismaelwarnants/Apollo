@@ -11,10 +11,10 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.ServiceBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -58,8 +58,10 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 				repeatMode = extras.getInt(MusicPlaybackService.KEY_REPEAT, MusicPlaybackService.REPEAT_NONE);
 				shuffleMode = extras.getInt(MusicPlaybackService.KEY_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
 			} else {
-				Intent broadcastIntent = new Intent(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
-				context.sendBroadcast(broadcastIntent);
+				// start PlaybackService to fetch playback information
+				Intent serviceIntent = new Intent(context, MusicPlaybackService.class);
+				serviceIntent.setAction(MusicPlaybackService.ACTION_WIDGET_UPDATE);
+				ContextCompat.startForegroundService(context, serviceIntent);
 			}
 		}
 		super.onReceive(context, intent);
@@ -72,8 +74,7 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	 * @return PendingIntent instance
 	 */
 	protected PendingIntent createPlaybackControlIntent(Context context, String action) {
-		ComponentName component = new ComponentName(context, MusicPlaybackService.class);
-		Intent intent = new Intent(action).setComponent(component);
+		Intent intent = new Intent(context, MusicPlaybackService.class).setAction(action);
 		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 	}
 
@@ -84,8 +85,8 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 	 * @return PendingIntent instance
 	 */
 	protected PendingIntent createAudioPlayerIntent(Context context, boolean isPlaying) {
-		Intent action = new Intent(context, isPlaying ? AudioPlayerActivity.class : HomeActivity.class);
-		return PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
+		Intent intent = new Intent(context, isPlaying ? AudioPlayerActivity.class : HomeActivity.class);
+		return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 	}
 
 	/**

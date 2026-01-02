@@ -76,6 +76,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private static final String TAG = "AudioPlayerActivity";
 
 	/**
+	 * intent used to open audio player
+	 */
+	public static final String ACTION_OPEN_PLAYER = BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER";
+
+	/**
 	 * MIME type for sharing songs
 	 */
 	private static final String MIME_AUDIO = "audio/*";

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
@@ -15,11 +14,6 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
  * @author nuclearfog
  */
 public class ServiceBroadcastReceiver extends BroadcastReceiver {
-
-	/**
-	 * IntentFilter action used to trigger {@link MusicPlaybackService} to update the widgets
-	 */
-	public static final String ACTION_WIDGET_UPDATE = BuildConfig.APPLICATION_ID + ".update_widgets";
 
 	/**
 	 * listener used to update playback service
@@ -45,8 +39,6 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 			listener.onExternalStorageChanged(false);
 		} else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
 			listener.onExternalStorageChanged(true);
-		} else if (ACTION_WIDGET_UPDATE.equals(action)) {
-			listener.onWidgetInstalled();
 		}
 	}
 
@@ -58,8 +50,6 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 		// init external storage intent filter
 		intentFilter.addAction(Intent.ACTION_MEDIA_EJECT);
 		intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-		// init widget listener
-		intentFilter.addAction(ServiceBroadcastReceiver.ACTION_WIDGET_UPDATE);
 		// init headset intent filter
 		intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		return intentFilter;
@@ -81,10 +71,5 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 		 * @param mount true if an external storage was connected
 		 */
 		void onExternalStorageChanged(boolean mount);
-
-		/**
-		 * called when an app widget was connected
-		 */
-		void onWidgetInstalled();
 	}
 }

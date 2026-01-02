@@ -131,18 +131,15 @@ public final class MusicUtils {
 	 * @param activity activity to unbind the playback service
 	 */
 	public static void unbindFromService(Activity activity) {
-		boolean isPlaying = isPlaying(activity);
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
 			activity.unbindService(mBinder);
 		}
 		// start foreground service if application is in background
 		if (mConnectionMap.isEmpty()) {
-			if (isPlaying) {
-				Intent intent = new Intent(activity, MusicPlaybackService.class);
-				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
-				ContextCompat.startForegroundService(activity, intent);
-			}
+			Intent intent = new Intent(activity, MusicPlaybackService.class);
+			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
+			ContextCompat.startForegroundService(activity, intent);
 		}
 	}
 

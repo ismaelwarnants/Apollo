@@ -128,6 +128,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String ACTION_SHUFFLE = APOLLO_PACKAGE_NAME + ".shuffle";
 	/**
+	 * IntentFilter action used to trigger {@link MusicPlaybackService} to update the widgets
+	 */
+	public static final String ACTION_WIDGET_UPDATE = BuildConfig.APPLICATION_ID + ".update_widgets";
+	/**
 	 * bundle key of the play status (play/pause)
 	 */
 	public static final String KEY_IS_PLAYING = "isPlaying";
@@ -412,16 +416,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceStartId = startId;
 		if (intent != null) {
 			boolean updateService = handleCommandIntent(intent);
-			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, true);
+			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 			// update service status
 			if (updateService) {
-				mNotificationHelper.createNotification();
-				if (isForeground && !isPlaying()) {
-					shutdownHandler.start();
-					return START_NOT_STICKY;
+				mNotificationHelper.updateNotification();
+				if (!isForeground || isPlaying()) {
+					return START_STICKY;
 				}
+			} else {
+				return START_STICKY;
 			}
-			return START_STICKY;
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
@@ -470,14 +474,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			savePlaybackList(true);
 		}
 		notifyChange(CHANGED_QUEUE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onWidgetInstalled() {
-		notifyChange(CHANGED_WIDGET);
 	}
 
 	/**
@@ -855,7 +851,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void stopForeground() {
 		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-		mNotificationHelper.dismissNotification();
 		shutdownHandler.stop();
 		isForeground = false;
 	}
@@ -869,7 +864,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!isPlaying() || force) {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
-			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse || force) {
 				if (stopSelfResult(mServiceStartId)) {
 					Log.d(TAG, "service stopped");
@@ -904,6 +898,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, imageFetcher.getAlbumArtwork(album));
 		}
 		mSession.setMetadata(builder.build());
+		mNotificationHelper.updateNotification();
 	}
 
 	/**
@@ -917,6 +912,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				PlaybackStateCompat.ACTION_PLAY_FROM_URI | PlaybackStateCompat.ACTION_SEEK_TO |
 				PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE | PlaybackStateCompat.ACTION_SET_REPEAT_MODE);
 		mSession.setPlaybackState(builder.build());
+		mNotificationHelper.updateNotification();
 	}
 
 	/**
@@ -1301,6 +1297,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			clearCurrentTrackInformation();
 			mShuffleList.clear();
 		}
+		updatePlaybackState();
 	}
 
 	/**
@@ -1352,6 +1349,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			return false;
 		}
+		// update widget
+		else if (ACTION_WIDGET_UPDATE.equals(action)) {
+			notifyChange(CHANGED_WIDGET);
+		}
 		return true;
 	}
 
@@ -1381,7 +1382,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void notifyChange(String what) {
 		Song song = currentSong;
 		Album album = currentAlbum;
-
 		// send broadcast to activities and widgets
 		Intent intent = new Intent(what);
 		intent.putExtra(KEY_IS_PLAYING, mPlayer.isPlaying());
@@ -1392,19 +1392,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			intent.putExtra(KEY_ALBUM, (Serializable) album);
 		}
 		sendBroadcast(intent);
-
+		// handle playback updates
 		switch (what) {
 			case CHANGED_META:
 				updateMetadata();
 				// Increase the play count for favorite songs.
-				if (song != null) {
+				if (song != null && album != null) {
 					popularStore.addSong(song);
-				}
-				if (album != null) {
 					recentStore.addAlbum(album);
-				}
-				if (isForeground) {
-					mNotificationHelper.updateNotification();
 				}
 				playerSettings.setCursorPosition(mPlayList.getPosition());
 				updateWidgets(intent);
@@ -1412,13 +1407,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_PLAYSTATE:
 				updatePlaybackState();
-				if (isForeground) {
-					mNotificationHelper.updateNotification();
-					if (mPlayer.isPlaying()) {
-						shutdownHandler.stop();
-					} else {
-						shutdownHandler.start();
-					}
+				if (isForeground && !mPlayer.isPlaying()) {
+					shutdownHandler.start();
 				} else {
 					shutdownHandler.stop();
 				}
