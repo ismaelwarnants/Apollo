@@ -61,6 +61,7 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 				// start PlaybackService to fetch playback information
 				Intent serviceIntent = new Intent(context, MusicPlaybackService.class);
 				serviceIntent.setAction(MusicPlaybackService.ACTION_WIDGET_UPDATE);
+				serviceIntent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
 				ContextCompat.startForegroundService(context, serviceIntent);
 			}
 		}

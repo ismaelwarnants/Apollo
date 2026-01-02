@@ -417,6 +417,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (intent != null) {
 			boolean updateService = handleCommandIntent(intent);
 			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
+			// start foreground service
+			if (isForeground) {
+				mNotificationHelper.startForeground();
+			}
 			// update service status
 			if (updateService) {
 				mNotificationHelper.updateNotification();

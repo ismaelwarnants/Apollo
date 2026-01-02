@@ -82,7 +82,6 @@ class NotificationHelper {
 	 * @param service  callback to the service
 	 * @param mSession media session of the current playback
 	 */
-	@SuppressLint("InlinedApi")
 	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
 		imageFetcher = new ImageFetcher(service.getApplicationContext());
@@ -111,7 +110,13 @@ class NotificationHelper {
 				.setProgress(0, 0, true).setAutoCancel(false)
 				.setShowWhen(false).setOngoing(true)
 				.setSilent(true).setStyle(mediaStyle);
-		// create notification & start foreground service
+	}
+
+	/**
+	 * create a notification & start a foreground service
+	 */
+	@SuppressLint("InlinedApi")
+	void startForeground() {
 		ServiceCompat.startForeground(mService, APOLLO_MUSIC_SERVICE, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 	}
 
