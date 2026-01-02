@@ -98,6 +98,24 @@ public final class StringUtils {
 	}
 
 	/**
+	 * get file/folder name of a path string
+	 *
+	 * @param str path to a file
+	 * @return file/folder name or str parameter if it's not a path
+	 */
+	public static String getFolderName(String str) {
+		if (str.length() > 2 && str.startsWith("/")) {
+			if (str.endsWith("/"))
+				str = str.substring(0, str.length() - 1);
+			int div = str.lastIndexOf('/');
+			if (div > 0) {
+				return str.substring(div + 1);
+			}
+		}
+		return str;
+	}
+
+	/**
 	 * create unique cache key for specific entry
 	 *
 	 * @param type image type to cache

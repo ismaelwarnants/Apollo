@@ -43,7 +43,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	public static final String OPEN_AUDIO_PLAYER = null;
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
-	private AsyncCallback<List<Song>> onShuffleSongs = this::onShuffleSongs;
 
 	private boolean shouldOpenAudioPlayer;
 
@@ -96,20 +95,20 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 			case MediaStore.Audio.Artists.CONTENT_TYPE:
 				// Get the artist song list
 				ArtistSongLoader artistSongLoader = new ArtistSongLoader(this);
-				artistSongLoader.execute(id, onShuffleSongs);
+				artistSongLoader.execute(id, onPlaySongs);
 				break;
 
 			case MediaStore.Audio.Albums.CONTENT_TYPE:
 				// Get the album song list
 				AlbumSongLoader albumSongLoader = new AlbumSongLoader(this);
-				albumSongLoader.execute(id, onShuffleSongs);
+				albumSongLoader.execute(id, onPlaySongs);
 				break;
 
 			case MediaStore.Audio.Genres.CONTENT_TYPE:
 				// Get the genre song list
 				String ids = getIntent().getStringExtra(Constants.IDS);
 				GenreSongLoader genreSongLoader = new GenreSongLoader(this);
-				genreSongLoader.execute(ids, onShuffleSongs);
+				genreSongLoader.execute(ids, onPlaySongs);
 				break;
 
 			case MediaStore.Audio.Playlists.CONTENT_TYPE:
@@ -153,23 +152,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 */
 	private void onPlaySongs(List<Song> songs) {
 		MusicUtils.playAll(this, songs, false);
-		redirectToPlayerActivity();
-	}
-
-	/**
-	 * set song ID list after loading asynchronously
-	 *
-	 * @param songs list of songs
-	 */
-	private void onShuffleSongs(List<Song> songs) {
-		MusicUtils.playAll(this, songs, true);
-		redirectToPlayerActivity();
-	}
-
-	/**
-	 * open {@link AudioPlayerActivity} and close this activity
-	 */
-	private void redirectToPlayerActivity() {
 		if (shouldOpenAudioPlayer) {
 			NavUtils.openAudioPlayer(this);
 		}

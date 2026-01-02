@@ -5,13 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.drawable.Icon;
 import android.media.audiofx.AudioEffect;
 import android.os.Build;
 import android.os.PowerManager;
@@ -32,6 +28,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -42,7 +41,6 @@ import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
 import org.nuclearfog.apollo.ui.views.ToastView;
 
-import java.io.File;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -131,8 +129,11 @@ public final class ApolloUtils {
 	@SuppressWarnings("deprecation")
 	public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {
 		try {
+			IconCompat icon;
 			Bitmap bitmap = null;
-			ImageFetcher fetcher = new ImageFetcher(activity);
+			Context context = activity.getApplicationContext();
+			ImageFetcher fetcher = new ImageFetcher(context);
+			// get icon for shortcut
 			if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
 				bitmap = fetcher.getAlbumImage(ids[0]);
 			} else if (mimeType.equals(MediaStore.Audio.Artists.CONTENT_TYPE)) {
@@ -142,11 +143,14 @@ public final class ApolloUtils {
 			} else if (mimeType.equals(MediaStore.Audio.Playlists.CONTENT_TYPE)) {
 				bitmap = fetcher.getPlaylistImage(ids[0]);
 			}
-			if (bitmap == null) {
-				bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.default_artwork);
+			if (bitmap != null) {
+
+				icon = IconCompat.createWithBitmap(bitmap);
+			} else {
+				icon = IconCompat.createWithResource(context, R.drawable.default_artwork);
 			}
-			// Intent used when the icon is touched
-			Intent shortcutIntent = new Intent(activity, ShortcutActivity.class);
+			// create Intent used when the icon is touched
+			Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
 			shortcutIntent.setAction(Intent.ACTION_VIEW);
 			shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -154,35 +158,19 @@ public final class ApolloUtils {
 			shortcutIntent.putExtra(Constants.IDS, ApolloUtils.serializeIDs(ids));
 			shortcutIntent.putExtra(Constants.NAME, displayName);
 			shortcutIntent.putExtra(Constants.MIME_TYPE, mimeType);
-			// check if display name is a path
-			if (displayName.startsWith("/")) {
-				File file = new File(displayName);
-				if (file.exists()) {
-					// use file name as label
-					displayName = file.getName();
-				}
-			}
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-				// Intent that actually sets the shortcut
-				Intent intent = new Intent();
-				intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, ImageUtils.resizeAndCropCenter(bitmap, 96));
-				intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-				intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
-				intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-				activity.sendBroadcast(intent);
+			// format display name
+			displayName = StringUtils.getFolderName(displayName);
+			// install shortcut
+			if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+				String shortcutId = displayName + "|" + artistName + "|" + ids[0];
+				ShortcutInfoCompat sInfo = new ShortcutInfoCompat.Builder(context, shortcutId)
+						.setIcon(icon).setIntent(shortcutIntent).setShortLabel(displayName).build();
+				ShortcutManagerCompat.requestPinShortcut(context, sInfo, null);
 				showInfoToast(activity, R.string.pinned_to_home_screen, displayName);
 			} else {
-				// use shortcut manager to install shortcut
-				ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
-				if (sManager.isRequestPinShortcutSupported()) {
-					Icon icon = Icon.createWithBitmap(bitmap);
-					String shortcutId = displayName + "|" + artistName + "|" + ids[0];
-					ShortcutInfo sInfo = new ShortcutInfo.Builder(activity, shortcutId).setIcon(icon)
-							.setIntent(shortcutIntent).setShortLabel(displayName).build();
-					sManager.requestPinShortcut(sInfo, null);
-				}
+				showInfoToast(activity, R.string.could_not_be_pinned_to_home_screen, displayName);
 			}
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			Log.e(TAG, "createShortcutIntent()", e);
 			showAlertToast(activity, R.string.could_not_be_pinned_to_home_screen, displayName);
 		}

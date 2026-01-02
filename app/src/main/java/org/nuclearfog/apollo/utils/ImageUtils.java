@@ -2,8 +2,6 @@ package org.nuclearfog.apollo.utils;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -263,33 +261,6 @@ public final class ImageUtils {
 
 		mBitmap.setPixels(pix, 0, w, 0, 0, w, h);
 		return mBitmap;
-	}
-
-	/**
-	 * This is only used when the launcher shortcut is created.
-	 *
-	 * @param bitmap The artist, album, genre, or playlist image that's going to
-	 *               be cropped.
-	 * @param size   The new size.
-	 * @return A {@link Bitmap} that has been resized and cropped for a launcher
-	 * shortcut.
-	 */
-	public static Bitmap resizeAndCropCenter(Bitmap bitmap, int size) {
-		int w = bitmap.getWidth();
-		int h = bitmap.getHeight();
-		if (w == size && h == size) {
-			return bitmap;
-		}
-		Bitmap mTarget = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-		float mScale = (float) size / Math.min(w, h);
-		int mWidth = Math.round(mScale * bitmap.getWidth());
-		int mHeight = Math.round(mScale * bitmap.getHeight());
-		Canvas mCanvas = new Canvas(mTarget);
-		mCanvas.translate((size - mWidth) / 2f, (size - mHeight) / 2f);
-		mCanvas.scale(mScale, mScale);
-		Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
-		mCanvas.drawBitmap(bitmap, 0, 0, paint);
-		return mTarget;
 	}
 
 	/**
