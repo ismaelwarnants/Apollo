@@ -27,6 +27,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onPlay() {
 		service.play();
+		setShutdownHandler(false);
 	}
 
 	/**
@@ -35,6 +36,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onPause() {
 		service.pause(false);
+		setShutdownHandler(true);
 	}
 
 	/**
@@ -43,6 +45,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onStop() {
 		service.stop();
+		setShutdownHandler(true);
 	}
 
 	/**
@@ -51,6 +54,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onSkipToNext() {
 		service.gotoNext();
+		setShutdownHandler(false);
 	}
 
 	/**
@@ -59,6 +63,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onSkipToPrevious() {
 		service.gotoPrev();
+		setShutdownHandler(false);
 	}
 
 	/**
@@ -75,6 +80,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 	@Override
 	public void onPlayFromUri(Uri uri, Bundle extras) {
 		service.openFile(uri);
+		setShutdownHandler(false);
 	}
 
 	/**
@@ -89,9 +95,6 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 				break;
 
 			case PlaybackStateCompat.SHUFFLE_MODE_ALL:
-				service.setShuffleMode(MusicPlaybackService.SHUFFLE_AUTO);
-				break;
-
 			case PlaybackStateCompat.SHUFFLE_MODE_GROUP:
 				service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
 				break;
@@ -117,6 +120,17 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 			case PlaybackStateCompat.REPEAT_MODE_GROUP:
 				service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
 				break;
+		}
+	}
+
+	/**
+	 * updates the shutdown handler of the service
+	 *
+	 * @param force true to force shutdown
+	 */
+	private void setShutdownHandler(boolean force) {
+		if (service.isForeground()) {
+			service.setScheduledShutdown(force || !service.isPlaying());
 		}
 	}
 }

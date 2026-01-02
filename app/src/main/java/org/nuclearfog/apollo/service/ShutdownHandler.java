@@ -15,7 +15,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	/**
 	 * Idle time in milliseconds before stopping the foreground notification
 	 */
-	private static final long IDLE_DELAY = 30000L;
+	public static final long IDLE_DELAY = 30000L;
 
 	private MusicPlaybackService service;
 

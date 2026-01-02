@@ -297,7 +297,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public IBinder onBind(Intent intent) {
 		mServiceInUse = true;
-		shutdownHandler.stop();
+		setScheduledShutdown(false);
 		return new ServiceStub(this);
 	}
 
@@ -427,7 +427,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (updateService) {
 				mNotificationHelper.updateNotification();
 				if (!isForeground || isPlaying()) {
-					shutdownHandler.stop();
+					setScheduledShutdown(false);
 					return START_STICKY;
 				}
 			} else {
@@ -436,7 +436,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
-		shutdownHandler.start();
+		setScheduledShutdown(true);
 		return START_NOT_STICKY;
 	}
 
@@ -467,6 +467,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
 		openCurrentAndNext();
 		notifyChange(CHANGED_PLAYSTATE);
+		if (isForeground && !isPlaying()) {
+			setScheduledShutdown(true);
+		}
 	}
 
 	/**
@@ -534,6 +537,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Nullable
 	public Song getCurrentSong() {
 		return currentSong;
+	}
+
+	/**
+	 * Returns true if this service is running in the foreground
+	 */
+	boolean isForeground() {
+		return isForeground;
 	}
 
 	/**
@@ -874,8 +884,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * enable/disable player fade effects
 	 */
-	public void setCrossfade(boolean enable) {
+	void setCrossfade(boolean enable) {
 		mPlayer.setFadeEffect(enable);
+	}
+
+	/**
+	 * enable/disable planned shutdown
+	 * if enabled, this service will be shutdown in {@link ShutdownHandler#IDLE_DELAY} milliseconds
+	 *
+	 * @param enable true to enable planned shutdown, false to stop a running timer
+	 */
+	void setScheduledShutdown(boolean enable) {
+		if (enable) {
+			shutdownHandler.start();
+		} else {
+			shutdownHandler.stop();
+		}
 	}
 
 	/**
@@ -1351,6 +1375,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// update widget
 		else if (ACTION_WIDGET_UPDATE.equals(action)) {
 			notifyChange(CHANGED_WIDGET);
+			return false;
 		}
 		return true;
 	}
@@ -1383,6 +1408,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Album album = currentAlbum;
 		// send broadcast to activities and widgets
 		Intent intent = new Intent(what);
+		intent.setPackage(BuildConfig.APPLICATION_ID);
 		intent.putExtra(KEY_IS_PLAYING, mPlayer.isPlaying());
 		intent.putExtra(KEY_SHUFFLE, mShuffleMode);
 		intent.putExtra(KEY_REPEAT, mRepeatMode);
