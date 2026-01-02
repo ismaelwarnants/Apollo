@@ -538,6 +538,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void stop() {
 		mPlayer.stop();
+		notifyChange(CHANGED_PLAYSTATE);
 		AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 	}
 
@@ -554,10 +555,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					gotoNext();
 				} else {
 					mPlayer.play();
+					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
 				setShuffleMode(SHUFFLE_AUTO);
 				mPlayer.play();
+				notifyChange(CHANGED_PLAYSTATE);
 			}
 		} else {
 			Log.i(TAG, "play(): could not request audio focus!");
@@ -571,6 +574,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public void pause(boolean force) {
 		mPlayer.pause(force);
+		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**

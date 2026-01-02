@@ -217,7 +217,6 @@ public class MultiPlayer {
 					setFadeTask(true);
 				}
 				player.start();
-				callback.onPlaybackChanged();
 			}
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "play()", exception);
@@ -233,13 +232,12 @@ public class MultiPlayer {
 	public synchronized void pause(boolean force) {
 		MediaPlayer player = mPlayers[selectedPlayer];
 		try {
+			isPlaying = false;
 			if (force || !fadeEffectEnabled) {
 				setFadeTask(false);
 				if (player.isPlaying())
 					player.pause();
-				isPlaying = false;
 				fadeMode = FADE_IDLE;
-				callback.onPlaybackChanged();
 			} else {
 				fadeMode = FADE_OUT;
 			}
@@ -262,7 +260,6 @@ public class MultiPlayer {
 				player.prepare();
 				player.seekTo(0);
 			}
-			callback.onPlaybackChanged();
 		} catch (IllegalStateException | IOException exception) {
 			Log.e(TAG, "stop()", exception);
 			reset();
@@ -530,6 +527,7 @@ public class MultiPlayer {
 					callback.onWentToNext();
 				} else {
 					pause(true);
+					callback.onPlaybackChanged();
 				}
 			}
 		} else {
