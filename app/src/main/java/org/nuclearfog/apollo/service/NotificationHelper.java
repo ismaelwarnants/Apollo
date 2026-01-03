@@ -1,11 +1,9 @@
 package org.nuclearfog.apollo.service;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -15,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.app.ServiceCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -35,12 +32,6 @@ import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 class NotificationHelper {
 
 	private static final String TAG = "NotificationHelper";
-
-	/**
-	 * Notification ID
-	 * use different notification IDs for each build to avoid conflicts
-	 */
-	private static final int APOLLO_MUSIC_SERVICE = BuildConfig.DEBUG ? 0x5D74E856 : 0x28E61796;
 
 	/**
 	 * Notification channel ID
@@ -113,14 +104,6 @@ class NotificationHelper {
 	}
 
 	/**
-	 * create a notification & start a foreground service
-	 */
-	@SuppressLint("InlinedApi")
-	void startForeground() {
-		ServiceCompat.startForeground(mService, APOLLO_MUSIC_SERVICE, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-	}
-
-	/**
 	 * update existing notification
 	 */
 	void updateNotification() {
@@ -135,9 +118,11 @@ class NotificationHelper {
 	}
 
 	/**
-	 * Changes the playback controls in and out of a paused state
+	 * prepare notification to post
+	 *
+	 * @return notification object with current playback information
 	 */
-	private Notification buildNotification() {
+	Notification buildNotification() {
 		// Android 13+ uses PlaybackState & MediaMetadata to update notification data
 		// no need to set playback information here
 		if (Build.VERSION.SDK_INT < VERSION_CODES.TIRAMISU) {
@@ -169,9 +154,9 @@ class NotificationHelper {
 	private void postNotification(@Nullable Notification notification) {
 		try {
 			if (notification != null) {
-				notificationManager.notify(APOLLO_MUSIC_SERVICE, notification);
+				notificationManager.notify(MusicPlaybackService.APOLLO_MUSIC_SERVICE, notification);
 			} else {
-				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
+				notificationManager.cancel(MusicPlaybackService.APOLLO_MUSIC_SERVICE);
 			}
 		} catch (SecurityException exception) {
 			Log.e(TAG, "postNotification()", exception);

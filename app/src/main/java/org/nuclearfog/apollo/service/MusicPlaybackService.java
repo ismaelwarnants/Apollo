@@ -1,11 +1,14 @@
 package org.nuclearfog.apollo.service;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
@@ -70,6 +73,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * app package name
 	 */
 	private static final String APOLLO_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
+	/**
+	 * service ID used to create notification
+	 */
+	public static final int APOLLO_MUSIC_SERVICE = BuildConfig.DEBUG ? 0x5D74E856 : 0x28E61796;
 	/**
 	 * used to determine if app is in foreground
 	 */
@@ -417,10 +424,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			boolean updateService = handleCommandIntent(intent);
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-				Log.d(TAG, "isForeground=" + isForeground);
-				// start foreground service
 				if (isForeground) {
-					mNotificationHelper.startForeground();
+					startForeground();
 				}
 			}
 			// update service status
@@ -864,6 +869,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
+	 * start foreground service with a notification
+	 */
+	@SuppressLint("InlinedApi")
+	void startForeground() {
+		Notification notification = mNotificationHelper.buildNotification();
+		ServiceCompat.startForeground(this, APOLLO_MUSIC_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+		Log.d(TAG, "foreground service started");
+	}
+
+	/**
 	 * releases playback service and removes notification/playback controls
 	 *
 	 * @param force true to force shutdown this service
@@ -897,8 +912,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void setScheduledShutdown(boolean enable) {
 		if (enable) {
 			shutdownHandler.start();
+			Log.d(TAG, "shutdown in (s): " + ShutdownHandler.IDLE_DELAY);
 		} else {
 			shutdownHandler.stop();
+			Log.d(TAG, "shutdown stopped");
 		}
 	}
 

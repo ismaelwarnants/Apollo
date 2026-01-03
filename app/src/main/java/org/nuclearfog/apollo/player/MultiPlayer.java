@@ -400,7 +400,7 @@ public class MultiPlayer {
 	 *
 	 * @param newVolume new volume for the current player
 	 */
-	private void setCurrentVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
+	private synchronized void setCurrentVolume(@FloatRange(from = 0f, to = 1f) float newVolume) {
 		try {
 			volume = newVolume;
 			// use cubic volume scale
@@ -474,7 +474,7 @@ public class MultiPlayer {
 	 *
 	 * @param enable true to enable fading
 	 */
-	private void setFadeTask(boolean enable) {
+	private synchronized void setFadeTask(boolean enable) {
 		if (enable) {
 			if (fadeTask == null) {
 				fadeTask = threadPool.scheduleWithFixedDelay(() -> playerHandler.post(this::onAudioFadeTrack), FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
@@ -551,12 +551,12 @@ public class MultiPlayer {
 		if (initialized) {
 			setFadeTask(false);
 			reset();
-			if (what != -38) {
+			if (what == -38) {
+				// caused by wrong state, stop playback
+				callback.onPlaybackChanged();
+			} else {
 				// delay error handling
 				playerHandler.postDelayed(() -> callback.onPlaybackError(), ERROR_RETRY);
-			} else {
-				// just stop playback
-				callback.onPlaybackChanged();
 			}
 			return true;
 		}
