@@ -400,11 +400,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			case AudioManager.AUDIOFOCUS_LOSS:
 				pause(true);
+				if (isForeground) {
+					setScheduledShutdown(true);
+				}
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
 					mPlayer.setMaxVolume(1f);
+				setScheduledShutdown(false);
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
