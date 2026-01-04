@@ -112,7 +112,7 @@ public class PlaylistStore extends AppStore {
 			column.put(PlaylistTable.ID, ids[i]);
 			column.put(PlaylistTable.POS, i);
 			column.put(PlaylistTable.CARD, cardId);
-			column.put(PlaylistTable.TYPE, PLAYLIST_TYPE_PLAYBACK);
+			column.put(PlaylistTable.TYPE, type);
 			db.insertWithOnConflict(PlaylistTable.TABLE, null, column, SQLiteDatabase.CONFLICT_REPLACE);
 		}
 		commit();

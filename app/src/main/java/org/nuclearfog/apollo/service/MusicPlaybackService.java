@@ -379,7 +379,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		sendBroadcast(audioEffectsIntent);
 		AudioEffects.release();
 		//save playlist, history and shuffle/repeat state
-		savePlaybackList(true);
+		savePlaybackList();
 		// Release the player
 		mPlayer.release();
 		// release player callbacks
@@ -490,7 +490,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mounted) {
 			initPlaybackList();
 		} else {
-			savePlaybackList(true);
+			savePlaybackList();
 		}
 		notifyChange(CHANGED_QUEUE);
 	}
@@ -750,7 +750,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setNextTrack(false);
 			}
 			notifyChange(CHANGED_SHUFFLEMODE);
-			savePlaybackList(false);
 		}
 	}
 
@@ -773,7 +772,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mSession.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
 			}
 			setNextTrack(false);
-			savePlaybackList(false);
 			notifyChange(CHANGED_REPEATMODE);
 		}
 	}
@@ -1280,9 +1278,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (mPlayList.isEmpty()) {
 				mShuffleMode = SHUFFLE_NONE;
 			} else {
-				mShuffleList.shuffle(mPlayList.size());
-				savePlaybackList(true);
 				mShuffleMode = SHUFFLE_NORMAL;
+				mShuffleList.shuffle(mPlayList.size());
+				savePlaybackList();
 				return true;
 			}
 		} catch (RuntimeException e) {
@@ -1292,23 +1290,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Saves the queue
-	 *
-	 * @param full true to save also the playback list and history
+	 * Save the playback queue and the play history
 	 */
-	private void savePlaybackList(boolean full) {
-		if (full) {
-			int cardId = getCurrentCardId();
-			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId, mPlayList.getItems());
-			if (mShuffleMode != SHUFFLE_NONE) {
-				playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId, mShuffleList.getHistory());
-			}
+	private void savePlaybackList() {
+		int cardId = getCurrentCardId();
+		playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_PLAYBACK, cardId, mPlayList.getItems());
+		if (mShuffleMode != SHUFFLE_NONE) {
+			playlistStore.setPlaylist(PlaylistStore.PLAYLIST_TYPE_HISTORY, cardId, mShuffleList.getHistory());
 		}
-		playerSettings.setCursorPosition(mPlayList.getPosition());
-		if (mPlayer.initialized()) {
-			playerSettings.setSeekPosition(mPlayer.getPosition());
-		}
-		playerSettings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 	}
 
 	/**
@@ -1453,18 +1442,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_PLAYSTATE:
 				updatePlaybackState();
-				if (mPlayer.initialized() && !mPlayer.isPlaying()) {
+				if (mPlayer.initialized() && !mPlayer.isPlaying())
 					playerSettings.setSeekPosition(mPlayer.getPosition());
-				}
 				updateWidgets(intent);
 				break;
 
 			case CHANGED_QUEUE:
-				savePlaybackList(true);
-				updatePlaybackState();
-				if (mPlayer.isPlaying()) {
+				if (mPlayer.isPlaying())
 					setNextTrack(false);
-				}
+				savePlaybackList();
+				updatePlaybackState();
 				break;
 
 			case CHANGED_SEEK:
@@ -1472,14 +1459,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				playerSettings.setSeekPosition(mPlayer.getPosition());
 				break;
 
-			case CHANGED_WIDGET:
 			case CHANGED_REPEATMODE:
 			case CHANGED_SHUFFLEMODE:
-				updateWidgets(intent);
+				playerSettings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 				// fall through
 
-			default:
-				savePlaybackList(false);
+			case CHANGED_WIDGET:
+				updateWidgets(intent);
 				break;
 		}
 	}

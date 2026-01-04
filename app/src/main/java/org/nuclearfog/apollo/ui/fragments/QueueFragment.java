@@ -39,7 +39,6 @@ import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -317,11 +316,8 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 				case REFRESH:
 					// get queue with song IDs
 					long[] ids = MusicUtils.getQueue(requireActivity());
-					List<Long> idList = new ArrayList<>(ids.length);
-					for (long id : ids)
-						idList.add(id);
 					// load songs of the queue
-					mLoader.execute(idList, this);
+					mLoader.execute(ids, this);
 					break;
 
 				case META_CHANGED:

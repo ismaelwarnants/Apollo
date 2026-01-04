@@ -16,7 +16,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
+public class QueueLoader extends AsyncExecutor<long[], List<Song>> {
 
 
 	public QueueLoader(Context context) {
@@ -27,7 +27,7 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected List<Song> doInBackground(final List<Long> param) {
+	protected List<Song> doInBackground(long[] param) {
 		List<Song> result = new LinkedList<>();
 		Context context = getContext();
 		if (context != null) {
