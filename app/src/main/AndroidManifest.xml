@@ -19,6 +19,7 @@
 	<!-- Used to create launcher shortcuts -->
 	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" tools:ignore="FullScreenIntentPolicy" />
+	<!-- remove unused permission -->
 	<uses-permission android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" tools:node="remove" />
 	<!-- Attribution declaration for the MediaPlayer -->
 	<attribution android:tag="audio_playback" android:label="@string/description" />
@@ -27,12 +28,10 @@
 		android:name="org.nuclearfog.apollo.ApolloApplication"
 		android:allowBackup="false"
 		android:fullBackupContent="false"
-		android:dataExtractionRules="@xml/rules"
+		android:dataExtractionRules="@xml/extraction_rules"
 		android:allowTaskReparenting="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
-		android:largeHeap="true"
-		android:requestLegacyExternalStorage="true"
 		android:taskAffinity="${applicationId}.task"
 		android:supportsRtl="true"
 		android:theme="@style/Apollo.Theme.Dark">
@@ -76,7 +75,7 @@
 
 		</activity>
 
-		<!-- Now playing -->
+		<!-- Audio Player -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.AudioPlayerActivity"
 			android:exported="true"
@@ -240,12 +239,13 @@
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 			</intent-filter>
-			<!-- This specifies the widget provider info -->
+
 			<meta-data
 				android:name="android.appwidget.provider"
 				android:resource="@xml/app_widget_recents" />
 		</receiver>
 
+		<!-- MediaButtonReceiver used for playback control via MediaSessionCompat -->
 		<receiver
 			android:name="androidx.media.session.MediaButtonReceiver"
 			android:exported="false">
