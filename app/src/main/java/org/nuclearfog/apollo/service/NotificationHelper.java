@@ -156,7 +156,7 @@ class NotificationHelper {
 			if (notification != null) {
 				notificationManager.notify(MusicPlaybackService.APOLLO_MUSIC_SERVICE, notification);
 			} else {
-				notificationManager.cancel(MusicPlaybackService.APOLLO_MUSIC_SERVICE);
+				notificationManager.cancelAll();
 			}
 		} catch (SecurityException exception) {
 			Log.e(TAG, "postNotification()", exception);

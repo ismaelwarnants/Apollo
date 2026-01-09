@@ -9,12 +9,13 @@ import android.os.Handler;
  */
 public class ShutdownHandler extends Handler implements Runnable {
 
-	/**
-	 * Idle time in milliseconds before stopping the foreground notification
-	 */
-	public static final long IDLE_DELAY = 30000L;
+	public static final int DELAY_LONG = 30000;
+
+	public static final int DELAY_SHORT = 1000;
 
 	private MusicPlaybackService service;
+
+	private boolean active = false;
 
 	/**
 	 * @param service callback to playback service
@@ -32,10 +33,13 @@ public class ShutdownHandler extends Handler implements Runnable {
 
 	/**
 	 * start scheduled shutdown
+	 *
+	 * @param delay delay in milliseconds {@link #DELAY_SHORT,#DELAY_LONG}
 	 */
-	public void start() {
-		removeCallbacks(this);
-		postDelayed(this, IDLE_DELAY);
+	public void start(int delay) {
+		if (!active) {
+			active = postDelayed(this, delay);
+		}
 	}
 
 	/**
@@ -43,5 +47,6 @@ public class ShutdownHandler extends Handler implements Runnable {
 	 */
 	public void stop() {
 		removeCallbacks(this);
+		active = false;
 	}
 }

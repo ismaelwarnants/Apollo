@@ -196,7 +196,6 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.stop();
 				service.releaseService();
 			} catch (RemoteException exception) {
 				Log.e(TAG, "releaseService()", exception);

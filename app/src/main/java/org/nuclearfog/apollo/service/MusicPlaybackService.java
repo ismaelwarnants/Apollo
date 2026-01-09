@@ -293,10 +293,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * current repeat mode {@link #REPEAT_NONE,#REPEAT_CURRENT,#REPEAT_ALL}
 	 */
 	private int mRepeatMode = REPEAT_ALL;
-	/**
-	 * ID of the current running service (used to stop service)
-	 */
-	private int mServiceStartId = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -423,7 +419,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mServiceStartId = startId;
 		if (intent != null) {
 			boolean updateService = handleCommandIntent(intent);
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
@@ -883,15 +878,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * releases playback service and removes notification/playback controls
 	 *
-	 * @param force true to force shutdown this service
+	 * @param delay true to delay releasing service, false to release service immediately
 	 */
-	void releaseService(boolean force) {
-		if (!isPlaying() || force) {
+	void releaseService(boolean delay) {
+		if (delay) {
+			shutdownHandler.start(ShutdownHandler.DELAY_SHORT);
+		} else if (!isPlaying()) {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
-			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+			ServiceCompat.stopForeground(MusicPlaybackService.this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			isForeground = false;
-			if (!mServiceInUse || force) {
-				if (stopSelfResult(mServiceStartId)) {
+			if (!mServiceInUse) {
+				Intent intent = new Intent(MusicPlaybackService.this, MusicPlaybackService.class);
+				if (stopService(intent)) {
 					Log.d(TAG, "service stopped");
 				}
 			}
@@ -907,14 +905,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * enable/disable planned shutdown
-	 * if enabled, this service will be shutdown in {@link ShutdownHandler#IDLE_DELAY} milliseconds
 	 *
 	 * @param enable true to enable planned shutdown, false to stop a running timer
 	 */
 	void setScheduledShutdown(boolean enable) {
 		if (enable) {
-			shutdownHandler.start();
-			Log.d(TAG, "shutdown in (s): " + ShutdownHandler.IDLE_DELAY);
+			shutdownHandler.start(ShutdownHandler.DELAY_LONG);
+			Log.d(TAG, "shutdown scheduled");
 		} else {
 			shutdownHandler.stop();
 			Log.d(TAG, "shutdown stopped");
