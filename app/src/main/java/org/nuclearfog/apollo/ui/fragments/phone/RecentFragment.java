@@ -328,8 +328,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 				break;
 
 			case AppPreferences.LAYOUT_DETAILED:
-				mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.list_item_detailed);
-				mAdapter.setLoadExtraData();
+				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
 				mList.setNumColumns(1);
 				break;
 

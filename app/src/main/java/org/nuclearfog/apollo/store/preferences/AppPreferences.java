@@ -48,6 +48,8 @@ public final class AppPreferences {
 	private static final String ALBUM_LAYOUT = "album_layout";
 	// Sets the type of layout to use for the recent list
 	private static final String RECENT_LAYOUT = "recent_layout";
+	// Sets the type of layout to use for the song list
+	private static final String TRACK_LAYOUT = "track_layout";
 	// Key that gives permissions to download missing album covers
 	private static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
 	// Key that gives permissions to download missing artist images
@@ -343,6 +345,26 @@ public final class AppPreferences {
 	public void setRecentLayout(String value) {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putString(RECENT_LAYOUT, value);
+		editor.commit();
+	}
+
+	/**
+	 * get layout type for the recent album list
+	 *
+	 * @return layout type {@link #LAYOUT_SIMPLE,#LAYOUT_DETAILED,#LAYOUT_GRID}
+	 */
+	public String getTrackLayout() {
+		return defaultPref.getString(TRACK_LAYOUT, LAYOUT_SIMPLE);
+	}
+
+	/**
+	 * Sets the layout type for the track list
+	 *
+	 * @param value The new layout type
+	 */
+	public void setTrackLayout(String value) {
+		SharedPreferences.Editor editor = defaultPref.edit();
+		editor.putString(TRACK_LAYOUT, value);
 		editor.commit();
 	}
 

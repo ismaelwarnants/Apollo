@@ -334,7 +334,6 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 
 			case AppPreferences.LAYOUT_DETAILED:
 				mAdapter = new ArtistAdapter(requireActivity(), 1, R.layout.list_item_detailed);
-				mAdapter.setLoadExtraData();
 				mList.setNumColumns(1);
 				break;
 

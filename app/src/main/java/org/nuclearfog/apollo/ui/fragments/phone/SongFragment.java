@@ -109,15 +109,14 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		TextView emptyText = mRootView.findViewById(R.id.list_base_empty_info);
 		mList = mRootView.findViewById(R.id.list_base);
-		//
 		preference = AppPreferences.getInstance(requireContext());
-		mAdapter = new SongAdapter(requireContext(), false);
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		songLoader = new SongLoader(requireContext());
 		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
+		// setup list adapter
+		initList();
 		// setup the list view
-		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyText);
 		mList.setRecyclerListener(new RecycleHolder());
 		mList.setOnCreateContextMenuListener(this);
@@ -249,6 +248,7 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 		switch (action) {
 			case REFRESH:
 			case MusicBrowserPhoneFragment.REFRESH:
+				initList();
 				songLoader.execute(null, onSongsLoaded);
 				break;
 
@@ -303,5 +303,22 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 			}
 			MusicUtils.refresh(requireActivity());
 		}
+	}
+
+	/**
+	 * initialize the list adapter and set layout
+	 */
+	private void initList() {
+		switch (preference.getTrackLayout()) {
+			default:
+			case AppPreferences.LAYOUT_SIMPLE:
+				mAdapter = new SongAdapter(requireActivity(), false, R.layout.list_item_simple);
+				break;
+
+			case AppPreferences.LAYOUT_DETAILED:
+				mAdapter = new SongAdapter(requireActivity(), false, R.layout.list_item_normal);
+				break;
+		}
+		mList.setAdapter(mAdapter);
 	}
 }

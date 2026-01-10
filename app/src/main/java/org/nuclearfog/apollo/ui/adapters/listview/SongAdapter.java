@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
@@ -28,14 +30,14 @@ import org.nuclearfog.apollo.utils.StringUtils;
 public class SongAdapter extends AlphabeticalAdapter<Song> {
 
 	/**
-	 * item layout
-	 */
-	private static final int LAYOUT = R.layout.list_item_simple;
-
-	/**
 	 * transparency mask for a RGB color
 	 */
 	private static final int TRANSPARENCY_MASK = 0x40FFFFFF;
+
+	/**
+	 * Image fetcher used to show album images
+	 */
+	private ImageFetcher mImageFetcher;
 
 	/**
 	 * current item position of the current track
@@ -53,13 +55,21 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 	private boolean enableDnD;
 
 	/**
-	 * @param enableDrag true to enable drag & drop feature
+	 * ID of the item layout resource
 	 */
-	public SongAdapter(Context context, boolean enableDrag) {
-		super(context, LAYOUT);
+	private int layoutId;
+
+	/**
+	 * @param enableDrag true to enable drag & drop feature
+	 * @param layoutId   ID of the layout {@link R.layout#list_item_simple} or {@link R.layout#list_item_normal}
+	 */
+	public SongAdapter(Context context, boolean enableDrag, @LayoutRes int layoutId) {
+		super(context, layoutId);
 		AppPreferences prefs = AppPreferences.getInstance(context);
+		mImageFetcher = new ImageFetcher(context);
 		selectedColor = prefs.getThemeColor() & TRANSPARENCY_MASK;
 		enableDnD = enableDrag;
+		this.layoutId = layoutId;
 	}
 
 	/**
@@ -71,13 +81,17 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 		// Recycle ViewHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
-			convertView = LayoutInflater.from(parent.getContext()).inflate(LAYOUT, parent, false);
-			if (enableDnD)
-				convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
 			holder = new MusicHolder(convertView);
-			// Hide the third line of text
-			holder.mLineThree.setVisibility(View.GONE);
 			convertView.setTag(holder);
+			// Hide the third line of text
+			if (holder.mLineThree != null) {
+				holder.mLineThree.setVisibility(View.GONE);
+			}
+			//  enable/disable handle on the left side
+			if (enableDnD) {
+				convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
+			}
 		} else {
 			holder = (MusicHolder) convertView.getTag();
 		}
@@ -87,15 +101,20 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 		} else {
 			convertView.setBackgroundColor(0);
 		}
-		// Retrieve the data holder
+		// Retrieve the item data
 		Song song = getItem(position);
 		if (song != null) {
 			// Set each song name (line one)
 			holder.mLineOne.setText(song.getName());
-			// Set the song duration (line one, right)
-			holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), (int) song.getDuration()));
 			// Set the album name (line two)
 			holder.mLineTwo.setText(song.getArtist());
+			// Set the song duration (line one, right)
+			if (holder.mLineOneRight != null) {
+				holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), (int) song.getDuration()));
+			}
+			if (holder.mImage != null) {
+				mImageFetcher.loadAlbumImage(song.getAlbumId(), holder.mImage);
+			}
 			if (song.isVisible()) {
 				convertView.setAlpha(1.0f);
 			} else {

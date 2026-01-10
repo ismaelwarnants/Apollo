@@ -35,11 +35,6 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 	private int mLayoutId;
 
 	/**
-	 * Loads line three and the background image if the user decides to.
-	 */
-	private boolean mLoadExtraData = false;
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public ArtistAdapter(Context context, int columns, int layoutId) {
@@ -62,7 +57,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 			convertView = inflater.inflate(mLayoutId, parent, false);
 			holder = new MusicHolder(convertView);
-			if (holder.mLineThree != null && !mLoadExtraData) {
+			if (holder.mLineThree != null && mLayoutId != R.layout.list_item_detailed) {
 				holder.mLineThree.setVisibility(View.GONE);
 			}
 			convertView.setTag(holder);
@@ -79,7 +74,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 			holder.mLineTwo.setText(numAlbums);
 			// Asynchronously load the artist image into the adapter
 			mImageFetcher.loadArtistImage(artist.getId(), holder.mImage);
-			if (mLoadExtraData) {
+			if (mLayoutId == R.layout.list_item_detailed) {
 				// Number of songs (line three)
 				String numTracks = StringUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
 				// Set the number of songs (line three)
@@ -130,12 +125,5 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 	 */
 	public void flush() {
 		mImageFetcher.clear();
-	}
-
-	/**
-	 * enable extra information
-	 */
-	public void setLoadExtraData() {
-		mLoadExtraData = true;
 	}
 }

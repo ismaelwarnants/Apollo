@@ -106,8 +106,8 @@ public class Album extends Music implements Parcelable {
 	 *
 	 * @return release date string or empty string if not defined
 	 */
-	public int getRelease() {
-		return year;
+	public String getRelease() {
+		return Integer.toString(year);
 	}
 
 
@@ -124,7 +124,7 @@ public class Album extends Music implements Parcelable {
 		dest.writeInt(isVisible() ? 1 : 0);
 		dest.writeString(getArtist());
 		dest.writeInt(getTrackCount());
-		dest.writeInt(getRelease());
+		dest.writeInt(year);
 	}
 
 	/**

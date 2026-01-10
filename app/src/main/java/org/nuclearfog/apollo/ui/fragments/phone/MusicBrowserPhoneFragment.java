@@ -14,6 +14,7 @@ import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
@@ -35,7 +36,7 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener, MenuProvider {
+public class MusicBrowserPhoneFragment extends Fragment implements OnPageChangeListener, OnCenterItemClickListener, MenuProvider {
 
 	/**
 	 *
@@ -93,6 +94,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
 		requireActivity().addMenuProvider(this);
 		pageIndicator.setOnCenterItemClickListener(this);
+		mViewPager.addOnPageChangeListener(this);
 		return rootView;
 	}
 
@@ -129,6 +131,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
 				case MusicBrowserAdapter.IDX_TRACKS:
 					inflater.inflate(R.menu.song_sort_by, menu);
+					inflater.inflate(R.menu.view_as, menu);
+					menu.findItem(R.id.menu_view_as_grid).setVisible(false);
 					break;
 
 				case MusicBrowserAdapter.IDX_ALBUM:
@@ -269,6 +273,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout(AppPreferences.LAYOUT_SIMPLE);
 				viewModel.notify(AlbumFragment.REFRESH);
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
+				mPreferences.setTrackLayout(AppPreferences.LAYOUT_SIMPLE);
+				viewModel.notify(SongFragment.REFRESH);
 			}
 		}
 		// set detailed item view
@@ -282,6 +289,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout(AppPreferences.LAYOUT_DETAILED);
 				viewModel.notify(AlbumFragment.REFRESH);
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
+				mPreferences.setTrackLayout(AppPreferences.LAYOUT_DETAILED);
+				viewModel.notify(SongFragment.REFRESH);
 			}
 		}
 		// set grid item view
@@ -307,6 +317,29 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onPageSelected(int position) {
+		// update options menu when changing tab
+		requireActivity().invalidateOptionsMenu();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onPageScrollStateChanged(int state) {
 	}
 
 	/**

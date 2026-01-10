@@ -932,7 +932,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, song.getDuration());
 		}
 		if (album != null) {
-			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, Integer.toString(album.getRelease()));
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, album.getRelease());
 			builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, album.getTrackCount());
 			builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, imageFetcher.getAlbumArtwork(album));
 		}

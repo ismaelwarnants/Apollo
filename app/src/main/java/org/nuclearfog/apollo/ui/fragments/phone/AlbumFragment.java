@@ -338,7 +338,6 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 
 			case AppPreferences.LAYOUT_DETAILED:
 				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
-				mAdapter.setLoadExtraData();
 				mList.setNumColumns(1);
 				break;
 

@@ -40,11 +40,6 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 	private int mLayoutId;
 
 	/**
-	 * Determines if the grid or list should be the default style
-	 */
-	private boolean mLoadExtraData = false;
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public AlbumAdapter(Context context, int columns, @LayoutRes int mLayoutId) {
@@ -80,7 +75,7 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 			// Asynchronously load the album images into the adapter
 			mImageFetcher.loadAlbumImage(album.getId(), holder.mImage);
 			// List view only items
-			if (mLoadExtraData) {
+			if (mLayoutId == R.layout.list_item_detailed) {
 				// Set the number of songs (line three)
 				if (holder.mLineThree != null) {
 					String count = StringUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
@@ -131,13 +126,5 @@ public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	public void flush() {
 		mImageFetcher.clear();
-	}
-
-	/**
-	 * enable extra information
-	 */
-	public void setLoadExtraData() {
-		mLoadExtraData = true;
-		notifyDataSetChanged();
 	}
 }

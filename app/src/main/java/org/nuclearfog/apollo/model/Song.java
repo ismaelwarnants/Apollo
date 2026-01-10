@@ -20,13 +20,15 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 		@Override
 		public Song createFromParcel(Parcel source) {
 			long id = source.readLong();
+			long albumId = source.readLong();
+			long artistId = source.readLong();
 			String name = source.readString();
 			String artist = source.readString();
 			String album = source.readString();
 			String path = source.readString();
 			long duration = source.readLong();
 			boolean visible = source.readInt() == 1;
-			return new Song(id, name, artist, album, path, duration, visible);
+			return new Song(id, albumId, artistId, name, artist, album, path, duration, visible);
 		}
 
 
@@ -59,12 +61,12 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	/**
 	 * ID of the song's artist
 	 */
-	private long artist_id = -1;
+	private long artist_id;
 
 	/**
 	 * ID of the song's album
 	 */
-	private long album_id = -1;
+	private long album_id;
 
 	/**
 	 * path to the song file
@@ -93,11 +95,12 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 *
 	 */
 	public Song(long song_id, String song_name, String artist_name, String album_name, long length) {
-		this(song_id, song_name, artist_name, album_name, "", length, true);
+		this(song_id, 0, 0, song_name, artist_name, album_name, "", length, true);
 	}
 
 	/**
-	 * @param song_id     The Id of the song
+	 * @param song_id     The ID of the song
+	 * @param album_id    THE ID of the song album
 	 * @param song_name   The song_name of the song
 	 * @param artist_name The song artist
 	 * @param album_name  The song album
@@ -105,7 +108,7 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 * @param duration    The duration of a song in milliseconds
 	 * @param visibility  Visibility of the track
 	 */
-	public Song(long song_id, String song_name, String artist_name, String album_name, String path, long duration, boolean visibility) {
+	public Song(long song_id, long album_id, long artist_id, String song_name, String artist_name, String album_name, String path, long duration, boolean visibility) {
 		super(song_id, song_name, visibility);
 		if (artist_name != null && !artist_name.equals("<unknown>")) {
 			this.artist_name = artist_name;
@@ -119,6 +122,8 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 		if (path != null) {
 			this.path = path;
 		}
+		this.album_id = album_id;
+		this.artist_id = artist_id;
 	}
 
 	/**
@@ -127,6 +132,8 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	@Override
 	public void writeToParcel(@NonNull Parcel dest, int flags) {
 		dest.writeLong(getId());
+		dest.writeLong(getAlbumId());
+		dest.writeLong(getArtistId());
 		dest.writeString(getName());
 		dest.writeString(getArtist());
 		dest.writeString(getAlbum());

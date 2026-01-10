@@ -106,7 +106,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Menu
 		mList = rootView.findViewById(R.id.list_base);
 		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		mAdapter = new SongAdapter(requireContext(), true);
+		mAdapter = new SongAdapter(requireContext(), true, R.layout.list_item_simple);
 		mLoader = new QueueLoader(requireContext());
 		mPref = AppPreferences.getInstance(requireContext());
 		// setup listview
