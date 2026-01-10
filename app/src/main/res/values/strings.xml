@@ -56,7 +56,7 @@
 	<string name="sort_order_entry_year">Year</string>
 	<string name="sort_order_entry_duration">Duration</string>
 	<string name="sort_order_entry_date_added">Date added</string>
-	<string name="sort_order_entry_track_list">Track list</string>
+	<string name="sort_order_entry_track_list">Track number</string>
 	<string name="sort_order_entry_number_of_songs">Number of songs</string>
 	<string name="sort_order_entry_number_of_albums">Number of albums</string>
 	<string name="sort_order_entry_filename">Filename</string>

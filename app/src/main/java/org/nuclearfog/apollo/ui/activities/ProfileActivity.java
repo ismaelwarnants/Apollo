@@ -330,80 +330,52 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 		}
 		// shuffle tracks
 		else if (item.getItemId() == R.id.menu_shuffle) {
-			switch (type) {
-				case ARTIST:
-					artistSongLoader.execute(ids[0], onShuffleSongs);
-					break;
-
-				case ALBUM:
-					albumSongLoader.execute(ids[0], onShuffleSongs);
-					break;
-
-				case GENRE:
-					String genreIds = ApolloUtils.serializeIDs(ids);
-					genreSongLoader.execute(genreIds, onShuffleSongs);
-					break;
-
-				case PLAYLIST:
-					playlistSongLoader.execute(ids[0], onShuffleSongs);
-					break;
-
-				case FAVORITE:
-					favoriteSongLoader.execute(null, onShuffleSongs);
-					break;
-
-				case LAST_ADDED:
-					lastAddedLoader.execute(null, onShuffleSongs);
-					break;
-
-				case POPULAR:
-					popularSongLoader.execute(null, onShuffleSongs);
-					break;
-
-				case FOLDER:
-					folderSongLoader.execute(folderPath, onShuffleSongs);
-					break;
+			if (type == Type.ARTIST) {
+				artistSongLoader.execute(ids[0], onShuffleSongs);
+			} else if (type == Type.ALBUM) {
+				albumSongLoader.execute(ids[0], onShuffleSongs);
+			} else if (type == Type.GENRE) {
+				String genreIds = ApolloUtils.serializeIDs(ids);
+				genreSongLoader.execute(genreIds, onShuffleSongs);
+			} else if (type == Type.PLAYLIST) {
+				playlistSongLoader.execute(ids[0], onShuffleSongs);
+			} else if (type == Type.FAVORITE) {
+				favoriteSongLoader.execute(null, onShuffleSongs);
+			} else if (type == Type.LAST_ADDED) {
+				lastAddedLoader.execute(null, onShuffleSongs);
+			} else if (type == Type.POPULAR) {
+				popularSongLoader.execute(null, onShuffleSongs);
+			} else if (type == Type.FOLDER) {
+				folderSongLoader.execute(folderPath, onShuffleSongs);
 			}
 		}
 		// sort alphabetical
 		else if (item.getItemId() == R.id.menu_sort_by_az) {
-			switch (type) {
-				case ARTIST:
-					if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-					} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-					}
-					break;
-
-				case ALBUM:
-					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-					break;
-
-				case FOLDER:
-					mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_A_Z);
-					break;
+			if (type == Type.ARTIST) {
+				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
+					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
+					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
+				}
+			} else if (type == Type.ALBUM) {
+				mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_A_Z);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort alphabetical reverse
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
-			switch (type) {
-				case ARTIST:
-					if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
-						mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-					} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
-						mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-					}
-					break;
-
-				case ALBUM:
-					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-					break;
-
-				case FOLDER:
-					mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_Z_A);
-					break;
+			if (type == Type.ARTIST) {
+				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
+					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+				} else if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
+					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
+				}
+			} else if (type == Type.ALBUM) {
+				mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_Z_A);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}

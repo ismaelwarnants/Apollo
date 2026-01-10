@@ -94,7 +94,8 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 			// Set the number of songs (line two)
 			holder.mLineTwo.setText(StringUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
 			// Set the album year (line three)
-			holder.mLineThree.setText(album.getRelease());
+			if (!album.getRelease().isEmpty())
+				holder.mLineThree.setText(album.getRelease());
 			// Asynchronously load the album images into the adapter
 			mImageFetcher.loadAlbumImage(album.getId(), holder.mImage);
 			// register album art click listener

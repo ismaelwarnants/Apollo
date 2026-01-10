@@ -166,7 +166,9 @@ public final class ApolloUtils {
 				ShortcutInfoCompat sInfo = new ShortcutInfoCompat.Builder(context, shortcutId)
 						.setIcon(icon).setIntent(shortcutIntent).setShortLabel(displayName).build();
 				ShortcutManagerCompat.requestPinShortcut(context, sInfo, null);
-				showInfoToast(activity, R.string.pinned_to_home_screen, displayName);
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+					showInfoToast(activity, R.string.pinned_to_home_screen, displayName);
+				}
 			} else {
 				showInfoToast(activity, R.string.could_not_be_pinned_to_home_screen, displayName);
 			}

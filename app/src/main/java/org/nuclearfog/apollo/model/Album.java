@@ -107,6 +107,8 @@ public class Album extends Music implements Parcelable {
 	 * @return release date string or empty string if not defined
 	 */
 	public String getRelease() {
+		if (year == 0)
+			return "";
 		return Integer.toString(year);
 	}
 

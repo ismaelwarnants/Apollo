@@ -39,7 +39,7 @@
 	<string name="sort_order_entry_year">Jahr</string>
 	<string name="sort_order_entry_duration">Titellänge</string>
 	<string name="sort_order_entry_date_added">Hinzufügezeitpunkt</string>
-	<string name="sort_order_entry_track_list">Titelliste</string>
+	<string name="sort_order_entry_track_list">Titelnummer</string>
 	<string name="sort_order_entry_number_of_songs">Titelanzahl</string>
 	<string name="sort_order_entry_number_of_albums">Albenanzahl</string>
 	<string name="sort_order_entry_filename">Dateiname</string>
