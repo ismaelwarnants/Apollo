@@ -536,6 +536,7 @@ public class MultiPlayer {
 				callback.onWentToNext();
 			} else {
 				pause(true);
+				callback.onPlaybackChanged();
 			}
 		}
 	}

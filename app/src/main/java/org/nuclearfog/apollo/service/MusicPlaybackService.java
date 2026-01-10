@@ -646,8 +646,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayList.setPosition(0);
 			// update metadata
 			notifyChange(CHANGED_QUEUE);
-			// setup player & start
-			setNextTrack(false);
+			// start player then stop after this track
+			mPlayer.setNextDataSource(getApplicationContext(), null);
+			mPlayList.setNextPosition(-1);
 			play();
 		} else {
 			// restore track information after error
