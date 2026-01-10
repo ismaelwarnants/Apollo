@@ -121,6 +121,7 @@
 	<string name="label_bass_boost">Bassanhebung</string>
 	<string name="label_enable_equalizer">aktiviere Audio FX</string>
 	<string name="settings_prefer_external_equalizer">externen Equalizer bevorzugen</string>
+	<string name="settings_category_player">Player-Einstellungen</string>
 	<string name="settings_other">Andere Einstellungen</string>
 	<string name="accessibility_switch_queue">zur Warteschlange umschalten</string>
 	<string name="accessibility_switch_album_art">zum Albumcover umschalten</string>

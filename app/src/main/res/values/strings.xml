@@ -142,6 +142,7 @@
 	<!-- Settings -->
 	<string name="settings_ui_category">Interface</string>
 	<string name="settings_storage_category">Storage</string>
+	<string name="settings_category_player">Player settings</string>
 	<string name="settings_other">Other settings</string>
 	<string name="settings_data_musicbrainz">MusicBrainz database</string>
 	<string name="settings_about_apollo">About Apollo</string>

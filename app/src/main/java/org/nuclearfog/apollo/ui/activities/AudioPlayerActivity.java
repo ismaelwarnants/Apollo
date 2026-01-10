@@ -91,10 +91,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private static final String KEY_QUEUE_VISIBILITY = "queue_visibility";
 
 	/**
-	 * highest jump when scanning forward or backward in milliseconds
+	 * seek jump limit when using fast-forward/rewind in milliseconds
+	 * The speed factor is calculated by multiplying this value with {@link ForwardRewindButton#S_INTERVAL}
 	 */
-	private static final long SCAN_MAX_TIME = 30000;
-
+	private static final long SCAN_MAX_TIME = 5000;
+	/**
+	 * callback used to play songs after being loaded asynchronously
+	 */
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	/**
 	 * Play & pause button

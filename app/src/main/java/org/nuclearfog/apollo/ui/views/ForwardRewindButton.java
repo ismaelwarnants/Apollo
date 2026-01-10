@@ -31,7 +31,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class ForwardRewindButton extends AppCompatImageButton implements OnTouchListener, OnLongClickListener {
 
-	private static final long S_INTERVAL = 400;
+	/**
+	 * poll intervall in milliseconds when the button is pressed and held for a long time
+	 */
+	public static final long S_INTERVAL = 500;
 
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 	private Handler mHandler;
