@@ -515,29 +515,22 @@ public class MultiPlayer {
 	 * @see android.media.MediaPlayer.OnCompletionListener
 	 */
 	private void onCompletion(MediaPlayer mp) {
-		if (fadeEffectEnabled) {
-			// Fix: sometimes the end position doesn't match the track duration
-			// which causes that the "track end" detection will fail
-			if (mp.getDuration() - mp.getCurrentPosition() > FADE_DELAY) {
-				// go to next player and fade in
-				if (continuous) {
+		if (continuous) {
+			if (fadeEffectEnabled) {
+				// Fix: sometimes the end position doesn't match the track duration
+				// which causes that the "track end" detection will fail
+				if (mp.getDuration() - mp.getCurrentPosition() > FADE_DELAY) {
 					setNextPlayer();
-					setCurrentVolume(0f);
 					fadeMode = FADE_IN;
 					callback.onWentToNext();
-				} else {
-					pause(true);
-					callback.onPlaybackChanged();
 				}
-			}
-		} else {
-			if (continuous) {
+			} else {
 				setNextPlayer();
 				callback.onWentToNext();
-			} else {
-				pause(true);
-				callback.onPlaybackChanged();
 			}
+		} else {
+			pause(true);
+			callback.onPlaybackChanged();
 		}
 	}
 
