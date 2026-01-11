@@ -69,7 +69,7 @@ public final class CursorFactory {
 	 * SQL Projection to get song information in a fixed order
 	 */
 	@SuppressLint("InlinedApi")
-	private static final String[] TRACK_COLUMNS = {
+	public static final String[] TRACK_COLUMNS = {
 			Media._ID,
 			Media.TITLE,
 			Media.ARTIST,

@@ -151,10 +151,14 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 * @param songs list of songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(this, songs, false);
-		if (shouldOpenAudioPlayer) {
-			NavUtils.openAudioPlayer(this);
+		if (!songs.isEmpty()) {
+			MusicUtils.playAll(this, songs, false);
+			if (shouldOpenAudioPlayer) {
+				NavUtils.openAudioPlayer(this);
+			}
+			finish();
+		} else {
+			NavUtils.goHome(this);
 		}
-		finish();
 	}
 }

@@ -409,7 +409,7 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 			mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
-		// sort by default order
+		// sort by track number
 		else if (item.getItemId() == R.id.menu_sort_by_track_list) {
 			if (type == Type.FOLDER) {
 				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_TRACK_LIST);
