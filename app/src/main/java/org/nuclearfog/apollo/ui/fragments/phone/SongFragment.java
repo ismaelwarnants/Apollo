@@ -285,8 +285,9 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
+			boolean showHidden = preference.getExcludeTracks();
 			for (Song song : songs) {
-				if (preference.getExcludeTracks() || song.isVisible()) {
+				if ((showHidden || song.isVisible()) && song.getDuration() > 0) {
 					mAdapter.add(song);
 				}
 			}

@@ -81,6 +81,6 @@ public class TrackDeleteWorker extends AsyncExecutor<Long[], Integer> {
 				cursor.close();
 			}
 		}
-		return null;
+		return 0;
 	}
 }

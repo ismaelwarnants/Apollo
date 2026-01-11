@@ -203,8 +203,9 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
+			boolean showHidden = preference.getExcludeTracks();
 			for (Genre genre : genres) {
-				if (preference.getExcludeTracks() || genre.isVisible()) {
+				if (showHidden || genre.isVisible()) {
 					mAdapter.add(genre);
 				}
 			}

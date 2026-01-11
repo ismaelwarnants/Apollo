@@ -127,7 +127,7 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	@Override
 	public void onResult(@NonNull Integer count) {
 		Activity activity = getActivity();
-		if (activity != null) {
+		if (activity != null && count > 0) {
 			ApolloUtils.showInfoToast(requireActivity(), R.plurals.NNNtracksdeleted, count);
 			// We deleted a number of tracks, which could affect any number of
 			// things in the media content domain, so update everything.

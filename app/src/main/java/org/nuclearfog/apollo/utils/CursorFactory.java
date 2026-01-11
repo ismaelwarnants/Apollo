@@ -160,7 +160,7 @@ public final class CursorFactory {
 	 * Selection to filter songs with empty name
 	 */
 	@SuppressLint("InlinedApi")
-	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.DURATION + ">0 AND " + Media.TITLE + "!=''";
+	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
 
 	/**
 	 *
@@ -170,7 +170,7 @@ public final class CursorFactory {
 	/**
 	 * folder track selection
 	 */
-	private static final String FOLDER_TRACK_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATA + " LIKE ?";
+	private static final String FOLDER_SONG_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATA + " LIKE ?";
 
 	/**
 	 * SQL selection
@@ -407,7 +407,7 @@ public final class CursorFactory {
 
 		String[] args = {folderName + "%"};
 		String sortOrder = AppPreferences.getInstance(context).getFolderSongSortOrder();
-		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, sortOrder);
+		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_SONG_SELECT, args, sortOrder);
 	}
 
 	/**

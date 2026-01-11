@@ -1041,6 +1041,7 @@ public final class MusicUtils {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void openDeleteDialog(FragmentActivity activity, String title, long[] ids) {
+		// todo stop playback and update queue after deletion
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 			// Use system Dialog to delete media files
 			try {

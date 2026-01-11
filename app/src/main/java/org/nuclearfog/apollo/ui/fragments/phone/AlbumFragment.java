@@ -275,8 +275,9 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
+			boolean showHidden = preference.getExcludeTracks();
 			for (Album album : albums) {
-				if (preference.getExcludeTracks() || album.isVisible()) {
+				if (showHidden || album.isVisible()) {
 					mAdapter.add(album);
 				}
 			}

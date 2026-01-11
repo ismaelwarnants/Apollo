@@ -195,8 +195,9 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 			// Clear list
 			mAdapter.clear();
 			// add data to the adapter
+			boolean showHidden = preference.getExcludeTracks();
 			for (Folder folder : folders) {
-				if (preference.getExcludeTracks() || folder.isVisible()) {
+				if (showHidden || folder.isVisible()) {
 					mAdapter.add(folder);
 				}
 			}
