@@ -231,9 +231,8 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					MusicUtils.moveQueueItem(requireActivity(), from - ProfileSongAdapter.HEADER_COUNT, to - ProfileSongAdapter.HEADER_COUNT);
 				}
 			}
-		} else {
-			mAdapter.notifyDataSetChanged();
 		}
+		mAdapter.notifyDataSetChanged();
 	}
 
 	/**
