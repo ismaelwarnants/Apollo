@@ -150,6 +150,7 @@ public class ImageFetcher {
 	 * @param artistId local MediaStore ID of the artist
 	 * @return artist image bitmap
 	 */
+	@NonNull
 	public Bitmap getArtistImage(long artistId) {
 		String key = StringUtils.generateCacheKey(ImageType.ARTIST, artistId);
 		Bitmap bitmap = mImageCache.getCachedBitmap(key);
@@ -197,6 +198,7 @@ public class ImageFetcher {
 	 * @param ids MediaStore IDs of a genre
 	 * @return thumbnail bitmap
 	 */
+	@NonNull
 	public Bitmap getGenreImage(long[] ids) {
 		String key = StringUtils.generateCacheKey(ImageType.GENRE, ids);
 		Bitmap bitmap = mImageCache.getCachedBitmap(key);
@@ -237,6 +239,7 @@ public class ImageFetcher {
 	 * @param id MediaStore playlist ID
 	 * @return image bitmap
 	 */
+	@NonNull
 	public Bitmap getPlaylistImage(long id) {
 		String key = StringUtils.generateCacheKey(ImageType.PLAYLIST, id);
 		Bitmap bitmap = mImageCache.getCachedBitmap(key);

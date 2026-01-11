@@ -1,5 +1,7 @@
 package org.nuclearfog.apollo.utils;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -289,5 +291,23 @@ public final class ImageUtils {
 	public static Drawable createBlurredDrawable(Resources resources, Bitmap bitmap) {
 		Bitmap blur = ImageUtils.createBlurredBitmap(bitmap);
 		return new BitmapDrawable(resources, blur);
+	}
+
+	/**
+	 * create small icon for the launcher
+	 *
+	 * @param bitmap bitmap to create a small shortcut icon
+	 * @return shortcut icon bitmap
+	 */
+	public static Bitmap createShortcutIcon(Context context, Bitmap bitmap) {
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		int iconsize = activityManager.getLauncherLargeIconSize();
+		if (bitmap.getWidth() == 0 || bitmap.getHeight() == 0 || iconsize == 0 || (bitmap.getHeight() <= iconsize && bitmap.getWidth() <= iconsize)) {
+			return bitmap;
+		} else if (bitmap.getHeight() > bitmap.getWidth()) {
+			return Bitmap.createScaledBitmap(bitmap, iconsize * bitmap.getWidth() / bitmap.getHeight(), iconsize, false);
+		} else {
+			return Bitmap.createScaledBitmap(bitmap, iconsize, iconsize * bitmap.getHeight() / bitmap.getWidth(), false);
+		}
 	}
 }

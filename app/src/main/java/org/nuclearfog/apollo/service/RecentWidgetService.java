@@ -2,7 +2,6 @@ package org.nuclearfog.apollo.service;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -113,12 +112,7 @@ public class RecentWidgetService extends RemoteViewsService {
 			// Set the artist names
 			mViews.setTextViewText(R.id.app_widget_recents_line_two, album.getArtist());
 			// Set the album art
-			Bitmap bitmap = mFetcher.getAlbumImage(album.getId());
-			if (bitmap != null) {
-				mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
-			} else {
-				mViews.setImageViewResource(R.id.app_widget_recents_base_image, R.drawable.default_artwork);
-			}
+			mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, mFetcher.getAlbumImage(album.getId()));
 			// Open the profile of the touched album
 			Intent profileIntent = new Intent();
 			profileIntent.putExtra(Constants.ID, album.getId());

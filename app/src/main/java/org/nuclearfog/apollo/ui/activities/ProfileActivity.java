@@ -107,7 +107,7 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 	private Type type;
 
 	/**
-	 * ID used for albums, artist genres etc
+	 * group of IDs (artist, album or genre ID)
 	 */
 	private long[] ids = {0};
 
@@ -321,11 +321,11 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 			// Place the artist, album, genre, or playlist onto the Home
 			// screen. Definitely one of my favorite features.
 			if (type == Type.ARTIST) {
-				ApolloUtils.createShortcutIntent(mArtistName, mArtistName, mType, this, ids);
+				ApolloUtils.createShortcutIntent(this, mArtistName, mType, ids);
 			} else if (type == Type.FOLDER) {
-				ApolloUtils.createShortcutIntent(folderPath, mArtistName, mType, this, ids);
+				ApolloUtils.createShortcutIntent(this, folderPath, mType, 0);
 			} else {
-				ApolloUtils.createShortcutIntent(mProfileName, mArtistName, mType, this, ids);
+				ApolloUtils.createShortcutIntent(this, mProfileName, mType, ids);
 			}
 		}
 		// shuffle tracks
