@@ -32,7 +32,7 @@
     <string name="sort_order_entry_year">Yıl</string>
     <string name="sort_order_entry_duration">Süre</string>
     <string name="sort_order_entry_date_added">Eklendiği tarih</string>
-    <string name="sort_order_entry_track_list">Parça listesi</string>
+    <string name="sort_order_entry_track_list">Parça numarası</string>
     <string name="sort_order_entry_number_of_songs">Şarkı sayısı</string>
     <string name="sort_order_entry_number_of_albums">Albüm sayısı</string>
     <string name="sort_order_entry_filename">Dosya adı</string>
