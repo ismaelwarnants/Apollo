@@ -260,10 +260,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private AppWidgetManager widgetManager;
 	/**
-	 * current audio session ID
-	 */
-	private int audioSessionId;
-	/**
 	 * Used to know when the service is active
 	 */
 	private boolean mServiceInUse = false;
@@ -332,9 +328,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		widgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// initialize audio manager and audio session ID
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		audioSessionId = mAudio.generateAudioSessionId();
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getApplicationContext(), audioSessionId, this, appSettings.crossfadeEnabled());
+		mPlayer = new MultiPlayer(getApplicationContext(), this, appSettings.crossfadeEnabled());
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
@@ -357,7 +352,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			// send session ID to external equalizer if set
 			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
 		} else {
-			AudioEffects.getInstance(getApplicationContext(), audioSessionId);
+			AudioEffects.getInstance(getApplicationContext(), mPlayer.getSessionId());
 		}
 		// initialize the playback/history list and state
 		initPlaybackList();
@@ -662,7 +657,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return The current audio session ID
 	 */
 	int getAudioSessionId() {
-		return audioSessionId;
+		return mPlayer.getSessionId();
 	}
 
 	/**

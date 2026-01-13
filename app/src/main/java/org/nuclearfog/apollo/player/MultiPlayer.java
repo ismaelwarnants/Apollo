@@ -131,11 +131,10 @@ public class MultiPlayer {
 
 	/**
 	 * @param context   context from service
-	 * @param sessionId current media session ID
 	 * @param callback  a callback used to inform about playback changes
 	 * @param fadeEnable true to enable fade effect
 	 */
-	public MultiPlayer(Context context, int sessionId, OnPlaybackStatusCallback callback, boolean fadeEnable) {
+	public MultiPlayer(Context context, OnPlaybackStatusCallback callback, boolean fadeEnable) {
 		playerHandler = new Handler(context.getMainLooper());
 		this.fadeEffectEnabled = fadeEnable;
 		this.callback = callback;
@@ -146,13 +145,22 @@ public class MultiPlayer {
 				mPlayers[i] = new MediaPlayer();
 			}
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mPlayers[i].setAudioSessionId(sessionId);
+			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}
 		if (fadeEnable) {
 			setAllVolume(0f);
 		}
+	}
+
+	/**
+	 * get audio session ID of the player
+	 *
+	 * @return audio session ID used by this players
+	 */
+	public int getSessionId() {
+		return mPlayers[0].getAudioSessionId();
 	}
 
 	/**
