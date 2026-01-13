@@ -878,8 +878,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void releaseService(boolean delay) {
 		if (delay) {
+			shutdownHandler.stop();
 			shutdownHandler.start(ShutdownHandler.DELAY_SHORT);
-		} else if (!isPlaying()) {
+		} else {
 			AudioManagerCompat.abandonAudioFocusRequest(mAudio, focusRequest);
 			ServiceCompat.stopForeground(MusicPlaybackService.this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			isForeground = false;
