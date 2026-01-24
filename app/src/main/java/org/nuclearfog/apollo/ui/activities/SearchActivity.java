@@ -2,6 +2,7 @@ package org.nuclearfog.apollo.ui.activities;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -86,16 +87,9 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected int getContentView() {
-		return R.layout.grid_search;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		// init view
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.grid_search);
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);
 		Toolbar toolbar = findViewById(R.id.grid_search_toolbar);
@@ -121,6 +115,11 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		mAdapter.setPrefix(mFilterString);
 		// Bind the data
 		mGridView.setAdapter(mAdapter);
+		if (ApolloUtils.isLandscape(this)) {
+			mGridView.setNumColumns(TWO);
+		} else {
+			mGridView.setNumColumns(ONE);
+		}
 		// Recycle the data
 		mGridView.setRecyclerListener(new RecycleHolder());
 		// set empty message
@@ -129,11 +128,6 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		mGridView.setOnScrollListener(this);
 		mGridView.setOnItemClickListener(this);
 		mGridView.setOnCreateContextMenuListener(this);
-		if (ApolloUtils.isLandscape(this)) {
-			mGridView.setNumColumns(TWO);
-		} else {
-			mGridView.setNumColumns(ONE);
-		}
 		// Prepare the loader. Either re-connect with an existing one
 		mLoader.execute(mFilterString, this);
 	}
@@ -278,6 +272,13 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onPermissionGranted() {
 	}
 
 

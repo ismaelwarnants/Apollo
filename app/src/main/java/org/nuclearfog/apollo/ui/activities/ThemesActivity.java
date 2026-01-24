@@ -1,7 +1,9 @@
 package org.nuclearfog.apollo.ui.activities;
 
+import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
@@ -20,15 +22,9 @@ public class ThemesActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected int getContentView() {
-		return R.layout.activity_base;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
@@ -54,6 +50,14 @@ public class ThemesActivity extends ActivityBase {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onPermissionGranted() {
+		// not used
 	}
 
 	/**

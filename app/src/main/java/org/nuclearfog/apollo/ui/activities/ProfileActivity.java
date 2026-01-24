@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore.Audio;
 import android.util.Log;
 import android.view.Menu;
@@ -153,19 +154,15 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 
 	private FragmentViewModel viewModel;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected int getContentView() {
-		return R.layout.activity_profile_base;
-	}
+	private ProfileAdapter mPagerAdapter;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void initialize() {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_profile_base);
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mViewPager = findViewById(R.id.activity_profile_base_pager);
@@ -205,17 +202,15 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 			folderPath = getIntent().getExtras().getString(Constants.FOLDER, "");
 		}
 		type = Type.fromString(mType);
+		mPagerAdapter = new ProfileAdapter(this, getIntent().getExtras(), type);
 		initViews();
-		// Initialize the pager adapter
-		ProfileAdapter mPagerAdapter = new ProfileAdapter(this, getIntent().getExtras(), type);
-		// Attach the adapter
-		mViewPager.setAdapter(mPagerAdapter);
-		// Offscreen limit
-		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
 		// Attach the page change listener
 		mViewPager.addOnPageChangeListener(this);
 		// Attach the carousel listener
 		mTabCarousel.setListener(this);
+		if (ApolloUtils.permissionsGranted(this)) {
+			onPermissionGranted();
+		}
 	}
 
 	/**
@@ -255,6 +250,17 @@ public class ProfileActivity extends ActivityBase implements AsyncCallback<Bitma
 		popularSongLoader.cancel();
 		folderSongLoader.cancel();
 		super.onDestroy();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onPermissionGranted() {
+		// Attach the adapter
+		mViewPager.setAdapter(mPagerAdapter);
+		// Offscreen limit
+		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
 	}
 
 	/**

@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -54,6 +55,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	private static final int REQ_CHECK_PERM = 0x1139398F;
 
 	/**
+	 * bottom action bar containing playback information and controls
+	 */
+	private View actionBar;
+	/**
 	 * Play and pause button (BAB)
 	 */
 	private PlayPauseButton mPlayPauseButton;
@@ -61,7 +66,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * Shuffle & Repeat button (BAB)
 	 */
 	private ShuffleRepeatButton mShuffleButton, mRepeatButton;
-
 	/**
 	 * Track name (BAB)
 	 */
@@ -74,53 +78,46 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * Album art (BAB)
 	 */
 	private ImageView mAlbumArt;
-
-	private HorizontalScrollView playbackControls;
 	/**
-	 * Broadcast receiver
+	 * scroll container for playback controls
+	 */
+	private HorizontalScrollView playbackControls;
+
+	/**
+	 * Broadcast receiver for playback updates
 	 */
 	private PlaybackBroadcastReceiver mPlaybackStatus;
-
 	private ImageFetcher imageFetcher;
+	private ThemeUtils mTheme;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void onCreate(@Nullable Bundle savedInstanceState) {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		setContentView(getContentView());
-		View v = getWindow().getDecorView().getRootView();
-		// Play and pause button
-		mPlayPauseButton = findViewById(R.id.action_button_play);
-		// Shuffle button
-		mShuffleButton = findViewById(R.id.action_button_shuffle);
-		// Repeat button
-		mRepeatButton = findViewById(R.id.action_button_repeat);
-		// Track name
-		mTrackName = findViewById(R.id.bottom_action_bar_line_one);
-		// Artist name
-		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
-		// Album art
-		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
-		// media controls
-		playbackControls = findViewById(R.id.bottom_action_bar_scrollview);
-		// next track button
-		View previousButton = findViewById(R.id.action_button_previous);
-		// previous track button
-		View nextButton = findViewById(R.id.action_button_next);
-		// background of bottom action bar
-		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 
-		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
-		ThemeUtils mTheme = new ThemeUtils(this);
+		actionBar = View.inflate(this, R.layout.action_bar_bottom, null);
+		mPlayPauseButton = actionBar.findViewById(R.id.action_button_play);
+		mShuffleButton = actionBar.findViewById(R.id.action_button_shuffle);
+		mRepeatButton = actionBar.findViewById(R.id.action_button_repeat);
+		mTrackName = actionBar.findViewById(R.id.bottom_action_bar_line_one);
+		mArtistName = actionBar.findViewById(R.id.bottom_action_bar_line_two);
+		mAlbumArt = actionBar.findViewById(R.id.bottom_action_bar_album_art);
+		playbackControls = actionBar.findViewById(R.id.bottom_action_bar_scrollview);
+		View previousButton = actionBar.findViewById(R.id.action_button_previous);
+		View nextButton = actionBar.findViewById(R.id.action_button_next);
+		View bottomActionBar = actionBar.findViewById(R.id.bottom_action_bar_background);
+
+		mTheme = new ThemeUtils(this);
 		imageFetcher = new ImageFetcher(this);
+		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
 
 		// set bottom action bar color
 		mTheme.setBackgroundColor(bottomActionBar);
-		// set background
-		mTheme.setBackground(v);
+		actionBar.setVisibility(View.INVISIBLE);
+		// initialize wake lock
 		ApolloUtils.setWakelock(this);
 
 		previousButton.setOnClickListener(this);
@@ -131,11 +128,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mRepeatButton.setOnClickListener(this);
 		mAlbumArt.setOnClickListener(this);
 
-		// check permissions before initialization
-		if (ApolloUtils.permissionsGranted(this)) {
-			// initialize sub-class
-			initialize();
-		} else {
+		// check permissions
+		if (!ApolloUtils.permissionsGranted(this)) {
 			ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, REQ_CHECK_PERM);
 		}
 	}
@@ -171,10 +165,21 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void setContentView(int layoutResID) {
+		ViewGroup rootView = (ViewGroup) View.inflate(this, layoutResID, null);
+		rootView.addView(actionBar);
+		mTheme.setBackground(rootView);
+		super.setContentView(rootView);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onServiceConnected() {
 		// fade in playback controls
-		if (playbackControls.getVisibility() != View.VISIBLE) {
-			AnimatorUtils.fade(playbackControls, true);
+		if (actionBar.getVisibility() != View.VISIBLE && actionBar.getAnimation() == null) {
+			AnimatorUtils.fade(actionBar, true);
 			playbackControls.scrollTo(0, 0);
 		}
 		// Set the playback drawables
@@ -204,8 +209,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			}
 			// show battery optimization dialog
 			ApolloUtils.openBatteryOptimizationDialog(this);
-			// initialize subclass
-			initialize();
+			onPermissionGranted();
 			// Bind Apollo's service
 			MusicUtils.bindToService(this, this);
 		}
@@ -374,16 +378,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	}
 
 	/**
-	 * get content view to use
-	 *
-	 * @return layout resource ID
+	 * called if missing permission were granted
 	 */
-	protected abstract int getContentView();
-
-	/**
-	 * initialize activity
-	 */
-	protected abstract void initialize();
+	protected abstract void onPermissionGranted();
 
 	/**
 	 * notify sub classes to reload information

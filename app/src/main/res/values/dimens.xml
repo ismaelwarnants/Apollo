@@ -106,9 +106,6 @@
 	<fraction name="tab_width_screen_percentage">75.0%</fraction>
 	<fraction name="tab_height_screen_percentage">42.0%</fraction>
 
-	<!-- Grid search -->
-	<dimen name="grid_search_grid_margin">8dp</dimen>
-
 	<!-- other -->
 	<dimen name="toolbar_height">45dp</dimen>
 	<dimen name="equalizer_seekbar_width">64dp</dimen>

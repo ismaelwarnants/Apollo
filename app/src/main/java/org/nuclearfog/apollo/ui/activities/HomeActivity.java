@@ -1,6 +1,7 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -11,6 +12,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
@@ -32,15 +34,9 @@ public class HomeActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected int getContentView() {
-		return R.layout.activity_base;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
@@ -50,6 +46,16 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
+		if (ApolloUtils.permissionsGranted(this)) {
+			onPermissionGranted();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onPermissionGranted() {
 		FragmentManager fm = getSupportFragmentManager();
 		if (fm.findFragmentByTag(MusicBrowserPhoneFragment.TAG) == null) {
 			fm.beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null, MusicBrowserPhoneFragment.TAG).commit();
