@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,7 +98,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
 		actionBar = View.inflate(this, R.layout.action_bar_bottom, null);
 		mPlayPauseButton = actionBar.findViewById(R.id.action_button_play);
 		mShuffleButton = actionBar.findViewById(R.id.action_button_shuffle);
@@ -109,7 +109,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View previousButton = actionBar.findViewById(R.id.action_button_previous);
 		View nextButton = actionBar.findViewById(R.id.action_button_next);
 		View bottomActionBar = actionBar.findViewById(R.id.bottom_action_bar_background);
-
 		mTheme = new ThemeUtils(this);
 		imageFetcher = new ImageFetcher(this);
 		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
@@ -117,6 +116,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// set bottom action bar color
 		mTheme.setBackgroundColor(bottomActionBar);
 		actionBar.setVisibility(View.INVISIBLE);
+		actionBar.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.bottom_action_bar_height)));
 		// initialize wake lock
 		ApolloUtils.setWakelock(this);
 

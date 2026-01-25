@@ -35,7 +35,7 @@
 	<dimen name="dialog_image_selector_item_margins">5dp</dimen>
 
 	<!-- Bottom Action Bar -->
-	<dimen name="bottom_action_bar_height">48.0dp</dimen>
+	<dimen name="bottom_action_bar_height">52.0dp</dimen>
 	<dimen name="bottom_action_bar_item_padding_left">12.0dp</dimen>
 	<dimen name="bottom_action_bar_item_padding_right">12.0dp</dimen>
 	<dimen name="bottom_action_bar_info_padding_left">5.0dp</dimen>
