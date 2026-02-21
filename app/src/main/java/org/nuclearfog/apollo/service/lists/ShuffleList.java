@@ -86,12 +86,25 @@ public class ShuffleList {
 	}
 
 	/**
+	 * create shuffle list using playlist. move first item to play at the beginning of the shuffle list
+	 *
+	 * @param playlist playback list used to create shuffle list
+	 */
+	public void shuffle(PlaybackList playlist) {
+		shuffle(playlist.size());
+		int playlistPos = playlist.getPosition();
+		if (playlistPos >= 0 && mShuffle.remove((Integer) playlistPos)) {
+			mShuffle.addFirst(playlistPos);
+		}
+	}
+
+	/**
 	 * create a new shuffle list with a new size.
 	 * Using a history to move listened track indexes to the end
 	 *
 	 * @param size new size of the shuffle list
 	 */
-	public void shuffle(int size) {
+	private void shuffle(int size) {
 		synchronized (mShuffle) {
 			clear();
 			if (size > 0) {

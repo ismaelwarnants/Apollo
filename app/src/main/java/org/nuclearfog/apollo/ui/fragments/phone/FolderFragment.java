@@ -218,7 +218,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**

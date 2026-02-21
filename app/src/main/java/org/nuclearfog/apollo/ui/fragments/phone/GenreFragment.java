@@ -226,7 +226,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**

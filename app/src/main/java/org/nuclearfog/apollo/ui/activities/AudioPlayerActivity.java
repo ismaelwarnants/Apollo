@@ -738,8 +738,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private void onPlaySongs(List<Song> songs) {
 		if (!songs.isEmpty()) {
-			long[] ids = MusicUtils.getIDsFromSongList(songs);
-			MusicUtils.playAll(this, ids, playPos, false);
+			MusicUtils.playAll(this, songs, playPos);
 			refreshQueue();
 			playPos = 0;
 		}

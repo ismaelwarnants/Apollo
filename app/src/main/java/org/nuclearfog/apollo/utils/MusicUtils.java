@@ -43,6 +43,7 @@ import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.WeakHashMap;
 
 /**
@@ -477,51 +478,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * play a song
-	 *
-	 * @param id ID of the track to play
-	 */
-	public static void play(Activity activity, long id) {
-		playAll(activity, new long[]{id}, 0, false);
-	}
-
-	/**
-	 * play all listed songs
-	 *
-	 * @param songs   songs to play
-	 * @param shuffle True to force a shuffle, false otherwise.
-	 */
-	public static void playAll(Activity activity, List<Song> songs, boolean shuffle) {
-		playAll(activity, MusicUtils.getIDsFromSongList(songs), 0, shuffle);
-	}
-
-	/**
-	 * play all listed songs
-	 *
-	 * @param list         The list of songs to play.
-	 * @param position     Specify where to start.
-	 * @param forceShuffle True to force a shuffle, false otherwise.
-	 */
-	public static void playAll(Activity activity, long[] list, int position, boolean forceShuffle) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				if (forceShuffle) {
-					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-					position = 0;
-				}
-				if (list.length > 0) {
-					service.open(list, position);
-				} else {
-					service.clearQueue();
-				}
-			} catch (RemoteException exception) {
-				Log.e(TAG, "playAll()", exception);
-			}
-		}
-	}
-
-	/**
 	 * load all songs from list and play the selected position
 	 *
 	 * @param adapter  list adapter containing songs
@@ -544,6 +500,43 @@ public final class MusicUtils {
 			// play whole ID list
 			playAll(activity, list, position, false);
 		}
+	}
+
+	/**
+	 * play a song
+	 *
+	 * @param id ID of the track to play
+	 */
+	public static void play(Activity activity, long id) {
+		playAll(activity, new long[]{id}, 0, false);
+	}
+
+	/**
+	 * shuffle and play all listed songs
+	 *
+	 * @param songs songs to play
+	 */
+	public static void shuffleAll(Activity activity, List<Song> songs) {
+		playAll(activity, MusicUtils.getIDsFromSongList(songs), 0, true);
+	}
+
+	/**
+	 * play all listed songs
+	 *
+	 * @param songs songs to play
+	 */
+	public static void playAll(Activity activity, List<Song> songs) {
+		playAll(activity, MusicUtils.getIDsFromSongList(songs), 0, getShuffleMode(activity) != SHUFFLE_NONE);
+	}
+
+	/**
+	 * play all listed songs
+	 *
+	 * @param songs songs to play
+	 * @param pos   position of the first track to play
+	 */
+	public static void playAll(Activity activity, List<Song> songs, int pos) {
+		playAll(activity, MusicUtils.getIDsFromSongList(songs), pos, false);
 	}
 
 	/**
@@ -1069,6 +1062,34 @@ public final class MusicUtils {
 			ids[i] = songs.get(i).getId();
 		}
 		return ids;
+	}
+
+	/**
+	 * play all listed songs
+	 *
+	 * @param list         The list of songs to play.
+	 * @param position     Specify where to start.
+	 * @param forceShuffle True to force a shuffle, false otherwise.
+	 */
+	private static void playAll(Activity activity, long[] list, int position, boolean forceShuffle) {
+		IApolloService service = getService(activity);
+		if (service != null) {
+			try {
+				if (forceShuffle) {
+					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+					if (list.length > 0) {
+						position = new Random().nextInt(list.length - 1);
+					}
+				}
+				if (list.length > 0) {
+					service.open(list, position);
+				} else {
+					service.clearQueue();
+				}
+			} catch (RemoteException exception) {
+				Log.e(TAG, "playAll()", exception);
+			}
+		}
 	}
 
 	/**

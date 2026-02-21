@@ -67,6 +67,9 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 
 	private PlaylistLoader playlistLoader;
 	private PlaylistSongLoader playlistSongLoader;
+	private FavoriteSongLoader favoriteSongLoader;
+	private LastAddedLoader lastAddedLoader;
+	private PopularSongLoader popularSongLoader;
 
 	/**
 	 * context menu selection
@@ -89,6 +92,9 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		mAdapter = new PlaylistAdapter(requireContext());
 		playlistLoader = new PlaylistLoader(requireContext());
 		playlistSongLoader = new PlaylistSongLoader(requireContext());
+		favoriteSongLoader = new FavoriteSongLoader(requireContext());
+		lastAddedLoader = new LastAddedLoader(requireContext());
+		popularSongLoader = new PopularSongLoader(requireContext());
 		//
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyInfo);
@@ -109,6 +115,9 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		viewModel.getSelectedItem().removeObserver(this);
 		playlistLoader.cancel();
 		playlistSongLoader.cancel();
+		favoriteSongLoader.cancel();
+		lastAddedLoader.cancel();
+		popularSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -152,18 +161,15 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 				case ContextMenuItems.PLAY_SELECTION:
 					// play favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						FavoriteSongLoader loader = new FavoriteSongLoader(requireContext());
-						loader.execute(null, onPlaySongs);
+						favoriteSongLoader.execute(null, onPlaySongs);
 					}
 					// play last added playlist
 					else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
-						LastAddedLoader loader = new LastAddedLoader(requireContext());
-						loader.execute(null, onPlaySongs);
+						lastAddedLoader.execute(null, onPlaySongs);
 					}
 					// play popular playlist
 					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						PopularSongLoader loader = new PopularSongLoader(requireContext());
-						loader.execute(null, onPlaySongs);
+						popularSongLoader.execute(null, onPlaySongs);
 					}
 					// play custom playlist
 					else {
@@ -174,18 +180,15 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 				case ContextMenuItems.ADD_TO_QUEUE:
 					// add favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						FavoriteSongLoader loader = new FavoriteSongLoader(requireContext());
-						loader.execute(null, onAddToQueue);
+						favoriteSongLoader.execute(null, onAddToQueue);
 					}
 					// add last added playlist
 					else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
-						LastAddedLoader loader = new LastAddedLoader(requireContext());
-						loader.execute(null, onAddToQueue);
+						lastAddedLoader.execute(null, onAddToQueue);
 					}
 					// add popular playlist
 					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						PopularSongLoader loader = new PopularSongLoader(requireContext());
-						loader.execute(null, onAddToQueue);
+						popularSongLoader.execute(null, onAddToQueue);
 					}
 					// add custom playlist to queue
 					else {
@@ -276,7 +279,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**

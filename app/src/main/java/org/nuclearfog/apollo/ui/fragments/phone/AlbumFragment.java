@@ -354,7 +354,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**

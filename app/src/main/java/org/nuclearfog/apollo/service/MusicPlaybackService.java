@@ -1273,7 +1273,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mShuffleMode = SHUFFLE_NONE;
 			} else {
 				mShuffleMode = SHUFFLE_NORMAL;
-				mShuffleList.shuffle(mPlayList.size());
+				mShuffleList.shuffle(mPlayList);
 				savePlaybackList();
 				return true;
 			}

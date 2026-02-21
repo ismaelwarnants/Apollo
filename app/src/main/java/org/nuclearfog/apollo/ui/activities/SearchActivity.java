@@ -376,7 +376,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(this, songs, false);
+		MusicUtils.playAll(this, songs);
 	}
 
 	/**

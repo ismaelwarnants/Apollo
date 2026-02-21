@@ -243,7 +243,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**

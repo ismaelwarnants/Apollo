@@ -349,7 +349,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 * play loaded songs
 	 */
 	private void onPlaySongs(List<Song> songs) {
-		MusicUtils.playAll(requireActivity(), songs, false);
+		MusicUtils.playAll(requireActivity(), songs);
 	}
 
 	/**
