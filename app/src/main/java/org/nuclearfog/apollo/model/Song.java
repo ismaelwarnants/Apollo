@@ -1,6 +1,7 @@
 package org.nuclearfog.apollo.model;
 
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -106,6 +107,15 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	public Song(Cursor cursor, boolean  visibility) {
 		this(cursor.getLong(0), cursor.getLong(6), cursor.getLong(5), cursor.getString(1), cursor.getString(2),
 				cursor.getString(3), cursor.getString(7), cursor.getLong(4), visibility);
+	}
+
+	/**
+	 * @param mmr metadata of the song
+	 */
+	public Song(MediaMetadataRetriever mmr) {
+		this(-1, -1, -1, mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
+				mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+				mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM), "", 0, true);
 	}
 
 	/**

@@ -55,12 +55,7 @@ public class MusicSearchLoader extends AsyncExecutor<String, List<Music>> {
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
 						do {
-							long id = cursor.getLong(0);
-							String albumName = cursor.getString(1);
-							String artist = cursor.getString(2);
-							int songCount = cursor.getInt(3);
-							int year = cursor.getInt(4);
-							Album album = new Album(id, albumName, artist, songCount, year, true);
+							Album album = new Album(cursor, true);
 							result.add(album);
 						} while (cursor.moveToNext());
 					}

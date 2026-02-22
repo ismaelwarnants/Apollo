@@ -591,11 +591,7 @@ public final class MusicUtils {
 		Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				String albumName = cursor.getString(1);
-				String artist = cursor.getString(2);
-				int songCount = cursor.getInt(3);
-				String year = Integer.toString(cursor.getInt(4));
-				album = new Album(id, albumName, artist, songCount, year, true);
+				album = new Album(cursor, true);
 			}
 			cursor.close();
 		}

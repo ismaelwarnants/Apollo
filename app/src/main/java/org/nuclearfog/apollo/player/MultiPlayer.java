@@ -553,7 +553,7 @@ public class MultiPlayer {
 		if (initialized) {
 			setFadeTask(false);
 			reset();
-			if (what == -38) {
+			if (what == -38 || extra == -1004) {
 				// caused by wrong state, stop playback
 				callback.onPlaybackChanged();
 			} else {

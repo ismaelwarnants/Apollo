@@ -1,5 +1,7 @@
 package org.nuclearfog.apollo.model;
 
+import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -52,6 +54,14 @@ public class Album extends Music implements Parcelable {
 	private int year;
 
 	/**
+	 * @param cursor     cursor with fixed Column order {@link org.nuclearfog.apollo.utils.CursorFactory#ALBUM_COLUMN}
+	 * @param visible    Visibility of this album
+	 */
+	public Album(Cursor cursor, boolean visible) {
+		this(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), visible);
+	}
+
+	/**
 	 * @param albumId    The Id of the album
 	 * @param albumName  The name of the album
 	 * @param artistName The album artist
@@ -81,6 +91,14 @@ public class Album extends Music implements Parcelable {
 			mArtistName = artistName;
 		this.year = year;
 		this.songNumber = songNumber;
+	}
+
+	/**
+	 * @param mmr Metadata of the album
+	 */
+	public Album(MediaMetadataRetriever mmr) {
+		this(-1, mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
+				mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST), 0, 0, true);
 	}
 
 	/**

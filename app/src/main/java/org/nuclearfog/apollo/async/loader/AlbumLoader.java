@@ -45,21 +45,9 @@ public class AlbumLoader extends AsyncExecutor<Void, List<Album>> {
 				if (mCursor != null) {
 					if (mCursor.moveToFirst()) {
 						do {
-							// Copy the album id
 							long id = mCursor.getLong(0);
-							// Copy the album name
-							String albumName = mCursor.getString(1);
-							// Copy the artist name
-							String artist = mCursor.getString(2);
-							// Copy the number of songs
-							int songCount = mCursor.getInt(3);
-							// Copy the release year
-							int year = mCursor.getInt(4);
-							// check if album is excluded from viewing
 							boolean visible = !excludedIds.contains(id);
-							// Create a new album
-							Album album = new Album(id, albumName, artist, songCount, year, visible);
-							// Add everything up
+							Album album = new Album(mCursor, visible);
 							result.add(album);
 						} while (mCursor.moveToNext());
 					}

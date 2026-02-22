@@ -43,7 +43,7 @@ public final class CursorFactory {
 	 * SQL Projection of an album row
 	 */
 	@SuppressLint("InlinedApi")
-	private static final String[] ALBUM_COLUMN = {
+	public static final String[] ALBUM_COLUMN = {
 			Albums._ID,
 			Albums.ALBUM,
 			Albums.ARTIST,

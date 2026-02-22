@@ -12,6 +12,7 @@ import android.content.pm.ServiceInfo;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
+import android.media.MediaMetadataRetriever;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
@@ -56,6 +57,7 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -647,10 +649,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayList.addFirst(song.getId());
 			mPlayList.setPosition(0);
 			mPlayList.setNextPosition(-1);
+			notifyChange(CHANGED_QUEUE);
 		} else {
 			mPlayList.setPosition(-1);
 		}
-		notifyChange(CHANGED_QUEUE);
 	}
 
 	/**
@@ -1038,8 +1040,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (cursor != null) {
 			updateTrackInformation(cursor);
 		} else {
-			clearCurrentTrackInformation();
-			Log.e(TAG, "failed to open track! uri=\"" + uri + "\"");
+			try {
+				MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+				mmr.setDataSource(this, uri);
+				currentSong = new Song(mmr);
+				currentAlbum = new Album(mmr);
+				notifyChange(CHANGED_META);
+				mmr.close();
+			} catch (RuntimeException e) {
+				clearCurrentTrackInformation();
+				Log.e(TAG, "failed to open track! uri=\"" + uri + "\"");
+			} catch (IOException e) {
+				Log.w(TAG, "faled to close Metadata retriever!");
+			}
 		}
 	}
 
@@ -1068,15 +1081,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		try {
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
-					long songId = cursor.getLong(0);
-					String songName = cursor.getString(1);
-					String artistName = cursor.getString(2);
-					String albumName = cursor.getString(3);
-					long length = cursor.getLong(4);
-					long artistId = cursor.getLong(5);
-					long albumId = cursor.getLong(6);
-					String path = cursor.getString(7);
-					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
+					song = new Song(cursor, true);
 				}
 				cursor.close();
 			}
@@ -1084,12 +1089,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
-						long id = cursor.getLong(0);
-						String name = cursor.getString(1);
-						String artist = cursor.getString(2);
-						int count = cursor.getInt(3);
-						int year = cursor.getInt(4);
-						album = new Album(id, name, artist, count, year, true);
+						album = new Album(cursor, true);
 					}
 					cursor.close();
 				}
