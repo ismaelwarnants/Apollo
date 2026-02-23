@@ -169,7 +169,10 @@ public class MultiPlayer {
 	 */
 	public synchronized boolean setDataSource(Context context, @NonNull Uri uri) {
 		// set source of the current selected player
-		initialized = setDataSourceImpl(mPlayers[selectedPlayer], context, uri);
+		MediaPlayer current = mPlayers[selectedPlayer];
+		initialized = setDataSourceImpl(current, context, uri);
+		current.setNextMediaPlayer(null);
+		continuous = false;
 		return initialized;
 	}
 
@@ -444,7 +447,7 @@ public class MultiPlayer {
 				case FADE_OUT_IN:
 					setCurrentVolume(Math.max(volume - FADE_STEPS, 0f));
 					if (volume == 0f) {
-						setNextPlayer();
+						gotoNext();
 						fadeMode = FADE_IN;
 						callback.onWentToNext();
 					}
@@ -512,8 +515,10 @@ public class MultiPlayer {
 	/**
 	 * increase player index
 	 */
-	private void setNextPlayer() {
+	private void gotoNext() {
 		selectedPlayer = (selectedPlayer + 1) % PLAYER_INST;
+		volume = fadeEffectEnabled ? 0f : 1f;
+		mPlayers[selectedPlayer].setVolume(volume, volume);
 	}
 
 	/**
@@ -528,12 +533,12 @@ public class MultiPlayer {
 				// Fix: sometimes the end position doesn't match the track duration
 				// which causes that the "track end" detection will fail
 				if (mp.getDuration() - mp.getCurrentPosition() > FADE_DELAY) {
-					setNextPlayer();
+					gotoNext();
 					fadeMode = FADE_IN;
 					callback.onWentToNext();
 				}
 			} else {
-				setNextPlayer();
+				gotoNext();
 				callback.onWentToNext();
 			}
 		} else {

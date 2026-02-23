@@ -639,12 +639,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayer.setNextDataSource(getApplicationContext(), null);
 			play();
 		} else {
+			// reset to previous state if an error occured
 			openCurrentAndNext();
+			return;
 		}
 		// load track information
 		updateTrackInformation(uri);
 		Song song = currentSong;
-		if (trackOpened && song != null && song.getId() != -1) {
+		if (song != null && song.getId() != -1) {
 			// add track ID at the beginning of the playlist
 			mPlayList.addFirst(song.getId());
 			mPlayList.setPosition(0);
@@ -652,6 +654,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			notifyChange(CHANGED_QUEUE);
 		} else {
 			mPlayList.setPosition(-1);
+			mPlayList.setNextPosition(-1);
 		}
 	}
 
@@ -1049,9 +1052,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mmr.close();
 			} catch (RuntimeException e) {
 				clearCurrentTrackInformation();
-				Log.e(TAG, "failed to open track! uri=\"" + uri + "\"");
+				Log.e(TAG, "failed to load track information! uri=\"" + uri + "\"");
 			} catch (IOException e) {
-				Log.w(TAG, "faled to close Metadata retriever!");
+				Log.w(TAG, "MediaMetadataRetriever error!", e);
 			}
 		}
 	}
