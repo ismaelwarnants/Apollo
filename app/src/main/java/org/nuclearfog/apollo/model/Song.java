@@ -76,16 +76,6 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	private String path = "";
 
 	/**
-	 * @param artist_id Id of the song artist
-	 */
-	public Song(long song_id, long artist_id, long album_id, String song_name, String artist_name, String album_name, long length, String path) {
-		this(song_id, song_name, artist_name, album_name, length);
-		this.artist_id = artist_id;
-		this.album_id = album_id;
-		this.path = path;
-	}
-
-	/**
 	 * @param playlist_index playlist position of the track
 	 */
 	public Song(long songId, String song_name, String artist_name, String album_name, long length, int playlist_index) {

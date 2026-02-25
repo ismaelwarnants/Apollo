@@ -420,6 +420,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		invalidateOptionsMenu();
 		// refresh queue after connected
 		refreshQueue();
+		// enable/disable fade effect
+		MusicUtils.setCrossfade(this, AppPreferences.getInstance(this).crossfadeEnabled());
 	}
 
 	/**

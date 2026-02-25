@@ -634,28 +634,29 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	void openFile(@NonNull Uri uri) {
 		stop();
 		// open new track
-		boolean trackOpened = mPlayer.setDataSource(getApplicationContext(), uri);
-		if (trackOpened) {
+		if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 			mPlayer.setNextDataSource(getApplicationContext(), null);
-			play();
-		} else {
-			// reset to previous state if an error occured
-			openCurrentAndNext();
-			return;
+			if (AudioManagerCompat.requestAudioFocus(mAudio, focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+				mPlayer.play();
+				notifyChange(CHANGED_PLAYSTATE);
+				// load track information
+				updateTrackInformation(uri);
+				Song song = currentSong;
+				if (song != null && song.getId() != -1) {
+					// add track ID at the beginning of the playlist
+					mPlayList.addFirst(song.getId());
+					mPlayList.setPosition(0);
+					mPlayList.setNextPosition(-1);
+					notifyChange(CHANGED_QUEUE);
+				} else {
+					mPlayList.setPosition(-1);
+					mPlayList.setNextPosition(-1);
+				}
+				return;
+			}
 		}
-		// load track information
-		updateTrackInformation(uri);
-		Song song = currentSong;
-		if (song != null && song.getId() != -1) {
-			// add track ID at the beginning of the playlist
-			mPlayList.addFirst(song.getId());
-			mPlayList.setPosition(0);
-			mPlayList.setNextPosition(-1);
-			notifyChange(CHANGED_QUEUE);
-		} else {
-			mPlayList.setPosition(-1);
-			mPlayList.setNextPosition(-1);
-		}
+		// reset to previous state if an error occured
+		openCurrentAndNext();
 	}
 
 	/**
