@@ -171,8 +171,6 @@ public class MultiPlayer {
 		// set source of the current selected player
 		MediaPlayer current = mPlayers[selectedPlayer];
 		initialized = setDataSourceImpl(current, context, uri);
-		current.setNextMediaPlayer(null);
-		continuous = false;
 		return initialized;
 	}
 

@@ -64,11 +64,9 @@ public class ShuffleList {
 	public int next() {
 		synchronized (mShuffle) {
 			if (!mShuffle.isEmpty() && index >= 0) {
-				if (++index >= mShuffle.size()) {
+				if (index >= mShuffle.size())
 					shuffle(mShuffle.size());
-					index = 0;
-				}
-				return mShuffle.get(index);
+				return mShuffle.get(index++);
 			}
 		}
 		return -1;
@@ -94,7 +92,7 @@ public class ShuffleList {
 		shuffle(playlist.size());
 		int playlistPos = playlist.getPosition();
 		if (playlistPos >= 0 && mShuffle.remove((Integer) playlistPos)) {
-			mShuffle.addFirst(playlistPos);
+			mShuffle.addLast(playlistPos);
 		}
 	}
 
