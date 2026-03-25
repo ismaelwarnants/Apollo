@@ -1,0 +1,3 @@
+O Apollo é um reprodutor moderno, intuitivo e personalizável.
+
+<i>Apollo</i> é um fork do reprodutor de música <a href="https://github.com/adneal/Apollo-CM">Apollo</a> da CyanogenMod para Android 5.0+
