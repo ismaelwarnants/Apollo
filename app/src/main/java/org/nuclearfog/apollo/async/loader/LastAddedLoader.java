@@ -6,6 +6,7 @@ import android.util.Log;
 
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public class LastAddedLoader extends AsyncExecutor<Void, List<Song>> {
 							Song song = new Song(id, songName, artist, album, duration);
 							// Add everything up
 							result.add(song);
-						} while (mCursor.moveToNext());
+						} while (mCursor.moveToNext() && result.size() < Constants.LAST_ADDED_LIMIT);
 					}
 					mCursor.close();
 				}

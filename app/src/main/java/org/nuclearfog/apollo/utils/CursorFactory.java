@@ -163,11 +163,6 @@ public final class CursorFactory {
 	private static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
 
 	/**
-	 *
-	 */
-	private static final String LAST_ADDED_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATE_ADDED + ">?";
-
-	/**
 	 * folder track selection
 	 */
 	private static final String FOLDER_SONG_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATA + " LIKE ?";
@@ -360,8 +355,7 @@ public final class CursorFactory {
 	public static Cursor makeLastAddedCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
-		String[] select = {Long.toString(System.currentTimeMillis() / 1000 - 2419200)};
-		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, LAST_ADDED_SELECT, select, ORDER_TIME);
+		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, null, null, ORDER_TIME);
 	}
 
 	/**

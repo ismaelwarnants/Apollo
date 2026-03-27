@@ -58,6 +58,11 @@ public final class Constants {
 	public static final long DURATION_LONG = 5000;
 
 	/**
+	 * max entries of 'last added' playlist
+	 */
+	public static final int LAST_ADDED_LIMIT = 100;
+
+	/**
 	 * maximal scroll speed when dragging a list element
 	 */
 	public static final float DRAG_DROP_MAX_SPEED = 3.0f;
