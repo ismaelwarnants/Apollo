@@ -269,7 +269,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		else if (v.getId() == R.id.bottom_action_bar_background) {
 			Song song = MusicUtils.getCurrentTrack(this);
 			if (song != null) {
-				NavUtils.openAudioPlayer(this);
+				NavUtils.openAudioPlayer(this, false);
 			} else {
 				MusicUtils.shuffleAll(this);
 			}

@@ -69,9 +69,10 @@ public final class NavUtils {
 	/**
 	 * open audio player activity
 	 */
-	public static void openAudioPlayer(Activity activity) {
+	public static void openAudioPlayer(Activity activity, boolean actionBackPress) {
 		Intent intent = new Intent(activity, AudioPlayerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra(AudioPlayerActivity.KEY_BACK_PRESS_CLOSE, actionBackPress);
 		activity.startActivity(intent);
 	}
 

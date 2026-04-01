@@ -81,6 +81,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	public static final String ACTION_OPEN_PLAYER = BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER";
 
 	/**
+	 * key to enable/disable "back press" handling. Setting
+	 * true openes the home activity when pressing the back button
+	 */
+	public static final String KEY_BACK_PRESS_CLOSE = "close_activity";
+
+	/**
 	 * MIME type for sharing songs
 	 */
 	private static final String MIME_AUDIO = "audio/*";
@@ -242,12 +248,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mArtistName.setOnClickListener(this);
 		mQueueSwitch.setOnClickListener(this);
 		mAlbumArtSmall.setOnClickListener(this);
-		getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-			@Override
-			public void handleOnBackPressed() {
-				NavUtils.goHome(AudioPlayerActivity.this);
-			}
-		});
+		if (playerIntent != null && playerIntent.getBooleanExtra(KEY_BACK_PRESS_CLOSE, true)) {
+			getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+				@Override
+				public void handleOnBackPressed() {
+					NavUtils.goHome(AudioPlayerActivity.this);
+				}
+			});
+		}
 	}
 
 	/**
