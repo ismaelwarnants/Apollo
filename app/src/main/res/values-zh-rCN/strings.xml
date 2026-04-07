@@ -39,7 +39,7 @@
     <string name="sort_order_entry_year">年份</string>
     <string name="sort_order_entry_duration">时长</string>
     <string name="sort_order_entry_date_added">添加日期</string>
-    <string name="sort_order_entry_track_list">曲目列表</string>
+    <string name="sort_order_entry_track_list">曲目编号</string>
     <string name="sort_order_entry_number_of_songs">歌曲数量</string>
     <string name="sort_order_entry_number_of_albums">专辑数量</string>
     <string name="sort_order_entry_filename">文件名</string>
@@ -109,7 +109,7 @@
     <string name="settings_open_source_licenses">开源许可</string>
     <string name="settings_version_title">版本号</string>
     <!-- 分享界面 -->
-	<string name="share_track_using">使用以下方式分享曲目：</string>
+	<string name="share_track_using">使用以下方式分享曲目</string>
     <!-- 颜色选择器 -->
 	<string name="current_color">当前</string>
     <string name="new_color">新的</string>
@@ -124,7 +124,7 @@
     <string name="empty_search">未找到搜索结果</string>
     <string name="error_permission_denied">应用无法正常工作，因为没有读取存储和电话状态的权限！</string>
     <string name="empty_recents">还没有听过任何曲目。</string>
-    <string name="empty_playlist">此播放列表为空。</string>
+    <string name="empty_playlist">此播放列表为空</string>
     <string name="empty_favorites">没有添加到收藏夹的曲目！</string>
     <string name="empty_artist_albums">此艺术家没有专辑</string>
     <!-- 标签 -->
@@ -133,4 +133,55 @@
     <string name="label_reverb">混响大小</string>
     <string name="title_audio_effects">音频效果</string>
     <!-- 小于1小时的时长格式 -->
+<string name="description">音乐播放器</string>
+    <string name="page_playlists_recent">播放列表 / 最近播放</string>
+    <string name="page_recent_artist">最近播放 / 艺术家</string>
+    <string name="page_artists_albums">艺术家 / 专辑</string>
+    <string name="page_albums_songs">专辑 / 歌曲</string>
+    <string name="page_songs_genres">歌曲 / 流派</string>
+    <string name="page_genres_folders">流派 / 文件夹</string>
+    <string name="menu_close">关闭</string>
+    <string name="save_preset">保存预设</string>
+    <string name="menu_delete_preset">删除预设</string>
+    <string name="menu_show_hidden">显示隐藏曲目</string>
+    <string name="rename_playlist">重命名播放列表</string>
+    <string name="copy_playlist">复制播放列表</string>
+    <string name="dialog_disable_bat_opt_title">关闭电源优化</string>
+    <string name="dialog_disable_bat_opt_message">建议关闭电源优化以防安卓系统中断播放进程</string>
+    <string name="dialog_disable_bat_opt_confirm">应用</string>
+    <string name="dialog_disable_bat_opt_ignore">忽略</string>
+    <string name="item_hidden">隐藏入口成功</string>
+    <string name="web_search">网页搜索</string>
+    <string name="context_menu_hide_album">隐藏专辑</string>
+    <string name="context_menu_hide_track">隐藏歌曲</string>
+    <string name="context_menu_hide_genre">隐藏流派</string>
+    <string name="context_menu_hide_artist">隐藏艺术家</string>
+    <string name="context_menu_hide_folder">隐藏文件夹</string>
+    <string name="context_menu_unhide_album">取消隐藏专辑</string>
+    <string name="context_menu_unhide_track">取消隐藏歌曲</string>
+    <string name="context_menu_unhide_genre">取消隐藏流派</string>
+    <string name="context_menu_unhide_artist">取消隐藏艺术家</string>
+    <string name="context_menu_unhide_folder">取消隐藏文件夹</string>
+    <string name="error_create_playlist">无法创建播放列表！</string>
+    <string name="error_rename_playlist">无法重命名播放列表！</string>
+    <string name="error_delete_playlist">无法删除播放列表！</string>
+    <string name="info_removed_playlist">播放列表已删除！</string>
+    <string name="error_playback">播放错误！</string>
+    <string name="settings_category_player">播放器设置</string>
+    <string name="settings_data_musicbrainz">MusicBrainz数据库</string>
+    <string name="settings_disable_bat_opt_title">关闭电池优化</string>
+    <string name="settings_disable_bat_opt_summary">电池优化可能导致后台运行时播放中断</string>
+    <string name="settings_scroll_current_track">自动滑动到当前曲目</string>
+    <string name="settings_keep_screen_on">保持屏幕亮起</string>
+    <string name="settings_disable_certi_validation">关闭SSL证书验证</string>
+    <string name="settings_disable_certi_validation_summary">危险！修理MusicBrainz下载问题，需要重启应用。</string>
+    <string name="settings_source_code">源代码</string>
+    <string name="settings_source_code_descr">在浏览器中打开</string>
+    <string name="empty_preset_name">空名称！</string>
+    <string name="label_preset">预设：</string>
+    <string name="preset_name_hint">其他</string>
+    <string name="album_name_hint">在此处输入专辑名</string>
+    <string name="preset_custom">自定义</string>
+    <string name="select_albumart">选择封面作品</string>
+    <string name="settings_enable_crossfade">开启淡入/淡出效果</string>
 </resources>
