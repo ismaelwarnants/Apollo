@@ -31,7 +31,6 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver.PlayStatusListener;
-import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.ShuffleRepeatButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
@@ -189,7 +188,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Update the favorites icon
 		invalidateOptionsMenu();
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this, AppPreferences.getInstance(this).crossfadeEnabled());
+		MusicUtils.setCrossfade(this);
+		// initialize audio effects for media playback
+		MusicUtils.initAudioEffects(this);
 	}
 
 	/**

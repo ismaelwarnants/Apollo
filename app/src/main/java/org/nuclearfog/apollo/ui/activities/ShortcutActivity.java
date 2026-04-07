@@ -15,7 +15,6 @@ import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -145,7 +144,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 				break;
 		}
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this, AppPreferences.getInstance(this).crossfadeEnabled());
+		MusicUtils.setCrossfade(this);
 	}
 
 	/**

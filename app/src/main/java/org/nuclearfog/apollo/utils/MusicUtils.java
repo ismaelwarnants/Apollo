@@ -36,8 +36,10 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.receiver.PlaybackBroadcastReceiver;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
@@ -986,6 +988,13 @@ public final class MusicUtils {
 
 	/**
 	 * enable/disable player crossfade
+	 */
+	public static void setCrossfade(Activity activity) {
+		setCrossfade(activity, AppPreferences.getInstance(activity).crossfadeEnabled());
+	}
+
+	/**
+	 * enable/disable player crossfade
 	 *
 	 * @param enable true to enable crossfade
 	 */
@@ -1046,6 +1055,20 @@ public final class MusicUtils {
 			}
 		} else {
 			DeleteTracksDialog.show(activity.getSupportFragmentManager(), title, ids);
+		}
+	}
+
+	/**
+	 * initialize audio playback effects
+	 */
+	public static void initAudioEffects(Activity activity) {
+		AppPreferences prefs = AppPreferences.getInstance(activity);
+		int sessionId = getAudioSessionId(activity);
+		if (prefs.isExternalAudioFxPreferred()) {
+			// send session ID to external equalizer if set
+			ApolloUtils.notifyExternalEqualizer(activity, sessionId);
+		} else {
+			AudioEffects.getInstance(activity.getApplicationContext(), sessionId);
 		}
 	}
 

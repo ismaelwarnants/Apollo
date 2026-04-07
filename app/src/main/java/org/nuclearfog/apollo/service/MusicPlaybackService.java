@@ -53,8 +53,6 @@ import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlt;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetRecent;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
-import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.AudioEffects;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.io.IOException;
@@ -349,13 +347,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// register receiver
 		IntentFilter intentFilter = serviceBroadcastReceiver.createIntentFiler();
 		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
-		// initialize audio effects
-		if (appSettings.isExternalAudioFxPreferred()) {
-			// send session ID to external equalizer if set
-			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
-		} else {
-			AudioEffects.getInstance(getApplicationContext(), mPlayer.getSessionId());
-		}
 		// initialize the playback/history list and state
 		initPlaybackList();
 	}
@@ -370,7 +361,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, APOLLO_PACKAGE_NAME);
 		sendBroadcast(audioEffectsIntent);
-		AudioEffects.release();
 		//save playlist, history and shuffle/repeat state
 		savePlaybackList();
 		// Release the player
