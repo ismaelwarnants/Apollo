@@ -4,6 +4,7 @@ plugins {
 
 android {
 	compileSdkVersion 36
+	buildToolsVersion '37.0.0'
 	namespace 'org.nuclearfog.apollo'
 
 	defaultConfig {
