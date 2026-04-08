@@ -429,7 +429,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// refresh queue after connected
 		refreshQueue();
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this);
+		MusicUtils.setFadeEffect(this);
 		// initialize audio effects for media playback
 		MusicUtils.initAudioEffects(this);
 	}

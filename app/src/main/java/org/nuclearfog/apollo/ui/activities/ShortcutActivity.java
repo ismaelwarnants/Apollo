@@ -144,7 +144,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 				break;
 		}
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this);
+		MusicUtils.setFadeEffect(this);
 	}
 
 	/**

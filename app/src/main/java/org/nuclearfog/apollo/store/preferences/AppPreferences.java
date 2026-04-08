@@ -283,11 +283,6 @@ public final class AppPreferences {
 	}
 
 
-
-
-
-
-
 	/**
 	 * get layout for the artist list
 	 *
@@ -454,11 +449,11 @@ public final class AppPreferences {
 	}
 
 	/**
-	 * check if crossfade is enabled
+	 * check if audio fade effect is enabled
 	 *
-	 * @return true if crossfade is enabled
+	 * @return true if effect is enabled
 	 */
-	public boolean crossfadeEnabled() {
+	public boolean fadeEffectEnabled() {
 		return defaultPref.getBoolean(ENABLE_XFADE, true);
 	}
 }

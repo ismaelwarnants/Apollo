@@ -32,11 +32,11 @@
 			android:key="autoscroll_current"
 			android:title="@string/settings_scroll_current_track" />
 
-		<!-- enable/disable crossfade effect -->
+		<!-- enable/disable fade effect -->
 		<CheckBoxPreference
 			android:defaultValue="true"
 			android:key="fade_effect_enable"
-			android:title="@string/settings_enable_crossfade" />
+			android:title="@string/settings_enable_audio_fading" />
 
 	</PreferenceCategory>
 

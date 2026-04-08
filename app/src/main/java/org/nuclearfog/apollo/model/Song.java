@@ -94,7 +94,7 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 * @param cursor     cursor with this fixed column order {@link org.nuclearfog.apollo.utils.CursorFactory#TRACK_COLUMNS}
 	 * @param visibility true if track is visible, false if track is excluded by user
 	 */
-	public Song(Cursor cursor, boolean  visibility) {
+	public Song(Cursor cursor, boolean visibility) {
 		this(cursor.getLong(0), cursor.getLong(6), cursor.getLong(5), cursor.getString(1), cursor.getString(2),
 				cursor.getString(3), cursor.getString(7), cursor.getLong(4), visibility);
 	}

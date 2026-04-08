@@ -987,24 +987,24 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * enable/disable player crossfade
+	 * enable/disable player fade effect
 	 */
-	public static void setCrossfade(Activity activity) {
-		setCrossfade(activity, AppPreferences.getInstance(activity).crossfadeEnabled());
+	public static void setFadeEffect(Activity activity) {
+		setFadeEffect(activity, AppPreferences.getInstance(activity).fadeEffectEnabled());
 	}
 
 	/**
-	 * enable/disable player crossfade
+	 * enable/disable player fade effect
 	 *
-	 * @param enable true to enable crossfade
+	 * @param enable true to enable audio fade effect
 	 */
-	public static void setCrossfade(Activity activity, boolean enable) {
+	public static void setFadeEffect(Activity activity, boolean enable) {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.setCrossfade(enable);
+				service.setFadeEffect(enable);
 			} catch (RemoteException exception) {
-				Log.e(TAG, "setCrossfade()", exception);
+				Log.e(TAG, "setFadeEffect()", exception);
 			}
 		}
 	}

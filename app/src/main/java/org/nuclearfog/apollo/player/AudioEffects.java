@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.EnvironmentalReverb;
 import android.media.audiofx.Equalizer;
+import android.media.audiofx.PresetReverb;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -28,7 +29,7 @@ public final class AudioEffects {
 	/**
 	 * max reverb steps defined in {@link EnvironmentalReverb}
 	 */
-	public static final int MAX_REVERB = 11;
+	public static final int MAX_REVERB = 6;
 
 	/**
 	 * priority used by audiofx (default 0, high > 0, low < 0)
@@ -43,7 +44,7 @@ public final class AudioEffects {
 
 	private Equalizer equalizer;
 	private BassBoost bassBooster;
-	private EnvironmentalReverb reverb;
+	private PresetReverb reverb;
 	private AudioEffectsPreferences prefs;
 
 	private int sessionId;
@@ -94,7 +95,7 @@ public final class AudioEffects {
 	private AudioEffects(Context context, int sessionId) {
 		equalizer = new Equalizer(FX_PRIORITY, sessionId);
 		bassBooster = new BassBoost(FX_PRIORITY, sessionId);
-		reverb = new EnvironmentalReverb(FX_PRIORITY, sessionId);
+		reverb = new PresetReverb(FX_PRIORITY, sessionId);
 		prefs = AudioEffectsPreferences.getInstance(context);
 		this.sessionId = sessionId;
 		boolean active = prefs.isAudioFxEnabled();
@@ -254,14 +255,12 @@ public final class AudioEffects {
 
 	/**
 	 * get reverb level
-	 * todo implement more reverb settings
 	 *
 	 * @return reverb level
 	 */
 	public int getReverbLevel() {
 		try {
-			int t = (reverb.getReverbLevel() + 9000) / 1000;
-			return (reverb.getReverbLevel() + 9000) / 1000;
+			return reverb.getPreset();
 		} catch (RuntimeException exception) {
 			Log.e(TAG, "getReverbLevel()", exception);
 		}
@@ -275,7 +274,7 @@ public final class AudioEffects {
 	 */
 	public void setReverbLevel(int level) {
 		try {
-			reverb.setReverbLevel((short) (level * 1000 - 9000));
+			reverb.setPreset((short) level);
 			prefs.setReverbLevel(level);
 		} catch (RuntimeException exception) {
 			Log.e(TAG, "setReverbLevel()", exception);
@@ -314,7 +313,7 @@ public final class AudioEffects {
 		try {
 			// setup audio effects
 			bassBooster.setStrength((short) prefs.getBassLevel());
-			reverb.setReverbLevel((short) prefs.getReverbLevel());
+			reverb.setPreset((short) prefs.getReverbLevel());
 			int[] bandLevel = prefs.getEqualizerBands();
 			for (short i = 0; i < bandLevel.length; i++) {
 				equalizer.setBandLevel(i, (short) bandLevel[i]);

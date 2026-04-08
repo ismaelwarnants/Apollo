@@ -47,7 +47,6 @@ import org.nuclearfog.apollo.service.lists.ShuffleList;
 import org.nuclearfog.apollo.store.PlaylistStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
-import org.nuclearfog.apollo.store.preferences.AppPreferences;
 import org.nuclearfog.apollo.store.preferences.PlayerPreferences;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlt;
@@ -324,12 +323,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		imageFetcher = new ImageFetcher(this);
 		// Initialize the preferences
 		playerSettings = PlayerPreferences.getInstance(this);
-		AppPreferences appSettings = AppPreferences.getInstance(this);
 		widgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		// initialize audio manager and audio session ID
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		// Initialize the media player
-		mPlayer = new MultiPlayer(getApplicationContext(), this, appSettings.crossfadeEnabled());
+		int sessionId = mAudio.generateAudioSessionId();
+		mPlayer = new MultiPlayer(getApplicationContext(), sessionId, this);
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
@@ -894,7 +893,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * enable/disable player fade effects
 	 */
-	void setCrossfade(boolean enable) {
+	void setFadeEffect(boolean enable) {
 		mPlayer.setFadeEffect(enable);
 	}
 
@@ -1244,7 +1243,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param partyShuffle true to create a party shuffle list with all available tracks
 	 *                     false to shuffle current queue
-	 *
 	 * @return true if shuffle list was created successfully, false otherwise
 	 */
 	private boolean makeShuffleList(boolean partyShuffle) {

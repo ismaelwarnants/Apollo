@@ -18,8 +18,8 @@ import org.nuclearfog.apollo.R;
 /**
  * A simple view shown at the top of an activity view containing a text message.
  *
- * @see org.nuclearfog.apollo.utils.ApolloUtils#showToast(Activity, String, boolean, long)
  * @author nuclearfog
+ * @see org.nuclearfog.apollo.utils.ApolloUtils#showToast(Activity, String, boolean, long)
  */
 public class ToastView extends LinearLayout {
 

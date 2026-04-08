@@ -121,7 +121,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 				return true;
 
 			case FADE_IN_OUT:
-				MusicUtils.setCrossfade(requireActivity(), ((CheckBoxPreference) preference).isChecked());
+				MusicUtils.setFadeEffect(requireActivity(), ((CheckBoxPreference) preference).isChecked());
 				break;
 
 			case SOURCECODE:

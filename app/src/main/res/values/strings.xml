@@ -209,6 +209,6 @@
 	<string name="album_name_hint">enter album name</string>
 	<string name="preset_custom">custom</string>
 	<string name="select_albumart">select artwork</string>
-	<string name="settings_enable_crossfade">enable fade in/out effect</string>
+	<string name="settings_enable_audio_fading">enable fade in/out effect</string>
 
 </resources>

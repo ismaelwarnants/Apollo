@@ -13,6 +13,8 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.store.preferences.AppPreferences;
+
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -124,20 +126,26 @@ public class MultiPlayer {
 	 * enable/disable fade in/out effect
 	 */
 	private boolean fadeEffectEnabled;
+
+	/**
+	 * current media session ID of the playback
+	 */
+	private final int sessionId;
+
 	/**
 	 * callback for playback changes
 	 */
 	private OnPlaybackStatusCallback callback;
 
 	/**
-	 * @param context   context from service
-	 * @param callback  a callback used to inform about playback changes
-	 * @param fadeEnable true to enable fade effect
+	 * @param context  context from service
+	 * @param callback a callback used to inform about playback changes
 	 */
-	public MultiPlayer(Context context, OnPlaybackStatusCallback callback, boolean fadeEnable) {
+	public MultiPlayer(Context context, int sessionId, OnPlaybackStatusCallback callback) {
 		playerHandler = new Handler(context.getMainLooper());
-		this.fadeEffectEnabled = fadeEnable;
+		fadeEffectEnabled = AppPreferences.getInstance(context).fadeEffectEnabled();
 		this.callback = callback;
+		this.sessionId = sessionId;
 		for (int i = 0; i < mPlayers.length; i++) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
 				mPlayers[i] = new MediaPlayer(context.createAttributionContext(ATTR_TAG));
@@ -145,11 +153,11 @@ public class MultiPlayer {
 				mPlayers[i] = new MediaPlayer();
 			}
 			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
+			mPlayers[i].setAudioSessionId(sessionId);
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}
-		if (fadeEnable) {
+		if (fadeEffectEnabled) {
 			setAllVolume(0f);
 		}
 	}
@@ -160,7 +168,7 @@ public class MultiPlayer {
 	 * @return audio session ID used by this players
 	 */
 	public int getSessionId() {
-		return mPlayers[0].getAudioSessionId();
+		return sessionId;
 	}
 
 	/**
@@ -548,8 +556,8 @@ public class MultiPlayer {
 	/**
 	 * called if the mediaplayer reports an error
 	 *
-	 * @see android.media.MediaPlayer.OnErrorListener
 	 * @noinspection unused
+	 * @see android.media.MediaPlayer.OnErrorListener
 	 */
 	private boolean onError(MediaPlayer mp, int what, int extra) {
 		Log.e(TAG, "onError(" + what + ", " + extra + "), " + this);

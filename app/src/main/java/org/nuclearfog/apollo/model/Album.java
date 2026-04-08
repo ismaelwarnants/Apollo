@@ -54,8 +54,8 @@ public class Album extends Music implements Parcelable {
 	private int year;
 
 	/**
-	 * @param cursor     cursor with fixed Column order {@link org.nuclearfog.apollo.utils.CursorFactory#ALBUM_COLUMN}
-	 * @param visible    Visibility of this album
+	 * @param cursor  cursor with fixed Column order {@link org.nuclearfog.apollo.utils.CursorFactory#ALBUM_COLUMN}
+	 * @param visible Visibility of this album
 	 */
 	public Album(Cursor cursor, boolean visible) {
 		this(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), visible);

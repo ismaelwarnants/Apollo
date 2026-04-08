@@ -188,7 +188,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Update the favorites icon
 		invalidateOptionsMenu();
 		// enable/disable fade effect
-		MusicUtils.setCrossfade(this);
+		MusicUtils.setFadeEffect(this);
 		// initialize audio effects for media playback
 		MusicUtils.initAudioEffects(this);
 	}
