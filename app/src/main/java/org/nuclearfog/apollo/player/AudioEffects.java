@@ -61,15 +61,16 @@ public final class AudioEffects {
 		try {
 			if (sessionId != 0) {
 				if (instance == null || instance.sessionId != sessionId) {
+					release();
 					instance = new AudioEffects(context, sessionId);
 					Log.d(TAG, "audio_session_id=" + sessionId);
 				}
 			} else {
-				Log.e(TAG, "init audio effects failed, audio session id is '0'!");
+				Log.e(TAG, "getInstance() audio session id is '0'!");
 			}
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			// thrown if there is no support for audio effects
-			Log.e(TAG, "audio effects not supported!", e);
+			Log.e(TAG, "getInstance() audio effects not supported!", e);
 		}
 		return instance;
 	}
@@ -97,8 +98,8 @@ public final class AudioEffects {
 		bassBooster = new BassBoost(FX_PRIORITY, sessionId);
 		reverb = new PresetReverb(FX_PRIORITY, sessionId);
 		prefs = AudioEffectsPreferences.getInstance(context);
-		this.sessionId = sessionId;
 		boolean active = prefs.isAudioFxEnabled();
+		this.sessionId = sessionId;
 
 		equalizer.setEnabled(active);
 		bassBooster.setEnabled(active);

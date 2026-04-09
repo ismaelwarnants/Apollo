@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-	compileSdkVersion 36
+	compileSdkVersion 37
 	buildToolsVersion '37.0.0'
 	namespace 'org.nuclearfog.apollo'
 
 	defaultConfig {
 		applicationId 'org.nuclearfog.apollo'
 		minSdkVersion 21
-		targetSdkVersion 36
+		targetSdkVersion 37
 		versionCode 74
 		versionName '1.7.6'
 		// disable vector optimization
