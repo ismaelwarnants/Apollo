@@ -166,7 +166,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private AlbumSongLoader albumSongLoader;
 
 	/**
-	 * intent set if player should play audio file
+	 * Activity intent containing play instructions from other activities and app shortcuts
+	 * to play album, artist, playlist tracks or audio file
 	 */
 	@Nullable
 	private Intent playerIntent = null;
@@ -209,7 +210,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mImageFetcher = new ImageFetcher(this);
 		mPlaybackStatus = new PlaybackBroadcastReceiver(this);
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
-		playerIntent = getIntent();
+		// skip on screen rotation
+		if (savedInstanceState == null) {
+			playerIntent = getIntent();
+		}
 		// Theme the action bar
 		if (toolbar != null)
 			setSupportActionBar(toolbar);
