@@ -3,16 +3,17 @@ plugins {
 }
 
 android {
-	compileSdkVersion 37
+	compileSdk 37
+	compileSdkMinor 0
 	buildToolsVersion '37.0.0'
 	namespace 'org.nuclearfog.apollo'
 
 	defaultConfig {
-		applicationId 'org.nuclearfog.apollo'
-		minSdkVersion 21
-		targetSdkVersion 37
+		minSdk 21
+		targetSdk 37
 		versionCode 74
 		versionName '1.7.6'
+		applicationId 'org.nuclearfog.apollo'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
 	}
@@ -68,6 +69,11 @@ android {
 		exclude '/kotlin/**'
 		exclude '/kotlin-tooling-metadata.json'
 		exclude '/Debug*'
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
 	}
 }
 
