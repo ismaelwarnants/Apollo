@@ -85,7 +85,7 @@ public class PresetStore extends AppStore {
 		ContentValues column = new ContentValues();
 		column.put(PresetColumns.NAME, preset.getName());
 		column.put(PresetColumns.BASS, preset.getBassLevel());
-		column.put(PresetColumns.REVERB, preset.getReverbLevel());
+		column.put(PresetColumns.REVERB, preset.getReverbPreset());
 		column.put(PresetColumns.TIME, System.currentTimeMillis());
 		StringBuilder buf = new StringBuilder();
 		for (int band : preset.getBands()) {

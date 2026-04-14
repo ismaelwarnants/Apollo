@@ -140,20 +140,20 @@ public class AudioEffectsPreferences {
 
 
 	/**
-	 * get reverb level
+	 * get selected reverb preset
 	 *
-	 * @return reverb level (room size)
+	 * @return reverb preset
 	 */
 	public int getReverbLevel() {
 		return audioEffectsPref.getInt(FX_REVERB, 0);
 	}
 
 	/**
-	 * set reverb level
+	 * set selected reverb preset
 	 *
-	 * @param level reverb level (room size)
+	 * @param level reverb preset
 	 */
-	public void setReverbLevel(int level) {
+	public void setReverbPreset(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_REVERB, level);
 		editor.commit();

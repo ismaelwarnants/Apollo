@@ -197,7 +197,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			}
 			// set reverb
 			else if (seekBar.getId() == R.id.audiofx_reverb) {
-				audioEffects.setReverbLevel(progress);
+				audioEffects.setReverbPreset(progress);
 			}
 		}
 	}
@@ -265,7 +265,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	private void setViews() {
 		enableFx.setChecked(audioEffects.isAudioFxEnabled());
 		bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASS_BOOST);
-		reverb.setProgress(audioEffects.getReverbLevel());
+		reverb.setProgress(audioEffects.getReverbPreset());
 		eqAdapter.setBands(audioEffects.getBandLevel());
 	}
 

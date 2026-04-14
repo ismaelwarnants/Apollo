@@ -25,7 +25,7 @@ public class AudioPreset implements Serializable {
 	 * @param name         preset name
 	 * @param eq_bands     equalizer band level
 	 * @param bass_level   bass level
-	 * @param reverb_level reverb level
+	 * @param reverb_level reverb preset
 	 */
 	public AudioPreset(String name, int[] eq_bands, int bass_level, int reverb_level) {
 		this.eq_bands = eq_bands;
@@ -67,9 +67,9 @@ public class AudioPreset implements Serializable {
 	}
 
 	/**
-	 * get reverb level
+	 * get reverb preset
 	 */
-	public int getReverbLevel() {
+	public int getReverbPreset() {
 		return reverb_level;
 	}
 

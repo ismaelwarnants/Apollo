@@ -2,18 +2,18 @@ package org.nuclearfog.apollo.player;
 
 import android.content.Context;
 import android.media.audiofx.BassBoost;
-import android.media.audiofx.EnvironmentalReverb;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.model.AudioPreset;
 import org.nuclearfog.apollo.store.preferences.AudioEffectsPreferences;
 
 /**
- * Audio effect class providing methods to manage effects at realtime
+ * Audio effect class providing methods to manage Android's built-in audio effects
  *
  * @author nuclearfog
  */
@@ -27,7 +27,7 @@ public final class AudioEffects {
 	public static final int MAX_BASS_BOOST = 1000;
 
 	/**
-	 * max reverb steps defined in {@link EnvironmentalReverb}
+	 * max reverb steps defined in {@link PresetReverb}
 	 */
 	public static final int MAX_REVERB = 6;
 
@@ -255,30 +255,30 @@ public final class AudioEffects {
 	}
 
 	/**
-	 * get reverb level
+	 * get selected reverb preset
 	 *
-	 * @return reverb level
+	 * @return selected reverb preset
 	 */
-	public int getReverbLevel() {
+	public int getReverbPreset() {
 		try {
 			return reverb.getPreset();
 		} catch (RuntimeException exception) {
-			Log.e(TAG, "getReverbLevel()", exception);
+			Log.e(TAG, "getReverbPreset()", exception);
 		}
 		return 0;
 	}
 
 	/**
-	 * set reverb level
+	 * select reverb preset
 	 *
-	 * @param level reverb level
+	 * @param preset reverb preset
 	 */
-	public void setReverbLevel(int level) {
+	public void setReverbPreset(@IntRange(from=0, to=6) int preset) {
 		try {
-			reverb.setPreset((short) level);
-			prefs.setReverbLevel(level);
+			reverb.setPreset((short) preset);
+			prefs.setReverbPreset(preset);
 		} catch (RuntimeException exception) {
-			Log.e(TAG, "setReverbLevel()", exception);
+			Log.e(TAG, "setReverbPreset()", exception);
 		}
 	}
 
@@ -288,7 +288,7 @@ public final class AudioEffects {
 	 * @return current preset
 	 */
 	public AudioPreset getPreset() {
-		return new AudioPreset(prefs.getPresetName(), getBandLevel(), getBassLevel(), getReverbLevel());
+		return new AudioPreset(prefs.getPresetName(), getBandLevel(), getBassLevel(), getReverbPreset());
 	}
 
 	/**
@@ -299,7 +299,7 @@ public final class AudioEffects {
 	public void setPreset(@Nullable AudioPreset preset) {
 		if (preset != null) {
 			setBassLevel(preset.getBassLevel());
-			setReverbLevel(preset.getReverbLevel());
+			setReverbPreset(preset.getReverbPreset());
 			setBandLevel(preset.getBands());
 			prefs.setPresetName(preset.getName());
 		} else {
