@@ -85,7 +85,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String CHANGED_PLAYSTATE = APOLLO_PACKAGE_NAME + ".playstatechanged";
 	/**
-	 * Indicates the meta data has changed in some way, like a track change
+	 * Indicates the metadata has changed in some way, like a track change
 	 */
 	public static final String CHANGED_META = APOLLO_PACKAGE_NAME + ".metachanged";
 	/**
@@ -331,7 +331,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mPlayer = new MultiPlayer(getApplicationContext(), sessionId, this);
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
-		mSession.setCallback(new MediaButtonCallback(this), null);
+		mSession.setCallback(new MediaButtonCallback(this));
 		mSession.setActive(true);
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
@@ -377,33 +377,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAudioFocusChange(int focusChange) {
-		switch (focusChange) {
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-			case AudioManager.AUDIOFOCUS_LOSS:
-				pause(true);
-				if (isForeground) {
-					setScheduledShutdown(true);
-				}
-				break;
-
-			case AudioManager.AUDIOFOCUS_GAIN:
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-					mPlayer.setMaxVolume(1f);
-				setScheduledShutdown(false);
-				break;
-
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-					mPlayer.setMaxVolume(.5f);
-				break;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent != null) {
 			boolean updateService = handleCommandIntent(intent);
@@ -434,6 +407,29 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onAudioFocusChange(int focusChange) {
+		switch (focusChange) {
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+			case AudioManager.AUDIOFOCUS_LOSS:
+				pause(true);
+				break;
+
+			case AudioManager.AUDIOFOCUS_GAIN:
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+					mPlayer.setMaxVolume(1f);
+				break;
+
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+					mPlayer.setMaxVolume(.5f);
+				break;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onPlaybackChanged() {
 		notifyChange(CHANGED_PLAYSTATE);
 	}
@@ -457,9 +453,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Toast.makeText(getApplicationContext(), R.string.error_playback, Toast.LENGTH_LONG).show();
 		openCurrentAndNext();
 		notifyChange(CHANGED_PLAYSTATE);
-		if (isForeground && !isPlaying()) {
-			setScheduledShutdown(true);
-		}
 	}
 
 	/**
@@ -527,13 +520,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Nullable
 	public Song getCurrentSong() {
 		return currentSong;
-	}
-
-	/**
-	 * Returns true if this service is running in the foreground
-	 */
-	boolean isForeground() {
-		return isForeground;
 	}
 
 	/**
@@ -882,7 +868,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			ServiceCompat.stopForeground(MusicPlaybackService.this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			isForeground = false;
 			if (!mServiceInUse) {
-				Intent intent = new Intent(MusicPlaybackService.this, MusicPlaybackService.class);
+				Intent intent = new Intent(this, MusicPlaybackService.class);
 				if (stopService(intent)) {
 					Log.d(TAG, "service stopped");
 				}
@@ -895,21 +881,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void setFadeEffect(boolean enable) {
 		mPlayer.setFadeEffect(enable);
-	}
-
-	/**
-	 * enable/disable planned shutdown
-	 *
-	 * @param enable true to enable planned shutdown, false to stop a running timer
-	 */
-	void setScheduledShutdown(boolean enable) {
-		if (enable) {
-			shutdownHandler.start(ShutdownHandler.DELAY_LONG);
-			Log.d(TAG, "shutdown scheduled");
-		} else {
-			shutdownHandler.stop();
-			Log.d(TAG, "shutdown stopped");
-		}
 	}
 
 	/**
@@ -1186,7 +1157,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 				// reset shuffle list after reaching the end or refreshing
 				if (mShuffleList.size() != mPlayList.size()) {
-					// create a new shuffle list. if fail, prevent playing
+					// create a new shuffle list. if failed, prevent playing
 					if (!makeShuffleList(false)) {
 						return -1;
 					}
@@ -1430,9 +1401,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_PLAYSTATE:
 				updatePlaybackState();
-				if (mPlayer.initialized() && !mPlayer.isPlaying())
-					playerSettings.setSeekPosition(mPlayer.getPosition());
 				updateWidgets(intent);
+				if (mPlayer.isPlaying()) {
+					setScheduledShutdown(false);
+				} else {
+					// save the last player position
+					if (mPlayer.initialized()) {
+						playerSettings.setSeekPosition(mPlayer.getPosition());
+					}
+					// prepare shutdown if app is in the background
+					if (isForeground) {
+						setScheduledShutdown(true);
+					}
+				}
 				break;
 
 			case CHANGED_QUEUE:
@@ -1455,6 +1436,21 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case CHANGED_WIDGET:
 				updateWidgets(intent);
 				break;
+		}
+	}
+
+	/**
+	 * enable/disable planned shutdown
+	 *
+	 * @param enable true to enable planned shutdown, false to stop a running timer
+	 */
+	private void setScheduledShutdown(boolean enable) {
+		if (enable) {
+			shutdownHandler.start(ShutdownHandler.DELAY_LONG);
+			Log.d(TAG, "shutdown scheduled");
+		} else {
+			shutdownHandler.stop();
+			Log.d(TAG, "shutdown stopped");
 		}
 	}
 }
