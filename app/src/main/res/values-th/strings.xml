@@ -91,4 +91,5 @@
     <string name="no_effects_for_you">ไม่สามารถเปิด equalizer ได้</string>
     <string name="empty_music">คัดลอกเพลงจากคอมพิวเตอร์ของคุณสู่อุปกรณ์ผ่านสาย USB</string>
     <string name="empty_search">ไม่พบผลการค้นหา</string>
+    <string name="description">เครื่องเล่นเพง</string>
 </resources>
