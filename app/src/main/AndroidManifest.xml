@@ -245,16 +245,6 @@
 				android:resource="@xml/app_widget_recents" />
 		</receiver>
 
-		<!-- MediaButtonReceiver used for playback control via MediaSessionCompat -->
-		<receiver
-			android:name="androidx.media.session.MediaButtonReceiver"
-			android:exported="false">
-
-			<intent-filter>
-				<action android:name="android.intent.action.MEDIA_BUTTON" />
-			</intent-filter>
-		</receiver>
-
 		<!-- The service serving the RemoteViews to the recently listened App Widget -->
 		<service
 			android:name="org.nuclearfog.apollo.service.RecentWidgetService"
