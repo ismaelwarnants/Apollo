@@ -946,6 +946,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
 			cursor = CursorFactory.makeTrackCursor(this, uri, true);
 		}
+		// use audio ID to get information
+		else if (uri.toString().matches("content://media/external/file/\\d+")) {
+			try {
+				long id = Long.parseLong(uri.toString().substring(30));
+				cursor = CursorFactory.makeTrackCursor(this, id);
+			} catch (NumberFormatException e) {
+				Log.e(TAG, "invalid content path: \"" + uri + "\"");
+			}
+		}
+		else if (uri.toString().matches("audio:\\d+")) {
+			try {
+				long id = Long.parseLong(uri.toString().substring(6));
+				cursor = CursorFactory.makeTrackCursor(this, id);
+			} catch (NumberFormatException e) {
+				Log.e(TAG, "invalid content path: \"" + uri + "\"");
+			}
+		}
 		// use file path to get information
 		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
 			cursor = CursorFactory.makeTrackCursor(this, uri.getPath());
@@ -954,16 +971,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (uri.getPath() != null && uri.getPath().startsWith("/root/")) {
 			String path = uri.getPath().substring(5);
 			cursor = CursorFactory.makeTrackCursor(this, path);
-		}
-		// use audio ID to get information
-		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("audio:\\d{1,18}")) {
-			long id = Long.parseLong(uri.getLastPathSegment().substring(6));
-			cursor = CursorFactory.makeTrackCursor(this, id);
-		}
-		// use generic document ID
-		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("\\d{1,18}")) {
-			long id = Long.parseLong(uri.getLastPathSegment());
-			cursor = CursorFactory.makeTrackCursor(this, id);
 		}
 		// fallback, use content resolver to get file information
 		if (cursor == null) {
@@ -980,8 +987,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 								name = name.substring(divider + 1);
 							}
 							// check if suffix is a document ID
-							if (name.matches("\\d{1,18}")) {
-								cursor = CursorFactory.makeTrackCursor(this, Long.parseLong(name));
+							if (name.matches("\\d+")) {
+								try {
+									cursor = CursorFactory.makeTrackCursor(this, Long.parseLong(name));
+								} catch (NumberFormatException e) {
+									Log.e(TAG, "invalid document ID: " + name);
+								}
 							}
 							// try to open as relative file path
 							if (cursor == null) {
