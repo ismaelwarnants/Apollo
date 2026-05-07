@@ -141,7 +141,7 @@
     <string name="settings_disable_bat_opt_summary">La optimización de la batería podría causar que se detenga la reproducción cuando se ejecuta en segundo plano</string>
     <string name="settings_prefer_external_equalizer">Preferir ecualizador externo</string>
     <string name="settings_scroll_current_track">Autoscroll a pista actual</string>
-    <string name="settings_disable_certi_validation">Desactivar validación de certificado-SSL</string>
+    <string name="settings_disable_certi_validation">Desactivar validación de certificado-TSL</string>
     <string name="settings_disable_certi_validation_summary">¡Inseguro! Arregla problemas de descarga MusicBrainz. Requiere reinicio.</string>
     <string name="settings_source_code">Código fuente</string>
     <string name="settings_source_code_descr">abrir en navegador</string>
