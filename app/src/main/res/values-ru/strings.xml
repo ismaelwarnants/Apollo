@@ -32,7 +32,7 @@
     <string name="sort_order_entry_year">Году</string>
     <string name="sort_order_entry_duration">Длительности</string>
     <string name="sort_order_entry_date_added">Дате добавления</string>
-    <string name="sort_order_entry_track_list">Трек-листу</string>
+    <string name="sort_order_entry_track_list">Номер песни</string>
     <string name="sort_order_entry_number_of_songs">Количеству песен</string>
     <string name="sort_order_entry_number_of_albums">Количеству альбомов</string>
     <string name="sort_order_entry_filename">Имени файла</string>
@@ -159,4 +159,10 @@
     <string name="error_duplicate_playlistname">Плейлист с таким именем уже существует!</string>
     <string name="settings_keep_screen_on">Держать экран включённым</string>
     <string name="error_permission_denied">Приложение не может работать с разрешением на чтение состояния хранилища и телефона!</string>
+    <string name="description">Музыкальный проигрыватель</string>
+    <string name="error_playback">Ошибка воспроизведения!</string>
+    <string name="settings_category_player">Настройки проигрывателя</string>
+    <string name="settings_disable_certi_validation">Отключите проверку TSL- сертификатов</string>
+    <string name="settings_disable_certi_validation_summary">Небезопасно! Исправляет проблемы со скачиванием MusicBrainz. Требуется перезапуск.</string>
+    <string name="settings_enable_audio_fading">включает эффект плавного появления и исчезания</string>
 </resources>
