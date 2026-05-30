@@ -173,7 +173,7 @@
     <string name="settings_disable_bat_opt_summary">电池优化可能导致后台运行时播放中断</string>
     <string name="settings_scroll_current_track">自动滑动到当前曲目</string>
     <string name="settings_keep_screen_on">保持屏幕亮起</string>
-    <string name="settings_disable_certi_validation">关闭SSL证书验证</string>
+    <string name="settings_disable_certi_validation">关闭TSL证书验证</string>
     <string name="settings_disable_certi_validation_summary">危险！修理MusicBrainz下载问题，需要重启应用。</string>
     <string name="settings_source_code">源代码</string>
     <string name="settings_source_code_descr">在浏览器中打开</string>
