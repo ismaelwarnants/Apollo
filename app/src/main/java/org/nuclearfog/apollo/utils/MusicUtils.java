@@ -710,13 +710,12 @@ public final class MusicUtils {
 	 * @param playlistId ID of the playlist
 	 * @param from       location of the track
 	 * @param to         new location of the track
-	 * @param off        the offset of the positions, or '0'
 	 * @return true if playlist item was moved successfully
 	 */
-	public static boolean movePlaylistTrack(Context context, long playlistId, int from, int to, int off) {
+	public static boolean movePlaylistTrack(Context context, long playlistId, int from, int to) {
 		ContentResolver resolver = context.getContentResolver();
 		try {
-			return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
+			return Playlists.Members.moveItem(resolver, playlistId, from, to);
 		} catch (RuntimeException exception) {
 			// thrown when the app doesn't own the playlist
 			Log.w(TAG, "could not move playlist item!");

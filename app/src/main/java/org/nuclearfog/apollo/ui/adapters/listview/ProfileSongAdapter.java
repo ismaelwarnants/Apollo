@@ -39,11 +39,6 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
 
 	/**
-	 * Count of the view header
-	 */
-	public static final int HEADER_COUNT = 1;
-
-	/**
 	 * item layout
 	 */
 	private static final int LAYOUT = R.layout.list_item_simple;
@@ -82,14 +77,14 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Return a faux header at position 0
 		if (enableHeader && position == 0) {
-			ProfileTabCarousel mHeader = new ProfileTabCarousel(parent.getContext());
+			ProfileTabCarousel mHeader = new ProfileTabCarousel(getContext());
 			mHeader.setVisibility(View.INVISIBLE);
 			return mHeader;
 		}
 		// Recycle MusicHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
-			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+			LayoutInflater inflater = LayoutInflater.from(getContext());
 			convertView = inflater.inflate(LAYOUT, parent, false);
 			holder = new MusicHolder(convertView);
 			holder.mLineThree.setVisibility(View.GONE);
@@ -131,7 +126,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	@Override
 	public int getCount() {
 		if (enableHeader)
-			return super.getCount() + HEADER_COUNT;
+			return super.getCount() + 1;
 		return super.getCount();
 	}
 
@@ -168,7 +163,9 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Override
 	public void insert(@Nullable Song song, int index) {
-		super.insert(song, index - HEADER_COUNT);
+		if (enableHeader)
+			index--;
+		super.insert(song, index);
 	}
 
 	/**
@@ -176,24 +173,19 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	 */
 	@Nullable
 	@Override
-	public Song getItem(int position) {
-		if (!enableHeader)
-			return super.getItem(position);
-		if (position >= HEADER_COUNT)
-			return super.getItem(position - HEADER_COUNT);
-		return null;
+	public Song getItem(int index) {
+		if (enableHeader)
+			index--;
+		return index >= 0 ? super.getItem(index) : null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getItemId(int position) {
-		Song song = getItem(position);
-		if (song != null) {
-			return song.getId();
-		}
-		return super.getItemId(position);
+	public long getItemId(int index) {
+		Song song = getItem(index);
+		return song != null ? song.getId() : super.getItemId(index);
 	}
 
 	/**

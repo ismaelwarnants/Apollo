@@ -220,15 +220,16 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	 */
 	@Override
 	public void drop(int from, int to) {
-		if (from > 0 && to > 0 && from != to) {
-			if (MusicUtils.movePlaylistTrack(requireContext(), mPlaylistId, from, to, ProfileSongAdapter.HEADER_COUNT)) {
+		if (from != to) {
+			int offset = mAdapter.getViewTypeCount() > 1 ? 1 : 0;
+			if (MusicUtils.movePlaylistTrack(requireContext(), mPlaylistId, from - offset, to - offset)) {
 				// update adapter
 				Song selectedSong = mAdapter.getItem(from);
 				mAdapter.remove(selectedSong);
 				mAdapter.insert(selectedSong, to);
 				// move track item in the current queue
 				if (queueIsPlaylist) {
-					MusicUtils.moveQueueItem(requireActivity(), from - ProfileSongAdapter.HEADER_COUNT, to - ProfileSongAdapter.HEADER_COUNT);
+					MusicUtils.moveQueueItem(requireActivity(), from - offset, to - offset);
 				}
 			}
 		}

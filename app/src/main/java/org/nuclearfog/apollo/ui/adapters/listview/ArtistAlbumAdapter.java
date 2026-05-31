@@ -36,11 +36,6 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
 
 	/**
-	 * count of header views
-	 */
-	private static final int HEADER_COUNT = 1;
-
-	/**
 	 * layout resource
 	 */
 	private static final int LAYOUT = R.layout.list_item_detailed;
@@ -108,17 +103,9 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public int getCount() {
 		if (enableHeader)
-			return HEADER_COUNT + super.getCount();
+			return super.getCount() + 1;
 		return super.getCount();
 	}
 
@@ -127,23 +114,19 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 	 */
 	@Nullable
 	@Override
-	public Album getItem(int position) {
-		if (!enableHeader)
-			return super.getItem(position);
-		if (position >= HEADER_COUNT)
-			return super.getItem(position - HEADER_COUNT);
-		return null;
+	public Album getItem(int index) {
+		if (enableHeader)
+			index--;
+		return index >= 0 ? super.getItem(index) : null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getItemId(int position) {
-		Album album = getItem(position);
-		if (album != null)
-			return album.getId();
-		return super.getItemId(position);
+	public long getItemId(int index) {
+		Album album = getItem(index);
+		return album != null ? album.getId() : super.getItemId(index);
 	}
 
 	/**
@@ -172,6 +155,14 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 		if (enableHeader && position == 0)
 			return ITEM_VIEW_TYPE_HEADER;
 		return ITEM_VIEW_TYPE_MUSIC;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
 	}
 
 	/**
