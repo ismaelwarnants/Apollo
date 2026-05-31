@@ -82,30 +82,6 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 		}
 	}
 
-
-	@Override
-	public void onDestroy() {
-		artistAlbumLoader.cancel();
-		albumSongLoader.cancel();
-		super.onDestroy();
-	}
-
-
-	@Override
-	protected void onItemClick(View v, int pos, long id) {
-		if (v.getId() == R.id.image) {
-			// Album art was clicked
-			albumSongLoader.execute(id, onPlaySongs);
-		} else {
-			// open Album
-			Album album = mAdapter.getItem(pos);
-			if (album != null) {
-				NavUtils.openAlbumProfile(requireActivity(), album);
-				requireActivity().finish();
-			}
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -113,6 +89,14 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 	public void onPause() {
 		super.onPause();
 		mAdapter.flush();
+	}
+
+
+	@Override
+	public void onDestroy() {
+		artistAlbumLoader.cancel();
+		albumSongLoader.cancel();
+		super.onDestroy();
 	}
 
 	/**
@@ -192,6 +176,20 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 			// Add the data to the adapter
 			for (Album album : albums) {
 				mAdapter.add(album);
+			}
+		}
+	}
+
+	@Override
+	protected void onItemClick(View v, int index, long id) {
+		if (v.getId() == R.id.image) {
+			// Album art was clicked
+			albumSongLoader.execute(id, onPlaySongs);
+		} else {
+			// open Album
+			Album album = mAdapter.getItem(index);
+			if (album != null) {
+				NavUtils.openAlbumProfile(requireActivity(), album);
 			}
 		}
 	}

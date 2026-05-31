@@ -12,6 +12,8 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
@@ -25,6 +27,7 @@ import org.nuclearfog.apollo.ui.activities.SettingsActivity;
  * Various navigation helpers.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public final class NavUtils {
 
@@ -33,18 +36,20 @@ public final class NavUtils {
 	/**
 	 * Opens the profile of an artist.
 	 *
-	 * @param artistName The name of the artist
+	 * @param artist_name The name of the artist
 	 */
-	public static void openArtistProfile(Activity activity, String artistName) {
-		// Create a new bundle to transfer the artist info
-		Bundle bundle = new Bundle();
-		bundle.putLong(Constants.ID, MusicUtils.getIdForArtist(activity, artistName));
-		bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
-		bundle.putString(Constants.ARTIST_NAME, artistName);
-		// Create the intent to launch the profile activity
-		Intent intent = new Intent(activity, ProfileActivity.class);
-		intent.putExtras(bundle);
-		activity.startActivity(intent);
+	public static void openArtistProfile(Activity activity, String artist_name) {
+		long id = MusicUtils.getIdForArtist(activity, artist_name);
+		if (id != -1) {
+			Bundle bundle = new Bundle();
+			bundle.putLong(Constants.ID, id);
+			bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
+			bundle.putString(Constants.ARTIST_NAME, artist_name);
+			// Create the intent to launch the profile activity
+			Intent intent = new Intent(activity, ProfileActivity.class);
+			intent.putExtras(bundle);
+			activity.startActivity(intent);
+		}
 	}
 
 	/**
@@ -52,8 +57,7 @@ public final class NavUtils {
 	 *
 	 * @param album Album to open
 	 */
-	public static void openAlbumProfile(Activity activity, Album album) {
-		// Create a new bundle to transfer the album info
+	public static void openAlbumProfile(Activity activity, @NonNull Album album) {
 		Bundle bundle = new Bundle();
 		bundle.putString(Constants.ALBUM_YEAR, album.getRelease());
 		bundle.putString(Constants.ARTIST_NAME, album.getArtist());
