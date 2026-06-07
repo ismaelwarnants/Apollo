@@ -486,22 +486,20 @@ public final class MusicUtils {
 	 * @param position selected item position
 	 */
 	public static void playAllFromUserItemClick(Activity activity, ArrayAdapter<Song> adapter, int position) {
-		if (position >= adapter.getViewTypeCount() - 1) {
-			// if view type count is greater than 1, a header exists at first position
-			// calculate position offset
-			int off = (adapter.getViewTypeCount() - 1);
-			// length of the array adapter
-			int len = adapter.getCount();
-			// calculate real position
-			position -= off;
-			// copy all IDs to an array
-			long[] list = new long[len - off];
-			for (int i = 0; i < list.length; i++) {
-				list[i] = adapter.getItemId(i + off);
-			}
-			// play whole ID list
-			playAll(activity, list, position, false);
+		// if view type count is greater than 1, a header exists at first position
+		// calculate position offset
+		int off = adapter.getViewTypeCount() > 1 ? 1 : 0;
+		// length of the array adapter
+		int len = adapter.getCount();
+		// calculate real position
+		position -= off;
+		// copy all IDs to an array
+		long[] list = new long[len - off];
+		for (int i = 0; i < list.length; i++) {
+			list[i] = adapter.getItemId(i + off);
 		}
+		// play whole ID list
+		playAll(activity, list, position, false);
 	}
 
 	/**

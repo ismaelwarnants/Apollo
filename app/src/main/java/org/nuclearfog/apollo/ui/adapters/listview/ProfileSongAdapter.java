@@ -31,12 +31,12 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	/**
 	 * The header view
 	 */
-	private static final int ITEM_VIEW_TYPE_HEADER = 0;
+	private static final int ITEM_VIEW_TYPE_HEADER = 1;
 
 	/**
 	 * * The data in the list.
 	 */
-	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
+	private static final int ITEM_VIEW_TYPE_MUSIC = 0;
 
 	/**
 	 * item layout
