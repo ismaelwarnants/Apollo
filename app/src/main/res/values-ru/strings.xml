@@ -162,7 +162,7 @@
     <string name="description">Музыкальный проигрыватель</string>
     <string name="error_playback">Ошибка воспроизведения!</string>
     <string name="settings_category_player">Настройки проигрывателя</string>
-    <string name="settings_disable_certi_validation">Отключите проверку TSL- сертификатов</string>
+    <string name="settings_disable_certi_validation">Отключите проверку TLS- сертификатов</string>
     <string name="settings_disable_certi_validation_summary">Небезопасно! Исправляет проблемы со скачиванием MusicBrainz. Требуется перезапуск.</string>
     <string name="settings_enable_audio_fading">включает эффект плавного появления и исчезания</string>
 </resources>

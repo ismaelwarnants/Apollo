@@ -144,7 +144,7 @@
     <string name="settings_prefer_external_equalizer">Preferir um equalizador externo</string>
     <string name="settings_scroll_current_track">Rolagem automática para a faixa atual</string>
     <string name="settings_keep_screen_on">Manter a tela ligada</string>
-    <string name="settings_disable_certi_validation">Desativar a validação do certificado TSL</string>
+    <string name="settings_disable_certi_validation">Desativar a validação do certificado TLS</string>
     <string name="settings_disable_certi_validation_summary">Inseguro! Corrige problemas de download do MusicBrainz. Requer reinicialização.</string>
     <string name="settings_source_code">Código-fonte</string>
     <string name="settings_source_code_descr">Abrir no navegador</string>
