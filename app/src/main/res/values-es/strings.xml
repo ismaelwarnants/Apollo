@@ -14,7 +14,7 @@
     <string name="menu_clear_queue">Borrar cola</string>
     <string name="menu_save_queue">Guardar cola</string>
     <string name="menu_share">Compartir</string>
-    <string name="menu_add_to_homescreen">Añadir al escritorio</string>
+    <string name="menu_add_to_homescreen">Añadir a pantalla de inicio</string>
     <string name="menu_equalizer">Ecualizador</string>
     <string name="menu_simple">Simple</string>
     <string name="menu_detailed">Detallado</string>
@@ -140,7 +140,7 @@
     <string name="settings_disable_bat_opt_title">Desactivar optimización de la batería</string>
     <string name="settings_disable_bat_opt_summary">La optimización de la batería podría causar que se detenga la reproducción cuando se ejecuta en segundo plano</string>
     <string name="settings_prefer_external_equalizer">Preferir ecualizador externo</string>
-    <string name="settings_scroll_current_track">Autoscroll a pista actual</string>
+    <string name="settings_scroll_current_track">Desplazar a pista actual</string>
     <string name="settings_disable_certi_validation">Desactivar validación de certificado-TLS</string>
     <string name="settings_disable_certi_validation_summary">¡Inseguro! Arregla problemas de descarga MusicBrainz. Requiere reinicio.</string>
     <string name="settings_source_code">Código fuente</string>
@@ -158,4 +158,11 @@
     <string name="preset_custom">personalizado</string>
     <string name="select_albumart">elegir arte</string>
     <string name="settings_enable_audio_fading">activar efecto fundido</string>
+    <string name="save_preset">Guardar preajuste</string>
+    <string name="menu_delete_preset">Borrar preajuste</string>
+    <string name="preset_name_hint">Ingresar nombre del preajuste</string>
+    <string name="settings_keep_screen_on">Mantener pantalla encendida</string>
+    <string name="menu_clear_popular">Limpiar canciones</string>
+    <string name="label_reverb">Tamaño de la habitación</string>
+    <string name="label_preset">Preajuste:</string>
 </resources>
