@@ -91,4 +91,17 @@
     <string name="no_effects_for_you">Ekualisir tidak dapat dibuka.</string>
     <string name="empty_music">Untuk menyalin musik dari komputer ke perangkat Anda, gunakan kabel USB.</string>
     <string name="empty_search">Hasil pencarian tidak ditemukan</string>
+    <string name="description">Pemutar musik</string>
+    <string name="page_playlists_recent">Daftar Putar / Terbaru</string>
+    <string name="page_recent_artist">Terbaru / Artis</string>
+    <string name="page_artists_albums">Artis / Album</string>
+    <string name="page_albums_songs">Album / Lagu</string>
+    <string name="page_songs_genres">Lagu / Genre</string>
+    <string name="page_genres_folders">Genre / Folder</string>
+    <string name="page_folders">Folder</string>
+    <string name="menu_close">Tutup</string>
+    <string name="save_preset">Simpan preset</string>
+    <string name="menu_delete_preset">Hapus preset</string>
+    <string name="menu_clear_popular">Hapus lagu</string>
+    <string name="menu_show_hidden">tampilkan trek yang tersembunyi</string>
 </resources>
