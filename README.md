@@ -1,6 +1,7 @@
 # Apollo Music Player
 
 Apollo is a fork from CyanogenMod's <a href="https://github.com/adneal/Apollo-CM">Apollo<a/> music player, supporting Android 5.0+
+This version of Apollo is a fork from the <a href="https://codeberg.org/nuclearfog/Apollo">Apollo<a/> music player, but improved support for modern android (15+).
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
