@@ -6,3 +6,5 @@
 /app/.cxx/
 /build/
 /local.properties
+*.keystore
+keystore.properties
