@@ -1,12 +1,14 @@
 package org.nuclearfog.apollo.player;
 
 import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.FloatRange;
@@ -146,14 +148,19 @@ public class MultiPlayer {
 		fadeEffectEnabled = AppPreferences.getInstance(context).fadeEffectEnabled();
 		this.callback = callback;
 		this.sessionId = sessionId;
+		AudioAttributes audioAttributes = new AudioAttributes.Builder()
+				.setUsage(AudioAttributes.USAGE_MEDIA)
+				.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+				.build();
 		for (int i = 0; i < mPlayers.length; i++) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
 				mPlayers[i] = new MediaPlayer(context.createAttributionContext(ATTR_TAG));
 			} else {
 				mPlayers[i] = new MediaPlayer();
 			}
-			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
+			mPlayers[i].setAudioAttributes(audioAttributes);
 			mPlayers[i].setAudioSessionId(sessionId);
+			mPlayers[i].setWakeMode(context.getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
 			mPlayers[i].setOnCompletionListener(this::onCompletion);
 			mPlayers[i].setOnErrorListener(this::onError);
 		}

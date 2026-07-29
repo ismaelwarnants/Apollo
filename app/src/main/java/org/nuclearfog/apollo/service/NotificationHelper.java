@@ -77,7 +77,7 @@ class NotificationHelper {
 		mService = service;
 		imageFetcher = new ImageFetcher(service.getApplicationContext());
 		// init notification manager & channel
-		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
+		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW);
 		channelBuilder.setName(NOTIFICATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(channelBuilder.build());
@@ -95,11 +95,12 @@ class NotificationHelper {
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(playerIntent)
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
-				.setCategory(NotificationCompat.CATEGORY_PROGRESS)
+				.setPriority(NotificationCompat.PRIORITY_LOW)
+				.setCategory(NotificationCompat.CATEGORY_TRANSPORT)
 				.setWhen(System.currentTimeMillis())
 				.setProgress(0, 0, true).setAutoCancel(false)
 				.setShowWhen(false).setOngoing(true)
+				.setOnlyAlertOnce(true)
 				.setSilent(true).setStyle(mediaStyle);
 	}
 
@@ -123,16 +124,15 @@ class NotificationHelper {
 	 * @return notification object with current playback information
 	 */
 	Notification buildNotification() {
-		// Android 13+ uses PlaybackState & MediaMetadata to update notification data
-		// no need to set playback information here
+		Album album = mService.getCurrentAlbum();
+		Song song = mService.getCurrentSong();
+		if (song != null && album != null) {
+			notificationBuilder.setContentTitle(song.getName());
+			notificationBuilder.setContentText(song.getArtist());
+			notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
+		}
+		// Android 13+ uses MediaSession metadata for media controls, skip manual actions
 		if (Build.VERSION.SDK_INT < VERSION_CODES.TIRAMISU) {
-			Album album = mService.getCurrentAlbum();
-			Song song = mService.getCurrentSong();
-			if (song != null && album != null) {
-				notificationBuilder.setContentTitle(song.getName());
-				notificationBuilder.setContentText(song.getArtist());
-				notificationBuilder.setLargeIcon(imageFetcher.getAlbumArtwork(album));
-			}
 			notificationBuilder.clearActions();
 			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
 			if (mService.isPlaying()) {

@@ -6,11 +6,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
@@ -61,7 +63,11 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
 				Intent serviceIntent = new Intent(context, MusicPlaybackService.class);
 				serviceIntent.setAction(MusicPlaybackService.ACTION_WIDGET_UPDATE);
 				serviceIntent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, false);
-				context.startService(serviceIntent);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+					ContextCompat.startForegroundService(context, serviceIntent);
+				} else {
+					context.startService(serviceIntent);
+				}
 			}
 		}
 		super.onReceive(context, intent);

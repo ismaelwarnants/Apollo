@@ -5,6 +5,8 @@
 	<uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
 	<!-- Used to prevent interrupting of the playback by battery optimization -->
 	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+	<!-- Used to keep CPU awake during audio playback -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<!-- Used for caching, creating new playlists and deleting tracks -->
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 	<!-- Used to download images -->

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
@@ -47,11 +48,13 @@ public class ServiceBroadcastReceiver extends BroadcastReceiver {
 	 */
 	public IntentFilter createIntentFiler() {
 		IntentFilter intentFilter = new IntentFilter();
-		// init external storage intent filter
-		intentFilter.addAction(Intent.ACTION_MEDIA_EJECT);
-		intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
 		// init headset intent filter
 		intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+		// init external storage intent filter (legacy, not delivered on Android 11+)
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+			intentFilter.addAction(Intent.ACTION_MEDIA_EJECT);
+			intentFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+		}
 		return intentFilter;
 	}
 

@@ -339,10 +339,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		shutdownHandler = new ShutdownHandler(this);
 		AudioAttributesCompat mAttributes = new AudioAttributesCompat.Builder()
 				.setUsage(AudioAttributesCompat.USAGE_MEDIA)
-				// prevent system fade in/out effects to be applied by setting content type to "speech"
-				.setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH).build();
+				.setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC).build();
 		focusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
-				.setAudioAttributes(mAttributes).setOnAudioFocusChangeListener(this).build();
+				.setAudioAttributes(mAttributes)
+				.setOnAudioFocusChangeListener(this)
+				.build();
 		// register receiver
 		IntentFilter intentFilter = serviceBroadcastReceiver.createIntentFiler();
 		ContextCompat.registerReceiver(this, serviceBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
@@ -379,13 +380,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent != null) {
-			boolean updateService = handleCommandIntent(intent);
+			// start foreground immediately if requested, before any other work
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					startForeground();
 				}
 			}
+			boolean updateService = handleCommandIntent(intent);
 			// update service status
 			if (updateService) {
 				mNotificationHelper.updateNotification();
@@ -409,19 +411,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
 			case AudioManager.AUDIOFOCUS_LOSS:
 				pause(true);
 				break;
 
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+				pause(true);
+				break;
+
 			case AudioManager.AUDIOFOCUS_GAIN:
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-					mPlayer.setMaxVolume(1f);
+				mPlayer.setMaxVolume(1f);
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 					mPlayer.setMaxVolume(.5f);
+				}
 				break;
 		}
 	}
