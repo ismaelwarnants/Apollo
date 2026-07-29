@@ -288,6 +288,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * current repeat mode {@link #REPEAT_NONE,#REPEAT_CURRENT,#REPEAT_ALL}
 	 */
 	private int mRepeatMode = REPEAT_ALL;
+	/**
+	 * true if playback was paused due to a transient audio focus loss
+	 * (e.g. navigation prompt, phone call) — auto-resume on focus gain
+	 */
+	private boolean mTransientFocusLoss = false;
 
 	/**
 	 * {@inheritDoc}
@@ -412,15 +417,24 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onAudioFocusChange(int focusChange) {
 		switch (focusChange) {
 			case AudioManager.AUDIOFOCUS_LOSS:
+				// permanent loss — don't auto-resume
+				mTransientFocusLoss = false;
 				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+				// temporary loss (e.g. navigation) — will auto-resume on gain
+				mTransientFocusLoss = mPlayer.isPlaying();
 				pause(true);
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
 				mPlayer.setMaxVolume(1f);
+				// auto-resume if we were playing before a transient loss
+				if (mTransientFocusLoss) {
+					mTransientFocusLoss = false;
+					play();
+				}
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -1425,8 +1439,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					if (mPlayer.initialized()) {
 						playerSettings.setSeekPosition(mPlayer.getPosition());
 					}
-					// prepare shutdown if app is in the background
-					if (isForeground) {
+					// don't shutdown during transient focus loss — we'll auto-resume
+					if (isForeground && !mTransientFocusLoss) {
 						setScheduledShutdown(true);
 					}
 				}

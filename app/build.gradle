@@ -17,8 +17,8 @@ android {
 	defaultConfig {
 		minSdk 21
 		targetSdk 37
-		versionCode 76
-		versionName '1.7.8'
+		versionCode 77
+		versionName '1.7.9'
 		applicationId 'org.ismaelwarnants.apollo'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
