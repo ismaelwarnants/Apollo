@@ -19,7 +19,7 @@ android {
 		targetSdk 37
 		versionCode 76
 		versionName '1.7.8'
-		applicationId 'org.nuclearfog.apollo'
+		applicationId 'org.ismaelwarnants.apollo'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
 	}
